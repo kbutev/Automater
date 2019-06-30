@@ -5,6 +5,8 @@
  */
 package automater;
 
+import automater.utilities.Logger;
+
 /**
  *
  * @author Bytevi
@@ -15,7 +17,7 @@ public class Automater {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        Logger.messageAction("Done");
     }
     
 }
