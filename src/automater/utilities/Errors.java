@@ -10,43 +10,43 @@ package automater.utilities;
  * @author Bytevi
  */
 public class Errors {
-    public static Exception throwUnknownError(String description)
+    public static void throwUnknownError(String description) throws Exception
     {
-        return new Exception(description);
+        throw new Exception(description);
     }
     
-    public static Exception throwInvalidArgument(String description)
+    public static void throwInvalidArgument(String description)
     {
-        return new IllegalArgumentException(description);
+        throw new IllegalArgumentException(description);
     }
     
-    public static Exception throwIndexOutOfBounds(String description)
+    public static void throwIndexOutOfBounds(String description)
     {
-        return new IndexOutOfBoundsException(description);
+        throw new IndexOutOfBoundsException(description);
     }
     
-    public static Exception throwIllegalMathOperation(String description)
+    public static void throwIllegalMathOperation(String description)
     {
-        return new ArithmeticException(description);
+        throw new ArithmeticException(description);
     }
     
-    public static Exception throwInternalLogicError(String description)
+    public static void throwInternalLogicError(String description) throws RuntimeException
     {
-        return new Exception(description);
+        throw new RuntimeException(description);
     }
     
-    public static Exception throwCannotStartTwice(String description)
+    public static void throwCannotStartTwice(String description) throws RuntimeException
     {
-        return new Exception(description);
+        throw new RuntimeException(description);
     }
     
-    public static Exception throwSerializationFailed(String description)
+    public static void throwSerializationFailed(String description) throws RuntimeException
     {
-        return new Exception(description);
+        throw new RuntimeException(description);
     }
     
-    public static Exception throwClassNotFound(String description)
+    public static void throwClassNotFound(String description) throws ClassNotFoundException
     {
-        return new ClassNotFoundException(description);
+        throw new ClassNotFoundException(description);
     }
 }

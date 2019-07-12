@@ -6,18 +6,20 @@
 package automater;
 
 import automater.utilities.Logger;
+import automater.ui.view.RecordForm;
+import automater.ui.viewcontroller.PrimaryViewContoller;
 
 /**
  *
  * @author Bytevi
  */
 public class Automater {
-
+    public static final PrimaryViewContoller primaryViewContoller = new PrimaryViewContoller();
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Logger.messageAction("Done");
+        primaryViewContoller.start();
     }
-    
 }
