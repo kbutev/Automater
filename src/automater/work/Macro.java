@@ -5,10 +5,24 @@
  */
 package automater.work;
 
+import automater.recorder.RecorderResult;
+
 /**
  *
  * @author Bytevi
  */
 public class Macro {
+    public final String name;
     
+    public Macro(String name, RecorderResult recorderResult)
+    {
+        this.name = name;
+        
+        parseRecorderResult(recorderResult);
+    }
+    
+    private void parseRecorderResult(RecorderResult recorderResult)
+    {
+        
+    }
 }

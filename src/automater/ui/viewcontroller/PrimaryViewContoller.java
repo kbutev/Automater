@@ -68,6 +68,48 @@ public class PrimaryViewContoller implements ViewController, FormActionDelegate 
         }
     }
     
+     @Override
+    public void onBeginRecord()
+    {
+        
+    }
+    
+    @Override
+    public void onEndRecord()
+    {
+        
+    }
+    
+    @Override
+    public void onSaveRecording(String name)
+    {
+        
+    }
+    
+    @Override
+    public void onPlayMacro(String name)
+    {
+        
+    }
+    
+    @Override
+    public void onStopPlayingMacro()
+    {
+        
+    }
+    
+    @Override
+    public void onDeleteMacro(String name)
+    {
+        
+    }
+    
+    @Override
+    public void onChangePlayMacroParameters(String name)
+    {
+        
+    }
+    
     private void switchScreenToPlay()
     {
         if (_playViewController == null)

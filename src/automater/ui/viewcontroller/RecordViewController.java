@@ -5,9 +5,14 @@
  */
 package automater.ui.viewcontroller;
 
+import automater.recorder.Recorder;
+import automater.recorder.RecorderResult;
+import automater.recorder.RecorderUserInput;
 import automater.ui.view.FormActionDelegate;
 import automater.ui.view.RecordForm;
+import automater.utilities.Logger;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 
 /**
  *
@@ -45,7 +50,7 @@ public class RecordViewController implements ViewController, FormActionDelegate 
     public void setActionDelegate(FormActionDelegate delegate)
     {
         _delegate = delegate;
-        _form.delegate = delegate;
+        _form.delegate = this;
     }
     
     @Override
@@ -55,5 +60,67 @@ public class RecordViewController implements ViewController, FormActionDelegate 
         {
             _delegate.onSwitchWindow();
         }
+    }
+    
+    @Override
+    public void onBeginRecord()
+    {
+        Logger.messageAction("Begin recording...");
+        
+        try {
+            Recorder.getDefault().start();
+            _form.beginRecording();
+        } catch (Exception e) {
+            _form.displayError("Record", "Cannot start recorder, its already recording!");
+        }
+    }
+    
+    @Override
+    public void onEndRecord()
+    {
+        Logger.messageAction("End recording.");
+        
+        try {
+            RecorderResult result = Recorder.getDefault().end();
+            
+            Logger.messageAction("Recorded " + String.valueOf(result.userInputs.size()) + " actions!");
+        } catch (Exception e) {
+            _form.displayError("Record", "Cannot end recorder, its not recording!");
+        }
+        
+        _form.endRecording();
+    }
+    
+    @Override
+    public void onSaveRecording(String name)
+    {
+        Logger.messageAction("Save recording as \"" + name + "\"");
+        
+        _form.willSaveRecording();
+        _form.didSaveRecording(true, null);
+    }
+    
+    @Override
+    public void onPlayMacro(String name)
+    {
+        
+    }
+    
+    @Override
+    public void onStopPlayingMacro()
+    {
+        
+    }
+    
+    @Override
+    public void onDeleteMacro(String name)
+    {
+        
+    }
+    
+    @Override
+    public void onChangePlayMacroParameters(String name)
+    {
+        
     }
 }

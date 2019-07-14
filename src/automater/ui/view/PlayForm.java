@@ -6,6 +6,7 @@
 package automater.ui.view;
 
 import static automater.ui.view.TextValue.*;
+import automater.work.MacroParameters;
 
 /**
  *
@@ -35,10 +36,10 @@ public class PlayForm extends javax.swing.JFrame {
         headerText = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         macrosList = new javax.swing.JList<>();
-        jButton1 = new javax.swing.JButton();
+        playMacroButton = new javax.swing.JButton();
         jProgressBar1 = new javax.swing.JProgressBar();
-        jLabel1 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
+        macroStateLabel = new javax.swing.JLabel();
+        macroOptionsButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(401, 294));
@@ -60,13 +61,23 @@ public class PlayForm extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(macrosList);
 
-        jButton1.setText("Play");
-        jButton1.setEnabled(false);
+        playMacroButton.setText("Play");
+        playMacroButton.setEnabled(false);
+        playMacroButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                playMacroButtonActionPerformed(evt);
+            }
+        });
 
-        jLabel1.setText("Idle");
+        macroStateLabel.setText("Idle");
 
-        jButton2.setText("Options");
-        jButton2.setEnabled(false);
+        macroOptionsButton.setText("Options");
+        macroOptionsButton.setEnabled(false);
+        macroOptionsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                macroOptionsButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -84,10 +95,10 @@ public class PlayForm extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(playMacroButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(macroOptionsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(macroStateLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 189, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -102,10 +113,10 @@ public class PlayForm extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(playMacroButton)
+                    .addComponent(macroOptionsButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
+                .addComponent(macroStateLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
                 .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -119,6 +130,20 @@ public class PlayForm extends javax.swing.JFrame {
             delegate.onSwitchWindow();
         }
     }//GEN-LAST:event_switchToRecordButtonActionPerformed
+
+    private void playMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playMacroButtonActionPerformed
+        if (delegate != null && selectedMacroName != null)
+        {
+            delegate.onPlayMacro(selectedMacroName);
+        }
+    }//GEN-LAST:event_playMacroButtonActionPerformed
+
+    private void macroOptionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_macroOptionsButtonActionPerformed
+        if (delegate != null && selectedMacroName != null)
+        {
+            delegate.onChangePlayMacroParameters(selectedMacroName);
+        }
+    }//GEN-LAST:event_macroOptionsButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -162,14 +187,17 @@ public class PlayForm extends javax.swing.JFrame {
         
     }
     
+    // Properties
+    private String selectedMacroName = null;
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel headerText;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton macroOptionsButton;
+    private javax.swing.JLabel macroStateLabel;
     private javax.swing.JList<String> macrosList;
+    private javax.swing.JButton playMacroButton;
     private javax.swing.JButton switchToRecordButton;
     // End of variables declaration//GEN-END:variables
 }

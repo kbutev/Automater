@@ -6,6 +6,10 @@
 package automater.ui.view;
 
 import static automater.ui.view.TextValue.*;
+import automater.utilities.AlertWindows;
+import automater.utilities.Logger;
+import com.sun.istack.internal.Nullable;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -49,6 +53,11 @@ public class RecordForm extends javax.swing.JFrame {
 
         recordMacroButton.setText("RECORD");
         recordMacroButton.setToolTipText("Begin recording actions for a macro");
+        recordMacroButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                recordMacroButtonActionPerformed(evt);
+            }
+        });
 
         macroActionsList.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -60,6 +69,11 @@ public class RecordForm extends javax.swing.JFrame {
         saveMacroButton.setText("Save");
         saveMacroButton.setToolTipText("");
         saveMacroButton.setEnabled(false);
+        saveMacroButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveMacroButtonActionPerformed(evt);
+            }
+        });
 
         macroNameField.setText("Untitled macro");
 
@@ -139,6 +153,27 @@ public class RecordForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_switchToPlayButtonActionPerformed
 
+    private void recordMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordMacroButtonActionPerformed
+        if (delegate != null)
+        {
+            if (!isRecording)
+            {
+                delegate.onBeginRecord();
+            }
+            else
+            {
+                delegate.onEndRecord();
+            }
+        }
+    }//GEN-LAST:event_recordMacroButtonActionPerformed
+
+    private void saveMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMacroButtonActionPerformed
+        if (delegate != null)
+        {
+            delegate.onSaveRecording(macroNameField.getText());
+        }
+    }//GEN-LAST:event_saveMacroButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -189,11 +224,71 @@ public class RecordForm extends javax.swing.JFrame {
         
         macroStateLabel.setText(TextValue.getText(TextValue.RecordIdleStatus, "F5"));
         
-        recordMacroButton.setText(TextValue.getText(TextValue.RecordBeginRecordingButton));
-        recordMacroButton.setToolTipText(TextValue.getText(TextValue.RecordBeginRecordingButtonTip));
         saveMacroButton.setText(TextValue.getText(TextValue.RecordSaveButton));
         saveMacroButton.setToolTipText(TextValue.getText(TextValue.RecordSaveButtonDisabledTip));
+        
+        updateRecordButtonToCorrectState();
     }
+    
+    public void willSwitchToPlayWindow()
+    {
+        if (isRecording)
+        {
+            Logger.warning("Switching to play screen while recording is not allowed.");
+        }
+    }
+    
+    public void beginRecording()
+    {
+        isRecording = true;
+        macroNameField.setEnabled(false);
+        switchToPlayButton.setEnabled(false);
+        saveMacroButton.setEnabled(false);
+        
+        updateRecordButtonToCorrectState();
+    }
+    
+    public void endRecording()
+    {
+        isRecording = false;
+        macroNameField.setEnabled(true);
+        switchToPlayButton.setEnabled(true);
+        saveMacroButton.setEnabled(true);
+        
+        updateRecordButtonToCorrectState();
+    }
+    
+    public void willSaveRecording()
+    {
+        
+    }
+    
+    public void didSaveRecording(boolean result, @Nullable String errorMessage)
+    {
+        
+    }
+    
+    public void displayError(String title, String message)
+    {
+        AlertWindows.showErrorMessage(getParent(), title, message, "Ok");
+    }
+    
+    private void updateRecordButtonToCorrectState()
+    {
+        if (!isRecording)
+        {
+            recordMacroButton.setText(TextValue.getText(TextValue.RecordBeginRecordingButton));
+            recordMacroButton.setToolTipText(TextValue.getText(TextValue.RecordBeginRecordingButtonTip));
+        }
+        else
+        {
+            recordMacroButton.setText(TextValue.getText(TextValue.RecordStopRecordingButton));
+            recordMacroButton.setToolTipText(TextValue.getText(TextValue.RecordStopRecordingButtonTip));
+        }
+    }
+    
+    // Properties
+    private boolean isRecording = false;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel headerText;

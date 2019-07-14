@@ -46,7 +46,7 @@ public class PlayViewController implements ViewController, FormActionDelegate {
     public void setActionDelegate(FormActionDelegate delegate)
     {
         _delegate = delegate;
-        _form.delegate = delegate;
+        _form.delegate = this;
     }
     
     @Override
@@ -56,5 +56,47 @@ public class PlayViewController implements ViewController, FormActionDelegate {
         {
         _delegate.onSwitchWindow();
         }
+    }
+    
+    @Override
+    public void onBeginRecord()
+    {
+        
+    }
+    
+    @Override
+    public void onEndRecord()
+    {
+        
+    }
+    
+    @Override
+    public void onSaveRecording(String name)
+    {
+        
+    }
+    
+    @Override
+    public void onPlayMacro(String name)
+    {
+        
+    }
+    
+    @Override
+    public void onStopPlayingMacro()
+    {
+        
+    }
+    
+    @Override
+    public void onDeleteMacro(String name)
+    {
+        
+    }
+    
+    @Override
+    public void onChangePlayMacroParameters(String name)
+    {
+        
     }
 }

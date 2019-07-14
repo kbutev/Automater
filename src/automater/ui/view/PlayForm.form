@@ -39,11 +39,11 @@
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="jButton1" min="-2" pref="90" max="-2" attributes="0"/>
+                              <Component id="playMacroButton" min="-2" pref="90" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jButton2" min="-2" pref="81" max="-2" attributes="0"/>
+                              <Component id="macroOptionsButton" min="-2" pref="81" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="jLabel1" alignment="0" min="-2" pref="240" max="-2" attributes="0"/>
+                          <Component id="macroStateLabel" alignment="0" min="-2" pref="240" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="0" pref="189" max="32767" attributes="0"/>
                   </Group>
@@ -64,11 +64,11 @@
               <Component id="jScrollPane1" min="-2" pref="176" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="playMacroButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="macroOptionsButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+              <Component id="macroStateLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace pref="18" max="32767" attributes="0"/>
               <Component id="jProgressBar1" min="-2" max="-2" attributes="0"/>
           </Group>
@@ -117,24 +117,30 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="jButton1">
+    <Component class="javax.swing.JButton" name="playMacroButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Play"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="playMacroButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JProgressBar" name="jProgressBar1">
     </Component>
-    <Component class="javax.swing.JLabel" name="jLabel1">
+    <Component class="javax.swing.JLabel" name="macroStateLabel">
       <Properties>
         <Property name="text" type="java.lang.String" value="Idle"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton2">
+    <Component class="javax.swing.JButton" name="macroOptionsButton">
       <Properties>
         <Property name="text" type="java.lang.String" value="Options"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="macroOptionsButtonActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

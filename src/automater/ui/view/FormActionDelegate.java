@@ -11,4 +11,13 @@ package automater.ui.view;
  */
 public interface FormActionDelegate {
     public void onSwitchWindow();
+    
+    public void onBeginRecord();
+    public void onEndRecord();
+    public void onSaveRecording(String name);
+    
+    public void onPlayMacro(String name);
+    public void onStopPlayingMacro();
+    public void onDeleteMacro(String name);
+    public void onChangePlayMacroParameters(String name);
 }
