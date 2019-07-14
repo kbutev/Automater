@@ -5,11 +5,8 @@
  */
 package automater.ui.view;
 
-import static automater.ui.view.TextValue.*;
 import automater.utilities.AlertWindows;
 import automater.utilities.Logger;
-import com.sun.istack.internal.Nullable;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -227,7 +224,7 @@ public class RecordForm extends javax.swing.JFrame {
         saveMacroButton.setText(TextValue.getText(TextValue.RecordSaveButton));
         saveMacroButton.setToolTipText(TextValue.getText(TextValue.RecordSaveButtonDisabledTip));
         
-        updateRecordButtonToCorrectState();
+        updateRecordState();
     }
     
     public void willSwitchToPlayWindow()
@@ -245,7 +242,7 @@ public class RecordForm extends javax.swing.JFrame {
         switchToPlayButton.setEnabled(false);
         saveMacroButton.setEnabled(false);
         
-        updateRecordButtonToCorrectState();
+        updateRecordState();
     }
     
     public void endRecording()
@@ -255,7 +252,7 @@ public class RecordForm extends javax.swing.JFrame {
         switchToPlayButton.setEnabled(true);
         saveMacroButton.setEnabled(true);
         
-        updateRecordButtonToCorrectState();
+        updateRecordState();
     }
     
     public void willSaveRecording()
@@ -263,9 +260,20 @@ public class RecordForm extends javax.swing.JFrame {
         
     }
     
-    public void didSaveRecording(boolean result, @Nullable String errorMessage)
+    public void didSaveRecording(boolean result, String errorMessage)
     {
+        if (!result)
+        {
+            displayError("Save Recording", "Could not save recording: " + errorMessage);
+            return;
+        }
         
+        // Reset to default state, prevent further saving until a new recording is made
+        saveMacroButton.setEnabled(false);
+        macroNameField.setText(TextValue.getText(TextValue.RecordMacroNameFieldDefaultText));
+        
+        // Show message alert
+        AlertWindows.showMessage(getParent(), "Save Recording", "Recording saved to storage.", "Ok");
     }
     
     public void displayError(String title, String message)
@@ -273,7 +281,7 @@ public class RecordForm extends javax.swing.JFrame {
         AlertWindows.showErrorMessage(getParent(), title, message, "Ok");
     }
     
-    private void updateRecordButtonToCorrectState()
+    private void updateRecordState()
     {
         if (!isRecording)
         {

@@ -8,9 +8,11 @@ package automater.ui.viewcontroller;
 import automater.recorder.Recorder;
 import automater.recorder.RecorderResult;
 import automater.recorder.RecorderUserInput;
+import automater.storage.GeneralStorage;
 import automater.ui.view.FormActionDelegate;
 import automater.ui.view.RecordForm;
 import automater.utilities.Logger;
+import automater.work.Macro;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
@@ -22,6 +24,8 @@ public class RecordViewController implements ViewController, FormActionDelegate 
     private FormActionDelegate _delegate;
     
     private RecordForm _form;
+    
+    private RecorderResult _recordedResult;
     
     public RecordViewController()
     {
@@ -81,9 +85,11 @@ public class RecordViewController implements ViewController, FormActionDelegate 
         Logger.messageAction("End recording.");
         
         try {
-            RecorderResult result = Recorder.getDefault().end();
+            // Retrieve result
+            _recordedResult = Recorder.getDefault().end();
             
-            Logger.messageAction("Recorded " + String.valueOf(result.userInputs.size()) + " actions!");
+            Logger.messageAction("Recorded " + String.valueOf(_recordedResult.userInputs.size()) + " actions!");
+            
         } catch (Exception e) {
             _form.displayError("Record", "Cannot end recorder, its not recording!");
         }
@@ -97,6 +103,19 @@ public class RecordViewController implements ViewController, FormActionDelegate 
         Logger.messageAction("Save recording as \"" + name + "\"");
         
         _form.willSaveRecording();
+        
+        // Parse result to macros
+        ArrayList<Macro> macros = new ArrayList<Macro>();
+        macros.add(new Macro(name, _recordedResult));
+        
+        // Store result
+        try {
+            GeneralStorage.getDefault().getMacrosStorage().addMacrosToStorage(macros);
+        } catch (Exception e) {
+            _form.didSaveRecording(false, e.toString());
+            return;
+        }
+        
         _form.didSaveRecording(true, null);
     }
     
