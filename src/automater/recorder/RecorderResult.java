@@ -6,16 +6,18 @@
 package automater.recorder;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  *
  * @author Bytevi
  */
 public class RecorderResult {
-    public final ArrayList<RecorderUserInput> userInputs;
+    public final Collection<RecorderUserInput> userInputs;
     
     public RecorderResult(ArrayList<RecorderUserInput> userInputs)
     {
-        this.userInputs = userInputs;
+        this.userInputs = Collections.unmodifiableCollection(new ArrayList<>(userInputs));
     }
 }

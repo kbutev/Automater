@@ -6,20 +6,42 @@
 package automater.recorder;
 
 import automater.utilities.Errors;
+import automater.utilities.Logger;
+import automater.utilities.Looper;
 import java.util.ArrayList;
+import java.util.function.Function;
 
 /**
- *
+ * A service that listens to system user input and records it as RecorderResult.
+ * 
+ * Must be started in order to function, stopped when no longer needed and in
+ * order to retrieve the recorded input.
+ * 
  * @author Bytevi
  */
 public class Recorder {
     private static Recorder singleton;
     
+    public final Defaults defaults = new Defaults();
+    public final Helpers helpers = new Helpers();
+    
+    private final State _state = new State();
+    private final Model _model = new Model();
     private final Object _lock = new Object();
+    private final RecorderListener _listener;
     
-    private boolean _isRecording = false;
-    
-    private ArrayList<RecorderUserInput> _recordedInput = new ArrayList<>();
+    private Recorder()
+    {
+        RecorderInputParserStandart parser = new RecorderInputParserStandart(defaults.getDefaultRecordSettings(), _model);
+        this._listener = new RecorderListener(parser);
+        
+        Looper.getShared().queueCallback(new Function<Void, Boolean>() {
+            @Override
+            public Boolean apply(Void t) {
+                return true;
+            }
+        });
+    }
     
     synchronized public static Recorder getDefault()
     {
@@ -35,51 +57,137 @@ public class Recorder {
     {
         synchronized (_lock)
         {
-            return _isRecording;
+            return _state.isRecording();
         }
     }
     
     public void start() throws Exception
     {
-        checkIfAlreadyRecording();
-        
         synchronized (_lock)
         {
+            _state.start();
+            _listener.start();
+        }
+    }
+    
+    public RecorderResult stop() throws Exception
+    {
+        synchronized (_lock)
+        {
+            _state.stop();
+            _listener.stop();
+            
+            return _model.parseRecordedInputToRecordedResult(true);
+        }
+    }
+    
+    // Recording state
+    private class State
+    {
+        private boolean _isRecording = false;
+        
+        public boolean isRecording()
+        {
+            return _isRecording;
+        }
+        
+        private void start() throws Exception
+        {
+            helpers.checkIfAlreadyRecording();
+            
+            Logger.messageEvent("Recorder: start");
+            
             _isRecording = true;
         }
-    }
-    
-    public RecorderResult end() throws Exception
-    {
-        checkIfNotRecording();
         
-        synchronized (_lock)
+        private void stop() throws Exception
         {
+            helpers.checkIfNotRecording();
+            
+            Logger.messageEvent("Recorder: stop");
+            
             _isRecording = false;
-            ArrayList<RecorderUserInput> result = _recordedInput;
-            _recordedInput = new ArrayList<>();
-            return new RecorderResult(result);
         }
     }
     
-    private void checkIfAlreadyRecording() throws Exception
+    // Holds recording data; stores data received from the parser
+    private class Model implements RecorderInputParserDelegate
     {
-        synchronized (_lock)
+        ArrayList<RecorderUserInput> recordedInput = new ArrayList<>();
+        
+        RecorderUserInputToResultParser inputParser = new RecorderUserInputToResultParser();
+        
+        public void onParseResult(RecorderUserInput input)
         {
-            if (isRecording())
+            recordedInput.add(input);
+        }
+        
+        private RecorderResult parseRecordedInputToRecordedResult(boolean resetOnComplete)
+        {
+            RecorderResult result = inputParser.parse(recordedInput);
+            
+            if (resetOnComplete)
             {
-                Errors.throwInternalLogicError("Recorder is already recording.");
+                reset();
+            }
+            
+            return result;
+        }
+        
+        private void reset()
+        {
+            recordedInput = new ArrayList<>();
+        }
+    }
+    
+    // Parses RecorderUserInput objects to one single RecorderResult
+    private class RecorderUserInputToResultParser
+    {
+        private RecorderResult parse(ArrayList<RecorderUserInput> userInputs)
+        {
+            return new RecorderResult(userInputs);
+        }
+    }
+    
+    // Holds default values
+    private class Defaults
+    {
+        private ArrayList<RecorderInputParserStandart.RecordSettings> getDefaultRecordSettings()
+        {
+            ArrayList<RecorderInputParserStandart.RecordSettings> settings;
+            settings = new ArrayList();
+            settings.add(RecorderInputParserStandart.RecordSettings.RECORD_KEYBOARD_EVENTS);
+            //settings.add(RecorderInputParser.RecordSettings.RECORD_MOUSE_CLICKS);
+            //settings.add(RecorderInputParser.RecordSettings.RECORD_MOUSE_MOTION);
+            //settings.add(RecorderInputParser.RecordSettings.RECORD_MOUSE_WHEEL);
+            //settings.add(RecorderInputParser.RecordSettings.RECORD_WINDOW_EVENTS);
+            settings.add(RecorderInputParserStandart.RecordSettings.LOG_EVENTS);
+            return settings;
+        }
+    }
+    
+    // Commonly used methods
+    private class Helpers
+    {
+        private void checkIfAlreadyRecording() throws Exception
+        {
+            synchronized (_lock)
+            {
+                if (isRecording())
+                {
+                    Errors.throwInternalLogicError("Recorder is already recording.");
+                }
             }
         }
-    }
-    
-    private void checkIfNotRecording() throws Exception
-    {
-        synchronized (_lock)
+        
+        private void checkIfNotRecording() throws Exception
         {
-            if (!isRecording())
+            synchronized (_lock)
             {
-                Errors.throwInternalLogicError("Recorder is not recording.");
+                if (!isRecording())
+                {
+                    Errors.throwInternalLogicError("Recorder is not recording.");
+                }
             }
         }
     }

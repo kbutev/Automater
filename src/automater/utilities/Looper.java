@@ -8,6 +8,8 @@ package automater.utilities;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 /**
@@ -20,17 +22,20 @@ public class Looper {
     private static Looper singleton;
     
     private final ClientsManager _clientsManager = new ClientsManager();
+    private final CallbacksManager _callbacksManager = new CallbacksManager();
     
-    private final Runnable runnable = new Runnable() {
+    private final Runnable _looperRunnable = new Runnable() {
         public void run()
         {
-            
+            loop();
+            loopAgain();
         }
     };
     
+    private final ScheduledThreadPoolExecutor _looperExecutor = new ScheduledThreadPoolExecutor(1);
+    
     private Looper()
     {
-        
         loopAgain();
     }
 
@@ -53,26 +58,32 @@ public class Looper {
     {
         _clientsManager.unsubscribe(client);
     }
+    
+    public void queueCallback(final Function<Void, Boolean> callback)
+    {
+        _callbacksManager.queueCallback(callback);
+    }
 
     private void loop()
     {
         _clientsManager.loop();
+        _callbacksManager.loop();
     }
-
+    
     private void loopAgain()
     {
-        //_mainHandler.postDelayed(_loopingRunnable, LOOPER_INTERVAL_MSEC);
+        _looperExecutor.schedule(_looperRunnable, LOOPER_INTERVAL_MSEC, TimeUnit.MILLISECONDS);
     }
     
     class ClientsManager 
     {
         private ArrayList<LooperClient> _clients = new ArrayList<>();
         
-        private final Object mainLock = new Object();
+        private final Object _mainLock = new Object();
         
-        void subscribe(final LooperClient client)
+        private void subscribe(final LooperClient client)
         {
-            synchronized (mainLock)
+            synchronized (_mainLock)
             {
                 if (!_clients.contains(client))
                 {
@@ -81,20 +92,19 @@ public class Looper {
             }
         }
 
-        void unsubscribe(final LooperClient client)
+        private void unsubscribe(final LooperClient client)
         {
-            synchronized (mainLock)
+            synchronized (_mainLock)
             {
                 _clients.remove(client);
             }
         }
         
-        void loop()
-        {
-            // This must be called on the main thread
+       private void loop()
+       {
             Collection<LooperClient> clients;
 
-            synchronized (mainLock)
+            synchronized (_mainLock)
             {
                 clients = Collections.unmodifiableCollection(_clients);
             }
@@ -103,6 +113,58 @@ public class Looper {
             {
                 client.loop();
             }
+        }
+    }
+    
+    class CallbacksManager {
+        private ArrayList<Function<Void, Boolean>> _callbacks = new ArrayList();
+        
+        private final Object _mainLock = new Object();
+        
+        private void queueCallback(Function<Void, Boolean> callback)
+        {
+            synchronized (_mainLock)
+            {
+                _callbacks.add(callback);
+            }
+        }
+        
+        private void queueCallbacks(ArrayList<Function<Void, Boolean>> callbacks)
+        {
+            synchronized (_mainLock)
+            {
+                _callbacks.addAll(callbacks);
+            }
+        }
+        
+        private void clearCallbacks()
+        {
+            synchronized (_mainLock)
+            {
+                _callbacks.clear();
+            }
+        }
+        
+        private void loop()
+        {
+            ArrayList<Function<Void, Boolean>> repeatCallbacks = new ArrayList();
+            Collection<Function<Void, Boolean>> callbacks;
+
+            synchronized (_mainLock)
+            {
+                callbacks = Collections.unmodifiableCollection(_callbacks);
+            }
+            
+            for (Function<Void, Boolean> callback : callbacks)
+            {
+                if (callback.apply(null))
+                {
+                    repeatCallbacks.add(callback);
+                }
+            }
+            
+            clearCallbacks();
+            queueCallbacks(repeatCallbacks);
         }
     }
 }

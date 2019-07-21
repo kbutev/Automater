@@ -15,6 +15,7 @@ import automater.utilities.Logger;
 import automater.work.Macro;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  *
@@ -86,9 +87,11 @@ public class RecordViewController implements ViewController, FormActionDelegate 
         
         try {
             // Retrieve result
-            _recordedResult = Recorder.getDefault().end();
+            _recordedResult = Recorder.getDefault().stop();
             
-            Logger.messageAction("Recorded " + String.valueOf(_recordedResult.userInputs.size()) + " actions!");
+            Collection data = _recordedResult.userInputs;
+            
+            Logger.messageAction("Recorded " + String.valueOf(data.size()) + " actions! Data:\n" + data.toString());
             
         } catch (Exception e) {
             _form.displayError("Record", "Cannot end recorder, its not recording!");
