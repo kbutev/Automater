@@ -7,9 +7,13 @@ package automater.presenter;
 
 import automater.recorder.Recorder;
 import automater.recorder.RecorderResult;
+import automater.storage.GeneralStorage;
+import automater.storage.MacroStorage;
 import automater.ui.viewcontroller.RootViewController;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
+import automater.work.Macro;
+import com.sun.istack.internal.Nullable;
 
 /**
  *
@@ -19,7 +23,9 @@ public class RecordPresenter implements BasePresenter {
     private final RootViewController _rootViewController;
     private BasePresenterDelegate _delegate;
     
-    private Recorder _recorder = Recorder.getDefault();
+    private final MacroStorage _storage = GeneralStorage.getDefault().getMacrosStorage();
+    
+    private final Recorder _recorder = Recorder.getDefault();
     private RecorderResult _recordedResult;
     
     public RecordPresenter(RootViewController rootViewController)
@@ -80,10 +86,11 @@ public class RecordPresenter implements BasePresenter {
             return;
         }
         
+        _recordedResult = null;
+        
         try {
-            RecorderResult result = _recorder.stop();
+            _recordedResult = _recorder.stop();
             
-            Logger.message(this, "Recorded " + String.valueOf(result.userInputs.size()) + " events");
             
         } catch (Exception e) {
             _delegate.onErrorEncountered(e);
@@ -92,5 +99,42 @@ public class RecordPresenter implements BasePresenter {
         Logger.messageEvent(this, "Macro recording has ended!");
         
         _delegate.stopRecording();
+    }
+    
+    public void onSaveRecording(String name)
+    {
+        RecorderResult result = _recordedResult;
+        
+        Logger.message(this, "Recorded " + String.valueOf(result.userInputs.size()) + " events");
+        
+        Macro macro = new Macro(name, _recordedResult);
+        
+        // Error checking
+        Exception canSaveRec = _storage.getSaveMacroError(macro);
+        
+        if (canSaveRec != null)
+        {
+            _delegate.onErrorEncountered(canSaveRec);
+            return;
+        }
+        
+        // Wipe recorded result
+        _recordedResult = null;
+        
+        // Save operation
+        try {
+            _storage.addMacroToStorage(macro);
+        } catch (Exception e) {
+            _delegate.onErrorEncountered(e);
+            return;
+        }
+        
+        // Alert delegate that operation was successful
+        _delegate.recordingSavedSuccessfully(name);
+    }
+    
+    public void onRecordingSavedSuccessufllyClosed()
+    {
+        _rootViewController.navigateToPlayScreen();
     }
 }

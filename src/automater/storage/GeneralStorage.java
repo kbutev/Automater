@@ -6,7 +6,8 @@
 package automater.storage;
 
 /**
- *
+ * Holds and maintains the storage of the application.
+ * 
  * @author Bytevi
  */
 public class GeneralStorage {
@@ -14,7 +15,7 @@ public class GeneralStorage {
     
     private final Object _lock = new Object();
     
-    private final MacrosStorage _macrosStorage = new MacrosStorage();
+    private final MacroStorage _macrosStorage = new MacroStorage();
     
     synchronized public static GeneralStorage getDefault()
     {
@@ -26,7 +27,7 @@ public class GeneralStorage {
         return singleton;
     }
     
-    public MacrosStorage getMacrosStorage()
+    public MacroStorage getMacrosStorage()
     {
         return _macrosStorage;
     }

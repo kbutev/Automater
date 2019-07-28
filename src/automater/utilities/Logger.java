@@ -20,6 +20,7 @@ public class Logger {
     public static final String MESSAGE_EVENT_PREFIX = "#EVENT#";
     public static final String WARNING_PREFIX = "#WARNING#";
     public static final String ERROR_PREFIX = "#ERROR#";
+    public static final String UTILITY_ERROR_PREFIX = "#UTILITY_ERROR#";
     public static final String SYSTEM_ERROR_PREFIX = "#SYSTEM_ERROR#";
     
     public static final String OVERRIDE_ME_MESSAGE = "Calling non-overriden base method ";
@@ -49,6 +50,11 @@ public class Logger {
         System.out.println(generateText(origin, ERROR_PREFIX, string));
     }
     
+    public static <T> void utilityError(T origin, String string)
+    {
+        System.out.println(generateText(origin, UTILITY_ERROR_PREFIX, string));
+    }
+    
     public static <T> void systemError(T origin, String string)
     {
         System.out.println(generateText(origin, SYSTEM_ERROR_PREFIX, string));
@@ -61,7 +67,7 @@ public class Logger {
     
     private static <T> String generateText(T origin, String prefix, String text)
     {
-        String reportingClass = origin.getClass().getSimpleName();
+        String reportingClass = origin != null ? origin.getClass().getSimpleName() : "Static";
         String textPrefix = generatePrefix(prefix);
         
         return textPrefix + " " + reportingClass + ": " + text;

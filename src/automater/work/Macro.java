@@ -6,17 +6,20 @@
 package automater.work;
 
 import automater.recorder.RecorderResult;
+import java.io.Serializable;
 
 /**
  *
  * @author Bytevi
  */
-public class Macro {
-    public final String name;
+public class Macro implements Serializable {
+    public String name;
+    public transient RecorderResult r;
     
     public Macro(String name, RecorderResult recorderResult)
     {
         this.name = name;
+        this.r = recorderResult;
         
         parseRecorderResult(recorderResult);
     }

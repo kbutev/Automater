@@ -10,7 +10,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Date;
 
 /**
  *
@@ -46,7 +48,42 @@ public class Archiver
         return null;
     }
     
-    public static Object deserializeObject(String data)
+    public static String deserializeString(String data)
+    {
+        return deserializeObject(String.class, data);
+    }
+    
+    public static ArrayList<String> deserializeStrings(String data)
+    {
+        return deserializeObject(String.class, data);
+    }
+    
+    public static Integer deserializeInteger(String data)
+    {
+        return deserializeObject(Integer.class, data);
+    }
+    
+    public static ArrayList<Integer> deserializeIntegers(String data)
+    {
+        return deserializeObject(Integer.class, data);
+    }
+    
+    public static Double deserializeDouble(String data)
+    {
+        return deserializeObject(Double.class, data);
+    }
+    
+    public static ArrayList<Double> deserializeDoubles(String data)
+    {
+        return deserializeObject(Double.class, data);
+    }
+    
+    public static Date deserializeDate(String data)
+    {
+        return deserializeObject(Date.class, data);
+    }
+    
+    public static <T> T deserializeObject(Class type, String data)
     {
         if (data == null || data.isEmpty())
         {
@@ -63,11 +100,62 @@ public class Archiver
             bi.close();
             si.close();
             
-            return result;
+            if (!type.isInstance(result))
+            {
+                Class c = result.getClass();
+                throw new Exception("Cannot deserialize array, element is not proper type - " + c.getCanonicalName());
+            }
+            
+            return (T)result;
         }
         catch (Exception e)
         {
             
+        }
+        
+        return null;
+    }
+    
+    public static <T> ArrayList<T> deserializeArray(Class elementType, String data)
+    {
+        if (data == null || data.isEmpty())
+        {
+            return null;
+        }
+
+        try {
+            byte b[] = Base64.getDecoder().decode(data.getBytes());
+            ByteArrayInputStream bi = new ByteArrayInputStream(b);
+            ObjectInputStream si = new ObjectInputStream(bi);
+            
+            Object result = si.readObject();
+            
+            bi.close();
+            si.close();
+            
+            if (!(result instanceof ArrayList))
+            {
+                throw new Exception("Cannot deserialize array, object is not array");
+            }
+            
+            ArrayList<Object> array = (ArrayList<Object>)result;
+            
+            if (!array.isEmpty())
+            {
+                Object first = array.get(0);
+                Class c = elementType;
+                
+                if (!c.isInstance(first))
+                {
+                    throw new Exception("Cannot deserialize array, element is not proper type - " + c.getCanonicalName());
+                }
+            }
+            
+            return (ArrayList<T>)result;
+        }
+        catch (Exception e)
+        {
+            Logger.utilityError(null, e.toString());
         }
         
         return null;

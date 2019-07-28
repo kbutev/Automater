@@ -17,27 +17,59 @@ public class AlertWindows {
             String title, String message, 
             String buttonText)
     {
+        showMessage(parent, title, message, buttonText, null);
+    }
+    
+    public static void showMessage(Component parent, 
+            String title, String message, 
+            String buttonText,
+            SimpleCallback okCallback)
+    {
         Object[] options = {buttonText};
         
-        JOptionPane.showOptionDialog(parent,
+        int result = JOptionPane.showOptionDialog(parent,
                 message, title,
                 JOptionPane.PLAIN_MESSAGE, JOptionPane.INFORMATION_MESSAGE,
                 null, 
                 options,
                 options[0]);
+        
+        if (okCallback != null)
+        {
+            if (result == JOptionPane.OK_OPTION)
+            {
+                okCallback.perform();
+            }
+        }
     }
     
     public static void showErrorMessage(Component parent, 
             String title, String message, 
             String buttonText)
     {
+        showErrorMessage(parent, title, message, buttonText, null);
+    }
+    
+    public static void showErrorMessage(Component parent, 
+            String title, String message, 
+            String buttonText,
+            SimpleCallback okCallback)
+    {
         Object[] options = {buttonText};
         
-        JOptionPane.showOptionDialog(parent,
+        int result = JOptionPane.showOptionDialog(parent,
                 message, title,
                 JOptionPane.PLAIN_MESSAGE, JOptionPane.ERROR_MESSAGE,
                 null, 
                 options,
                 options[0]);
+        
+        if (okCallback != null)
+        {
+            if (result == JOptionPane.OK_OPTION)
+            {
+                okCallback.perform();
+            }
+        }
     }
 }

@@ -10,7 +10,6 @@ import automater.presenter.PlayPresenter;
 import automater.ui.view.PlayForm;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
-import com.sun.istack.internal.Nullable;
 import java.awt.event.WindowEvent;
 
 /**
@@ -75,6 +74,12 @@ public class PlayViewController implements BaseViewController, BasePresenterDele
     }
     
     @Override
+    public void recordingSavedSuccessfully(String name)
+    {
+        
+    }
+    
+    @Override
     public void startPlaying()
     {
         
@@ -89,6 +94,6 @@ public class PlayViewController implements BaseViewController, BasePresenterDele
     @Override
     public void onErrorEncountered(Exception e)
     {
-        Logger.error(this, e.toString());
+        Logger.error(this, "Error encountered: " + e.toString());
     }
 }

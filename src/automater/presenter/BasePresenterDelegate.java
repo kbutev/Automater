@@ -13,6 +13,7 @@ package automater.presenter;
 public interface BasePresenterDelegate {
     public void startRecording();
     public void stopRecording();
+    public void recordingSavedSuccessfully(String name);
     
     public void startPlaying();
     public void stopPlaying();

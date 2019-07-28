@@ -7,8 +7,8 @@ package automater.ui.viewcontroller;
 
 import automater.presenter.BasePresenterDelegate;
 import automater.presenter.RecordPresenter;
-import automater.recorder.RecorderResult;
 import automater.ui.view.RecordForm;
+import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
@@ -55,7 +55,7 @@ public class RecordViewController implements BaseViewController, BasePresenterDe
         _form.onSaveMacroButtonCallback = new Callback<String>() {
             @Override
             public void perform(String argument) {
-                
+                _presenter.onSaveRecording(argument);
             }
         };
     }
@@ -97,6 +97,17 @@ public class RecordViewController implements BaseViewController, BasePresenterDe
     }
     
     @Override
+    public void recordingSavedSuccessfully(String name)
+    {
+        AlertWindows.showMessage(_form, "Save Macro", "Recording '" + name + "' saved successfully!", "Ok", new SimpleCallback() {
+            @Override
+            public void perform() {
+                _presenter.onRecordingSavedSuccessufllyClosed();
+            }
+        });
+    }
+    
+    @Override
     public void startPlaying()
     {
         
@@ -111,6 +122,8 @@ public class RecordViewController implements BaseViewController, BasePresenterDe
     @Override
     public void onErrorEncountered(Exception e)
     {
-        Logger.error(this, e.toString());
+        Logger.error(this, "Error encountered: " + e.toString());
+        
+        AlertWindows.showErrorMessage(_form, "Save Macro", "Could not save: " + e.getMessage(), "Ok");
     }
 }
