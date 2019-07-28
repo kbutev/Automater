@@ -6,6 +6,8 @@
 package automater.ui.view;
 
 import static automater.ui.view.TextValue.*;
+import automater.utilities.Callback;
+import automater.utilities.SimpleCallback;
 import automater.work.MacroParameters;
 
 /**
@@ -13,8 +15,9 @@ import automater.work.MacroParameters;
  * @author Bytevi
  */
 public class PlayForm extends javax.swing.JFrame {
-    public FormActionDelegate delegate;
-
+    // Public properties
+    public SimpleCallback onSwitchToPlayButtonCallback = SimpleCallback.createDoNothing();
+    
     /**
      * Creates new form PlayForm
      */
@@ -125,23 +128,20 @@ public class PlayForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void switchToRecordButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_switchToRecordButtonActionPerformed
-        if (delegate != null)
-        {
-            delegate.onSwitchWindow();
-        }
+        onSwitchToPlayButtonCallback.perform();
     }//GEN-LAST:event_switchToRecordButtonActionPerformed
 
     private void playMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playMacroButtonActionPerformed
-        if (delegate != null && selectedMacroName != null)
+        if (selectedMacroName != null)
         {
-            delegate.onPlayMacro(selectedMacroName);
+            
         }
     }//GEN-LAST:event_playMacroButtonActionPerformed
 
     private void macroOptionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_macroOptionsButtonActionPerformed
-        if (delegate != null && selectedMacroName != null)
+        if (selectedMacroName != null)
         {
-            delegate.onChangePlayMacroParameters(selectedMacroName);
+            
         }
     }//GEN-LAST:event_macroOptionsButtonActionPerformed
 
@@ -187,7 +187,9 @@ public class PlayForm extends javax.swing.JFrame {
         
     }
     
-    // Properties
+    // # Public UI operations
+    
+    // Private properties
     private String selectedMacroName = null;
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

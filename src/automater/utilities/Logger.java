@@ -9,43 +9,72 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- *
+ * Logs various messages to the standart output.
+ * 
  * @author Bytevi
  */
 public class Logger {
-    public static final String MESSAGE_ACTION_PREFIX = "#ACTION: ";
-    public static final String MESSAGE_EVENT_PREFIX = "#EVENT: ";
-    public static final String WARNING_PREFIX = "#WARNING: ";
-    public static final String ERROR_PREFIX = "#ERROR: ";
+    public static final boolean DISPLAY_TIMESTAMPS = true;
     
-    public static void message(String string)
+    public static final String MESSAGE_ACTION_PREFIX = "#ACTION#";
+    public static final String MESSAGE_EVENT_PREFIX = "#EVENT#";
+    public static final String WARNING_PREFIX = "#WARNING#";
+    public static final String ERROR_PREFIX = "#ERROR#";
+    public static final String SYSTEM_ERROR_PREFIX = "#SYSTEM_ERROR#";
+    
+    public static final String OVERRIDE_ME_MESSAGE = "Calling non-overriden base method ";
+    
+    public static <T> void message(T origin, String string)
     {
-        System.out.println(string);
+        System.out.println(generateText(origin, "", string));
     }
     
-    public static void messageAction(String string)
+    public static <T> void messageAction(T origin, String string)
     {
-        System.out.println(generateTimestamp(MESSAGE_ACTION_PREFIX) + string);
+        System.out.println(generateText(origin, MESSAGE_ACTION_PREFIX, string));
     }
     
-    public static void messageEvent(String string)
+    public static <T> void messageEvent(T origin, String string)
     {
-        System.out.println(generateTimestamp(MESSAGE_EVENT_PREFIX) + string);
+        System.out.println(generateText(origin, MESSAGE_EVENT_PREFIX, string));
     }
     
-    public static void warning(String string)
+    public static <T> void warning(T origin, String string)
     {
-        System.out.println(generateTimestamp(WARNING_PREFIX) + string);
+        System.out.println(generateText(origin, WARNING_PREFIX, string));
     }
     
-    public static void error(String string)
+    public static <T> void error(T origin, String string)
     {
-        System.out.println(generateTimestamp(ERROR_PREFIX) + string);
+        System.out.println(generateText(origin, ERROR_PREFIX, string));
     }
     
-    private static String generateTimestamp(String prefix)
+    public static <T> void systemError(T origin, String string)
     {
-        return prefix.length() > 0 ? getTimestamp() + " " + prefix : "";
+        System.out.println(generateText(origin, SYSTEM_ERROR_PREFIX, string));
+    }
+    
+    public static <T> void overrideMe(T origin, String methodName)
+    {
+        System.out.println(generateText(origin, WARNING_PREFIX, OVERRIDE_ME_MESSAGE + methodName));
+    }
+    
+    private static <T> String generateText(T origin, String prefix, String text)
+    {
+        String reportingClass = origin.getClass().getSimpleName();
+        String textPrefix = generatePrefix(prefix);
+        
+        return textPrefix + " " + reportingClass + ": " + text;
+    }
+    
+    private static String generatePrefix(String prefix)
+    {
+        if (!DISPLAY_TIMESTAMPS)
+        {
+            return prefix;
+        }
+        
+        return prefix.length() > 0 ? getTimestamp() + " " + prefix : getTimestamp();
     }
     
     private static String getTimestamp()

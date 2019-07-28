@@ -5,16 +5,11 @@
  */
 package automater.ui.viewcontroller;
 
-import automater.ui.view.FormActionDelegate;
-
 /**
  *
  * @author Bytevi
  */
-public interface ViewController {
-    public void start();
-    public void suspend();
-    public void terminate();
-    
-    public void setActionDelegate(FormActionDelegate delegate);
+public interface RootViewController {
+    public void navigateToRecordScreen();
+    public void navigateToPlayScreen();
 }

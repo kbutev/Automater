@@ -170,7 +170,7 @@ public class RecorderInputParserStandart implements RecorderInputParser {
         {
             if (settings.contains(RecordSettings.LOG_EVENTS))
             {
-                Logger.messageEvent("RecorderInputParser: keyboard event '" + translatedKey.value.name() + "'");
+                Logger.messageEvent(this, "RecorderInputParser: keyboard event '" + translatedKey.value.name() + "'");
             }
         }
         
@@ -178,7 +178,7 @@ public class RecorderInputParserStandart implements RecorderInputParser {
         {
             if (settings.contains(RecordSettings.LOG_EVENTS))
             {
-                Logger.messageEvent("RecorderInputParser: mouse event");
+                Logger.messageEvent(this, "RecorderInputParser: mouse event");
             }
         }
         
@@ -186,7 +186,7 @@ public class RecorderInputParserStandart implements RecorderInputParser {
         {
             if (settings.contains(RecordSettings.LOG_EVENTS))
             {
-                Logger.messageEvent("RecorderInputParser: mouse wheel event");
+                Logger.messageEvent(this, "RecorderInputParser: mouse wheel event");
             }
         }
         
@@ -194,7 +194,7 @@ public class RecorderInputParserStandart implements RecorderInputParser {
         {
             if (settings.contains(RecordSettings.LOG_EVENTS))
             {
-                Logger.messageEvent("RecorderInputParser: window event");
+                Logger.messageEvent(this, "RecorderInputParser: window event");
             }
         }
     }

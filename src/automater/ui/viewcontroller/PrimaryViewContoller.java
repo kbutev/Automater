@@ -5,7 +5,8 @@
  */
 package automater.ui.viewcontroller;
 
-import automater.ui.view.FormActionDelegate;
+import automater.presenter.PlayPresenter;
+import automater.presenter.RecordPresenter;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 
@@ -13,8 +14,8 @@ import automater.utilities.Logger;
  *
  * @author Bytevi
  */
-public class PrimaryViewContoller implements ViewController, FormActionDelegate {
-    private ViewController _currentViewController;
+public class PrimaryViewContoller implements RootViewController {
+    private BaseViewController _currentViewController;
     
     private PlayViewController _playViewController;
     private RecordViewController _recordViewController;
@@ -24,98 +25,48 @@ public class PrimaryViewContoller implements ViewController, FormActionDelegate 
         
     }
     
-    public ViewController getCurrentViewController()
+    public BaseViewController getCurrentViewController()
     {
         return _currentViewController;
     }
     
-    @Override
     public void start()
     {
+        if (_currentViewController != null)
+        {
+            Errors.throwInternalLogicError("PrimaryViewController already started");
+        }
+        
+        // By default, we start with the record screen opened
+        switchScreenToRecord();
+    }
+    
+    // # RootViewController
+    
+    @Override
+    public void navigateToRecordScreen()
+    {
+        Logger.messageEvent(this, "Navigating to record screen.");
+        
+        switchScreenToRecord();
+    }
+    
+    @Override
+    public void navigateToPlayScreen()
+    {
+        Logger.messageEvent(this, "Navigating to play screen.");
+        
         switchScreenToPlay();
-    }
-    
-    @Override
-    public void suspend()
-    {
-        Errors.throwInternalLogicError("Cannot hide primary view controller");
-    }
-    
-    @Override
-    public void terminate()
-    {
-        Errors.throwInternalLogicError("Cannot terminate primary view controller");
-    }
-    
-    @Override
-    public void setActionDelegate(FormActionDelegate delegate)
-    {
-        
-    }
-    
-    @Override
-    public void onSwitchWindow()
-    {
-        if (_currentViewController instanceof RecordViewController)
-        {
-            Logger.messageAction("Switching from Record screen to Play screen");
-            switchScreenToPlay();
-        }
-        else
-        {
-            Logger.messageAction("Switching from Play screen to Record screen");
-            switchScreenToRecord();
-        }
-    }
-    
-     @Override
-    public void onBeginRecord()
-    {
-        
-    }
-    
-    @Override
-    public void onEndRecord()
-    {
-        
-    }
-    
-    @Override
-    public void onSaveRecording(String name)
-    {
-        
-    }
-    
-    @Override
-    public void onPlayMacro(String name)
-    {
-        
-    }
-    
-    @Override
-    public void onStopPlayingMacro()
-    {
-        
-    }
-    
-    @Override
-    public void onDeleteMacro(String name)
-    {
-        
-    }
-    
-    @Override
-    public void onChangePlayMacroParameters(String name)
-    {
-        
     }
     
     private void switchScreenToPlay()
     {
         if (_playViewController == null)
         {
-            _playViewController = new PlayViewController();
-            _playViewController.setActionDelegate(this);
+            PlayPresenter presenter = new PlayPresenter(this);
+            PlayViewController vc = new PlayViewController(presenter);
+            _playViewController = vc;
+            presenter.setDelegate(vc);
         }
         
         if (_currentViewController != null)
@@ -131,8 +82,10 @@ public class PrimaryViewContoller implements ViewController, FormActionDelegate 
     {
         if (_recordViewController == null)
         {
-            _recordViewController = new RecordViewController();
-            _recordViewController.setActionDelegate(this);
+            RecordPresenter presenter = new RecordPresenter(this);
+            RecordViewController vc = new RecordViewController(presenter);
+            _recordViewController = vc;
+            presenter.setDelegate(vc);
         }
         
         if (_currentViewController != null)

@@ -5,37 +5,68 @@
  */
 package automater.ui.viewcontroller;
 
-import automater.recorder.Recorder;
+import automater.presenter.BasePresenterDelegate;
+import automater.presenter.RecordPresenter;
 import automater.recorder.RecorderResult;
-import automater.recorder.RecorderUserInput;
-import automater.storage.GeneralStorage;
-import automater.ui.view.FormActionDelegate;
 import automater.ui.view.RecordForm;
+import automater.utilities.Callback;
 import automater.utilities.Logger;
-import automater.work.Macro;
+import automater.utilities.SimpleCallback;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  *
  * @author Bytevi
  */
-public class RecordViewController implements ViewController, FormActionDelegate {
-    private FormActionDelegate _delegate;
+public class RecordViewController implements BaseViewController, BasePresenterDelegate {
+    private final RecordPresenter _presenter;
     
     private RecordForm _form;
     
-    private RecorderResult _recordedResult;
-    
-    public RecordViewController()
+    public RecordViewController(RecordPresenter presenter)
     {
+        _presenter = presenter;
         _form = new RecordForm();
     }
+    
+    private void setupViewCallbacks()
+    {
+        _form.onSwitchToPlayButtonCallback = new SimpleCallback() {
+            @Override
+            public void perform() {
+                _presenter.onSwitchToPlayScreen();
+            }
+        };
+        
+        _form.onRecordMacroButtonCallback = new SimpleCallback() {
+            @Override
+            public void perform() {
+                _presenter.onStartRecording();
+            }
+        };
+        
+        _form.onStopRecordMacroButtonCallback = new SimpleCallback() {
+            @Override
+            public void perform() {
+                _presenter.onStopRecording();
+            }
+        };
+        
+        _form.onSaveMacroButtonCallback = new Callback<String>() {
+            @Override
+            public void perform(String argument) {
+                
+            }
+        };
+    }
+    
+    // # BaseViewController
     
     @Override
     public void start()
     {
+        setupViewCallbacks();
+        
         _form.setVisible(true);
     }
     
@@ -51,98 +82,35 @@ public class RecordViewController implements ViewController, FormActionDelegate 
         _form.dispatchEvent(new WindowEvent(_form, WindowEvent.WINDOW_CLOSING));
     }
     
+    // # BasePresenterDelegate
+    
     @Override
-    public void setActionDelegate(FormActionDelegate delegate)
+    public void startRecording()
     {
-        _delegate = delegate;
-        _form.delegate = this;
+        _form.beginRecording();
     }
     
     @Override
-    public void onSwitchWindow()
+    public void stopRecording()
     {
-        if (_delegate != null)
-        {
-            _delegate.onSwitchWindow();
-        }
-    }
-    
-    @Override
-    public void onBeginRecord()
-    {
-        Logger.messageAction("Begin recording...");
-        
-        try {
-            Recorder.getDefault().start();
-            _form.beginRecording();
-        } catch (Exception e) {
-            _form.displayError("Record", "Cannot start recorder, its already recording!");
-        }
-    }
-    
-    @Override
-    public void onEndRecord()
-    {
-        Logger.messageAction("End recording.");
-        
-        try {
-            // Retrieve result
-            _recordedResult = Recorder.getDefault().stop();
-            
-            Collection data = _recordedResult.userInputs;
-            
-            Logger.messageAction("Recorded " + String.valueOf(data.size()) + " actions! Data:\n" + data.toString());
-            
-        } catch (Exception e) {
-            _form.displayError("Record", "Cannot end recorder, its not recording!");
-        }
-        
         _form.endRecording();
     }
     
     @Override
-    public void onSaveRecording(String name)
+    public void startPlaying()
     {
-        Logger.messageAction("Save recording as \"" + name + "\"");
         
-        _form.willSaveRecording();
-        
-        // Parse result to macros
-        ArrayList<Macro> macros = new ArrayList<Macro>();
-        macros.add(new Macro(name, _recordedResult));
-        
-        // Store result
-        try {
-            GeneralStorage.getDefault().getMacrosStorage().addMacrosToStorage(macros);
-        } catch (Exception e) {
-            _form.didSaveRecording(false, e.toString());
-            return;
-        }
-        
-        _form.didSaveRecording(true, null);
     }
-    
-    @Override
-    public void onPlayMacro(String name)
+        
+    @Override    
+    public void stopPlaying()
     {
         
     }
     
     @Override
-    public void onStopPlayingMacro()
+    public void onErrorEncountered(Exception e)
     {
-        
-    }
-    
-    @Override
-    public void onDeleteMacro(String name)
-    {
-        
-    }
-    
-    @Override
-    public void onChangePlayMacroParameters(String name)
-    {
-        
+        Logger.error(this, e.toString());
     }
 }

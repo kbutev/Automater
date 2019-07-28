@@ -63,6 +63,8 @@ public class Recorder {
     
     public void start() throws Exception
     {
+        Logger.messageEvent(this, "Start...");
+        
         synchronized (_lock)
         {
             _state.start();
@@ -72,6 +74,8 @@ public class Recorder {
     
     public RecorderResult stop() throws Exception
     {
+        Logger.messageEvent(this, "Stop!");
+        
         synchronized (_lock)
         {
             _state.stop();
@@ -95,7 +99,7 @@ public class Recorder {
         {
             helpers.checkIfAlreadyRecording();
             
-            Logger.messageEvent("Recorder: start");
+            Logger.messageEvent(this, "Recorder: start");
             
             _isRecording = true;
         }
@@ -104,7 +108,7 @@ public class Recorder {
         {
             helpers.checkIfNotRecording();
             
-            Logger.messageEvent("Recorder: stop");
+            Logger.messageEvent(this, "Recorder: stop");
             
             _isRecording = false;
         }

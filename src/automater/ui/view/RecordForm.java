@@ -6,15 +6,20 @@
 package automater.ui.view;
 
 import automater.utilities.AlertWindows;
+import automater.utilities.Callback;
 import automater.utilities.Logger;
+import automater.utilities.SimpleCallback;
 
 /**
  *
  * @author Bytevi
  */
 public class RecordForm extends javax.swing.JFrame {
-    public FormActionDelegate delegate;
-    
+    // Public properties
+    public SimpleCallback onSwitchToPlayButtonCallback = SimpleCallback.createDoNothing();
+    public SimpleCallback onRecordMacroButtonCallback = SimpleCallback.createDoNothing();
+    public SimpleCallback onStopRecordMacroButtonCallback = SimpleCallback.createDoNothing();
+    public Callback<String> onSaveMacroButtonCallback = Callback.createDoNothing();
     
     /**
      * Creates new form RecordForm
@@ -144,31 +149,19 @@ public class RecordForm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void switchToPlayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_switchToPlayButtonActionPerformed
-        if (delegate != null)
-        {
-            delegate.onSwitchWindow();
-        }
+        onSwitchToPlayButtonCallback.perform();
     }//GEN-LAST:event_switchToPlayButtonActionPerformed
 
     private void recordMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordMacroButtonActionPerformed
-        if (delegate != null)
-        {
-            if (!isRecording)
-            {
-                delegate.onBeginRecord();
-            }
-            else
-            {
-                delegate.onEndRecord();
-            }
+        if (!isRecording()) {
+            onRecordMacroButtonCallback.perform();
+        } else {
+            onStopRecordMacroButtonCallback.perform();
         }
     }//GEN-LAST:event_recordMacroButtonActionPerformed
 
     private void saveMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMacroButtonActionPerformed
-        if (delegate != null)
-        {
-            delegate.onSaveRecording(macroNameField.getText());
-        }
+        onSaveMacroButtonCallback.perform(macroNameField.getText());
     }//GEN-LAST:event_saveMacroButtonActionPerformed
 
     /**
@@ -227,17 +220,24 @@ public class RecordForm extends javax.swing.JFrame {
         updateRecordState();
     }
     
+    public boolean isRecording()
+    {
+        return _isRecording;
+    }
+    
+    // # Public UI operations
+    
     public void willSwitchToPlayWindow()
     {
-        if (isRecording)
+        if (_isRecording)
         {
-            Logger.warning("Switching to play screen while recording is not allowed.");
+            Logger.warning(this, "Switching to play screen while recording is not allowed.");
         }
     }
     
     public void beginRecording()
     {
-        isRecording = true;
+        _isRecording = true;
         macroNameField.setEnabled(false);
         switchToPlayButton.setEnabled(false);
         saveMacroButton.setEnabled(false);
@@ -247,7 +247,7 @@ public class RecordForm extends javax.swing.JFrame {
     
     public void endRecording()
     {
-        isRecording = false;
+        _isRecording = false;
         macroNameField.setEnabled(true);
         switchToPlayButton.setEnabled(true);
         saveMacroButton.setEnabled(true);
@@ -283,7 +283,7 @@ public class RecordForm extends javax.swing.JFrame {
     
     private void updateRecordState()
     {
-        if (!isRecording)
+        if (!_isRecording)
         {
             recordMacroButton.setText(TextValue.getText(TextValue.RecordBeginRecordingButton));
             recordMacroButton.setToolTipText(TextValue.getText(TextValue.RecordBeginRecordingButtonTip));
@@ -295,8 +295,8 @@ public class RecordForm extends javax.swing.JFrame {
         }
     }
     
-    // Properties
-    private boolean isRecording = false;
+    // Private properties
+    private boolean _isRecording = false;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel headerText;

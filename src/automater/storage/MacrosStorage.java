@@ -36,14 +36,14 @@ public class MacrosStorage {
     
     public void clearMacros()
     {
-        Logger.message("Wiping out all macros from storage...");
+        Logger.message(this, "Wiping out all macros from storage...");
         
         clearFileData();
     }
     
     public void addMacrosToStorage(ArrayList<Macro> macros) throws Exception
     {
-        Logger.message("Saving macros to storage...");
+        Logger.message(this, "Saving macros to storage...");
         
         ArrayList<Macro> currentMacros = getMacros();
         
