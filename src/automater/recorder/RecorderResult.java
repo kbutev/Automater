@@ -5,9 +5,10 @@
  */
 package automater.recorder;
 
+import automater.recorder.model.RecorderUserInput;
+import automater.utilities.CollectionUtilities;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  *
@@ -18,6 +19,6 @@ public class RecorderResult {
     
     public RecorderResult(ArrayList<RecorderUserInput> userInputs)
     {
-        this.userInputs = Collections.unmodifiableCollection(new ArrayList<>(userInputs));
+        this.userInputs = CollectionUtilities.copyAsImmutable(userInputs);
     }
 }

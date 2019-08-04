@@ -5,21 +5,27 @@
  */
 package automater.presenter;
 
+import automater.recorder.BaseRecorderListener;
 import automater.recorder.Recorder;
 import automater.recorder.RecorderResult;
+import automater.recorder.model.RecorderUserInput;
 import automater.storage.GeneralStorage;
 import automater.storage.MacroStorage;
 import automater.ui.viewcontroller.RootViewController;
+import automater.utilities.CollectionUtilities;
+import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.work.Macro;
-import com.sun.istack.internal.Nullable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
  * @author Bytevi
  */
-public class RecordPresenter implements BasePresenter {
+public class RecordPresenter implements BasePresenter, BaseRecorderListener {
     private final RootViewController _rootViewController;
     private BasePresenterDelegate _delegate;
     
@@ -27,6 +33,8 @@ public class RecordPresenter implements BasePresenter {
     
     private final Recorder _recorder = Recorder.getDefault();
     private RecorderResult _recordedResult;
+    
+    private ArrayList<Description> _viewActionStrings = new ArrayList<>();
     
     public RecordPresenter(RootViewController rootViewController)
     {
@@ -67,11 +75,13 @@ public class RecordPresenter implements BasePresenter {
         }
         
         try {
-            _recorder.start();
+            _recorder.start(this);
         } catch (Exception e) {
             _delegate.onErrorEncountered(e);
             return;
         }
+        
+        clearData();
         
         Logger.messageEvent(this, "Macro recording has started....");
         
@@ -136,5 +146,34 @@ public class RecordPresenter implements BasePresenter {
     public void onRecordingSavedSuccessufllyClosed()
     {
         _rootViewController.navigateToPlayScreen();
+    }
+    
+    // # BaseRecorderListener
+    
+    @Override
+    public void onRecordedUserInput(RecorderUserInput input)
+    {
+        Logger.messageEvent(this, "Captured user input " + input.toString());
+        
+        _viewActionStrings.add(input);
+        
+        _delegate.onActionsRecordedChange(getActionStringsData());
+    }
+    
+    // # Private
+    
+    private void clearData()
+    {
+        _viewActionStrings.clear();
+        
+        if (_delegate != null)
+        {
+            _delegate.onActionsRecordedChange(getActionStringsData());
+        }
+    }
+    
+    private List<Description> getActionStringsData()
+    {
+        return CollectionUtilities.copyAsReversed(_viewActionStrings);
     }
 }

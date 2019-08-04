@@ -6,7 +6,8 @@
 package automater.ui.viewcontroller;
 
 /**
- *
+ * The one and only view controller that is active at all times.
+ * 
  * @author Bytevi
  */
 public interface RootViewController {

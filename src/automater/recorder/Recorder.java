@@ -5,6 +5,8 @@
  */
 package automater.recorder;
 
+import automater.recorder.parser.RecorderInputParser;
+import automater.recorder.parser.RecorderParserFlag;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.Looper;
@@ -26,14 +28,14 @@ public class Recorder {
     public final Helpers helpers = new Helpers();
     
     private final State _state = new State();
-    private final Model _model = new Model();
+    private final RecorderModel _model = new RecorderModel();
     private final Object _lock = new Object();
-    private final RecorderListener _listener;
+    private final RecorderNativeListener _listener;
     
     private Recorder()
     {
-        RecorderInputParserStandart parser = new RecorderInputParserStandart(defaults.getDefaultRecordSettings(), _model);
-        this._listener = new RecorderListener(parser);
+        RecorderInputParser parser = new RecorderInputParser(defaults.getDefaultRecordSettings(), _model);
+        this._listener = new RecorderNativeListener(parser);
         
         Looper.getShared().queueCallback(new Function<Void, Boolean>() {
             @Override
@@ -61,12 +63,13 @@ public class Recorder {
         }
     }
     
-    public void start() throws Exception
+    public void start(BaseRecorderListener listener) throws Exception
     {
         Logger.messageEvent(this, "Start...");
         
         synchronized (_lock)
         {
+            _model.listener = listener;
             _state.start();
             _listener.start();
         }
@@ -78,6 +81,7 @@ public class Recorder {
         
         synchronized (_lock)
         {
+            _model.listener = null;
             _state.stop();
             _listener.stop();
             
@@ -114,58 +118,19 @@ public class Recorder {
         }
     }
     
-    // Holds recording data; stores data received from the parser
-    private class Model implements RecorderInputParserDelegate
-    {
-        ArrayList<RecorderUserInput> recordedInput = new ArrayList<>();
-        
-        RecorderUserInputToResultParser inputParser = new RecorderUserInputToResultParser();
-        
-        public void onParseResult(RecorderUserInput input)
-        {
-            recordedInput.add(input);
-        }
-        
-        private RecorderResult parseRecordedInputToRecordedResult(boolean resetOnComplete)
-        {
-            RecorderResult result = inputParser.parse(recordedInput);
-            
-            if (resetOnComplete)
-            {
-                reset();
-            }
-            
-            return result;
-        }
-        
-        private void reset()
-        {
-            recordedInput = new ArrayList<>();
-        }
-    }
-    
-    // Parses RecorderUserInput objects to one single RecorderResult
-    private class RecorderUserInputToResultParser
-    {
-        private RecorderResult parse(ArrayList<RecorderUserInput> userInputs)
-        {
-            return new RecorderResult(userInputs);
-        }
-    }
-    
-    // Holds default values
+    // Default values
     private class Defaults
     {
-        private ArrayList<RecorderInputParserStandart.RecordSettings> getDefaultRecordSettings()
+        private ArrayList<RecorderParserFlag> getDefaultRecordSettings()
         {
-            ArrayList<RecorderInputParserStandart.RecordSettings> settings;
+            ArrayList<RecorderParserFlag> settings;
             settings = new ArrayList();
-            settings.add(RecorderInputParserStandart.RecordSettings.RECORD_KEYBOARD_EVENTS);
-            //settings.add(RecorderInputParser.RecordSettings.RECORD_MOUSE_CLICKS);
-            //settings.add(RecorderInputParser.RecordSettings.RECORD_MOUSE_MOTION);
-            //settings.add(RecorderInputParser.RecordSettings.RECORD_MOUSE_WHEEL);
-            //settings.add(RecorderInputParser.RecordSettings.RECORD_WINDOW_EVENTS);
-            settings.add(RecorderInputParserStandart.RecordSettings.LOG_EVENTS);
+            settings.add(RecorderParserFlag.RECORD_KEYBOARD_EVENTS);
+            settings.add(RecorderParserFlag.RECORD_MOUSE_CLICKS);
+            //settings.add(RecorderParserFlag.RECORD_MOUSE_MOTION);
+            //settings.add(RecorderParserFlag.RECORD_MOUSE_WHEEL);
+            //settings.add(RecorderParserFlag.RECORD_WINDOW_EVENTS);
+            settings.add(RecorderParserFlag.LOG_EVENTS);
             return settings;
         }
     }

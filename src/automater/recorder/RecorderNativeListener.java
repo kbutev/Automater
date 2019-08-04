@@ -20,6 +20,7 @@ import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseInputListener;
 import org.jnativehook.mouse.NativeMouseWheelEvent;
 import org.jnativehook.mouse.NativeMouseWheelListener;
+import automater.recorder.parser.BaseRecorderInputParser;
 
 /**
  * Wrapper of NativeHookListener.
@@ -29,13 +30,13 @@ import org.jnativehook.mouse.NativeMouseWheelListener;
  * 
  * @author Bytevi
  */
-public class RecorderListener {
+public class RecorderNativeListener {
     private static final SwingDispatchService _swingDispatchService = new SwingDispatchService();
     
     private NativeHookListener _nativeHookListener;
-    private final RecorderInputParser _parser;
+    private final BaseRecorderInputParser _parser;
     
-    public RecorderListener(RecorderInputParser parser)
+    public RecorderNativeListener(BaseRecorderInputParser parser)
     {
         this._parser = parser;
         

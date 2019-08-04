@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.recorder;
+package automater.recorder.parser;
 
+import automater.recorder.model.RecorderUserInput;
+import automater.recorder.model.RecorderUserInputKey;
 import automater.utilities.Logger;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -16,27 +18,19 @@ import org.jnativehook.mouse.NativeMouseWheelEvent;
 /**
  * Maps jnativehook events to RecorderUserInput objects.
  * 
+ * This is a standart implementation of BaseRecorderInputParser.
+ * 
  * @author Bytevi
  */
-public class RecorderInputParserStandart implements RecorderInputParser {
-    enum RecordSettings 
-    {
-        RECORD_WINDOW_EVENTS,
-        RECORD_KEYBOARD_EVENTS,
-        RECORD_MOUSE_MOTION,
-        RECORD_MOUSE_WHEEL,
-        RECORD_MOUSE_CLICKS,
-        
-        LOG_EVENTS
-    }
-    
-    public final ArrayList<RecordSettings> settings;
+public class RecorderInputParser implements BaseRecorderInputParser {
+    public final ArrayList<RecorderParserFlag> settings;
     
     private final RecorderInputParserDelegate _delegate;
     private final RecorderSystemKeyboardTranslator _keyboardTranslator = new RecorderSystemKeyboardTranslator();
+    private final RecorderSystemMouseTranslator _mouseTranslator = new RecorderSystemMouseTranslator(_keyboardTranslator);
     private final EventLogger _eventLogger = new EventLogger();
     
-    public RecorderInputParserStandart(ArrayList<RecordSettings> settings, RecorderInputParserDelegate delegate)
+    public RecorderInputParser(ArrayList<RecorderParserFlag> settings, RecorderInputParserDelegate delegate)
     {
         this.settings = settings;
         this._delegate = delegate;
@@ -61,13 +55,18 @@ public class RecorderInputParserStandart implements RecorderInputParser {
     
     private void evaluate(NativeKeyEvent keyboardEvent, boolean press)
     {
-        if (!settings.contains(RecordSettings.RECORD_KEYBOARD_EVENTS))
+        if (!settings.contains(RecorderParserFlag.RECORD_KEYBOARD_EVENTS))
         {
             return;
         }
         
         Date timestamp = getCurrentTime();
-        RecorderUserInputKey translatedKey = _keyboardTranslator.translate(keyboardEvent);
+        RecorderUserInputKey translatedKey = _keyboardTranslator.translate(keyboardEvent, press);
+        
+        if (translatedKey == null)
+        {
+            return;
+        }
         
         _eventLogger.logKeyboardEvent(keyboardEvent, translatedKey);
         
@@ -84,7 +83,10 @@ public class RecorderInputParserStandart implements RecorderInputParser {
             userInput = RecorderUserInput.createKeyboardRelease(timestamp, translatedKey);
         }
         
-        _delegate.onParseResult(userInput);
+        if (userInput != null)
+        {
+            _delegate.onParseResult(userInput);
+        }
     }
     
     @Override
@@ -101,28 +103,38 @@ public class RecorderInputParserStandart implements RecorderInputParser {
     
     private void evaluate(NativeMouseEvent mouseEvent, boolean press)
     {
-        if (!settings.contains(RecordSettings.RECORD_MOUSE_CLICKS))
+        if (!settings.contains(RecorderParserFlag.RECORD_MOUSE_CLICKS))
         {
             return;
         }
         
         Date timestamp = getCurrentTime();
-        _eventLogger.logMouseEvent(mouseEvent);
+        RecorderUserInputKey mouseKey = _mouseTranslator.translate(mouseEvent);
+        
+        if (mouseKey == null)
+        {
+            return;
+        }
+        
+        _eventLogger.logMouseEvent(mouseEvent, mouseKey);
         
         RecorderUserInput userInput;
         
         // Press
         if (press)
         {
-            userInput = RecorderUserInput.createMousePress(timestamp);
+            userInput = RecorderUserInput.createMousePress(timestamp, mouseKey);
         }
         // Release
         else
         {
-            userInput = RecorderUserInput.createMouseRelease(timestamp);
+            userInput = RecorderUserInput.createMouseRelease(timestamp, mouseKey);
         }
         
-        _delegate.onParseResult(userInput);
+        if (userInput != null)
+        {
+            _delegate.onParseResult(userInput);
+        }
     }
     
     @Override
@@ -134,7 +146,7 @@ public class RecorderInputParserStandart implements RecorderInputParser {
     @Override
     public void evaluate(NativeMouseWheelEvent mouseWheelEvent)
     {
-        if (!settings.contains(RecordSettings.RECORD_MOUSE_WHEEL))
+        if (!settings.contains(RecorderParserFlag.RECORD_MOUSE_WHEEL))
         {
             return;
         }
@@ -150,7 +162,7 @@ public class RecorderInputParserStandart implements RecorderInputParser {
     @Override
     public void evaluate(WindowEvent windowEvent)
     {
-        if (!settings.contains(RecordSettings.RECORD_WINDOW_EVENTS))
+        if (!settings.contains(RecorderParserFlag.RECORD_WINDOW_EVENTS))
         {
             return;
         }
@@ -168,23 +180,23 @@ public class RecorderInputParserStandart implements RecorderInputParser {
     {
         void logKeyboardEvent(NativeKeyEvent keyboardEvent, RecorderUserInputKey translatedKey)
         {
-            if (settings.contains(RecordSettings.LOG_EVENTS))
+            if (settings.contains(RecorderParserFlag.LOG_EVENTS))
             {
-                Logger.messageEvent(this, "RecorderInputParser: keyboard event '" + translatedKey.value.name() + "'");
+                Logger.messageEvent(this, "RecorderInputParser: keyboard event '" + translatedKey.toString() + "'");
             }
         }
         
-        void logMouseEvent(NativeMouseEvent keyboardEvent)
+        void logMouseEvent(NativeMouseEvent keyboardEvent, RecorderUserInputKey translatedKey)
         {
-            if (settings.contains(RecordSettings.LOG_EVENTS))
+            if (settings.contains(RecorderParserFlag.LOG_EVENTS))
             {
-                Logger.messageEvent(this, "RecorderInputParser: mouse event");
+                Logger.messageEvent(this, "RecorderInputParser: mouse event '" + translatedKey.toString() + "'");
             }
         }
         
         void logMouseWheelEvent(NativeMouseWheelEvent keyboardEvent)
         {
-            if (settings.contains(RecordSettings.LOG_EVENTS))
+            if (settings.contains(RecorderParserFlag.LOG_EVENTS))
             {
                 Logger.messageEvent(this, "RecorderInputParser: mouse wheel event");
             }
@@ -192,7 +204,7 @@ public class RecorderInputParserStandart implements RecorderInputParser {
         
         void logWindowEvent(WindowEvent keyboardEvent)
         {
-            if (settings.contains(RecordSettings.LOG_EVENTS))
+            if (settings.contains(RecorderParserFlag.LOG_EVENTS))
             {
                 Logger.messageEvent(this, "RecorderInputParser: window event");
             }

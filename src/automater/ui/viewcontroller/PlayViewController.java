@@ -11,6 +11,9 @@ import automater.ui.view.PlayForm;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
 import java.awt.event.WindowEvent;
+import java.util.List;
+import automater.ui.view.BaseView;
+import automater.utilities.Description;
 
 /**
  *
@@ -42,20 +45,30 @@ public class PlayViewController implements BaseViewController, BasePresenterDele
     @Override
     public void start()
     {
-        _form.setVisible(true);
-        
         setupViewCallbacks();
+        
+        _form.setVisible(true);
+        _form.onViewStart();
+    }
+    
+    @Override
+    public void resume()
+    {
+        _form.setVisible(true);
+        _form.onViewResume();
     }
     
     @Override
     public void suspend()
     {
         _form.setVisible(false);
+        _form.onViewSuspended();
     }
     
     @Override
     public void terminate()
     {
+        _form.onViewTerminate();
         _form.dispatchEvent(new WindowEvent(_form, WindowEvent.WINDOW_CLOSING));
     }
     
@@ -71,6 +84,12 @@ public class PlayViewController implements BaseViewController, BasePresenterDele
     public void stopRecording()
     {
         
+    }
+    
+    @Override
+    public void onActionsRecordedChange(List<Description> actions)
+    {
+    
     }
     
     @Override

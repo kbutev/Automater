@@ -5,11 +5,13 @@
  */
 package automater.recorder;
 
+import automater.recorder.model.RecorderUserInput;
+
 /**
- * Handles the result of a parsed system user input.
- * 
+ * A listener for recorded user input actions.
+ *
  * @author Bytevi
  */
-public interface RecorderInputParserDelegate {
-    void onParseResult(RecorderUserInput input);
+public interface BaseRecorderListener {
+    public void onRecordedUserInput(RecorderUserInput input);
 }

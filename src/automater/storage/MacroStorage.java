@@ -214,11 +214,6 @@ public class MacroStorage {
         {
             Logger.message(this, "Retrieved " + macrosLoaded.size() + " macros from storage");
             
-            for (Macro m : macrosLoaded)
-            {
-                Logger.message(this, "++++ " + m.name);
-            }
-            
             this._macros = macrosLoaded;
         }
     }

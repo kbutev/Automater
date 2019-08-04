@@ -7,6 +7,7 @@ package automater.presenter;
 
 import automater.ui.viewcontroller.RootViewController;
 import automater.utilities.Errors;
+import automater.ui.view.BaseView;
 
 /**
  *

@@ -5,9 +5,11 @@
  */
 package automater;
 
-import automater.utilities.Logger;
-import automater.ui.view.RecordForm;
 import automater.ui.viewcontroller.PrimaryViewContoller;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+import org.jnativehook.GlobalScreen;
 
 /**
  *
@@ -21,5 +23,10 @@ public class Automater {
      */
     public static void main(String[] args) {
         primaryViewContoller.start();
+        
+        // Disable jnativehook logging
+        LogManager.getLogManager().reset();
+        Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
+        logger.setLevel(Level.OFF);
     }
 }

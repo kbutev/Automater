@@ -14,7 +14,7 @@ import automater.work.MacroParameters;
  *
  * @author Bytevi
  */
-public class PlayForm extends javax.swing.JFrame {
+public class PlayForm extends javax.swing.JFrame implements BaseView {
     // Public properties
     public SimpleCallback onSwitchToPlayButtonCallback = SimpleCallback.createDoNothing();
     
@@ -184,6 +184,39 @@ public class PlayForm extends javax.swing.JFrame {
         this.setTitle(TextValue.getText(TextValue.PlayFormTitle));
         
         //switchToPlayButton.setText(TextValue.getText(TextValue.RecordSwitchToPlayButton));
+        
+    }
+    
+    // # GenericView
+    
+    @Override
+    public void onViewStart()
+    {
+        
+    }
+    
+    @Override
+    public void onViewSuspended()
+    {
+        
+    }
+    
+    @Override
+    public void onViewResume()
+    {
+        //switchToPlayButton.setSelected(false);
+        //saveMacroButton.setEnabled(false);
+    }
+    
+    @Override
+    public void onViewTerminate()
+    {
+        
+    }
+    
+    @Override
+    public void reloadData()
+    {
         
     }
     

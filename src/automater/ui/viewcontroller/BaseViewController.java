@@ -14,6 +14,7 @@ import automater.presenter.BasePresenterDelegate;
  */
 public interface BaseViewController {
     public void start();
+    public void resume();
     public void suspend();
     public void terminate();
 }

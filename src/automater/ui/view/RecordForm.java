@@ -9,12 +9,14 @@ import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
+import javax.swing.ListModel;
+import javax.swing.event.ListDataListener;
 
 /**
  *
  * @author Bytevi
  */
-public class RecordForm extends javax.swing.JFrame {
+public class RecordForm extends javax.swing.JFrame implements BaseView {
     // Public properties
     public SimpleCallback onSwitchToPlayButtonCallback = SimpleCallback.createDoNothing();
     public SimpleCallback onRecordMacroButtonCallback = SimpleCallback.createDoNothing();
@@ -220,9 +222,49 @@ public class RecordForm extends javax.swing.JFrame {
         updateRecordState();
     }
     
+    // # GenericView
+    
+    @Override
+    public void onViewStart()
+    {
+        macroActionsList.setModel(new RecordFormActionsDataSource());
+    }
+    
+    @Override
+    public void onViewSuspended()
+    {
+        
+    }
+    
+    @Override
+    public void onViewResume()
+    {
+        switchToPlayButton.setSelected(false);
+        saveMacroButton.setEnabled(false);
+    }
+    
+    @Override
+    public void onViewTerminate()
+    {
+        
+    }
+    
+    @Override
+    public void reloadData()
+    {
+        
+    }
+    
+    // # Public properties getters/setters
+    
     public boolean isRecording()
     {
         return _isRecording;
+    }
+    
+    public void setListDataSource(RecordFormActionsDataSource dataSource)
+    {
+        macroActionsList.setModel(dataSource);
     }
     
     // # Public UI operations

@@ -61,7 +61,9 @@ public class PrimaryViewContoller implements RootViewController {
     
     private void switchScreenToPlay()
     {
-        if (_playViewController == null)
+        boolean playViewControllerStart = _playViewController == null;
+        
+        if (playViewControllerStart)
         {
             PlayPresenter presenter = new PlayPresenter(this);
             PlayViewController vc = new PlayViewController(presenter);
@@ -75,12 +77,22 @@ public class PrimaryViewContoller implements RootViewController {
         }
         
         _currentViewController = _playViewController;
-        _currentViewController.start();
+        
+        if (playViewControllerStart)
+        {
+            _currentViewController.start();
+        }
+        else
+        {
+            _currentViewController.resume();
+        }
     }
     
     private void switchScreenToRecord()
     {
-        if (_recordViewController == null)
+        boolean recordViewControllerStart = _recordViewController == null;
+        
+        if (recordViewControllerStart)
         {
             RecordPresenter presenter = new RecordPresenter(this);
             RecordViewController vc = new RecordViewController(presenter);
@@ -94,6 +106,14 @@ public class PrimaryViewContoller implements RootViewController {
         }
         
         _currentViewController = _recordViewController;
-        _currentViewController.start();
+        
+        if (recordViewControllerStart)
+        {
+            _currentViewController.start();
+        }
+        else
+        {
+            _currentViewController.resume();
+        }
     }
 }

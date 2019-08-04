@@ -5,6 +5,9 @@
  */
 package automater.presenter;
 
+import java.util.List;
+import automater.utilities.Description;
+
 /**
  * Presenters delegates.
  * 
@@ -13,6 +16,7 @@ package automater.presenter;
 public interface BasePresenterDelegate {
     public void startRecording();
     public void stopRecording();
+    public void onActionsRecordedChange(List<Description> actions);
     public void recordingSavedSuccessfully(String name);
     
     public void startPlaying();

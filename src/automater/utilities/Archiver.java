@@ -20,6 +20,13 @@ import java.util.Date;
  */
 public class Archiver 
 {
+    private static final Archiver _archiver = new Archiver();
+    
+    private Archiver()
+    {
+        
+    }
+    
     public static String serializeObject(Serializable object)
     {
         if (object == null)
@@ -110,7 +117,7 @@ public class Archiver
         }
         catch (Exception e)
         {
-            
+            Logger.utilityError(_archiver, e.toString());
         }
         
         return null;
@@ -155,7 +162,7 @@ public class Archiver
         }
         catch (Exception e)
         {
-            Logger.utilityError(null, e.toString());
+            Logger.utilityError(_archiver, e.toString());
         }
         
         return null;

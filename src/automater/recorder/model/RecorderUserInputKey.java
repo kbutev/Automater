@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.recorder;
+package automater.recorder.model;
 
 /**
  * A key value and a key mask.
@@ -17,6 +17,12 @@ public class RecorderUserInputKey {
     public RecorderUserInputKey(RecorderUserInputKeyValue value, RecorderUserInputKeyMask mask)
     {
         this.value = value;
-        this.mask = mask;
+        this.mask = mask.copy();
+    }
+    
+    @Override
+    public String toString()
+    {
+        return mask.toString() + value.toString();
     }
 }

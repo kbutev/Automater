@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.recorder;
+package automater.recorder.parser;
 
 import java.awt.event.WindowEvent;
 import org.jnativehook.keyboard.NativeKeyEvent;
@@ -11,11 +11,11 @@ import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseWheelEvent;
 
 /**
- * User input parser interface.
+ * Recorder parse interface.
  * 
  * @author Bytevi
  */
-public interface RecorderInputParser {
+public interface BaseRecorderInputParser {
      public void evaluatePress(NativeKeyEvent keyboardEvent);
      public void evaluateRelease(NativeKeyEvent keyboardEvent);
      

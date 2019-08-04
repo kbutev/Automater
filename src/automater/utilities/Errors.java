@@ -30,6 +30,11 @@ public class Errors {
         throw new ArithmeticException(description);
     }
     
+    public static void throwNotImplemented(String description) throws RuntimeException
+    {
+        throw new UnsupportedOperationException(description);
+    }
+    
     public static void throwInternalLogicError(String description) throws RuntimeException
     {
         throw new RuntimeException(description);
