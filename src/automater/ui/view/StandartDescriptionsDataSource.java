@@ -16,27 +16,27 @@ import javax.swing.event.ListDataListener;
  *
  * @author Bytevi
  */
-public class RecordFormActionsDataSource implements ListModel<String> {
-    public final List<Description> actions;
+public class StandartDescriptionsDataSource implements ListModel<String> {
+    public final List<Description> data;
     
-    public RecordFormActionsDataSource()
+    public StandartDescriptionsDataSource()
     {
-        this.actions = new ArrayList();
+        this.data = new ArrayList();
     }
     
-    public RecordFormActionsDataSource(List<Description> actions)
+    public StandartDescriptionsDataSource(List<Description> actions)
     {
-        this.actions = CollectionUtilities.copyAsImmutable(actions);
+        this.data = CollectionUtilities.copyAsImmutable(actions);
     }
     
     @Override
     public int getSize() {
-        return actions.size();
+        return data.size();
     }
 
     @Override
     public String getElementAt(int index) {
-        return actions.get(index).getVerbose();
+        return data.get(index).getStandart();
     }
 
     @Override
@@ -48,5 +48,4 @@ public class RecordFormActionsDataSource implements ListModel<String> {
     public void removeListDataListener(ListDataListener l) {
         
     }
-    
 }

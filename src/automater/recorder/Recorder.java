@@ -9,9 +9,7 @@ import automater.recorder.parser.RecorderInputParser;
 import automater.recorder.parser.RecorderParserFlag;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
-import automater.utilities.Looper;
 import java.util.ArrayList;
-import java.util.function.Function;
 
 /**
  * A service that listens to system user input and records it as RecorderResult.
@@ -36,13 +34,6 @@ public class Recorder {
     {
         RecorderInputParser parser = new RecorderInputParser(defaults.getDefaultRecordSettings(), _model);
         this._listener = new RecorderNativeListener(parser);
-        
-        Looper.getShared().queueCallback(new Function<Void, Boolean>() {
-            @Override
-            public Boolean apply(Void t) {
-                return true;
-            }
-        });
     }
     
     synchronized public static Recorder getDefault()

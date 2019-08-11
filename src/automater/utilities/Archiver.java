@@ -49,7 +49,7 @@ public class Archiver
         }
         catch (Exception e)
         {
-            
+            Logger.utilityError(_archiver, "Cannot serialize object " + object.toString() + ", " + e.toString());
         }
         
         return null;

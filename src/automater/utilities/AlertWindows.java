@@ -43,6 +43,29 @@ public class AlertWindows {
         }
     }
     
+    public static void showConfirmationMessage(Component parent, 
+            String title, String message,
+            SimpleCallback confirmCallback,
+            SimpleCallback cancelCallback)
+    {
+        int result = JOptionPane.showConfirmDialog(parent, message, title, JOptionPane.YES_NO_OPTION);
+        
+        if (result == JOptionPane.YES_OPTION)
+        {
+            if (confirmCallback != null)
+            {
+                confirmCallback.perform();
+            }
+        }
+        else if (result == JOptionPane.NO_OPTION)
+        {
+            if (cancelCallback != null)
+            {
+                cancelCallback.perform();
+            }
+        }
+    }
+    
     public static void showErrorMessage(Component parent, 
             String title, String message, 
             String buttonText)

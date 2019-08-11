@@ -10,9 +10,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 /**
+ * Contains utilities for performing callbacks, and updating objects every interval.
  *
  * @author Bytevi
  */
@@ -59,9 +59,14 @@ public class Looper {
         _clientsManager.unsubscribe(client);
     }
     
-    public void queueCallback(final Function<Void, Boolean> callback)
+    public void performCallback(final SimpleCallback callback)
     {
         _callbacksManager.queueCallback(callback);
+    }
+    
+    public <T> void performCallback(final Callback<T> callback, final T parameter)
+    {
+        _callbacksManager.queueCallback(callback, parameter);
     }
 
     private void loop()
@@ -117,23 +122,23 @@ public class Looper {
     }
     
     class CallbacksManager {
-        private ArrayList<Function<Void, Boolean>> _callbacks = new ArrayList();
+        private ArrayList<LooperCallback> _callbacks = new ArrayList();
         
         private final Object _mainLock = new Object();
         
-        private void queueCallback(Function<Void, Boolean> callback)
+        private void queueCallback(SimpleCallback callback)
         {
             synchronized (_mainLock)
             {
-                _callbacks.add(callback);
+                _callbacks.add(new LooperCallback(callback));
             }
         }
         
-        private void queueCallbacks(ArrayList<Function<Void, Boolean>> callbacks)
+        private <T> void queueCallback(Callback<T> callback, T parameter)
         {
             synchronized (_mainLock)
             {
-                _callbacks.addAll(callbacks);
+                _callbacks.add(new LooperCallback(callback, parameter));
             }
         }
         
@@ -147,24 +152,51 @@ public class Looper {
         
         private void loop()
         {
-            ArrayList<Function<Void, Boolean>> repeatCallbacks = new ArrayList();
-            Collection<Function<Void, Boolean>> callbacks;
+            Collection<LooperCallback> callbacks;
 
             synchronized (_mainLock)
             {
                 callbacks = Collections.unmodifiableCollection(_callbacks);
             }
             
-            for (Function<Void, Boolean> callback : callbacks)
+            for (LooperCallback callback : callbacks)
             {
-                if (callback.apply(null))
-                {
-                    repeatCallbacks.add(callback);
-                }
+                callback.perform();
             }
             
             clearCallbacks();
-            queueCallbacks(repeatCallbacks);
+        }
+    }
+    
+    class LooperCallback <T> {
+        public final SimpleCallback callback;
+        public final Callback<T> callbackWithParameter;
+        public final T parameter;
+        
+        private LooperCallback(SimpleCallback callback)
+        {
+            this.callback = callback;
+            this.callbackWithParameter = null;
+            this.parameter = null;
+        }
+        
+        private LooperCallback(Callback<T> callback, T parameter)
+        {
+            this.callback = null;
+            this.callbackWithParameter = callback;
+            this.parameter = parameter;
+        }
+        
+        private void perform()
+        {
+            if (callback != null)
+            {
+                this.callback.perform();
+            }
+            else
+            {
+                this.callbackWithParameter.perform(parameter);
+            }
         }
     }
 }

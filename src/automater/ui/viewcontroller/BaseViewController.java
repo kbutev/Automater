@@ -5,8 +5,6 @@
  */
 package automater.ui.viewcontroller;
 
-import automater.presenter.BasePresenterDelegate;
-
 /**
  * Base implementation for view controllers.
  * 

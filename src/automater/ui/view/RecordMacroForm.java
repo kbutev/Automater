@@ -5,19 +5,18 @@
  */
 package automater.ui.view;
 
+import automater.TextValue;
 import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
-import javax.swing.ListModel;
-import javax.swing.event.ListDataListener;
 
 /**
  *
  * @author Bytevi
  */
-public class RecordForm extends javax.swing.JFrame implements BaseView {
-    // Public properties
+public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
+    // UI callbacks
     public SimpleCallback onSwitchToPlayButtonCallback = SimpleCallback.createDoNothing();
     public SimpleCallback onRecordMacroButtonCallback = SimpleCallback.createDoNothing();
     public SimpleCallback onStopRecordMacroButtonCallback = SimpleCallback.createDoNothing();
@@ -26,7 +25,7 @@ public class RecordForm extends javax.swing.JFrame implements BaseView {
     /**
      * Creates new form RecordForm
      */
-    public RecordForm() {
+    public RecordMacroForm() {
         initComponents();
         setup();
     }
@@ -46,12 +45,15 @@ public class RecordForm extends javax.swing.JFrame implements BaseView {
         macroActionsList = new javax.swing.JList<>();
         saveMacroButton = new javax.swing.JButton();
         macroNameField = new javax.swing.JTextField();
-        switchToPlayButton = new javax.swing.JToggleButton();
+        switchToOpenMacrosButton = new javax.swing.JToggleButton();
         headerText = new javax.swing.JLabel();
         macroActionsListName = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
+        nameLabel = new javax.swing.JLabel();
+        macroDescriptionField = new javax.swing.JTextField();
+        descriptionLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         macroStateLabel.setText("Idle (Press F5 to RECORD/FINISH)");
 
@@ -81,11 +83,11 @@ public class RecordForm extends javax.swing.JFrame implements BaseView {
 
         macroNameField.setText("Untitled macro");
 
-        switchToPlayButton.setText("PLAY >");
-        switchToPlayButton.setToolTipText("");
-        switchToPlayButton.addActionListener(new java.awt.event.ActionListener() {
+        switchToOpenMacrosButton.setText("MACROS >");
+        switchToOpenMacrosButton.setToolTipText("");
+        switchToOpenMacrosButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                switchToPlayButtonActionPerformed(evt);
+                switchToOpenMacrosButtonActionPerformed(evt);
             }
         });
 
@@ -94,7 +96,9 @@ public class RecordForm extends javax.swing.JFrame implements BaseView {
 
         macroActionsListName.setText("Recorded actions");
 
-        jLabel1.setText("Name");
+        nameLabel.setText("Name");
+
+        descriptionLabel.setText("Description");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -105,23 +109,27 @@ public class RecordForm extends javax.swing.JFrame implements BaseView {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(headerText)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(switchToPlayButton, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(macroActionsListName)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(macroNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 249, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
                         .addComponent(macroStateLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(recordMacroButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(saveMacroButton, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(saveMacroButton, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(macroActionsListName)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(nameLabel)
+                                    .addComponent(descriptionLabel))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(macroDescriptionField)
+                                    .addComponent(macroNameField, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE))))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(headerText)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(switchToOpenMacrosButton)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -129,12 +137,16 @@ public class RecordForm extends javax.swing.JFrame implements BaseView {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(switchToPlayButton)
+                    .addComponent(switchToOpenMacrosButton)
                     .addComponent(headerText))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(nameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(macroNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(macroDescriptionField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(descriptionLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(macroActionsListName)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -150,9 +162,9 @@ public class RecordForm extends javax.swing.JFrame implements BaseView {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void switchToPlayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_switchToPlayButtonActionPerformed
+    private void switchToOpenMacrosButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_switchToOpenMacrosButtonActionPerformed
         onSwitchToPlayButtonCallback.perform();
-    }//GEN-LAST:event_switchToPlayButtonActionPerformed
+    }//GEN-LAST:event_switchToOpenMacrosButtonActionPerformed
 
     private void recordMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordMacroButtonActionPerformed
         if (!isRecording()) {
@@ -183,41 +195,42 @@ public class RecordForm extends javax.swing.JFrame implements BaseView {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(RecordForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RecordMacroForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(RecordForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RecordMacroForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(RecordForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RecordMacroForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(RecordForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RecordMacroForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new RecordForm().setVisible(true);
+                new RecordMacroForm().setVisible(true);
             }
         });
     }
     
     private void setup() {
-        this.setTitle(TextValue.getText(TextValue.RecordFormTitle));
+        this.setTitle(TextValue.getText(TextValue.Record_FormTitle));
         
-        switchToPlayButton.setText(TextValue.getText(TextValue.RecordSwitchToPlayButton));
-        switchToPlayButton.setToolTipText(TextValue.getText(TextValue.RecordSwitchToPlayButtonTip));
+        headerText.setText(TextValue.getText(TextValue.Record_HeaderText));
         
-        headerText.setText(TextValue.getText(TextValue.RecordHeaderText));
+        switchToOpenMacrosButton.setText(TextValue.getText(TextValue.Record_SwitchToOpenButtonTitle));
+        switchToOpenMacrosButton.setToolTipText(TextValue.getText(TextValue.Record_SwitchToOpenButtonTip));
         
-        macroActionsListName.setText(TextValue.getText(TextValue.RecordMacroActionListName));
+        macroActionsListName.setText(TextValue.getText(TextValue.Record_MacroActionListName));
         
-        macroNameField.setText(TextValue.getText(TextValue.RecordMacroNameFieldDefaultText));
-        macroNameField.setToolTipText(TextValue.getText(TextValue.RecordMacroNameFieldTip));
+        macroNameField.setText(TextValue.getText(TextValue.Record_MacroNameFieldDefaultText));
+        macroNameField.setToolTipText(TextValue.getText(TextValue.Record_MacroNameFieldTip));
         
-        macroStateLabel.setText(TextValue.getText(TextValue.RecordIdleStatus, "F5"));
+        macroStateLabel.setText(TextValue.getText(TextValue.Record_IdleStatus, "F5"));
         
-        saveMacroButton.setText(TextValue.getText(TextValue.RecordSaveButton));
-        saveMacroButton.setToolTipText(TextValue.getText(TextValue.RecordSaveButtonDisabledTip));
+        saveMacroButton.setText(TextValue.getText(TextValue.Record_SaveButton));
+        saveMacroButton.setToolTipText(TextValue.getText(TextValue.Record_SaveButtonDisabledTip));
         
         updateRecordState();
     }
@@ -227,7 +240,7 @@ public class RecordForm extends javax.swing.JFrame implements BaseView {
     @Override
     public void onViewStart()
     {
-        macroActionsList.setModel(new RecordFormActionsDataSource());
+        macroActionsList.setModel(new StandartDescriptionsDataSource());
     }
     
     @Override
@@ -239,8 +252,13 @@ public class RecordForm extends javax.swing.JFrame implements BaseView {
     @Override
     public void onViewResume()
     {
-        switchToPlayButton.setSelected(false);
+        macroActionsList.setModel(new StandartDescriptionsDataSource());
+        
+        switchToOpenMacrosButton.setSelected(false);
         saveMacroButton.setEnabled(false);
+        
+        macroNameField.setText(TextValue.getText(TextValue.Record_MacroNameFieldDefaultText));
+        macroDescriptionField.setText("");
     }
     
     @Override
@@ -262,7 +280,17 @@ public class RecordForm extends javax.swing.JFrame implements BaseView {
         return _isRecording;
     }
     
-    public void setListDataSource(RecordFormActionsDataSource dataSource)
+    public String getMacroName()
+    {
+        return macroNameField.getText();
+    }
+    
+    public String getMacroDescription()
+    {
+        return macroDescriptionField.getText();
+    }
+    
+    public void setListDataSource(StandartDescriptionsDataSource dataSource)
     {
         macroActionsList.setModel(dataSource);
     }
@@ -281,7 +309,7 @@ public class RecordForm extends javax.swing.JFrame implements BaseView {
     {
         _isRecording = true;
         macroNameField.setEnabled(false);
-        switchToPlayButton.setEnabled(false);
+        switchToOpenMacrosButton.setEnabled(false);
         saveMacroButton.setEnabled(false);
         
         updateRecordState();
@@ -291,7 +319,7 @@ public class RecordForm extends javax.swing.JFrame implements BaseView {
     {
         _isRecording = false;
         macroNameField.setEnabled(true);
-        switchToPlayButton.setEnabled(true);
+        switchToOpenMacrosButton.setEnabled(true);
         saveMacroButton.setEnabled(true);
         
         updateRecordState();
@@ -302,38 +330,24 @@ public class RecordForm extends javax.swing.JFrame implements BaseView {
         
     }
     
-    public void didSaveRecording(boolean result, String errorMessage)
-    {
-        if (!result)
-        {
-            displayError("Save Recording", "Could not save recording: " + errorMessage);
-            return;
-        }
-        
-        // Reset to default state, prevent further saving until a new recording is made
-        saveMacroButton.setEnabled(false);
-        macroNameField.setText(TextValue.getText(TextValue.RecordMacroNameFieldDefaultText));
-        
-        // Show message alert
-        AlertWindows.showMessage(getParent(), "Save Recording", "Recording saved to storage.", "Ok");
-    }
-    
     public void displayError(String title, String message)
     {
         AlertWindows.showErrorMessage(getParent(), title, message, "Ok");
     }
     
+    // # Private
+    
     private void updateRecordState()
     {
         if (!_isRecording)
         {
-            recordMacroButton.setText(TextValue.getText(TextValue.RecordBeginRecordingButton));
-            recordMacroButton.setToolTipText(TextValue.getText(TextValue.RecordBeginRecordingButtonTip));
+            recordMacroButton.setText(TextValue.getText(TextValue.Record_BeginRecordingButtonTitle));
+            recordMacroButton.setToolTipText(TextValue.getText(TextValue.Record_BeginRecordingButtonTip));
         }
         else
         {
-            recordMacroButton.setText(TextValue.getText(TextValue.RecordStopRecordingButton));
-            recordMacroButton.setToolTipText(TextValue.getText(TextValue.RecordStopRecordingButtonTip));
+            recordMacroButton.setText(TextValue.getText(TextValue.Record_StopRecordingButtonTitle));
+            recordMacroButton.setToolTipText(TextValue.getText(TextValue.Record_StopRecordingButtonTip));
         }
     }
     
@@ -341,15 +355,17 @@ public class RecordForm extends javax.swing.JFrame implements BaseView {
     private boolean _isRecording = false;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel descriptionLabel;
     private javax.swing.JLabel headerText;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JList<String> macroActionsList;
     private javax.swing.JLabel macroActionsListName;
+    private javax.swing.JTextField macroDescriptionField;
     private javax.swing.JTextField macroNameField;
     private javax.swing.JLabel macroStateLabel;
+    private javax.swing.JLabel nameLabel;
     private javax.swing.JButton recordMacroButton;
     private javax.swing.JButton saveMacroButton;
-    private javax.swing.JToggleButton switchToPlayButton;
+    private javax.swing.JToggleButton switchToOpenMacrosButton;
     // End of variables declaration//GEN-END:variables
 }

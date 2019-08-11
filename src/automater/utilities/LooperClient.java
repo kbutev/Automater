@@ -6,7 +6,8 @@
 package automater.utilities;
 
 /**
- *
+ * Interface for a looper client.
+ * 
  * @author Bytevi
  */
 public interface LooperClient {

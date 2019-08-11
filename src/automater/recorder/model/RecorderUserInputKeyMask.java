@@ -5,6 +5,7 @@
  */
 package automater.recorder.model;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,7 +14,7 @@ import java.util.Set;
  * 
  * @author Bytevi
  */
-public class RecorderUserInputKeyMask {
+public class RecorderUserInputKeyMask implements Serializable {
     private final HashSet<RecorderUserInputKeyMaskValue> _flags = new HashSet<>();
     
     public static RecorderUserInputKeyMask empty()

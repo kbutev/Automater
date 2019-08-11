@@ -3,9 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Bytevi/Documents/NetBeansProjects/Automater/src/automater/recorder/RecorderModel.java</file>
-            <file>file:/C:/Users/Bytevi/Documents/NetBeansProjects/Automater/src/automater/recorder/Recorder.java</file>
-            <file>file:/C:/Users/Bytevi/Documents/NetBeansProjects/Automater/src/automater/presenter/RecordPresenter.java</file>
+            <file>file:/C:/Users/Bytevi/Documents/NetBeansProjects/Automater/src/automater/TextValue.java</file>
+            <file>file:/C:/Users/Bytevi/Documents/NetBeansProjects/Automater/src/automater/work/Macro.java</file>
+            <file>file:/C:/Users/Bytevi/Documents/NetBeansProjects/Automater/src/automater/ui/view/OpenMacroForm.java</file>
         </group>
     </open-files>
 </project-private>

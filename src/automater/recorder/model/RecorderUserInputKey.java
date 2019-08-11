@@ -5,12 +5,14 @@
  */
 package automater.recorder.model;
 
+import java.io.Serializable;
+
 /**
  * A key value and a key mask.
  * 
  * @author Bytevi
  */
-public class RecorderUserInputKey {
+public class RecorderUserInputKey implements Serializable {
     public final RecorderUserInputKeyValue value;
     public final RecorderUserInputKeyMask mask;
     

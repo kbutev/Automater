@@ -5,32 +5,35 @@
  */
 package automater.ui.viewcontroller;
 
+import automater.TextValue;
 import automater.presenter.BasePresenterDelegate;
-import automater.presenter.RecordPresenter;
-import automater.ui.view.RecordForm;
-import automater.ui.view.RecordFormActionsDataSource;
+import automater.presenter.RecordMacroPresenter;
+import automater.ui.view.RecordMacroForm;
+import automater.ui.view.StandartDescriptionsDataSource;
 import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
 import java.awt.event.WindowEvent;
 import java.util.List;
-import automater.ui.view.BaseView;
 import automater.utilities.Description;
+import java.util.ArrayList;
 
 /**
  *
  * @author Bytevi
  */
-public class RecordViewController implements BaseViewController, BasePresenterDelegate {
-    private final RecordPresenter _presenter;
+public class RecordMacroViewController implements BaseViewController, BasePresenterDelegate {
+    private final RecordMacroPresenter _presenter;
     
-    private RecordForm _form;
+    private RecordMacroForm _form;
     
-    public RecordViewController(RecordPresenter presenter)
+    private StandartDescriptionsDataSource _dataSource;
+    
+    public RecordMacroViewController(RecordMacroPresenter presenter)
     {
         _presenter = presenter;
-        _form = new RecordForm();
+        _form = new RecordMacroForm();
     }
     
     private void setupViewCallbacks()
@@ -59,7 +62,7 @@ public class RecordViewController implements BaseViewController, BasePresenterDe
         _form.onSaveMacroButtonCallback = new Callback<String>() {
             @Override
             public void perform(String argument) {
-                _presenter.onSaveRecording(argument);
+                _presenter.onSaveRecording(argument, _form.getMacroDescription());
             }
         };
     }
@@ -113,18 +116,42 @@ public class RecordViewController implements BaseViewController, BasePresenterDe
     @Override
     public void onActionsRecordedChange(List<Description> actions)
     {
-        _form.setListDataSource(new RecordFormActionsDataSource(actions));
+        _dataSource = new StandartDescriptionsDataSource(actions);
+        _form.setListDataSource(_dataSource);
     }
     
     @Override
-    public void recordingSavedSuccessfully(String name)
+    public void onRecordingSaved(String name, boolean success)
     {
-        AlertWindows.showMessage(_form, "Save Macro", "Recording '" + name + "' saved successfully!", "Ok", new SimpleCallback() {
+        if (!success) {
+            // Wipe out all current data
+            onActionsRecordedChange(new ArrayList<>());
+            return;
+        }
+        
+        // Show message alert
+        String textTitle = TextValue.getText(TextValue.Dialog_SavedRecordingTitle);
+        String textMessage = TextValue.getText(TextValue.Dialog_SavedRecordingMessage);
+        String ok = TextValue.getText(TextValue.Dialog_OK);
+        
+        AlertWindows.showMessage(_form, textTitle, textMessage, ok, new SimpleCallback() {
             @Override
             public void perform() {
                 _presenter.onRecordingSavedSuccessufllyClosed();
             }
         });
+    }
+    
+    @Override
+    public void onLoadedMacrosFromStorage(List<Description> macros)
+    {
+        
+    }
+    
+    @Override
+    public void onLoadedMacroFromStorage(String macroName, String macroDescription, List<Description> macroActions)
+    {
+        
     }
     
     @Override
@@ -134,7 +161,13 @@ public class RecordViewController implements BaseViewController, BasePresenterDe
     }
         
     @Override    
-    public void stopPlaying()
+    public void cancelPlaying()
+    {
+        
+    }
+    
+    @Override
+    public void finishPlaying()
     {
         
     }
@@ -144,6 +177,11 @@ public class RecordViewController implements BaseViewController, BasePresenterDe
     {
         Logger.error(this, "Error encountered: " + e.toString());
         
-        AlertWindows.showErrorMessage(_form, "Save Macro", "Could not save: " + e.getMessage(), "Ok");
+        // Show message alert
+        String textTitle = TextValue.getText(TextValue.Dialog_SaveRecordingFailedTitle);
+        String textMessage = TextValue.getText(TextValue.Dialog_SaveRecordingFailedMessage, e.getMessage());
+        String ok = TextValue.getText(TextValue.Dialog_OK);
+        
+        AlertWindows.showErrorMessage(_form, textTitle, textMessage, ok);
     }
 }

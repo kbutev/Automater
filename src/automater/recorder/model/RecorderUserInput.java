@@ -6,9 +6,10 @@
 package automater.recorder.model;
 
 import static automater.recorder.model.RecorderUserInputKeyValue.*;
+import automater.utilities.DateUtilities;
 import automater.utilities.Description;
 import automater.utilities.Logger;
-import java.text.SimpleDateFormat;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -16,8 +17,7 @@ import java.util.Date;
  * 
  * @author Bytevi
  */
-public class RecorderUserInput implements Description {
-    public static final SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss.SSS");
+public class RecorderUserInput implements Serializable, Description {
     private static final RecorderUserInput _logInstance = new RecorderUserInput();
     
     public final Date timestamp;
@@ -108,7 +108,7 @@ public class RecorderUserInput implements Description {
 
     @Override
     public String getVerbose() {
-        return getName() + ": " + getStandart();
+        return getStandart();
     }
 
     @Override
@@ -123,7 +123,7 @@ public class RecorderUserInput implements Description {
 
     @Override
     public String getName() {
-        return formatter.format(timestamp);
+        return DateUtilities.asHourMinuteSecondMilisecond(timestamp);
     }
 
     @Override

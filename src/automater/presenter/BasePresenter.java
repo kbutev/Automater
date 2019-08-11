@@ -11,6 +11,8 @@ package automater.presenter;
  * @author Bytevi
  */
 public interface BasePresenter {
-    void start();
-    void setDelegate(BasePresenterDelegate delegate);
+    public void start();
+    public void setDelegate(BasePresenterDelegate delegate);
+    
+    public void requestDataUpdate();
 }

@@ -18,14 +18,13 @@ import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.work.Macro;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  *
  * @author Bytevi
  */
-public class RecordPresenter implements BasePresenter, BaseRecorderListener {
+public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener {
     private final RootViewController _rootViewController;
     private BasePresenterDelegate _delegate;
     
@@ -34,12 +33,14 @@ public class RecordPresenter implements BasePresenter, BaseRecorderListener {
     private final Recorder _recorder = Recorder.getDefault();
     private RecorderResult _recordedResult;
     
-    private ArrayList<Description> _viewActionStrings = new ArrayList<>();
+    private ArrayList<Description> _macroActionDescriptionsList = new ArrayList<>();
     
-    public RecordPresenter(RootViewController rootViewController)
+    public RecordMacroPresenter(RootViewController rootViewController)
     {
         _rootViewController = rootViewController;
     }
+    
+    // # BasePresenter
     
     @Override
     public void start()
@@ -48,6 +49,8 @@ public class RecordPresenter implements BasePresenter, BaseRecorderListener {
         {
             Errors.throwInternalLogicError("RecordPresenter delegate is not set before starting");
         }
+        
+        Logger.message(this, "Start.");
     }
     
     @Override
@@ -61,9 +64,29 @@ public class RecordPresenter implements BasePresenter, BaseRecorderListener {
         _delegate = delegate;
     }
     
+    @Override
+    public void requestDataUpdate()
+    {
+        
+    }
+    
+    // # BaseRecorderListener
+    
+    @Override
+    public void onRecordedUserInput(RecorderUserInput input)
+    {
+        Logger.messageEvent(this, "Captured user input " + input.toString());
+        
+        _macroActionDescriptionsList.add(input);
+        
+        _delegate.onActionsRecordedChange(getActionStringsData());
+    }
+    
+    // # Public functionality
+    
     public void onSwitchToPlayScreen()
     {
-        _rootViewController.navigateToPlayScreen();
+        _rootViewController.navigateToOpenScreen();
     }
     
     public void onStartRecording()
@@ -100,8 +123,6 @@ public class RecordPresenter implements BasePresenter, BaseRecorderListener {
         
         try {
             _recordedResult = _recorder.stop();
-            
-            
         } catch (Exception e) {
             _delegate.onErrorEncountered(e);
         }
@@ -111,60 +132,54 @@ public class RecordPresenter implements BasePresenter, BaseRecorderListener {
         _delegate.stopRecording();
     }
     
-    public void onSaveRecording(String name)
+    public void onSaveRecording(String name, String description)
     {
         RecorderResult result = _recordedResult;
         
         Logger.message(this, "Recorded " + String.valueOf(result.userInputs.size()) + " events");
         
         Macro macro = new Macro(name, _recordedResult);
+        Logger.message(this, "test " + description);
+        macro.setDescription(description);
         
-        // Error checking
+        // Simple error checking - for name taken, actions empty etc...
         Exception canSaveRec = _storage.getSaveMacroError(macro);
         
         if (canSaveRec != null)
         {
+            // When a simple error is encountered, do not wipe out here
             _delegate.onErrorEncountered(canSaveRec);
             return;
         }
         
-        // Wipe recorded result
+        // Wipe recorded result, regardless of save operation result
         _recordedResult = null;
         
         // Save operation
         try {
-            _storage.addMacroToStorage(macro);
+            _storage.saveMacroToStorage(macro);
         } catch (Exception e) {
+            _delegate.onRecordingSaved(name, false);
             _delegate.onErrorEncountered(e);
             return;
         }
         
         // Alert delegate that operation was successful
-        _delegate.recordingSavedSuccessfully(name);
+        _delegate.onRecordingSaved(name, true);
     }
     
     public void onRecordingSavedSuccessufllyClosed()
     {
-        _rootViewController.navigateToPlayScreen();
-    }
-    
-    // # BaseRecorderListener
-    
-    @Override
-    public void onRecordedUserInput(RecorderUserInput input)
-    {
-        Logger.messageEvent(this, "Captured user input " + input.toString());
+        clearData();
         
-        _viewActionStrings.add(input);
-        
-        _delegate.onActionsRecordedChange(getActionStringsData());
+        _rootViewController.navigateToOpenScreen();
     }
     
     // # Private
     
     private void clearData()
     {
-        _viewActionStrings.clear();
+        _macroActionDescriptionsList.clear();
         
         if (_delegate != null)
         {
@@ -174,6 +189,6 @@ public class RecordPresenter implements BasePresenter, BaseRecorderListener {
     
     private List<Description> getActionStringsData()
     {
-        return CollectionUtilities.copyAsReversed(_viewActionStrings);
+        return CollectionUtilities.copyAsReversed(_macroActionDescriptionsList);
     }
 }
