@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.work;
+package automater.recorder.model;
 
 /**
+ * Represents a keyboard or mouse click input.
  *
  * @author Bytevi
  */
-public class MacroParameters {
-    public MacroParameters() {
-        
-    }
+public interface UserInputKeyClick {
+    public RecorderUserInputKey getKeyValue();
+    public boolean isPress();
 }

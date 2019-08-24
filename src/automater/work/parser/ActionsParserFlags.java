@@ -3,12 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.work;
+package automater.work.parser;
 
 /**
  *
  * @author Bytevi
  */
-public class ActionState {
-    
+public class ActionsParserFlags {
+    public static ActionsParserFlags defaults()
+    {
+        return new ActionsParserFlags();
+    }
 }

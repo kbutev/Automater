@@ -7,8 +7,13 @@ package automater.presenter;
 
 import automater.recorder.BaseRecorderListener;
 import automater.recorder.Recorder;
+import automater.recorder.RecorderHotkeyListener;
+import automater.recorder.RecorderModel;
 import automater.recorder.RecorderResult;
 import automater.recorder.model.RecorderUserInput;
+import automater.recorder.parser.RecorderNativeParser;
+import automater.recorder.parser.RecorderParserFlag;
+import automater.settings.Hotkey;
 import automater.storage.GeneralStorage;
 import automater.storage.MacroStorage;
 import automater.ui.viewcontroller.RootViewController;
@@ -16,7 +21,7 @@ import automater.utilities.CollectionUtilities;
 import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
-import automater.work.Macro;
+import automater.work.model.Macro;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,16 +29,22 @@ import java.util.List;
  *
  * @author Bytevi
  */
-public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener {
+public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener, RecorderHotkeyListener {
     private final RootViewController _rootViewController;
     private BasePresenterDelegate _delegate;
     
     private final MacroStorage _storage = GeneralStorage.getDefault().getMacrosStorage();
     
     private final Recorder _recorder = Recorder.getDefault();
+    private final List<RecorderParserFlag> _recordFlags = _recorder.defaults.getRecordOnlyKeyClicksAndMouseMotionFlags();
+    private final RecorderModel _recorderModel = new RecorderModel();
+    private final RecorderNativeParser _recorderMacroParser = new RecorderNativeParser(_recordFlags);
+    private boolean _hasStartedMacroRecording = false;
     private RecorderResult _recordedResult;
     
-    private ArrayList<Description> _macroActionDescriptionsList = new ArrayList<>();
+    private final ArrayList<Description> _macroActionDescriptionsList = new ArrayList<>();
+    
+    private Hotkey _recordOrStopHotkey;
     
     public RecordMacroPresenter(RootViewController rootViewController)
     {
@@ -51,6 +62,8 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         }
         
         Logger.message(this, "Start.");
+        
+        _recorder.registerPlayStopHotkeyListener(this);
     }
     
     @Override
@@ -73,67 +86,125 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     // # BaseRecorderListener
     
     @Override
-    public void onRecordedUserInput(RecorderUserInput input)
+    public RecorderUserInput onRecordedUserInput(RecorderUserInput input)
     {
+        if (input == null)
+        {
+            return null;
+        }
+        
         Logger.messageEvent(this, "Captured user input " + input.toString());
         
         _macroActionDescriptionsList.add(input);
         
         _delegate.onActionsRecordedChange(getActionStringsData());
+        
+        return input;
     }
     
-    // # Public functionality
+    @Override
+    public void onFinishedRecording(RecorderResult result, boolean success, Exception exception)
+    {
+        Logger.messageEvent(this, "Recording was stopped.");
+        
+        _recordedResult = result;
+        
+        _delegate.stopRecording();
+    }
+    
+    // # RecorderHotkeyListener
+    
+    @Override
+    public Hotkey getHotkey()
+    {
+        return _recordOrStopHotkey;
+    }
+    
+    @Override
+    public void onHotkeyPressed()
+    {
+        
+    }
+    
+    @Override
+    public void onHotkeyReleased()
+    {
+        Logger.message(this, "Record hotkey tapped!");
+        
+        if (!_hasStartedMacroRecording)
+        {
+            onStartRecording();
+        }
+        else
+        {
+            onStopRecording();
+        }
+    }
+    
+    // # Public
     
     public void onSwitchToPlayScreen()
     {
+        _recorder.unregisterPlayStopHotkeyListener();
+        
         _rootViewController.navigateToOpenScreen();
     }
     
     public void onStartRecording()
     {
-        if (_recorder.isRecording())
+        if (_hasStartedMacroRecording)
         {
             _delegate.onErrorEncountered(new Exception("Cannot start when already recording!"));
             return;
         }
         
+        clearData();
+        
         try {
-            _recorder.start(this);
+            _recorder.start(_recorderMacroParser, _recorderModel, this);
         } catch (Exception e) {
             _delegate.onErrorEncountered(e);
             return;
         }
         
-        clearData();
+        _hasStartedMacroRecording = true;
         
-        Logger.messageEvent(this, "Macro recording has started....");
+        Logger.messageEvent(this, "Starting recording...");
         
         _delegate.startRecording();
     }
     
     public void onStopRecording()
     {
-        if (!_recorder.isRecording())
+        if (!_hasStartedMacroRecording)
         {
             _delegate.onErrorEncountered(new Exception("Cannot stop when not recording!"));
             return;
         }
         
-        _recordedResult = null;
+        _hasStartedMacroRecording = false;
+        
+        Logger.messageEvent(this, "Stopping recording...");
         
         try {
-            _recordedResult = _recorder.stop();
+            _recorder.stop();
+            _delegate.stopRecording();
+            Logger.messageEvent(this, "Recording has ended!");
         } catch (Exception e) {
             _delegate.onErrorEncountered(e);
+            Logger.error(this, "Failed to stop recording: " + e.toString());
+            e.printStackTrace(System.out);
         }
-        
-        Logger.messageEvent(this, "Macro recording has ended!");
-        
-        _delegate.stopRecording();
     }
     
     public void onSaveRecording(String name, String description)
     {
+        if (_recordedResult == null)
+        {
+            _delegate.onErrorEncountered(new Exception("Cannot save, nothing has been recorded!"));
+            return;
+        }
+        
         RecorderResult result = _recordedResult;
         
         Logger.message(this, "Recorded " + String.valueOf(result.userInputs.size()) + " events");
@@ -175,10 +246,20 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         _rootViewController.navigateToOpenScreen();
     }
     
+    public void setPlayOrStopHotkey(Hotkey hotkey)
+    {
+        synchronized (this)
+        {
+            _recordOrStopHotkey = hotkey;
+        }
+    }
+    
     // # Private
     
     private void clearData()
     {
+        _recordedResult = null;
+        
         _macroActionDescriptionsList.clear();
         
         if (_delegate != null)

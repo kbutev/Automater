@@ -5,13 +5,16 @@
  */
 package automater.ui.viewcontroller;
 
+import automater.TextValue;
 import automater.presenter.BasePresenterDelegate;
 import automater.presenter.PlayMacroPresenter;
 import automater.ui.view.PlayMacroForm;
 import automater.ui.view.StandartDescriptionsDataSource;
+import automater.utilities.AlertWindows;
 import automater.utilities.Description;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
+import automater.work.model.ExecutorProgress;
 import java.awt.event.WindowEvent;
 import java.util.List;
 
@@ -38,6 +41,20 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
             @Override
             public void perform() {
                 _presenter.navigateBack();
+            }
+        };
+        
+        _form.onPlayButtonCallback = new SimpleCallback() {
+            @Override
+            public void perform() {
+                _presenter.play();
+            }
+        };
+        
+        _form.onStopButtonCallback = new SimpleCallback() {
+            @Override
+            public void perform() {
+                _presenter.stop();
             }
         };
     }
@@ -120,6 +137,14 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     {
         _form.play();
     }
+    
+    @Override
+    public void updatePlayStatus(ExecutorProgress progress)
+    {
+        _form.setProgressBarValue(progress.getPercentageDone());
+        _form.setStatus(progress.getCurrentStatus());
+        _form.setSelectedIndex(progress.getCurrentActionIndex());
+    }
 
     @Override
     public void cancelPlaying()
@@ -130,12 +155,21 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     @Override
     public void finishPlaying()
     {
-        
+        _form.finish();
     }
 
     @Override
     public void onErrorEncountered(Exception e)
     {
         Logger.error(this, "Error encountered: " + e.toString());
+        
+        _form.cancel();
+        
+        // Show message alert
+        String textTitle = TextValue.getText(TextValue.Dialog_PlayErrorTitle);
+        String textMessage = e.toString();
+        String ok = TextValue.getText(TextValue.Dialog_OK);
+        
+        AlertWindows.showErrorMessage(_form, textTitle, textMessage, ok);
     }
 }

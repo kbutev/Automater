@@ -8,9 +8,13 @@ package automater.ui.viewcontroller;
 import automater.presenter.OpenMacroPresenter;
 import automater.presenter.PlayMacroPresenter;
 import automater.presenter.RecordMacroPresenter;
+import automater.recorder.model.RecorderUserInputKey;
+import automater.recorder.model.RecorderUserInputKeyMask;
+import automater.recorder.model.RecorderUserInputKeyValue;
+import automater.settings.Hotkey;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
-import automater.work.Macro;
+import automater.work.model.Macro;
 
 /**
  *
@@ -20,8 +24,9 @@ public class PrimaryViewContoller implements RootViewController {
     private BaseViewController _currentViewController;
     
     private OpenMacroViewController _openMacroViewController;
+    private OpenMacroPresenter _openMacroPresenter;
     private RecordMacroViewController _recordMacroViewController;
-    private PlayMacroViewController _playMacroViewController;
+    private RecordMacroPresenter _recordMacroPresenter;
     
     public PrimaryViewContoller()
     {
@@ -63,7 +68,7 @@ public class PrimaryViewContoller implements RootViewController {
     }
     
     @Override
-    public void navigateToPlayScreen(automater.work.Macro macro)
+    public void navigateToPlayScreen(automater.work.model.Macro macro)
     {
         Logger.messageEvent(this, "Navigating to play macro screen.");
         
@@ -75,14 +80,13 @@ public class PrimaryViewContoller implements RootViewController {
     private void switchScreenToOpen()
     {
         boolean playViewControllerStart = _openMacroViewController == null;
-        OpenMacroPresenter presenter = null;
         
         if (playViewControllerStart)
         {
-            presenter = new OpenMacroPresenter(this);
-            OpenMacroViewController vc = new OpenMacroViewController(presenter);
+            _openMacroPresenter = new OpenMacroPresenter(this);
+            OpenMacroViewController vc = new OpenMacroViewController(_openMacroPresenter);
             _openMacroViewController = vc;
-            presenter.setDelegate(vc);
+            _openMacroPresenter.setDelegate(vc);
         }
         
         if (_currentViewController != null)
@@ -95,25 +99,28 @@ public class PrimaryViewContoller implements RootViewController {
         if (playViewControllerStart)
         {
             _currentViewController.start();
-            presenter.start();
         }
         else
         {
             _currentViewController.resume();
         }
+        
+        _openMacroPresenter.start();
     }
     
     private void switchScreenToRecord()
     {
         boolean recordViewControllerStart = _recordMacroViewController == null;
-        RecordMacroPresenter presenter = null;
         
         if (recordViewControllerStart)
         {
-            presenter = new RecordMacroPresenter(this);
-            RecordMacroViewController vc = new RecordMacroViewController(presenter);
+            Hotkey playOrStopHotkey;
+            playOrStopHotkey = new Hotkey(RecorderUserInputKeyValue._F4);
+            _recordMacroPresenter = new RecordMacroPresenter(this);
+            _recordMacroPresenter.setPlayOrStopHotkey(playOrStopHotkey);
+            RecordMacroViewController vc = new RecordMacroViewController(_recordMacroPresenter);
             _recordMacroViewController = vc;
-            presenter.setDelegate(vc);
+            _recordMacroPresenter.setDelegate(vc);
         }
         
         if (_currentViewController != null)
@@ -126,42 +133,34 @@ public class PrimaryViewContoller implements RootViewController {
         if (recordViewControllerStart)
         {
             _currentViewController.start();
-            presenter.start();
         }
         else
         {
             _currentViewController.resume();
         }
+        
+        _recordMacroPresenter.start();
     }
     
     private void switchScreenToPlay(Macro macro)
     {
-        boolean playViewControllerStart = _playMacroViewController == null;
-        PlayMacroPresenter presenter = null;
+        Hotkey playOrStopHotkey;
+        playOrStopHotkey = new Hotkey(RecorderUserInputKeyValue._F4);
         
-        if (playViewControllerStart)
-        {
-            presenter = new PlayMacroPresenter(this, macro);
-            PlayMacroViewController vc = new PlayMacroViewController(presenter);
-            _playMacroViewController = vc;
-            presenter.setDelegate(vc);
-        }
+        PlayMacroPresenter presenter = new PlayMacroPresenter(this, macro);
+        presenter.setPlayOrStopHotkey(playOrStopHotkey);
+        PlayMacroViewController vc = new PlayMacroViewController(presenter);
+        presenter.setDelegate(vc);
         
         if (_currentViewController != null)
         {
             _currentViewController.suspend();
         }
         
-        _currentViewController = _playMacroViewController;
+        _currentViewController = vc;
         
-        if (playViewControllerStart)
-        {
-            _currentViewController.start();
-            presenter.start();
-        }
-        else
-        {
-            _currentViewController.resume();
-        }
+        _currentViewController.start();
+        
+        presenter.start();
     }
 }

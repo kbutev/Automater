@@ -8,14 +8,13 @@ package automater.presenter;
 import automater.storage.GeneralStorage;
 import automater.storage.MacroStorage;
 import automater.ui.viewcontroller.RootViewController;
-import automater.utilities.CollectionUtilities;
 import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.Looper;
 import automater.utilities.LooperSwing;
 import automater.utilities.SimpleCallback;
-import automater.work.Macro;
+import automater.work.model.Macro;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,10 +26,10 @@ public class OpenMacroPresenter implements BasePresenter {
     private final RootViewController _rootViewController;
     private BasePresenterDelegate _delegate;
     
-    private MacroStorage _macrosStorage = GeneralStorage.getDefault().getMacrosStorage();
+    private final MacroStorage _macrosStorage = GeneralStorage.getDefault().getMacrosStorage();
     
     private List<Macro> _macros = new ArrayList<>();
-    private List<Description> _macrosAsDescriptions = new ArrayList<>();
+    private final List<Description> _macrosAsDescriptions = new ArrayList<>();
     
     public OpenMacroPresenter(RootViewController rootViewController)
     {

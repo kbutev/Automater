@@ -13,5 +13,5 @@ package automater.ui.viewcontroller;
 public interface RootViewController {
     public void navigateToRecordScreen();
     public void navigateToOpenScreen();
-    public void navigateToPlayScreen(automater.work.Macro macro);
+    public void navigateToPlayScreen(automater.work.model.Macro macro);
 }

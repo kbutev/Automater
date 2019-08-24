@@ -6,9 +6,8 @@
 package automater.ui.view;
 
 import automater.TextValue;
-import automater.utilities.Description;
 import automater.utilities.SimpleCallback;
-import java.util.List;
+import javax.swing.DefaultListSelectionModel;
 
 /**
  *
@@ -17,6 +16,8 @@ import java.util.List;
 public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
     // UI callbacks
     public SimpleCallback onBackButtonCallback = SimpleCallback.createDoNothing();
+    public SimpleCallback onPlayButtonCallback = SimpleCallback.createDoNothing();
+    public SimpleCallback onStopButtonCallback = SimpleCallback.createDoNothing();
     
     /**
      * Creates new form PlayMacroForm
@@ -35,12 +36,12 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jProgressBar1 = new javax.swing.JProgressBar();
+        progressBar = new javax.swing.JProgressBar();
         statusLabel = new javax.swing.JLabel();
         backButton = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         macroActionsList = new javax.swing.JList<>();
-        playButton = new javax.swing.JButton();
+        playAndStopButton = new javax.swing.JButton();
         optionsButton = new javax.swing.JButton();
         optionsLabel = new javax.swing.JLabel();
         macroNameLabel = new javax.swing.JLabel();
@@ -49,6 +50,7 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
+        statusLabel.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         statusLabel.setText("Idle");
 
         backButton.setText("< BACK");
@@ -63,12 +65,20 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        macroActionsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        macroActionsList.setSelectionBackground(new java.awt.Color(0, 204, 0));
         jScrollPane1.setViewportView(macroActionsList);
 
-        playButton.setText("Play");
+        playAndStopButton.setText("Play");
+        playAndStopButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                playAndStopButtonActionPerformed(evt);
+            }
+        });
 
         optionsButton.setText("Options");
 
+        optionsLabel.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         optionsLabel.setText("Play once");
 
         macroNameLabel.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
@@ -84,23 +94,23 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(playButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(statusLabel))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(optionsButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(optionsLabel))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(backButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(macroNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 270, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(macroDescriptionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 382, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 9, Short.MAX_VALUE)))
+                        .addGap(0, 9, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(playAndStopButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(optionsButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(optionsLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -120,10 +130,10 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
                     .addComponent(optionsLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(playButton)
+                    .addComponent(playAndStopButton)
                     .addComponent(statusLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -132,6 +142,17 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
         onBackButtonCallback.perform();
     }//GEN-LAST:event_backButtonActionPerformed
+
+    private void playAndStopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playAndStopButtonActionPerformed
+        if (!isPlaying)
+        {
+            onPlayButtonCallback.perform();
+        }
+        else
+        {
+            onStopButtonCallback.perform();
+        }
+    }//GEN-LAST:event_playAndStopButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -172,6 +193,10 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         this.setTitle(TextValue.getText(TextValue.Play_FormTitle));
         
         backButton.setText(TextValue.getText(TextValue.Play_BackButtonTitle));
+        playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, "F4"));
+        
+        // Disable user selection for the macros list
+        macroActionsList.setSelectionModel(selectionModel);
     }
     
     // # GenericView
@@ -210,12 +235,31 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
     
     public void play()
     {
+        if (isPlaying)
+        {
+            return;
+        }
         
+        isPlaying = true;
+        
+        playAndStopButton.setText(TextValue.getText(TextValue.Play_StopButtonTitle, "F4"));
+        backButton.setEnabled(false);
+        optionsButton.setEnabled(false);
+        setProgressBarValue(0);
     }
     
     public void cancel()
     {
+        if (!isPlaying)
+        {
+            return;
+        }
         
+        isPlaying = false;
+        
+        playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, "F4"));
+        backButton.setEnabled(true);
+        optionsButton.setEnabled(true);
     }
     
     public void finish()
@@ -229,17 +273,54 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         macroDescriptionLabel.setText(macroDescription);
         macroActionsList.setModel(macroActionsDataSource);
     }
+    
+    public void setProgressBarValue(double value)
+    {
+        value *= 100;
+        
+        int progress = (int)value;
+        progressBar.setValue(progress);
+    }
+    
+    public void setStatus(String value)
+    {
+        statusLabel.setText(value);
+    }
+    
+    public void setSelectedIndex(int index)
+    {
+        if (index >= 0 && index < macroActionsList.getModel().getSize())
+        {
+            selectionModel.manualySelectIndex(index);
+            macroActionsList.ensureIndexIsVisible(index);
+        }
+    }
+    
+    // # Private properties
+    private boolean isPlaying = false;
+    private DisabledItemSelectionModel selectionModel = new DisabledItemSelectionModel();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton backButton;
-    private javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JList<String> macroActionsList;
     private javax.swing.JLabel macroDescriptionLabel;
     private javax.swing.JLabel macroNameLabel;
     private javax.swing.JButton optionsButton;
     private javax.swing.JLabel optionsLabel;
-    private javax.swing.JButton playButton;
+    private javax.swing.JButton playAndStopButton;
+    private javax.swing.JProgressBar progressBar;
     private javax.swing.JLabel statusLabel;
     // End of variables declaration//GEN-END:variables
+}
+
+class DisabledItemSelectionModel extends DefaultListSelectionModel {
+    @Override
+    public void setSelectionInterval(int index0, int index1) {
+        super.setSelectionInterval(-1, -1);
+    }
+    
+    public void manualySelectIndex(int index) {
+        super.setSelectionInterval(index, index);
+    }
 }

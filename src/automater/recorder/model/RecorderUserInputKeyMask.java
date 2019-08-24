@@ -7,6 +7,7 @@ package automater.recorder.model;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -17,7 +18,7 @@ import java.util.Set;
 public class RecorderUserInputKeyMask implements Serializable {
     private final HashSet<RecorderUserInputKeyMaskValue> _flags = new HashSet<>();
     
-    public static RecorderUserInputKeyMask empty()
+    public static RecorderUserInputKeyMask none()
     {
         return new RecorderUserInputKeyMask();
     }
@@ -38,6 +39,25 @@ public class RecorderUserInputKeyMask implements Serializable {
         {
             _flags.add(flag);
         }
+    }
+    
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o instanceof RecorderUserInputKeyMask)
+        {
+            RecorderUserInputKeyMask other = (RecorderUserInputKeyMask)o;
+            return _flags.equals(other._flags);
+        }
+        
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 97 * hash + Objects.hashCode(this._flags);
+        return hash;
     }
     
     public Set<RecorderUserInputKeyMaskValue> getFlags()

@@ -33,6 +33,8 @@ public enum TextValue {
     // Play form
     Play_FormTitle,
     Play_BackButtonTitle,
+    Play_PlayButtonTitle, Play_StopButtonTitle,
+    Dialog_PlayErrorTitle,
     
     // Dialog
     Dialog_OK,
@@ -121,6 +123,9 @@ public enum TextValue {
         // Play form
         put(Play_FormTitle, "Automater - Play");
         put(Play_BackButtonTitle, "< BACK");
+        put(Play_PlayButtonTitle, "Play (%@)");
+        put(Play_StopButtonTitle, "Stop (%@)");
+        put(Dialog_PlayErrorTitle, "Failed to play Macro");
         
         // Dialog
         put(Dialog_OK, "Ok");

@@ -3,13 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.utilities;
+package automater.recorder.model;
 
 /**
- * Interface for a looper client.
- * 
+ * Represents mouse movement input.
+ *
  * @author Bytevi
  */
-public interface LooperClient {
-    public void loop();
+public interface UserInputMouseMotion {
+    public int getMoveX();
+    public int getMoveY();
 }

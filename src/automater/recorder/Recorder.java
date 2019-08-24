@@ -5,11 +5,21 @@
  */
 package automater.recorder;
 
-import automater.recorder.parser.RecorderInputParser;
+import automater.recorder.model.RecorderUserInput;
+import automater.recorder.model.RecorderUserInputKey;
+import automater.recorder.parser.BaseRecorderNativeParser;
 import automater.recorder.parser.RecorderParserFlag;
-import automater.utilities.Errors;
+import automater.recorder.parser.RecorderSystemKeyboardTranslator;
+import automater.settings.Hotkey;
+import automater.utilities.CollectionUtilities;
 import automater.utilities.Logger;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import org.jnativehook.keyboard.NativeKeyEvent;
+import org.jnativehook.mouse.NativeMouseEvent;
+import org.jnativehook.mouse.NativeMouseWheelEvent;
 
 /**
  * A service that listens to system user input and records it as RecorderResult.
@@ -19,22 +29,26 @@ import java.util.ArrayList;
  * 
  * @author Bytevi
  */
-public class Recorder {
+public class Recorder implements RecorderNativeListenerDelegate {
     private static Recorder singleton;
+    private final Object _lock = new Object();
     
     public final Defaults defaults = new Defaults();
-    public final Helpers helpers = new Helpers();
     
-    private final State _state = new State();
-    private final RecorderModel _model = new RecorderModel();
-    private final Object _lock = new Object();
-    private final RecorderNativeListener _listener;
+    private RecorderNativeListener _nativeListener;
+    private RecorderMasterNativeParser _masterParser;
+    
+    private BaseRecorderListener _listener;
+    private BaseRecorderNativeParser _inputParser;
+    private BaseRecorderInputModel _recorderModel;
+    private Hotkey _stopHotkey;
     
     private Recorder()
     {
-        RecorderInputParser parser = new RecorderInputParser(defaults.getDefaultRecordSettings(), _model);
-        this._listener = new RecorderNativeListener(parser);
+        startIfNotStarted();
     }
+    
+    // # Public
     
     synchronized public static Recorder getDefault()
     {
@@ -46,109 +60,389 @@ public class Recorder {
         return singleton;
     }
     
-    public boolean isRecording()
+    public void start(BaseRecorderNativeParser parser, BaseRecorderInputModel model, BaseRecorderListener listener) throws Exception
     {
-        synchronized (_lock)
-        {
-            return _state.isRecording();
-        }
+        start(parser, model, listener, null);
     }
     
-    public void start(BaseRecorderListener listener) throws Exception
+    public void start(BaseRecorderNativeParser parser, BaseRecorderInputModel model, BaseRecorderListener listener, Hotkey stopHotkey) throws Exception
     {
         Logger.messageEvent(this, "Start...");
         
         synchronized (_lock)
         {
-            _model.listener = listener;
-            _state.start();
-            _listener.start();
+            _inputParser = parser;
+            _recorderModel = model;
+            _listener = listener;
+            _stopHotkey = stopHotkey;
+            
+            _masterParser.setSubparser(_inputParser);
         }
     }
     
-    public RecorderResult stop() throws Exception
+    public void stop() throws Exception
     {
         Logger.messageEvent(this, "Stop!");
         
-        synchronized (_lock)
+        cancel(false, null);
+    }
+    
+    public void registerHotkeyListener(RecorderHotkeyListener listener)
+    {
+        _masterParser.registerHotkeyListener(listener);
+    }
+    
+    public void unregisterHotkeyListener(RecorderHotkeyListener listener)
+    {
+        _masterParser.unregisterHotkeyListener(listener);
+    }
+    
+    public void registerPlayStopHotkeyListener(RecorderHotkeyListener listener)
+    {
+        _masterParser.setPlayStopHotkeyListener(listener);
+    }
+    
+    public void unregisterPlayStopHotkeyListener()
+    {
+        _masterParser.setPlayStopHotkeyListener(null);
+    }
+    
+    // # RecorderNativeListenerDelegate
+    
+    @Override
+    public void onParseInput(RecorderUserInput input)
+    {
+        // If not recording, do nothing
+        if (_recorderModel == null)
         {
-            _model.listener = null;
-            _state.stop();
-            _listener.stop();
+            return;
+        }
+        
+        // Process the input that native hook listener has translated for us
+        try {
+            _recorderModel.addInput(input);
+        } catch (Exception e) {
+            try {
+                Logger.messageEvent(this, "Cancel! Exception encountered: " + e.toString());
+                e.printStackTrace(System.out);
+                cancel(false, e);
+            } catch (Exception e2) {
+                
+            }
             
-            return _model.parseRecordedInputToRecordedResult(true);
+            return;
+        }
+        
+        // Successfully parsed the input object, alert the listener
+        if (input != null)
+        {
+            _listener.onRecordedUserInput(input);
         }
     }
     
-    // Recording state
-    private class State
+    // # Private
+    
+    private void startIfNotStarted()
     {
-        private boolean _isRecording = false;
-        
-        public boolean isRecording()
+        if (_masterParser != null)
         {
-            return _isRecording;
+            return;
         }
         
-        private void start() throws Exception
-        {
-            helpers.checkIfAlreadyRecording();
-            
-            Logger.messageEvent(this, "Recorder: start");
-            
-            _isRecording = true;
-        }
+        _masterParser = new RecorderMasterNativeParser();
+        _nativeListener = new RecorderNativeListener(_masterParser, this);
         
-        private void stop() throws Exception
+        try {
+            _nativeListener.start();
+        } catch (Exception e) {
+            
+        }
+    }
+    
+    private void cancel(boolean success, Exception exception) throws Exception
+    {
+        synchronized (_lock)
         {
-            helpers.checkIfNotRecording();
+            _masterParser.setSubparser(null);
             
-            Logger.messageEvent(this, "Recorder: stop");
+            BaseRecorderListener listener = _listener;
             
-            _isRecording = false;
+            _inputParser = null;
+            _listener = null;
+            _stopHotkey = null;
+            
+            RecorderResult result = _recorderModel.retrieveRecordedData();
+            
+            listener.onFinishedRecording(result, success, exception);
         }
     }
     
     // Default values
-    private class Defaults
+    public class Defaults
     {
-        private ArrayList<RecorderParserFlag> getDefaultRecordSettings()
+        public ArrayList<RecorderParserFlag> getDefaultRecordFlags()
         {
             ArrayList<RecorderParserFlag> settings;
             settings = new ArrayList();
             settings.add(RecorderParserFlag.RECORD_KEYBOARD_EVENTS);
             settings.add(RecorderParserFlag.RECORD_MOUSE_CLICKS);
-            //settings.add(RecorderParserFlag.RECORD_MOUSE_MOTION);
-            //settings.add(RecorderParserFlag.RECORD_MOUSE_WHEEL);
-            //settings.add(RecorderParserFlag.RECORD_WINDOW_EVENTS);
+            settings.add(RecorderParserFlag.RECORD_MOUSE_MOTION);
+            settings.add(RecorderParserFlag.RECORD_MOUSE_WHEEL);
+            settings.add(RecorderParserFlag.RECORD_WINDOW_EVENTS);
             settings.add(RecorderParserFlag.LOG_EVENTS);
             return settings;
         }
-    }
-    
-    // Commonly used methods
-    private class Helpers
-    {
-        private void checkIfAlreadyRecording() throws Exception
+        
+        public ArrayList<RecorderParserFlag> getRecordOnlyKeyClicksAndMouseMotionFlags()
         {
-            synchronized (_lock)
-            {
-                if (isRecording())
-                {
-                    Errors.throwInternalLogicError("Recorder is already recording.");
-                }
-            }
+            ArrayList<RecorderParserFlag> settings;
+            settings = new ArrayList();
+            settings.add(RecorderParserFlag.RECORD_KEYBOARD_EVENTS);
+            settings.add(RecorderParserFlag.RECORD_MOUSE_CLICKS);
+            settings.add(RecorderParserFlag.RECORD_MOUSE_MOTION);
+            settings.add(RecorderParserFlag.LOG_EVENTS);
+            return settings;
         }
         
-        private void checkIfNotRecording() throws Exception
+        public ArrayList<RecorderParserFlag> getRecordOnlyKeyClicksFlags()
         {
-            synchronized (_lock)
-            {
-                if (!isRecording())
-                {
-                    Errors.throwInternalLogicError("Recorder is not recording.");
-                }
-            }
+            ArrayList<RecorderParserFlag> settings;
+            settings = new ArrayList();
+            settings.add(RecorderParserFlag.RECORD_KEYBOARD_EVENTS);
+            settings.add(RecorderParserFlag.RECORD_MOUSE_CLICKS);
+            settings.add(RecorderParserFlag.LOG_EVENTS);
+            return settings;
+        }
+        
+        public ArrayList<RecorderParserFlag> getRecordOnlyKeyClicksAndMouseMotionSilentlyFlags()
+        {
+            ArrayList<RecorderParserFlag> settings;
+            settings = new ArrayList();
+            settings.add(RecorderParserFlag.RECORD_KEYBOARD_EVENTS);
+            settings.add(RecorderParserFlag.RECORD_MOUSE_CLICKS);
+            settings.add(RecorderParserFlag.RECORD_MOUSE_MOTION);
+            return settings;
+        }
+        
+        public ArrayList<RecorderParserFlag> getRecordOnlyKeyClicksSilentlyFlags()
+        {
+            ArrayList<RecorderParserFlag> settings;
+            settings = new ArrayList();
+            settings.add(RecorderParserFlag.RECORD_KEYBOARD_EVENTS);
+            settings.add(RecorderParserFlag.RECORD_MOUSE_CLICKS);
+            return settings;
         }
     }
 }
+
+class RecorderMasterNativeParser implements BaseRecorderNativeParser 
+{
+    private final Object _lock = new Object();
+    
+    private BaseRecorderNativeParser _subParser;
+    
+    private final RecorderSystemKeyboardTranslator _keyboardTranslator = new RecorderSystemKeyboardTranslator();
+    private HashSet<RecorderHotkeyListener> _hotkeyListeners = new HashSet<>();
+    private RecorderHotkeyListener _playStopHotkeyListener;
+    
+    public RecorderMasterNativeParser()
+    {
+        
+    }
+    
+    public BaseRecorderNativeParser getSubparser()
+    {
+        synchronized (_lock)
+        {
+            return _subParser;
+        }
+    }
+    
+    public void setSubparser(BaseRecorderNativeParser parser)
+    {
+        synchronized (_lock)
+        {
+            _subParser = parser;
+        }
+    }
+    
+    public void registerHotkeyListener(RecorderHotkeyListener listener)
+    {
+        synchronized (_lock)
+        {
+            _hotkeyListeners.add(listener);
+        }
+    }
+    
+    public void unregisterHotkeyListener(RecorderHotkeyListener listener)
+    {
+        synchronized (_lock)
+        {
+            _hotkeyListeners.remove(listener);
+        }
+    }
+    
+    public void setPlayStopHotkeyListener(RecorderHotkeyListener listener)
+    {
+        synchronized (_lock)
+        {
+            _playStopHotkeyListener = listener;
+        }
+    }
+    
+    @Override
+    public RecorderUserInput evaluatePress(NativeKeyEvent keyboardEvent) {
+        // Hotkey listeners alert
+        alertHotkeyListeners(true, keyboardEvent);
+        
+        // Play/stop hotkey?
+        // Do not parse the event - ignore it
+        if (_playStopHotkeyListener != null)
+        {
+            Hotkey hotkey = _playStopHotkeyListener.getHotkey();
+            
+            if (isHotkeyEvent(hotkey, keyboardEvent))
+            {
+                _playStopHotkeyListener.onHotkeyPressed();
+                return null;
+            }
+        }
+        
+        // Subparser delegation
+        BaseRecorderNativeParser subparser = getSubparser();
+        
+        if (subparser == null)
+        {
+            return null;
+        }
+        
+        return subparser.evaluatePress(keyboardEvent);
+    }
+
+    @Override
+    public RecorderUserInput evaluateRelease(NativeKeyEvent keyboardEvent) {
+        // Hotkey listeners alert
+        alertHotkeyListeners(false, keyboardEvent);
+        
+        // Play/stop hotkey?
+        // Do not parse the event - ignore it
+        if (_playStopHotkeyListener != null)
+        {
+            Hotkey hotkey = _playStopHotkeyListener.getHotkey();
+            
+            if (isHotkeyEvent(hotkey, keyboardEvent))
+            {
+                _playStopHotkeyListener.onHotkeyReleased();
+                return null;
+            }
+        }
+        
+        // Subparser delegation
+        BaseRecorderNativeParser subparser = getSubparser();
+        
+        if (subparser == null)
+        {
+            return null;
+        }
+        
+        return subparser.evaluateRelease(keyboardEvent);
+    }
+
+    @Override
+    public RecorderUserInput evaluatePress(NativeMouseEvent mouseEvent) {
+        BaseRecorderNativeParser subparser = getSubparser();
+        
+        if (subparser == null)
+        {
+            return null;
+        }
+        
+        return subparser.evaluatePress(mouseEvent);
+    }
+
+    @Override
+    public RecorderUserInput evaluateRelease(NativeMouseEvent mouseEvent) {
+        BaseRecorderNativeParser subparser = getSubparser();
+        
+        if (subparser == null)
+        {
+            return null;
+        }
+        
+        return subparser.evaluateRelease(mouseEvent);
+    }
+
+    @Override
+    public RecorderUserInput evaluateMouseMove(NativeMouseEvent mouseMoveEvent) {
+        BaseRecorderNativeParser subparser = getSubparser();
+        
+        if (subparser == null)
+        {
+            return null;
+        }
+        
+        return subparser.evaluateMouseMove(mouseMoveEvent);
+    }
+
+    @Override
+    public RecorderUserInput evaluateMouseWheel(NativeMouseWheelEvent mouseWheelEvent) {
+        BaseRecorderNativeParser subparser = getSubparser();
+        
+        if (subparser == null)
+        {
+            return null;
+        }
+        
+        return subparser.evaluateMouseWheel(mouseWheelEvent);
+    }
+
+    @Override
+    public RecorderUserInput evaluateOther(WindowEvent windowEvent) {
+        BaseRecorderNativeParser subparser = getSubparser();
+        
+        if (subparser == null)
+        {
+            return null;
+        }
+        
+        return subparser.evaluateOther(windowEvent);
+    }
+    
+    private void alertHotkeyListeners(boolean press, NativeKeyEvent keyboardEvent)
+    {
+        Collection<RecorderHotkeyListener> listeners;
+        
+        synchronized (_lock)
+        {
+            listeners = CollectionUtilities.copyAsImmutable(_hotkeyListeners);
+        }
+        
+        for (RecorderHotkeyListener l : listeners)
+        {
+            if (isHotkeyEvent(l.getHotkey(), keyboardEvent))
+            {
+                if (press)
+                {
+                    l.onHotkeyPressed();
+                }
+                else
+                {
+                    l.onHotkeyReleased();
+                }
+            }
+        }
+    }
+    
+    public boolean isHotkeyEvent(Hotkey hotkey, NativeKeyEvent keyboardEvent)
+    {
+        RecorderUserInputKey translatedKey = _keyboardTranslator.translate(keyboardEvent);
+        
+        if (translatedKey == null)
+        {
+            return false;
+        }
+        
+        return hotkey.isEqualTo(translatedKey);
+    }
+}
+

@@ -3,13 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.utilities;
+package automater.work.model;
+
+import java.awt.Robot;
 
 /**
- * Interface for a looper client.
- * 
+ *
  * @author Bytevi
  */
-public interface LooperClient {
-    public void loop();
+public interface BaseActionContext {
+    public Robot getRobot();
 }

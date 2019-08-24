@@ -7,9 +7,6 @@ package automater.recorder.parser;
 
 import automater.recorder.model.RecorderUserInputKey;
 import automater.recorder.model.RecorderUserInputKeyValue;
-import static automater.recorder.parser.RecorderSystemKeyboardTranslator.keyValueForJNativeHookKey;
-import automater.utilities.Logger;
-import com.sun.glass.events.KeyEvent;
 import org.jnativehook.mouse.NativeMouseEvent;
 
 /**

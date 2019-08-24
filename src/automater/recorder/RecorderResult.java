@@ -11,6 +11,7 @@ import automater.utilities.Description;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -23,6 +24,11 @@ public class RecorderResult implements Serializable {
     public RecorderResult(ArrayList<RecorderUserInput> userInputs)
     {
         this.userInputs = CollectionUtilities.copyAsImmutable(userInputs);
+    }
+    
+    public Iterator<RecorderUserInput> getIteratorForUserInputs()
+    {
+        return userInputs.iterator();
     }
     
     public List<Description> getUserInputAsDescriptions()

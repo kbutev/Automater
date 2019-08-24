@@ -5,9 +5,7 @@
  */
 package automater.recorder;
 
-import automater.recorder.parser.RecorderInputParserDelegate;
 import automater.recorder.model.RecorderUserInput;
-import automater.utilities.Logger;
 import java.util.ArrayList;
 
 /**
@@ -15,35 +13,26 @@ import java.util.ArrayList;
  * 
  * @author Bytevi
  */
-public class RecorderModel implements RecorderInputParserDelegate {
-    private ArrayList<RecorderUserInput> recordedInput = new ArrayList<>();
-    public BaseRecorderListener listener;
+public class RecorderModel implements BaseRecorderInputModel {
+    private final ArrayList<RecorderUserInput> recordedInput = new ArrayList<>();
+    
+    public RecorderModel()
+    {
+        
+    }
     
     @Override
-    public void onParseResult(RecorderUserInput input)
+    public void addInput(RecorderUserInput input)
     {
-        recordedInput.add(input);
-        
-        if (listener != null)
+        if (input != null)
         {
-            listener.onRecordedUserInput(input);
+            recordedInput.add(input);
         }
     }
     
-    public RecorderResult parseRecordedInputToRecordedResult(boolean resetOnComplete)
+    @Override
+    public RecorderResult retrieveRecordedData()
     {
-        RecorderResult result = new RecorderResult(recordedInput);
-        
-        if (resetOnComplete)
-        {
-            reset();
-        }
-        
-        return result;
-    }
-    
-    public void reset()
-    {
-        recordedInput = new ArrayList<>();
+        return new RecorderResult(recordedInput);
     }
 }

@@ -3,12 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.work;
+package automater.work.model;
 
 /**
  *
  * @author Bytevi
  */
-public class Effect {
+public interface ExecutorProgress {
+    public String getCurrentStatus();
     
+    public double getPercentageDone();
+    public int getCurrentActionIndex();
 }

@@ -35,6 +35,11 @@ public class Errors {
         throw new UnsupportedOperationException(description);
     }
     
+    public static void throwIllegalStateError(String description) throws RuntimeException
+    {
+        throw new IllegalStateException(description);
+    }
+    
     public static void throwInternalLogicError(String description) throws RuntimeException
     {
         throw new RuntimeException(description);

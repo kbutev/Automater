@@ -79,9 +79,9 @@ public class RecorderUserInput implements Serializable, Description {
         return null;
     }
      
-    public static RecorderUserInput createMouseMotion(Date timestamp)
+    public static RecorderUserInput createMouseMotion(Date timestamp, int x, int y)
     {
-        return new RecorderUserInputMouseMotion(timestamp);
+        return new RecorderUserInputMouseMotion(timestamp, x, y);
     }
     
     public static RecorderUserInput createMouseWheel(Date timestamp)
@@ -132,7 +132,7 @@ public class RecorderUserInput implements Serializable, Description {
     }
 }
 
-class RecorderUserInputKeyboardPress extends RecorderUserInput
+class RecorderUserInputKeyboardPress extends RecorderUserInput implements UserInputKeyClick
 {
     public final RecorderUserInputKey key;
     
@@ -142,13 +142,27 @@ class RecorderUserInputKeyboardPress extends RecorderUserInput
         this.key = key;
     }
     
+    // # Description
+    
     @Override
     public String getStandart() {
-        return "Keyboard Press" + " '" + key.toString() + "'";
+        return "KeyboardPress " + "'" + key.toString() + "'";
+    }
+    
+    // # UserInputKeyClick
+
+    @Override
+    public RecorderUserInputKey getKeyValue() {
+        return this.key;
+    }
+
+    @Override
+    public boolean isPress() {
+        return true;
     }
 }
 
-class RecorderUserInputKeyboardRelease extends RecorderUserInput
+class RecorderUserInputKeyboardRelease extends RecorderUserInput implements UserInputKeyClick
 {
     public final RecorderUserInputKey key;
     
@@ -158,13 +172,27 @@ class RecorderUserInputKeyboardRelease extends RecorderUserInput
         this.key = key;
     }
     
+    // # Description
+    
     @Override
     public String getStandart() {
-        return "Keyboard Release" + " '" + key.toString() + "'";
+        return "KeyboardRelease " + "'" + key.toString() + "'";
+    }
+
+    // # UserInputKeyClick
+    
+    @Override
+    public RecorderUserInputKey getKeyValue() {
+        return this.key;
+    }
+
+    @Override
+    public boolean isPress() {
+        return false;
     }
 }
 
-class RecorderUserInputMousePress extends RecorderUserInput
+class RecorderUserInputMousePress extends RecorderUserInput implements UserInputKeyClick, UserInputMouse
 {
     public final RecorderUserInputKey key;
     
@@ -204,13 +232,27 @@ class RecorderUserInputMousePress extends RecorderUserInput
         this.key = key;
     }
     
+    // # Description
+    
     @Override
     public String getStandart() {
-        return "Mouse Press" + " '" + key.toString() + "'";
+        return "MousePress " + "'" + key.toString() + "'";
+    }
+    
+    // # UserInputKeyClick
+
+    @Override
+    public RecorderUserInputKey getKeyValue() {
+        return this.key;
+    }
+
+    @Override
+    public boolean isPress() {
+        return true;
     }
 }
 
-class RecorderUserInputMouseRelease extends RecorderUserInput
+class RecorderUserInputMouseRelease extends RecorderUserInput implements UserInputKeyClick, UserInputMouse
 {
     public final RecorderUserInputKey key;
     
@@ -250,48 +292,97 @@ class RecorderUserInputMouseRelease extends RecorderUserInput
         this.key = key;
     }
     
-    @Override
-    public String getStandart() {
-        return "Mouse Release" + " '" + key.toString() + "'";
-    }
-}
-
-class RecorderUserInputMouseMotion extends RecorderUserInput
-{
-    RecorderUserInputMouseMotion(Date timestamp)
-    {
-        super(timestamp);
-    }
+    // # Description
     
     @Override
     public String getStandart() {
-        return "MouseMotion";
+        return "MouseRelease " + "'" + key.toString() + "'";
+    }
+    
+    // # UserInputKeyClick
+
+    @Override
+    public RecorderUserInputKey getKeyValue() {
+        return this.key;
+    }
+
+    @Override
+    public boolean isPress() {
+        return false;
     }
 }
 
-class RecorderUserInputMouseWheel extends RecorderUserInput
+class RecorderUserInputMouseMotion extends RecorderUserInput implements UserInputMouseMotion, UserInputMouse
+{
+    final int x;
+    final int y;
+    
+    RecorderUserInputMouseMotion(Date timestamp, int x, int y)
+    {
+        super(timestamp);
+        this.x = x;
+        this.y = y;
+    }
+    
+    // # Description
+    
+    @Override
+    public String getStandart() {
+        return "MouseMotion " + "(" + x + "," + y + ")";
+    }
+
+    // # UserInputMouseMotion
+    
+    @Override
+    public int getMoveX() {
+        return x;
+    }
+
+    @Override
+    public int getMoveY() {
+        return y;
+    }
+}
+
+class RecorderUserInputMouseWheel extends RecorderUserInput implements UserInputMouseWheel, UserInputMouse
 {
     RecorderUserInputMouseWheel(Date timestamp)
     {
         super(timestamp);
     }
     
+    // # Description
+    
     @Override
     public String getStandart() {
         return "MouseWheel";
     }
+    
+    // # UserInputMouseWheel
+
+    @Override
+    public int getScrollValue() {
+        return 0;
+    }
 }
 
-class RecorderUserInputWindow extends RecorderUserInput
+class RecorderUserInputWindow extends RecorderUserInput implements UserInputSpecialAction
 {
     RecorderUserInputWindow(Date timestamp)
     {
         super(timestamp);
     }
     
+    // # Description
+    
     @Override
     public String getStandart() {
         return "InputWindow";
+    }
+    
+    @Override
+    public boolean isCloseWindow() {
+        return false;
     }
 }
 

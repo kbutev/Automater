@@ -11,7 +11,7 @@ import automater.utilities.CollectionUtilities;
 import automater.utilities.Errors;
 import automater.utilities.FileSystem;
 import automater.utilities.Logger;
-import automater.work.Macro;
+import automater.work.model.Macro;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -198,7 +198,7 @@ public class MacroStorage {
     
     public Exception getSaveMacroError(Macro macro)
     {
-        if (macro.r.userInputs.isEmpty())
+        if (macro.getData().userInputs.isEmpty())
         {
             return new Exception("Macro requires at least one user input action.");
         }

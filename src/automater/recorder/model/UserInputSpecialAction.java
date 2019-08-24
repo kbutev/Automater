@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.utilities;
+package automater.recorder.model;
 
 /**
- * Interface for a looper client.
+ * Represents a system action, thats not a keyboard or mouse input.
  * 
  * @author Bytevi
  */
-public interface LooperClient {
-    public void loop();
+public interface UserInputSpecialAction {
+    public boolean isCloseWindow();
 }

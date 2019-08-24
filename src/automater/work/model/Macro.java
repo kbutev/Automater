@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.work;
+package automater.work.model;
 
 import automater.TextValue;
 import automater.recorder.RecorderResult;
@@ -19,20 +19,23 @@ import java.util.Date;
  */
 public class Macro implements Serializable, Description {
     public final String name;
+    private final RecorderResult _data;
     private String description = "";
     public final Date dateCreated;
     private int numberOfTimesPlayed = 0;
     private Date lastDatePlayed;
-    public final RecorderResult r;
     
     public Macro(String name, RecorderResult recorderResult)
     {
         this.name = name;
+        this._data = recorderResult;
         this.dateCreated = new Date();
         this.lastDatePlayed = new Date();
-        this.r = recorderResult;
-        
-        parseRecorderResult(recorderResult);
+    }
+    
+    public RecorderResult getData()
+    {
+        return _data;
     }
     
     // # Description
@@ -108,7 +111,7 @@ public class Macro implements Serializable, Description {
     
     public int getNumberOfActions()
     {
-        return this.r.userInputs.size();
+        return getData().userInputs.size();
     }
     
     public int getNumberOfTimesPlayed()
@@ -132,12 +135,5 @@ public class Macro implements Serializable, Description {
         {
             this.lastDatePlayed = date;
         }
-    }
-    
-    // # Private
-    
-    private void parseRecorderResult(RecorderResult recorderResult)
-    {
-        
     }
 }

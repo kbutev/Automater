@@ -8,6 +8,7 @@ package automater.utilities;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -82,7 +83,7 @@ public class Looper {
     
     class ClientsManager 
     {
-        private ArrayList<LooperClient> _clients = new ArrayList<>();
+        private HashSet<LooperClient> _clients = new HashSet<>();
         
         private final Object _mainLock = new Object();
         
@@ -90,10 +91,7 @@ public class Looper {
         {
             synchronized (_mainLock)
             {
-                if (!_clients.contains(client))
-                {
-                    _clients.add(client);
-                }
+                _clients.add(client);
             }
         }
 
@@ -111,12 +109,17 @@ public class Looper {
 
             synchronized (_mainLock)
             {
-                clients = Collections.unmodifiableCollection(_clients);
+                clients = CollectionUtilities.copyAsImmutable(_clients);
             }
             
             for (LooperClient client : clients)
             {
-                client.loop();
+                try {
+                    client.loop();
+                } catch (Exception e) {
+                    Logger.error(this, "Uncaught exception in client loop: " + e.toString());
+                    e.printStackTrace(System.out);
+                }
             }
         }
     }
@@ -156,12 +159,17 @@ public class Looper {
 
             synchronized (_mainLock)
             {
-                callbacks = Collections.unmodifiableCollection(_callbacks);
+                callbacks = CollectionUtilities.copyAsImmutable(_callbacks);
             }
             
             for (LooperCallback callback : callbacks)
             {
-                callback.perform();
+                try {
+                    callback.perform();
+                } catch (Exception e) {
+                    Logger.error(this, "Uncaught exception in callback: " + e.toString());
+                    e.printStackTrace(System.out);
+                }
             }
             
             clearCallbacks();

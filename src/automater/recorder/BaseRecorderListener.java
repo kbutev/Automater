@@ -9,9 +9,13 @@ import automater.recorder.model.RecorderUserInput;
 
 /**
  * A listener for recorded user input actions.
+ * You can modify the user input by returning a different value (return NULL
+ * to reject the recorded input).
  *
  * @author Bytevi
  */
 public interface BaseRecorderListener {
-    public void onRecordedUserInput(RecorderUserInput input);
+    public RecorderUserInput onRecordedUserInput(RecorderUserInput input);
+    
+    public void onFinishedRecording(RecorderResult result, boolean success, Exception exception);
 }

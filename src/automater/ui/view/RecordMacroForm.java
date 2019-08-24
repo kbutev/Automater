@@ -227,7 +227,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
         macroNameField.setText(TextValue.getText(TextValue.Record_MacroNameFieldDefaultText));
         macroNameField.setToolTipText(TextValue.getText(TextValue.Record_MacroNameFieldTip));
         
-        macroStateLabel.setText(TextValue.getText(TextValue.Record_IdleStatus, "F5"));
+        macroStateLabel.setText(TextValue.getText(TextValue.Record_IdleStatus, "F4"));
         
         saveMacroButton.setText(TextValue.getText(TextValue.Record_SaveButton));
         saveMacroButton.setToolTipText(TextValue.getText(TextValue.Record_SaveButtonDisabledTip));

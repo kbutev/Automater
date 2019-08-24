@@ -5,6 +5,7 @@
  */
 package automater.recorder;
 
+import automater.recorder.model.RecorderUserInput;
 import automater.utilities.Errors;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,27 +21,28 @@ import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseInputListener;
 import org.jnativehook.mouse.NativeMouseWheelEvent;
 import org.jnativehook.mouse.NativeMouseWheelListener;
-import automater.recorder.parser.BaseRecorderInputParser;
+import automater.recorder.parser.BaseRecorderNativeParser;
 
 /**
  * Wrapper of NativeHookListener.
  * 
- * Requires a parser to translate user commands from jnativehook events to
- * RecorderUserInput objects.
+ * Requires a parser to translate the jnativehook events to Automater friendly
+ * objects: RecorderUserInput.
  * 
  * @author Bytevi
  */
 public class RecorderNativeListener {
-    private static final SwingDispatchService _swingDispatchService = new SwingDispatchService();
+    private static final Object _registerLock = new Object();
+    private static SwingDispatchService _swingDispatchService = null;
     
     private NativeHookListener _nativeHookListener;
-    private final BaseRecorderInputParser _parser;
+    private final BaseRecorderNativeParser _parser;
+    private final RecorderNativeListenerDelegate _delegate;
     
-    public RecorderNativeListener(BaseRecorderInputParser parser)
+    public RecorderNativeListener(BaseRecorderNativeParser parser, RecorderNativeListenerDelegate delegate)
     {
         this._parser = parser;
-        
-        GlobalScreen.setEventDispatcher(_swingDispatchService);
+        this._delegate = delegate;
     }
     
     public boolean isRunning()
@@ -57,6 +59,7 @@ public class RecorderNativeListener {
         
         _nativeHookListener = new NativeHookListener();
         
+        registerEventDispatcherOnce();
         GlobalScreen.registerNativeHook();
         GlobalScreen.addNativeKeyListener(_nativeHookListener);
         GlobalScreen.addNativeMouseListener(_nativeHookListener);
@@ -80,6 +83,21 @@ public class RecorderNativeListener {
         _nativeHookListener = null;
     }
     
+    // # Private
+    
+    private void registerEventDispatcherOnce()
+    {
+        synchronized (_registerLock)
+        {
+            if (_swingDispatchService == null)
+            {
+                _swingDispatchService = new SwingDispatchService();
+                GlobalScreen.setEventDispatcher(_swingDispatchService);
+            }
+        }
+    }
+    
+    // Hook listener
     private class NativeHookListener implements ActionListener, ItemListener, NativeKeyListener, NativeMouseInputListener, NativeMouseWheelListener, WindowListener
     {
         public NativeHookListener()
@@ -104,12 +122,14 @@ public class RecorderNativeListener {
 
         @Override
         public void nativeKeyPressed(NativeKeyEvent nke) {
-            _parser.evaluatePress(nke);
+            RecorderUserInput input = _parser.evaluatePress(nke);
+            _delegate.onParseInput(input);
         }
 
         @Override
         public void nativeKeyReleased(NativeKeyEvent nke) {
-            _parser.evaluateRelease(nke);
+            RecorderUserInput input = _parser.evaluateRelease(nke);
+            _delegate.onParseInput(input);
         }
 
         @Override
@@ -119,17 +139,20 @@ public class RecorderNativeListener {
 
         @Override
         public void nativeMousePressed(NativeMouseEvent nme) {
-            _parser.evaluatePress(nme);
+            RecorderUserInput input = _parser.evaluatePress(nme);
+            _delegate.onParseInput(input);
         }
 
         @Override
         public void nativeMouseReleased(NativeMouseEvent nme) {
-            _parser.evaluateRelease(nme);
+            RecorderUserInput input = _parser.evaluateRelease(nme);
+            _delegate.onParseInput(input);
         }
 
         @Override
         public void nativeMouseMoved(NativeMouseEvent nme) {
-            _parser.evaluate(nme);
+            RecorderUserInput input = _parser.evaluateMouseMove(nme);
+            _delegate.onParseInput(input);
         }
 
         @Override
@@ -139,22 +162,22 @@ public class RecorderNativeListener {
 
         @Override
         public void nativeMouseWheelMoved(NativeMouseWheelEvent nmwe) {
-            _parser.evaluate(nmwe);
+            
         }
 
         @Override
         public void windowOpened(WindowEvent e) {
-            _parser.evaluate(e);
+            
         }
 
         @Override
         public void windowClosing(WindowEvent e) {
-            _parser.evaluate(e);
+            
         }
 
         @Override
         public void windowClosed(WindowEvent e) {
-            _parser.evaluate(e);
+            
         }
 
         @Override
@@ -169,12 +192,12 @@ public class RecorderNativeListener {
 
         @Override
         public void windowActivated(WindowEvent e) {
-            _parser.evaluate(e);
+            
         }
 
         @Override
         public void windowDeactivated(WindowEvent e) {
-            _parser.evaluate(e);
+            
         }
     }
 }

@@ -21,6 +21,8 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
     // UI callbacks
     public SimpleCallback onSwitchToPlayButtonCallback = SimpleCallback.createDoNothing();
     public Callback<Integer> onSelectItem = Callback.createDoNothing();
+    public Callback<Integer> onClickItem = Callback.createDoNothing();
+    public Callback<Integer> onDoubleClickItem = Callback.createDoNothing();
     public Callback<Integer> onOpenItem = Callback.createDoNothing();
     public Callback<Integer> onEditItem = Callback.createDoNothing();
     public Callback<Integer> onDeleteItem = Callback.createDoNothing();
@@ -71,6 +73,11 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
             public String getElementAt(int i) { return strings[i]; }
         });
         macrosList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        macrosList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                macrosListMouseClicked(evt);
+            }
+        });
         macrosList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 macrosListValueChanged(evt);
@@ -166,16 +173,15 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
     }//GEN-LAST:event_openMacroButtonActionPerformed
 
     private void macrosListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_macrosListValueChanged
-        if (evt.getValueIsAdjusting())
+        int selectedIndex = macrosList.getSelectedIndex();
+        
+        // Selection event
+        if (_selectedIndex != selectedIndex)
         {
-            return;
+            _selectedIndex = selectedIndex;
+            selectedMacroAt(_selectedIndex);
+            onSelectItem.perform(_selectedIndex);
         }
-        
-        int selectionIndex = getSelectionIndex();
-        
-        selectedMacroAt(selectionIndex);
-        
-        onSelectItem.perform(selectionIndex);
     }//GEN-LAST:event_macrosListValueChanged
 
     private void editMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMacroButtonActionPerformed
@@ -185,6 +191,30 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
     private void deleteMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteMacroButtonActionPerformed
         onDeleteItem.perform(getSelectionIndex());
     }//GEN-LAST:event_deleteMacroButtonActionPerformed
+
+    private void macrosListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_macrosListMouseClicked
+        int selectedIndex = macrosList.getSelectedIndex();
+        
+        // Selection event
+        if (_selectedIndex != selectedIndex)
+        {
+            _selectedIndex = selectedIndex;
+            selectedMacroAt(_selectedIndex);
+            onSelectItem.perform(_selectedIndex);
+        }
+        
+        // Click event
+        if (evt.getClickCount() == 1)
+        {
+            onClickItem.perform(_selectedIndex);
+        }
+        
+        // Double click event
+        if (evt.getClickCount() == 2)
+        {
+            onDoubleClickItem.perform(_selectedIndex);
+        }
+    }//GEN-LAST:event_macrosListMouseClicked
 
     /**
      * @param args the command line arguments
@@ -281,7 +311,7 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
     
     private int getSelectionIndex()
     {
-        return macrosList.getSelectedIndex();
+        return _selectedIndex;
     }
     
     private void selectedMacroAt(int index)
@@ -341,6 +371,7 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
     
     // Private
     private StandartDescriptionsDataSource _dataSource;
+    private int _selectedIndex = -1;
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton deleteMacroButton;

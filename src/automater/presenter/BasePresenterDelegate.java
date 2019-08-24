@@ -7,6 +7,7 @@ package automater.presenter;
 
 import java.util.List;
 import automater.utilities.Description;
+import automater.work.model.ExecutorProgress;
 
 /**
  * Presenters delegates.
@@ -24,6 +25,7 @@ public interface BasePresenterDelegate {
     public void onLoadedMacroFromStorage(String macroName, String macroDescription, List<Description> macroActions);
     
     public void startPlaying();
+    public void updatePlayStatus(ExecutorProgress progress);
     public void cancelPlaying();
     public void finishPlaying();
     

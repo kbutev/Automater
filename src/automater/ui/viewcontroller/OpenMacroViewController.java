@@ -17,6 +17,7 @@ import automater.utilities.SimpleCallback;
 import java.awt.event.WindowEvent;
 import java.util.List;
 import automater.utilities.Description;
+import automater.work.model.ExecutorProgress;
 
 /**
  *
@@ -48,6 +49,13 @@ public class OpenMacroViewController implements BaseViewController, BasePresente
             @Override
             public void perform(Integer argument) {
                 onSelectItem(argument);
+            }
+        };
+        
+        _form.onDoubleClickItem = new Callback<Integer>() {
+            @Override
+            public void perform(Integer argument) {
+                onOpenItem(argument);
             }
         };
         
@@ -148,6 +156,12 @@ public class OpenMacroViewController implements BaseViewController, BasePresente
     
     @Override
     public void startPlaying()
+    {
+        
+    }
+    
+    @Override
+    public void updatePlayStatus(ExecutorProgress progress)
     {
         
     }
