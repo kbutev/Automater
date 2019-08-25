@@ -37,7 +37,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     
     private final Recorder _recorder = Recorder.getDefault();
     private final List<RecorderParserFlag> _recordFlags = _recorder.defaults.getRecordOnlyKeyClicksAndMouseMotionFlags();
-    private final RecorderModel _recorderModel = new RecorderModel();
+    private RecorderModel _recorderModel = new RecorderModel();
     private final RecorderNativeParser _recorderMacroParser = new RecorderNativeParser(_recordFlags);
     private boolean _hasStartedMacroRecording = false;
     private RecorderResult _recordedResult;
@@ -258,6 +258,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     
     private void clearData()
     {
+        _recorderModel = new RecorderModel();
         _recordedResult = null;
         
         _macroActionDescriptionsList.clear();
