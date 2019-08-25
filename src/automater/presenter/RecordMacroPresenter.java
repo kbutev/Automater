@@ -204,7 +204,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         Logger.message(this, "Recorded " + String.valueOf(result.userInputs.size()) + " events");
         
         Macro macro = new Macro(name, _recordedResult);
-        Logger.message(this, "test " + description);
+        
         macro.setDescription(description);
         
         // Simple error checking - for name taken, actions empty etc...
