@@ -42,15 +42,15 @@ public class RecorderUserInput implements Serializable, Description {
         switch (mouseKey.value)
         {
             case _MOUSE_LEFT_CLICK:
-                return RecorderUserInputMousePress.createLeftMouse(timestamp, mouseKey.mask);
+                return RecorderUserInputMousePress.createLeftMouse(timestamp, mouseKey.modifiers);
             case _MOUSE_RIGHT_CLICK:
-                return RecorderUserInputMousePress.createRightMouse(timestamp, mouseKey.mask);
+                return RecorderUserInputMousePress.createRightMouse(timestamp, mouseKey.modifiers);
             case _MOUSE_MIDDLE_CLICK:
-                return RecorderUserInputMousePress.createMiddleMouse(timestamp, mouseKey.mask);
+                return RecorderUserInputMousePress.createMiddleMouse(timestamp, mouseKey.modifiers);
             case _MOUSE_4_CLICK:
-                return RecorderUserInputMousePress.create4Mouse(timestamp, mouseKey.mask);
+                return RecorderUserInputMousePress.create4Mouse(timestamp, mouseKey.modifiers);
             case _MOUSE_5_CLICK:
-                return RecorderUserInputMousePress.create5Mouse(timestamp, mouseKey.mask);
+                return RecorderUserInputMousePress.create5Mouse(timestamp, mouseKey.modifiers);
         }
         
         Logger.warning(_logInstance, "Cannot create mouse press input from given mouse key " + mouseKey.toString());
@@ -63,15 +63,15 @@ public class RecorderUserInput implements Serializable, Description {
         switch (mouseKey.value)
         {
             case _MOUSE_LEFT_CLICK:
-                return RecorderUserInputMouseRelease.createLeftMouse(timestamp, mouseKey.mask);
+                return RecorderUserInputMouseRelease.createLeftMouse(timestamp, mouseKey.modifiers);
             case _MOUSE_RIGHT_CLICK:
-                return RecorderUserInputMouseRelease.createRightMouse(timestamp, mouseKey.mask);
+                return RecorderUserInputMouseRelease.createRightMouse(timestamp, mouseKey.modifiers);
             case _MOUSE_MIDDLE_CLICK:
-                return RecorderUserInputMouseRelease.createMiddleMouse(timestamp, mouseKey.mask);
+                return RecorderUserInputMouseRelease.createMiddleMouse(timestamp, mouseKey.modifiers);
             case _MOUSE_4_CLICK:
-                return RecorderUserInputMouseRelease.create4Mouse(timestamp, mouseKey.mask);
+                return RecorderUserInputMouseRelease.create4Mouse(timestamp, mouseKey.modifiers);
             case _MOUSE_5_CLICK:
-                return RecorderUserInputMouseRelease.create5Mouse(timestamp, mouseKey.mask);
+                return RecorderUserInputMouseRelease.create5Mouse(timestamp, mouseKey.modifiers);
         }
         
         Logger.warning(_logInstance, "Cannot create mouse release input from given mouse key " + mouseKey.toString());
@@ -196,31 +196,31 @@ class RecorderUserInputMousePress extends RecorderUserInput implements UserInput
 {
     public final RecorderUserInputKey key;
     
-    static RecorderUserInput createLeftMouse(Date timestamp, RecorderUserInputKeyMask mask)
+    static RecorderUserInput createLeftMouse(Date timestamp, RecorderUserInputKeyModifiers mask)
     {
         RecorderUserInputKey key = new RecorderUserInputKey(_MOUSE_LEFT_CLICK, mask);
         return new RecorderUserInputMousePress(timestamp, key);
     }
     
-    static RecorderUserInput createRightMouse(Date timestamp, RecorderUserInputKeyMask mask)
+    static RecorderUserInput createRightMouse(Date timestamp, RecorderUserInputKeyModifiers mask)
     {
         RecorderUserInputKey key = new RecorderUserInputKey(_MOUSE_RIGHT_CLICK, mask);
         return new RecorderUserInputMousePress(timestamp, key);
     }
     
-    static RecorderUserInput createMiddleMouse(Date timestamp, RecorderUserInputKeyMask mask)
+    static RecorderUserInput createMiddleMouse(Date timestamp, RecorderUserInputKeyModifiers mask)
     {
         RecorderUserInputKey key = new RecorderUserInputKey(_MOUSE_MIDDLE_CLICK, mask);
         return new RecorderUserInputMousePress(timestamp, key);
     }
     
-    static RecorderUserInput create4Mouse(Date timestamp, RecorderUserInputKeyMask mask)
+    static RecorderUserInput create4Mouse(Date timestamp, RecorderUserInputKeyModifiers mask)
     {
         RecorderUserInputKey key = new RecorderUserInputKey(_MOUSE_4_CLICK, mask);
         return new RecorderUserInputMousePress(timestamp, key);
     }
     
-    static RecorderUserInput create5Mouse(Date timestamp, RecorderUserInputKeyMask mask)
+    static RecorderUserInput create5Mouse(Date timestamp, RecorderUserInputKeyModifiers mask)
     {
         RecorderUserInputKey key = new RecorderUserInputKey(_MOUSE_5_CLICK, mask);
         return new RecorderUserInputMousePress(timestamp, key);
@@ -256,31 +256,31 @@ class RecorderUserInputMouseRelease extends RecorderUserInput implements UserInp
 {
     public final RecorderUserInputKey key;
     
-    static RecorderUserInput createLeftMouse(Date timestamp, RecorderUserInputKeyMask mask)
+    static RecorderUserInput createLeftMouse(Date timestamp, RecorderUserInputKeyModifiers mask)
     {
         RecorderUserInputKey key = new RecorderUserInputKey(_MOUSE_LEFT_CLICK, mask);
         return new RecorderUserInputMouseRelease(timestamp, key);
     }
     
-    static RecorderUserInput createRightMouse(Date timestamp, RecorderUserInputKeyMask mask)
+    static RecorderUserInput createRightMouse(Date timestamp, RecorderUserInputKeyModifiers mask)
     {
         RecorderUserInputKey key = new RecorderUserInputKey(_MOUSE_RIGHT_CLICK, mask);
         return new RecorderUserInputMouseRelease(timestamp, key);
     }
     
-    static RecorderUserInput createMiddleMouse(Date timestamp, RecorderUserInputKeyMask mask)
+    static RecorderUserInput createMiddleMouse(Date timestamp, RecorderUserInputKeyModifiers mask)
     {
         RecorderUserInputKey key = new RecorderUserInputKey(_MOUSE_MIDDLE_CLICK, mask);
         return new RecorderUserInputMouseRelease(timestamp, key);
     }
     
-    static RecorderUserInput create4Mouse(Date timestamp, RecorderUserInputKeyMask mask)
+    static RecorderUserInput create4Mouse(Date timestamp, RecorderUserInputKeyModifiers mask)
     {
         RecorderUserInputKey key = new RecorderUserInputKey(_MOUSE_4_CLICK, mask);
         return new RecorderUserInputMouseRelease(timestamp, key);
     }
     
-    static RecorderUserInput create5Mouse(Date timestamp, RecorderUserInputKeyMask mask)
+    static RecorderUserInput create5Mouse(Date timestamp, RecorderUserInputKeyModifiers mask)
     {
         RecorderUserInputKey key = new RecorderUserInputKey(_MOUSE_5_CLICK, mask);
         return new RecorderUserInputMouseRelease(timestamp, key);

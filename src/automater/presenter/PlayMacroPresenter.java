@@ -151,12 +151,6 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     @Override
     public void onHotkeyPressed()
     {
-        
-    }
-    
-    @Override
-    public void onHotkeyReleased()
-    {
         Logger.message(this, "Play hotkey tapped!");
         
         if (_ongoingExecution == null)

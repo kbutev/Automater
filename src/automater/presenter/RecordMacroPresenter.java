@@ -123,12 +123,6 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     @Override
     public void onHotkeyPressed()
     {
-        
-    }
-    
-    @Override
-    public void onHotkeyReleased()
-    {
         Logger.message(this, "Record hotkey tapped!");
         
         if (!_hasStartedMacroRecording)

@@ -9,24 +9,24 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * A key value and a key mask.
+ * A recorded keystroke with its modifier values.
  * 
  * @author Bytevi
  */
 public class RecorderUserInputKey implements Serializable {
     public final RecorderUserInputKeyValue value;
-    public final RecorderUserInputKeyMask mask;
+    public final RecorderUserInputKeyModifiers modifiers;
     
     public RecorderUserInputKey(RecorderUserInputKeyValue value)
     {
         this.value = value;
-        this.mask = RecorderUserInputKeyMask.none();
+        this.modifiers = RecorderUserInputKeyModifiers.none();
     }
     
-    public RecorderUserInputKey(RecorderUserInputKeyValue value, RecorderUserInputKeyMask mask)
+    public RecorderUserInputKey(RecorderUserInputKeyValue value, RecorderUserInputKeyModifiers modifiers)
     {
         this.value = value;
-        this.mask = mask.copy();
+        this.modifiers = modifiers.copy();
     }
     
     @Override
@@ -35,7 +35,7 @@ public class RecorderUserInputKey implements Serializable {
         if (o instanceof RecorderUserInputKey)
         {
             RecorderUserInputKey other = (RecorderUserInputKey)o;
-            return value == other.value && mask.equals(other.mask);
+            return value == other.value && modifiers.equals(other.modifiers);
         }
         
         return false;
@@ -46,14 +46,14 @@ public class RecorderUserInputKey implements Serializable {
     {
         int hash = 7;
         hash = 59 * hash + Objects.hashCode(this.value);
-        hash = 59 * hash + Objects.hashCode(this.mask);
+        hash = 59 * hash + Objects.hashCode(this.modifiers);
         return hash;
     }
     
     @Override
     public String toString()
     {
-        return mask.toString() + value.toString();
+        return modifiers.toString() + value.toString();
     }
     
     public boolean isKeyboardKey()

@@ -51,6 +51,25 @@ public class ExecutorState implements LooperClient {
         }
     }
     
+    public void stopAll()
+    {
+        synchronized (_lock)
+        {
+            Logger.messageEvent(this, "Stopping all processes");
+            
+            for (BaseExecutorProcess process : _processes)
+            {
+                try {
+                    process.stop();
+                } catch (Exception e) {
+                    
+                }
+            }
+            
+            _processes.clear();
+        }
+    }
+    
     // # LooperClient
     
     @Override
@@ -67,6 +86,11 @@ public class ExecutorState implements LooperClient {
     
     // # Private
     
+    private boolean isProcessEligibleForRemoval(BaseExecutorProcess process)
+    {
+        return process.isFinished();
+    }
+    
     private void update()
     {
         ArrayList<BaseExecutorProcess> processesToRemove = new ArrayList<>();
@@ -80,7 +104,7 @@ public class ExecutorState implements LooperClient {
         
         for (BaseExecutorProcess p : processes)
         {
-            if (p.isFinished())
+            if (isProcessEligibleForRemoval(p))
             {
                 processesToRemove.add(p);
             }

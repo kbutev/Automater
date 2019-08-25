@@ -10,7 +10,7 @@ package automater.recorder.model;
  * 
  * @author Bytevi
  */
-public enum RecorderUserInputKeyMaskValue {
+public enum RecorderUserInputKeyModifierValue {
     NONE,
     CTRL,
     ALT,

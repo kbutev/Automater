@@ -6,8 +6,8 @@
 package automater.recorder.parser;
 
 import automater.recorder.model.RecorderUserInputKey;
-import automater.recorder.model.RecorderUserInputKeyMask;
-import automater.recorder.model.RecorderUserInputKeyMaskValue;
+import automater.recorder.model.RecorderUserInputKeyModifiers;
+import automater.recorder.model.RecorderUserInputKeyModifierValue;
 import automater.recorder.model.RecorderUserInputKeyValue;
 import automater.utilities.Logger;
 import java.util.HashMap;
@@ -21,14 +21,14 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 public class RecorderSystemKeyboardTranslator {
     private static HashMap<Integer, RecorderUserInputKeyValue> _keyMapping = new HashMap<>();
     
-    private RecorderUserInputKeyMask _mask = RecorderUserInputKeyMask.none();
+    private RecorderUserInputKeyModifiers _mask = RecorderUserInputKeyModifiers.none();
     
     public RecorderSystemKeyboardTranslator()
     {
         
     }
     
-    public RecorderUserInputKeyMask getCurrentMask()
+    public RecorderUserInputKeyModifiers getCurrentMask()
     {
         return _mask;
     }
@@ -61,15 +61,15 @@ public class RecorderSystemKeyboardTranslator {
     
     private void handleMaskKey(RecorderUserInputKeyValue keyValue, boolean press)
     {
-        RecorderUserInputKeyMaskValue mask = maskValueFoKey(keyValue);
+        RecorderUserInputKeyModifierValue mask = maskValueFoKey(keyValue);
         
         if (press)
         {
-            _mask = _mask.createWithNewAddedFlag(mask);
+            _mask = _mask.createWithNewAddedModifier(mask);
         }
         else
         {
-            _mask = _mask.createWithRemovedFlag(mask);
+            _mask = _mask.createWithRemovedModifier(mask);
         }
     }
     
@@ -199,23 +199,23 @@ public class RecorderSystemKeyboardTranslator {
         return result;
     }
     
-    public static RecorderUserInputKeyMaskValue maskValueFoKey(RecorderUserInputKeyValue keyValue)
+    public static RecorderUserInputKeyModifierValue maskValueFoKey(RecorderUserInputKeyValue keyValue)
     {
         if (keyValue == RecorderUserInputKeyValue._SHIFT)
         {
-            return RecorderUserInputKeyMaskValue.SHIFT;
+            return RecorderUserInputKeyModifierValue.SHIFT;
         }
         
         if (keyValue == RecorderUserInputKeyValue._CONTROL)
         {
-            return RecorderUserInputKeyMaskValue.CTRL;
+            return RecorderUserInputKeyModifierValue.CTRL;
         }
         
         if (keyValue == RecorderUserInputKeyValue._ALT)
         {
-            return RecorderUserInputKeyMaskValue.ALT;
+            return RecorderUserInputKeyModifierValue.ALT;
         }
             
-        return RecorderUserInputKeyMaskValue.NONE;
+        return RecorderUserInputKeyModifierValue.NONE;
     }
 }

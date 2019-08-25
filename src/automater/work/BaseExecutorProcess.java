@@ -25,6 +25,7 @@ public interface BaseExecutorProcess {
     public boolean isFinished();
     
     public BaseActionProcess getCurrentActionProcess();
+    public BaseActionProcess getPreviousActionProcess();
     
     public ExecutorProgress getProgress();
     

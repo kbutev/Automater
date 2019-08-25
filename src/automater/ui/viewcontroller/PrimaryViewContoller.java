@@ -9,7 +9,7 @@ import automater.presenter.OpenMacroPresenter;
 import automater.presenter.PlayMacroPresenter;
 import automater.presenter.RecordMacroPresenter;
 import automater.recorder.model.RecorderUserInputKey;
-import automater.recorder.model.RecorderUserInputKeyMask;
+import automater.recorder.model.RecorderUserInputKeyModifiers;
 import automater.recorder.model.RecorderUserInputKeyValue;
 import automater.settings.Hotkey;
 import automater.utilities.Errors;

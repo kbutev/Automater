@@ -16,5 +16,4 @@ public interface RecorderHotkeyListener {
     public Hotkey getHotkey();
     
     public void onHotkeyPressed();
-    public void onHotkeyReleased();
 }

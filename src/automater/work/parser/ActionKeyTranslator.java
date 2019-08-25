@@ -6,13 +6,19 @@
 package automater.work.parser;
 
 import automater.recorder.model.RecorderUserInputKey;
+import automater.recorder.model.RecorderUserInputKeyModifierValue;
+import automater.recorder.model.RecorderUserInputKeyModifiers;
 import automater.recorder.model.RecorderUserInputKeyValue;
 import automater.utilities.DeviceOS;
 import automater.utilities.Errors;
 import automater.work.model.ActionSystemKey;
+import automater.work.model.ActionSystemKeyModifierValue;
+import automater.work.model.ActionSystemKeyModifiers;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Translates RecorderUserInputKey(s) to ActionSystemKey(s).
@@ -23,7 +29,7 @@ public class ActionKeyTranslator {
     private static final HashMap<RecorderUserInputKeyValue, Integer> _keyboardMapping = new HashMap<>();
     private static final HashMap<RecorderUserInputKeyValue, Integer> _mouseKeyMapping = new HashMap<>();
     
-    public static ActionSystemKey translate(RecorderUserInputKey key) throws Exception
+    public static ActionSystemKey translateKeystroke(RecorderUserInputKey key) throws Exception
     {
         if (isKeyboardRecorderUserInputKey(key))
         {
@@ -37,6 +43,39 @@ public class ActionKeyTranslator {
         
         Errors.throwInvalidArgument("ActionKeyTranslator cannot translate key '" + key.toString() + "': cannot recognize type");
         return null;
+    }
+    
+    public static ActionSystemKeyModifiers translateModifiers(RecorderUserInputKey key)
+    {
+        RecorderUserInputKeyModifiers modifiers = key.modifiers;
+        Set<RecorderUserInputKeyModifierValue> values = modifiers.getValues();
+        
+        if (values.isEmpty())
+        {
+            return ActionSystemKeyModifiers.none();
+        }
+        
+        HashSet<ActionSystemKeyModifierValue> modifierValues = new HashSet<>();
+        
+        for (RecorderUserInputKeyModifierValue modifier : values)
+        {
+            if (modifier == RecorderUserInputKeyModifierValue.CTRL)
+            {
+                modifierValues.add(ActionSystemKeyModifierValue.CTRL);
+            }
+            
+            if (modifier == RecorderUserInputKeyModifierValue.ALT)
+            {
+                modifierValues.add(ActionSystemKeyModifierValue.ALT);
+            }
+            
+            if (modifier == RecorderUserInputKeyModifierValue.SHIFT)
+            {
+                modifierValues.add(ActionSystemKeyModifierValue.SHIFT);
+            }
+        }
+        
+        return ActionSystemKeyModifiers.createModifierValues(modifierValues);
     }
     
     public static boolean isKeyboardRecorderUserInputKey(RecorderUserInputKey key)
@@ -185,9 +224,9 @@ public class ActionKeyTranslator {
             return _mouseKeyMapping;
         }
         
-        _mouseKeyMapping.put(RecorderUserInputKeyValue._MOUSE_LEFT_CLICK, MouseEvent.BUTTON1);
-        _mouseKeyMapping.put(RecorderUserInputKeyValue._MOUSE_RIGHT_CLICK, MouseEvent.BUTTON2);
-        _mouseKeyMapping.put(RecorderUserInputKeyValue._MOUSE_MIDDLE_CLICK, MouseEvent.BUTTON3);
+        _mouseKeyMapping.put(RecorderUserInputKeyValue._MOUSE_LEFT_CLICK, InputEvent.BUTTON1_DOWN_MASK);
+        _mouseKeyMapping.put(RecorderUserInputKeyValue._MOUSE_MIDDLE_CLICK, InputEvent.BUTTON2_DOWN_MASK);
+        _mouseKeyMapping.put(RecorderUserInputKeyValue._MOUSE_RIGHT_CLICK, InputEvent.BUTTON3_DOWN_MASK);
         
         return _mouseKeyMapping;
     }

@@ -70,6 +70,16 @@ public class Executor {
         }
     }
     
+    public void stopAll()
+    {
+        Logger.messageEvent(this, "Stop all processes");
+        
+        synchronized (_lock)
+        {
+            _state.stopAll();
+        }
+    }
+    
     // # Private
     
     private void initRobot() throws Exception

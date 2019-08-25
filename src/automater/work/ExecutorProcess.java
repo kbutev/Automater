@@ -26,6 +26,7 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     private final Object _lock = new Object();
     
     private final Robot _robot;
+    private ActionContext _context;
     private final List<BaseAction> _actions;
     
     private BaseExecutorTimer _timer;
@@ -58,30 +59,51 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     @Override
     public boolean isIdle()
     {
-        return _currentActionProcess == null;
+        synchronized (_lock)
+        {
+            return _currentActionProcess == null;
+        }
     }
     
     @Override
     public boolean isWaiting()
     {
-        return _currentActionProcess == null && !isFinished();
+        synchronized (_lock)
+        {
+            return _currentActionProcess == null && !isFinished();
+        }
     }
     
     @Override
     public boolean isFinished()
     {
-        if (_previousActionProcess == null)
+        synchronized (_lock)
         {
-            return false;
+            if (_previousActionProcess == null)
+            {
+                return false;
+            }
+            
+            return isLastAction(_previousActionProcess.getAction());
         }
-        
-        return isLastAction(_previousActionProcess.getAction());
     }
     
     @Override
     public BaseActionProcess getCurrentActionProcess()
     {
-        return _currentActionProcess;
+        synchronized (_lock)
+        {
+            return _currentActionProcess;
+        }
+    }
+    
+    @Override
+    public BaseActionProcess getPreviousActionProcess()
+    {
+        synchronized (_lock)
+        {
+            return _previousActionProcess;
+        }
     }
     
     @Override
@@ -126,6 +148,9 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
             Looper.getShared().subscribe(this);
             
             actionsSize = _actions.size();
+            
+            // Setup context
+            _context = new ActionContext(_robot);
         }
         
         // Listener alert
@@ -147,6 +172,10 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
                 Errors.throwInternalLogicError("Executor process cannot stop, never has been started");
                 return;
             }
+            
+            cleanup();
+            
+            _context.cleanup();
         }
         
         // Listener alert
@@ -154,9 +183,6 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
         {
             _listener.onCancel();
         }
-        
-        // Cleanup outside the synchronized
-        cleanup();
     }
     
     // # ExecutorTimer
@@ -226,24 +252,24 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
         
         if (isWaiting())
         {
-            BaseActionProcess p = getPreviousActionProcessSafely();
+            BaseActionProcess previous = getPreviousActionProcess();
             
-            if (p == null)
+            if (previous == null)
             {
                 return "Waiting for next";
             }
             
-            return "Performed " + p.getAction().getDescription().getStandart() + ", waiting for next";
+            return "Performed " + previous.getAction().getDescription().getStandart() + ", waiting for next";
         }
         
-        BaseActionProcess p = getCurrentActionProcessSafely();
+        BaseActionProcess current = getCurrentActionProcess();
         
-        if (p == null)
+        if (current == null)
         {
             return "Idle";
         }
         
-        return "Performing " + p.getAction().getDescription().getStandart();
+        return "Performing " + current.getAction().getDescription().getStandart();
     }
 
     @Override
@@ -269,25 +295,17 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
 
     @Override
     public int getCurrentActionIndex() {
-        BaseActionProcess process = getCurrentActionProcessSafely();
+        BaseActionProcess process = getCurrentActionProcess();
         
         if (process == null)
         {
-            process = getPreviousActionProcessSafely();
+            process = getPreviousActionProcess();
         }
         
         return _actions.indexOf(process.getAction());
     }
     
     // # Private
-    
-    private BaseActionProcess getCurrentActionProcessSafely()
-    {
-        synchronized (_lock)
-        {
-            return _currentActionProcess;
-        }
-    }
     
     private void setCurrentActionProcessSafely(BaseActionProcess p)
     {
@@ -305,17 +323,9 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
         }
     }
     
-    private BaseActionProcess getPreviousActionProcessSafely()
-    {
-        synchronized (_lock)
-        {
-            return _previousActionProcess;
-        }
-    }
-    
     private void markCurrentActionProcessAsDone()
     {
-        BaseActionProcess current = getCurrentActionProcessSafely();
+        BaseActionProcess current = getCurrentActionProcess();
         
         if (current == null)
         {
@@ -329,18 +339,18 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     
     private void performCurrentActionProcess()
     {
-        BaseActionProcess current = getCurrentActionProcessSafely();
-        ActionContext context = new ActionContext(_robot);
+        BaseActionProcess current = getCurrentActionProcess();
         
         try {
-            current.perform(context);
+            current.perform(_context);
         } catch (Exception e) {
             Logger.error(this, "Failed to perform action " + current.toString() + ": + " + e.toString());
+            e.printStackTrace(System.out);
         }
     }
     
     private List<BaseAction> getRemainingActions() {
-        BaseActionProcess previousActionProcess = getPreviousActionProcessSafely();
+        BaseActionProcess previousActionProcess = getPreviousActionProcess();
         
         if (previousActionProcess == null)
         {
@@ -400,7 +410,7 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
         
         if (!isIdle)
         {
-            BaseActionProcess currentActionProcess = getCurrentActionProcessSafely();
+            BaseActionProcess currentActionProcess = getCurrentActionProcess();
             BaseAction action = currentActionProcess.getAction();
             
             // Listener alert
@@ -449,6 +459,7 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
                 setCurrentActionProcessSafely(p);
                 
                 String actionDescription = nextAction.getDescription().getStandart();
+                
                 Logger.messageEvent(this, "Perform next action: " + actionDescription);
                 
                 // Listener alert
@@ -490,7 +501,10 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
             }
             
             // Cleanup
-            cleanup();
+            synchronized (_lock)
+            {
+                cleanup();
+            }
             
             return;
         }
@@ -513,8 +527,8 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     
     private void cleanup()
     {
-        setPreviousActionProcessSafely(new ActionProcess(getLastAction()));
-        setCurrentActionProcessSafely(null);
+       _previousActionProcess = new ActionProcess(getLastAction());
+       _currentActionProcess = null;
         Looper.getShared().unsubscribe(this);
     }
 }

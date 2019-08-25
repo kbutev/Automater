@@ -9,6 +9,8 @@ import automater.recorder.model.UserInputKeyClick;
 import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.work.model.ActionSystemKey;
+import automater.work.model.ActionSystemKeyModifierValue;
+import automater.work.model.ActionSystemKeyModifiers;
 import automater.work.model.BaseActionContext;
 import automater.work.parser.ActionKeyTranslator;
 import java.awt.Robot;
@@ -99,6 +101,7 @@ public class Action implements BaseAction, Description {
 class ActionKeyPress extends Action {
     long time;
     ActionSystemKey key;
+    ActionSystemKeyModifiers modifiers;
     
     String standartDescription;
     String verboseDescription;
@@ -106,7 +109,8 @@ class ActionKeyPress extends Action {
     ActionKeyPress(long time, UserInputKeyClick keyClick, Description description) throws Exception
     {
         this.time = time;
-        this.key = ActionKeyTranslator.translate(keyClick.getKeyValue());
+        this.key = ActionKeyTranslator.translateKeystroke(keyClick.getKeyValue());
+        this.modifiers = ActionKeyTranslator.translateModifiers(keyClick.getKeyValue());
         
         if (description != null)
         {
@@ -126,15 +130,31 @@ class ActionKeyPress extends Action {
     {
         Robot robot = context.getRobot();
         
-        if (key.isKeyboardKey())
+        // First, simulate press modifier keys
+        for (ActionSystemKeyModifierValue value : modifiers.modifiers)
         {
-            robot.keyPress(key.getValue());
+            if (!context.isModifierPressed(value))
+            {
+                robot.keyPress(value.getValue());
+            }
         }
         
-        if (key.isMouseKey())
+        // Second, simulate press keystroke
+        if (!context.isKeyPressed(key))
         {
-            robot.mousePress(key.getValue());
+            if (key.isKeyboardKey())
+            {
+                robot.keyPress(key.getValue());
+            }
+            
+            if (key.isMouseKey())
+            {
+                robot.mousePress(key.getValue());
+            }
         }
+        
+        // Finally, alert context
+        context.onPressKey(key, modifiers);
     }
     
     @Override
@@ -151,6 +171,7 @@ class ActionKeyPress extends Action {
 class ActionKeyRelease extends Action {
     long time;
     ActionSystemKey key;
+    ActionSystemKeyModifiers modifiers;
     
     String standartDescription;
     String verboseDescription;
@@ -158,7 +179,8 @@ class ActionKeyRelease extends Action {
     ActionKeyRelease(long time, UserInputKeyClick keyClick, Description description) throws Exception
     {
         this.time = time;
-        this.key = ActionKeyTranslator.translate(keyClick.getKeyValue());
+        this.key = ActionKeyTranslator.translateKeystroke(keyClick.getKeyValue());
+        this.modifiers = ActionKeyTranslator.translateModifiers(keyClick.getKeyValue());
         
         if (description != null)
         {
@@ -178,15 +200,31 @@ class ActionKeyRelease extends Action {
     {
         Robot robot = context.getRobot();
         
-        if (key.isKeyboardKey())
+        // First, simulate release modifier keys
+        for (ActionSystemKeyModifierValue value : modifiers.modifiers)
         {
-            robot.keyRelease(key.getValue());
+            if (context.isModifierPressed(value))
+            {
+                robot.keyRelease(value.getValue());
+            }
         }
         
-        if (key.isMouseKey())
+        // Second, simulate release keystroke
+        if (context.isKeyPressed(key))
         {
-            robot.mouseRelease(key.getValue());
+            if (key.isKeyboardKey())
+            {
+                robot.keyRelease(key.getValue());
+            }
+            
+            if (key.isMouseKey())
+            {
+                robot.mouseRelease(key.getValue());
+            }
         }
+        
+        // Finally, alert context
+        context.onReleaseKey(key, modifiers);
     }
     
     @Override

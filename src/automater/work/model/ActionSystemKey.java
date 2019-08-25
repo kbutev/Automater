@@ -36,6 +36,25 @@ public class ActionSystemKey implements Description {
     {
         return false;
     }
+    
+    @Override
+    public boolean equals(Object o) 
+    {
+        if (o instanceof ActionSystemKey)
+        {
+            ActionSystemKey other = (ActionSystemKey)o;
+            return getValue() == other.getValue();
+        }
+        
+        return false;
+    }
+    
+    @Override
+    public int hashCode()
+    {
+        int hash = 7;
+        return hash;
+    }
 
     @Override
     public String getStandart() {

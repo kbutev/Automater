@@ -6,6 +6,7 @@
 package automater.settings;
 
 import automater.recorder.model.RecorderUserInputKey;
+import automater.recorder.model.RecorderUserInputKeyModifiers;
 import automater.recorder.model.RecorderUserInputKeyValue;
 
 /**
@@ -23,6 +24,11 @@ public class Hotkey {
     public boolean isEqualTo(RecorderUserInputKey key)
     {
         if (key == null)
+        {
+            return false;
+        }
+        
+        if (!key.modifiers.equals(RecorderUserInputKeyModifiers.none()))
         {
             return false;
         }

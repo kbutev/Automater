@@ -286,26 +286,27 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     {
         synchronized (_lock)
         {
-            _playStopHotkeyListener = listener;
+            if (listener != null)
+            {
+                _playStopHotkeyListener = listener;
+                _hotkeyListeners.add(listener);
+            }
+            else if (_playStopHotkeyListener != null)
+            {
+                _hotkeyListeners.remove(_playStopHotkeyListener);
+                _playStopHotkeyListener = null;
+            }
         }
     }
     
     @Override
     public RecorderUserInput evaluatePress(NativeKeyEvent keyboardEvent) {
         // Hotkey listeners alert
-        alertHotkeyListeners(true, keyboardEvent);
+        boolean continueParsing = alertHotkeyListeners(keyboardEvent);
         
-        // Play/stop hotkey?
-        // Do not parse the event - ignore it
-        if (_playStopHotkeyListener != null)
+        if (!continueParsing)
         {
-            Hotkey hotkey = _playStopHotkeyListener.getHotkey();
-            
-            if (isHotkeyEvent(hotkey, keyboardEvent))
-            {
-                _playStopHotkeyListener.onHotkeyPressed();
-                return null;
-            }
+            return null;
         }
         
         // Subparser delegation
@@ -321,21 +322,9 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
 
     @Override
     public RecorderUserInput evaluateRelease(NativeKeyEvent keyboardEvent) {
-        // Hotkey listeners alert
-        alertHotkeyListeners(false, keyboardEvent);
-        
-        // Play/stop hotkey?
-        // Do not parse the event - ignore it
-        if (_playStopHotkeyListener != null)
-        {
-            Hotkey hotkey = _playStopHotkeyListener.getHotkey();
-            
-            if (isHotkeyEvent(hotkey, keyboardEvent))
-            {
-                _playStopHotkeyListener.onHotkeyReleased();
-                return null;
-            }
-        }
+        // For release keyboard events, hotkey listeners are never alerted
+        // However, we still need to update the keyboard translator
+        _keyboardTranslator.translate(true, keyboardEvent, false);
         
         // Subparser delegation
         BaseRecorderNativeParser subparser = getSubparser();
@@ -408,8 +397,10 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         return subparser.evaluateOther(windowEvent);
     }
     
-    private void alertHotkeyListeners(boolean press, NativeKeyEvent keyboardEvent)
+    private boolean alertHotkeyListeners(NativeKeyEvent keyboardEvent)
     {
+        boolean continueWithParsing = true;
+        
         Collection<RecorderHotkeyListener> listeners;
         
         synchronized (_lock)
@@ -421,21 +412,22 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         {
             if (isHotkeyEvent(l.getHotkey(), keyboardEvent))
             {
-                if (press)
+                l.onHotkeyPressed();
+                
+                // Play stop hotkey listener is never recorded
+                if (l == _playStopHotkeyListener)
                 {
-                    l.onHotkeyPressed();
-                }
-                else
-                {
-                    l.onHotkeyReleased();
+                    continueWithParsing = false;
                 }
             }
         }
+        
+        return continueWithParsing;
     }
     
     public boolean isHotkeyEvent(Hotkey hotkey, NativeKeyEvent keyboardEvent)
     {
-        RecorderUserInputKey translatedKey = _keyboardTranslator.translate(keyboardEvent);
+        RecorderUserInputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, true);
         
         if (translatedKey == null)
         {
