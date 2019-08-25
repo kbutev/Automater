@@ -174,8 +174,6 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
             }
             
             cleanup();
-            
-            _context.cleanup();
         }
         
         // Listener alert
@@ -527,6 +525,7 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     
     private void cleanup()
     {
+        _context.cleanup();
        _previousActionProcess = new ActionProcess(getLastAction());
        _currentActionProcess = null;
         Looper.getShared().unsubscribe(this);
