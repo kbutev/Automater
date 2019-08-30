@@ -5,12 +5,15 @@
  */
 package automater.recorder.model;
 
+import java.util.Date;
+
 /**
- * Represents a keyboard or mouse click input.
- *
+ * Represents a generic user input action.
+ * 
+ * Described only by a timestamp value.
+ * 
  * @author Bytevi
  */
-public interface UserInputKeyClick extends UserInput {
-    public RecorderUserInputKey getKeyValue();
-    public boolean isPress();
+public interface UserInput {
+    public Date getTimestamp();
 }

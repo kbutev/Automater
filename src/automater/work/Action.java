@@ -6,14 +6,20 @@
 package automater.work;
 
 import automater.recorder.model.UserInputKeyClick;
+import automater.recorder.model.UserInputMouseMove;
+import automater.utilities.CollectionUtilities;
 import automater.utilities.Description;
 import automater.utilities.Errors;
+import automater.utilities.Logger;
+import static automater.work.Action.translateDateToActionTime;
 import automater.work.model.ActionSystemKey;
 import automater.work.model.ActionSystemKeyModifierValue;
 import automater.work.model.ActionSystemKeyModifiers;
 import automater.work.model.BaseActionContext;
 import automater.work.parser.ActionKeyTranslator;
 import java.awt.Robot;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Date;
 
 /**
@@ -35,6 +41,11 @@ public class Action implements BaseAction, Description {
     public static Action createMouseMovement(Date timestamp, int x, int y, Description description) throws Exception
     {
         return new ActionMouseMovement(translateDateToActionTime(timestamp), x, y, description);
+    }
+    
+    public static Action createMouseMovement(Date timestamp, List<UserInputMouseMove> mouseMovements, Description description) throws Exception
+    {
+        return new ActionMouseMovement(translateDateToActionTime(timestamp), mouseMovements, description);
     }
     
     public static long translateDateToActionTime(Date timestamp)
@@ -240,23 +251,62 @@ class ActionKeyRelease extends Action {
 
 class ActionMouseMovement extends Action {
     long time;
-    int x;
-    int y;
+    List<UserInputMouseMove> movements;
     
     String standartDescription;
     String verboseDescription;
     
-    ActionMouseMovement(long time, int x, int y, Description description) throws Exception
+    ActionMouseMovement(long time, List<UserInputMouseMove> movements, Description description) throws Exception
     {
         this.time = time;
-        this.x = x;
-        this.y = y;
+        this.movements = CollectionUtilities.copyAsImmutable(movements);
         
         if (description != null)
         {
             this.standartDescription = description.getStandart();
             this.verboseDescription = description.getVerbose();
         }
+        
+        for (UserInputMouseMove m : this.movements)
+        {
+            Logger.message(this, "UserInputMouseMove with " + m.getTimestamp().getTime());
+        }
+    }
+    
+    ActionMouseMovement(long time, int x, int y, Description description) throws Exception
+    {
+        this.time = time;
+        
+        List<UserInputMouseMove> move = new ArrayList<>();
+        move.add(new UserInputMouseMove() {
+            @Override
+            public int getX() {
+                return x;
+            }
+
+            @Override
+            public int getY() {
+                return y;
+            }
+
+            @Override
+            public Date getTimestamp() {
+                return new Date(time);
+            }
+        });
+        this.movements = move;
+        
+        if (description != null)
+        {
+            this.standartDescription = description.getStandart();
+            this.verboseDescription = description.getVerbose();
+        }
+    }
+    
+    @Override
+    public boolean isComplex()
+    {
+        return true;
     }
     
     @Override
@@ -268,9 +318,58 @@ class ActionMouseMovement extends Action {
     @Override
     public void perform(BaseActionContext context)
     {
+        Logger.messageEvent(this, "Performing mouse motion action with " + String.valueOf(movements.size()) + " movements...");
+        
         Robot robot = context.getRobot();
         
-        robot.mouseMove(x, y);
+        ArrayList<UserInputMouseMove> movementsCopy = new ArrayList<>(movements);
+        BaseExecutorTimer timer = context.getTimer();
+        
+        while (movementsCopy.size() > 0)
+        {
+            UserInputMouseMove next = movementsCopy.get(0);
+            final long nextTime = translateDateToActionTime(next.getTimestamp());
+            
+            BaseAction action = new BaseAction() {
+                @Override
+                public boolean isComplex() {
+                    return false;
+                }
+
+                @Override
+                public long getPerformTime() {
+                    return nextTime;
+                }
+
+                @Override
+                public Description getDescription() {
+                    return null;
+                }
+
+                @Override
+                public void perform(BaseActionContext context) {
+                    robot.mouseMove(next.getX(), next.getY());
+                }
+            };
+            
+            if (timer.canPerformNextAction(action))
+            {
+                Logger.messageEvent(this, "Perform subaction mouse move " + nextTime);
+                
+                action.perform(context);
+                movementsCopy.remove(0);
+            }
+            else
+            {
+                try {
+                    wait(10);
+                } catch (Exception e) {
+                    
+                }
+            }
+        }
+        
+        Logger.messageEvent(this, "Finished mouse motion action");
     }
     
     @Override

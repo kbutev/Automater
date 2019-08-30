@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.recorder;
+package automater.recorder.parser;
 
 import automater.recorder.model.RecorderUserInput;
 
@@ -12,6 +12,6 @@ import automater.recorder.model.RecorderUserInput;
  * 
  * @author Bytevi
  */
-public interface RecorderNativeListenerDelegate {
+public interface RecorderJHookListenerDelegate {
     public void onParseInput(RecorderUserInput input);
 }

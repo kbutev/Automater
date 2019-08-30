@@ -5,6 +5,9 @@
  */
 package automater.recorder;
 
+import automater.recorder.model.RecorderResult;
+import automater.recorder.parser.RecorderJHookListenerDelegate;
+import automater.recorder.parser.RecorderJHookListener;
 import automater.recorder.model.RecorderUserInput;
 import automater.recorder.model.RecorderUserInputKey;
 import automater.recorder.parser.BaseRecorderNativeParser;
@@ -29,18 +32,18 @@ import org.jnativehook.mouse.NativeMouseWheelEvent;
  * 
  * @author Bytevi
  */
-public class Recorder implements RecorderNativeListenerDelegate {
+public class Recorder implements RecorderJHookListenerDelegate {
     private static Recorder singleton;
     private final Object _lock = new Object();
     
     public final Defaults defaults = new Defaults();
     
-    private RecorderNativeListener _nativeListener;
+    private RecorderJHookListener _nativeListener;
     private RecorderMasterNativeParser _masterParser;
     
     private BaseRecorderListener _listener;
     private BaseRecorderNativeParser _inputParser;
-    private BaseRecorderInputModel _recorderModel;
+    private BaseRecorderModel _recorderModel;
     private Hotkey _stopHotkey;
     
     private Recorder()
@@ -60,12 +63,12 @@ public class Recorder implements RecorderNativeListenerDelegate {
         return singleton;
     }
     
-    public void start(BaseRecorderNativeParser parser, BaseRecorderInputModel model, BaseRecorderListener listener) throws Exception
+    public void start(BaseRecorderNativeParser parser, BaseRecorderModel model, BaseRecorderListener listener) throws Exception
     {
         start(parser, model, listener, null);
     }
     
-    public void start(BaseRecorderNativeParser parser, BaseRecorderInputModel model, BaseRecorderListener listener, Hotkey stopHotkey) throws Exception
+    public void start(BaseRecorderNativeParser parser, BaseRecorderModel model, BaseRecorderListener listener, Hotkey stopHotkey) throws Exception
     {
         Logger.messageEvent(this, "Start...");
         
@@ -99,11 +102,19 @@ public class Recorder implements RecorderNativeListenerDelegate {
     
     public void registerPlayStopHotkeyListener(RecorderHotkeyListener listener)
     {
+        Logger.messageEvent(this, "Registering a play/stop hotkey listener for client " + listener.toString());
         _masterParser.setPlayStopHotkeyListener(listener);
     }
     
     public void unregisterPlayStopHotkeyListener()
     {
+        RecorderHotkeyListener l = _masterParser.getPlayStopHotkeyListener();
+        
+        if (l != null)
+        {
+            Logger.messageEvent(this, "Unregistering a play/stop hotkey listener for client " + l.toString());
+        }
+        
         _masterParser.setPlayStopHotkeyListener(null);
     }
     
@@ -118,9 +129,11 @@ public class Recorder implements RecorderNativeListenerDelegate {
             return;
         }
         
+        boolean success;
+        
         // Process the input that native hook listener has translated for us
         try {
-            _recorderModel.addInput(input);
+            success = _recorderModel.addInput(input);
         } catch (Exception e) {
             try {
                 Logger.messageEvent(this, "Cancel! Exception encountered: " + e.toString());
@@ -133,10 +146,19 @@ public class Recorder implements RecorderNativeListenerDelegate {
             return;
         }
         
-        // Successfully parsed the input object, alert the listener
-        if (input != null)
+        // Alert listener
+        if (_listener == null)
+        {
+            return;
+        }
+        
+        if (success)
         {
             _listener.onRecordedUserInput(input);
+        }
+        else
+        {
+            _listener.onFailedRecordedUserInput(input);
         }
     }
     
@@ -150,7 +172,7 @@ public class Recorder implements RecorderNativeListenerDelegate {
         }
         
         _masterParser = new RecorderMasterNativeParser();
-        _nativeListener = new RecorderNativeListener(_masterParser, this);
+        _nativeListener = new RecorderJHookListener(_masterParser, this);
         
         try {
             _nativeListener.start();
@@ -260,6 +282,15 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     
     public void setSubparser(BaseRecorderNativeParser parser)
     {
+        if (parser != null)
+        {
+            Logger.message(this, "set parser to " + parser.toString());
+        }
+        else
+        {
+            Logger.message(this, "set parser to null");
+        }
+        
         synchronized (_lock)
         {
             _subParser = parser;
@@ -282,6 +313,14 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         }
     }
     
+    public RecorderHotkeyListener getPlayStopHotkeyListener()
+    {
+        synchronized (_lock)
+        {
+            return _playStopHotkeyListener;
+        }
+    }
+    
     public void setPlayStopHotkeyListener(RecorderHotkeyListener listener)
     {
         synchronized (_lock)
@@ -301,8 +340,9 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     
     @Override
     public RecorderUserInput evaluatePress(NativeKeyEvent keyboardEvent) {
-        // Hotkey listeners alert
-        boolean continueParsing = alertHotkeyListeners(keyboardEvent);
+        // Hotkey listeners update & alert
+        RecorderUserInputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, true);
+        boolean continueParsing = updateHotkeyListeners(translatedKey, true);
         
         if (!continueParsing)
         {
@@ -322,9 +362,14 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
 
     @Override
     public RecorderUserInput evaluateRelease(NativeKeyEvent keyboardEvent) {
-        // For release keyboard events, hotkey listeners are never alerted
-        // However, we still need to update the keyboard translator
-        _keyboardTranslator.translate(true, keyboardEvent, false);
+        // Hotkey listeners update
+        RecorderUserInputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, false);
+        boolean continueParsing = updateHotkeyListeners(translatedKey, false);
+        
+        if (!continueParsing)
+        {
+            return null;
+        }
         
         // Subparser delegation
         BaseRecorderNativeParser subparser = getSubparser();
@@ -386,7 +431,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     }
 
     @Override
-    public RecorderUserInput evaluateOther(WindowEvent windowEvent) {
+    public RecorderUserInput evaluateWindowEvent(WindowEvent windowEvent) {
         BaseRecorderNativeParser subparser = getSubparser();
         
         if (subparser == null)
@@ -394,10 +439,10 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
             return null;
         }
         
-        return subparser.evaluateOther(windowEvent);
+        return subparser.evaluateWindowEvent(windowEvent);
     }
     
-    private boolean alertHotkeyListeners(NativeKeyEvent keyboardEvent)
+    private boolean updateHotkeyListeners(RecorderUserInputKey translatedKey, boolean performDelegateCall)
     {
         boolean continueWithParsing = true;
         
@@ -410,11 +455,14 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         
         for (RecorderHotkeyListener l : listeners)
         {
-            if (isHotkeyEvent(l.getHotkey(), keyboardEvent))
+            if (isHotkeyEvent(l.getHotkey(), translatedKey))
             {
-                l.onHotkeyPressed();
+                if (performDelegateCall)
+                {
+                    l.onHotkeyPressed();
+                }
                 
-                // Play stop hotkey listener is never recorded
+                // Play/stop hotkey is never recorded
                 if (l == _playStopHotkeyListener)
                 {
                     continueWithParsing = false;
@@ -425,10 +473,8 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         return continueWithParsing;
     }
     
-    public boolean isHotkeyEvent(Hotkey hotkey, NativeKeyEvent keyboardEvent)
+    public boolean isHotkeyEvent(Hotkey hotkey, RecorderUserInputKey translatedKey)
     {
-        RecorderUserInputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, true);
-        
         if (translatedKey == null)
         {
             return false;

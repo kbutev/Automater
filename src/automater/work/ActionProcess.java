@@ -6,6 +6,7 @@
 package automater.work;
 
 import automater.utilities.Errors;
+import automater.utilities.Logger;
 import automater.utilities.Looper;
 import automater.utilities.SimpleCallback;
 import automater.work.model.ActionContext;

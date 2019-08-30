@@ -145,7 +145,7 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
         _eventLogger.logMouseMovementEvent(mouseMoveEvent, x, y);
         
         RecorderUserInput userInput;
-        userInput = RecorderUserInput.createMouseMotion(timestamp, x, y);
+        userInput = RecorderUserInput.createMouseMove(timestamp, x, y);
         
         return userInput;
     }
@@ -158,28 +158,18 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
             return null;
         }
         
-        Date timestamp = getCurrentTime();
-        _eventLogger.logMouseWheelEvent(mouseWheelEvent);
-        
-        RecorderUserInput userInput = new RecorderUserInput(timestamp);
-        
-        return userInput;
+        return null;
     }
     
     @Override
-    public RecorderUserInput evaluateOther(WindowEvent windowEvent)
+    public RecorderUserInput evaluateWindowEvent(WindowEvent windowEvent)
     {
         if (!flags.contains(RecorderParserFlag.RECORD_WINDOW_EVENTS))
         {
             return null;
         }
         
-        Date timestamp = getCurrentTime();
-        _eventLogger.logWindowEvent(windowEvent);
-        
-        RecorderUserInput userInput = new RecorderUserInput(timestamp);
-        
-        return userInput;
+        return null;
     }
     
     // Private logger

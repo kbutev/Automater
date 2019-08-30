@@ -8,10 +8,11 @@ package automater.presenter;
 import automater.recorder.BaseRecorderListener;
 import automater.recorder.Recorder;
 import automater.recorder.RecorderHotkeyListener;
-import automater.recorder.RecorderModel;
-import automater.recorder.RecorderResult;
+import automater.recorder.model.RecorderModel;
+import automater.recorder.model.RecorderResult;
 import automater.recorder.model.RecorderUserInput;
 import automater.recorder.parser.RecorderNativeParser;
+import automater.recorder.parser.RecorderNativeParserSmart;
 import automater.recorder.parser.RecorderParserFlag;
 import automater.settings.Hotkey;
 import automater.storage.GeneralStorage;
@@ -38,7 +39,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     private final Recorder _recorder = Recorder.getDefault();
     private final List<RecorderParserFlag> _recordFlags = _recorder.defaults.getRecordOnlyKeyClicksAndMouseMotionFlags();
     private RecorderModel _recorderModel = new RecorderModel();
-    private final RecorderNativeParser _recorderMacroParser = new RecorderNativeParser(_recordFlags);
+    private final RecorderNativeParser _recorderMacroParser = new RecorderNativeParserSmart(_recordFlags);
     private boolean _hasStartedMacroRecording = false;
     private RecorderResult _recordedResult;
     
@@ -86,11 +87,11 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     // # BaseRecorderListener
     
     @Override
-    public RecorderUserInput onRecordedUserInput(RecorderUserInput input)
+    public void onRecordedUserInput(RecorderUserInput input)
     {
         if (input == null)
         {
-            return null;
+            return;
         }
         
         Logger.messageEvent(this, "Captured user input " + input.toString());
@@ -98,8 +99,12 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         _macroActionDescriptionsList.add(input);
         
         _delegate.onActionsRecordedChange(getActionStringsData());
-        
-        return input;
+    }
+    
+    @Override
+    public void onFailedRecordedUserInput(RecorderUserInput input)
+    {
+        _delegate.onActionsRecordedChange(getActionStringsData());
     }
     
     @Override
@@ -237,7 +242,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     {
         clearData();
         
-        _rootViewController.navigateToOpenScreen();
+        onSwitchToPlayScreen();
     }
     
     public void setPlayOrStopHotkey(Hotkey hotkey)

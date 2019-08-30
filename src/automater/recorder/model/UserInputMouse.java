@@ -10,6 +10,6 @@ package automater.recorder.model;
  * 
  * @author Bytevi
  */
-public interface UserInputMouse {
+public interface UserInputMouse extends UserInput {
     
 }

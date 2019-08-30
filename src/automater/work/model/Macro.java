@@ -6,7 +6,7 @@
 package automater.work.model;
 
 import automater.TextValue;
-import automater.recorder.RecorderResult;
+import automater.recorder.model.RecorderResult;
 import automater.utilities.DateUtilities;
 import automater.utilities.Description;
 import java.io.Serializable;

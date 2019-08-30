@@ -24,6 +24,7 @@ import java.util.List;
  */
 public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, LooperClient, ExecutorProgress {
     private final Object _lock = new Object();
+    private final Object _timerLock = new Object();
     
     private final Robot _robot;
     private ActionContext _context;
@@ -150,7 +151,7 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
             actionsSize = _actions.size();
             
             // Setup context
-            _context = new ActionContext(_robot);
+            _context = new ActionContext(_robot, _timer);
         }
         
         // Listener alert
@@ -187,14 +188,19 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     
     @Override
     public void setup(BaseAction firstAction, BaseAction lastAction) throws Exception {
-        _previousDate = new Date();
-        
-        _currentTimeValue = firstAction.getPerformTime();
+        synchronized (_timerLock)
+        {
+            _previousDate = new Date();
+            _currentTimeValue = firstAction.getPerformTime();
+        }
     }
 
     @Override
     public long getCurrentTimeValue() {
-        return _currentTimeValue;
+        synchronized (_timerLock)
+        {
+            return _currentTimeValue;
+        }
     }
 
     @Override
@@ -209,26 +215,37 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
 
     @Override
     public double getTimeScale() {
-        return _timeScale;
+        synchronized (_timerLock)
+        {
+            return _timeScale;
+        }
+        
     }
     
     @Override
     public void setTimeScale(double scale) {
-        _timeScale = scale;
+        synchronized (_timerLock)
+        {
+            _timeScale = scale;
+        }
     }
 
     @Override
     public long updateCurrentTime(long dt) {
-        dt *= _timeScale;
-        
-        _currentTimeValue += dt;
-        
-        return _currentTimeValue;
+        synchronized (_timerLock)
+        {
+            dt *= _timeScale;
+            
+            _currentTimeValue += dt;
+            
+            return _currentTimeValue;
+        }
     }
     
     @Override
     public boolean canPerformNextAction(BaseAction action) {
-        return action.getPerformTime() <= getCurrentTimeValue();
+        long currentTime = getCurrentTimeValue();
+        return action.getPerformTime() <= currentTime;
     }
     
     // # LooperClient
@@ -418,7 +435,7 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
             }
             
             // Process finished? Mark as done
-            if (currentActionProcess.isActive())
+            if (!currentActionProcess.isActive())
             {
                 String actionDescription = action.getDescription().getStandart();
                 

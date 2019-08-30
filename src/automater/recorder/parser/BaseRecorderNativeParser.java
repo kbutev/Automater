@@ -26,5 +26,5 @@ public interface BaseRecorderNativeParser {
     public RecorderUserInput evaluateMouseMove(NativeMouseEvent mouseMoveEvent);
     public RecorderUserInput evaluateMouseWheel(NativeMouseWheelEvent mouseWheelEvent);
     
-    public RecorderUserInput evaluateOther(WindowEvent windowEvent);
+    public RecorderUserInput evaluateWindowEvent(WindowEvent windowEvent);
 }

@@ -5,6 +5,7 @@
  */
 package automater.work.model;
 
+import automater.work.BaseExecutorTimer;
 import java.awt.Robot;
 
 /**
@@ -21,6 +22,7 @@ import java.awt.Robot;
  */
 public interface BaseActionContext {
     public Robot getRobot();
+    public BaseExecutorTimer getTimer();
     
     public ActionSystemKeyModifiers getPressedModifiers();
     public boolean isModifierPressed(ActionSystemKeyModifierValue modifier);

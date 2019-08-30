@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.recorder;
+package automater.recorder.model;
 
 import automater.recorder.model.RecorderUserInput;
 import automater.utilities.CollectionUtilities;

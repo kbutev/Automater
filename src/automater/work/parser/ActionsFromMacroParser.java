@@ -14,6 +14,8 @@ import automater.recorder.model.UserInputKeyClick;
 import automater.recorder.model.UserInputMouseMotion;
 import automater.utilities.Description;
 import automater.work.BaseAction;
+import java.awt.Point;
+import automater.recorder.model.UserInputMouseMove;
 
 /**
  *
@@ -57,14 +59,28 @@ public class ActionsFromMacroParser implements BaseActionsParser {
         {
             UserInputKeyClick keyClick = (UserInputKeyClick)input;
             Description description = input;
-            action = Action.createKeyClick(input.timestamp, keyClick, description);
+            action = Action.createKeyClick(input.getTimestamp(), keyClick, description);
+        }
+        
+        if (input instanceof UserInputMouseMove)
+        {
+            UserInputMouseMove mouseMove = (UserInputMouseMove)input;
+            Description description = input;
+            action = Action.createMouseMovement(mouseMove.getTimestamp(), mouseMove.getX(), mouseMove.getY(), description);
         }
         
         if (input instanceof UserInputMouseMotion)
         {
-            UserInputMouseMotion mouseMove = (UserInputMouseMotion)input;
+            UserInputMouseMotion mouseMotion = (UserInputMouseMotion)input;
+            ArrayList<UserInputMouseMove> movements = new ArrayList<>();
+            
+            for (int e = 0; e < mouseMotion.numberOfMovements(); e++)
+            {
+                movements.add(mouseMotion.getMoveAt(e));
+            }
+            
             Description description = input;
-            action = Action.createMouseMovement(input.timestamp, mouseMove.getMoveX(), mouseMove.getMoveY(), description);
+            action = Action.createMouseMovement(input.getTimestamp(), movements, description);
         }
         
         if (action == null)

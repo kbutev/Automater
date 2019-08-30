@@ -5,17 +5,17 @@
  */
 package automater.recorder;
 
+import automater.recorder.model.RecorderResult;
 import automater.recorder.model.RecorderUserInput;
 
 /**
  * A listener for recorded user input actions.
- * You can modify the user input by returning a different value (return NULL
- * to reject the recorded input).
  *
  * @author Bytevi
  */
 public interface BaseRecorderListener {
-    public RecorderUserInput onRecordedUserInput(RecorderUserInput input);
+    public void onRecordedUserInput(RecorderUserInput input);
+    public void onFailedRecordedUserInput(RecorderUserInput input);
     
     public void onFinishedRecording(RecorderResult result, boolean success, Exception exception);
 }

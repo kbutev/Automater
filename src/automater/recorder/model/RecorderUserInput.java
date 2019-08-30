@@ -17,15 +17,10 @@ import java.util.Date;
  * 
  * @author Bytevi
  */
-public class RecorderUserInput implements Serializable, Description {
+public class RecorderUserInput implements UserInput, Serializable, Description {
     private static final RecorderUserInput _logInstance = new RecorderUserInput();
     
-    public final Date timestamp;
-    
-    private RecorderUserInput()
-    {
-        timestamp = null;
-    }
+    private final Date _timestamp;
     
     public static RecorderUserInput createKeyboardPress(Date timestamp, RecorderUserInputKey key)
     {
@@ -79,9 +74,9 @@ public class RecorderUserInput implements Serializable, Description {
         return null;
     }
      
-    public static RecorderUserInput createMouseMotion(Date timestamp, int x, int y)
+    public static RecorderUserInput createMouseMove(Date timestamp, int x, int y)
     {
-        return new RecorderUserInputMouseMotion(timestamp, x, y);
+        return new RecorderUserInputMouseMove(timestamp, x, y);
     }
     
     public static RecorderUserInput createMouseWheel(Date timestamp)
@@ -94,9 +89,21 @@ public class RecorderUserInput implements Serializable, Description {
         return new RecorderUserInputWindow(timestamp);
     }
     
-    public RecorderUserInput(Date timestamp)
+    private RecorderUserInput()
     {
-        this.timestamp = timestamp;
+        _timestamp = null;
+    }
+    
+    protected RecorderUserInput(Date timestamp)
+    {
+        this._timestamp = timestamp;
+    }
+    
+    // # UserInput
+    
+    @Override
+    public Date getTimestamp() {
+        return _timestamp;
     }
     
     // # Description
@@ -123,7 +130,7 @@ public class RecorderUserInput implements Serializable, Description {
 
     @Override
     public String getName() {
-        return DateUtilities.asHourMinuteSecondMilisecond(timestamp);
+        return DateUtilities.asHourMinuteSecondMilisecond(_timestamp);
     }
 
     @Override
@@ -312,12 +319,12 @@ class RecorderUserInputMouseRelease extends RecorderUserInput implements UserInp
     }
 }
 
-class RecorderUserInputMouseMotion extends RecorderUserInput implements UserInputMouseMotion, UserInputMouse
+class RecorderUserInputMouseMove extends RecorderUserInput implements UserInputMouseMove, UserInputMouse
 {
     final int x;
     final int y;
     
-    RecorderUserInputMouseMotion(Date timestamp, int x, int y)
+    RecorderUserInputMouseMove(Date timestamp, int x, int y)
     {
         super(timestamp);
         this.x = x;
@@ -328,18 +335,20 @@ class RecorderUserInputMouseMotion extends RecorderUserInput implements UserInpu
     
     @Override
     public String getStandart() {
-        return "MouseMotion " + "(" + x + "," + y + ")";
+        return "MouseMove " + "(" + x + "," + y + ")";
     }
 
     // # UserInputMouseMotion
     
     @Override
-    public int getMoveX() {
+    public int getX()
+    {
         return x;
     }
-
+    
     @Override
-    public int getMoveY() {
+    public int getY()
+    {
         return y;
     }
 }

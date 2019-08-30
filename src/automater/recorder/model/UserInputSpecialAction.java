@@ -10,6 +10,6 @@ package automater.recorder.model;
  * 
  * @author Bytevi
  */
-public interface UserInputSpecialAction {
+public interface UserInputSpecialAction extends UserInput {
     public boolean isCloseWindow();
 }

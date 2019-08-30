@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.recorder;
+package automater.recorder.parser;
 
 import automater.recorder.model.RecorderUserInput;
 import automater.utilities.Errors;
@@ -21,7 +21,6 @@ import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseInputListener;
 import org.jnativehook.mouse.NativeMouseWheelEvent;
 import org.jnativehook.mouse.NativeMouseWheelListener;
-import automater.recorder.parser.BaseRecorderNativeParser;
 
 /**
  * Wrapper of NativeHookListener.
@@ -31,15 +30,15 @@ import automater.recorder.parser.BaseRecorderNativeParser;
  * 
  * @author Bytevi
  */
-public class RecorderNativeListener {
+public class RecorderJHookListener {
     private static final Object _registerLock = new Object();
     private static SwingDispatchService _swingDispatchService = null;
     
     private NativeHookListener _nativeHookListener;
     private final BaseRecorderNativeParser _parser;
-    private final RecorderNativeListenerDelegate _delegate;
+    private final RecorderJHookListenerDelegate _delegate;
     
-    public RecorderNativeListener(BaseRecorderNativeParser parser, RecorderNativeListenerDelegate delegate)
+    public RecorderJHookListener(BaseRecorderNativeParser parser, RecorderJHookListenerDelegate delegate)
     {
         this._parser = parser;
         this._delegate = delegate;

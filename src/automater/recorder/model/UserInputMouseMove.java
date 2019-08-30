@@ -6,11 +6,11 @@
 package automater.recorder.model;
 
 /**
- * Represents a keyboard or mouse click input.
+ * Represents mouse movement input.
  *
  * @author Bytevi
  */
-public interface UserInputKeyClick extends UserInput {
-    public RecorderUserInputKey getKeyValue();
-    public boolean isPress();
+public interface UserInputMouseMove extends UserInputMouse {
+    public int getX();
+    public int getY();
 }

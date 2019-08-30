@@ -7,13 +7,15 @@ package automater.utilities;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Contains utilities for performing callbacks, and updating objects every interval.
+ * 
+ * LooperClients are updated by one single specific background thread. Do not block it!
+ * All callbacks are done on separate background threads, they can be blocked w/o any worries.
  *
  * @author Bytevi
  */
@@ -164,12 +166,19 @@ public class Looper {
             
             for (LooperCallback callback : callbacks)
             {
-                try {
-                    callback.perform();
-                } catch (Exception e) {
-                    Logger.error(this, "Uncaught exception in callback: " + e.toString());
-                    e.printStackTrace(System.out);
-                }
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            callback.perform();
+                        } catch (Exception e) {
+                            Logger.error(this, "Uncaught exception in callback: " + e.toString());
+                            e.printStackTrace(System.out);
+                        }
+                    }
+                };
+                
+                new Thread(runnable).start();
             }
             
             clearCallbacks();

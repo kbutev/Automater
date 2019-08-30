@@ -6,11 +6,13 @@
 package automater.recorder.model;
 
 /**
- * Represents mouse movement input.
  *
  * @author Bytevi
  */
-public interface UserInputMouseMotion {
-    public int getMoveX();
-    public int getMoveY();
+public interface UserInputMouseMotion extends UserInputMouse {
+    public int numberOfMovements();
+    
+    public UserInputMouseMove getFirstMove();
+    public UserInputMouseMove getLastMove();
+    public UserInputMouseMove getMoveAt(int index);
 }

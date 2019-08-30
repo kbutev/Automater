@@ -232,8 +232,6 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         
         _recorder.unregisterHotkeyListener(this);
         
-        cleanup();
-        
         _rootViewController.navigateToOpenScreen();
     }
     
@@ -246,15 +244,6 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     }
     
     // # Private
-    
-    private void cleanup()
-    {
-        try {
-            _recorder.stop();
-        } catch (Exception e) {
-            
-        }
-    }
     
     private void updatePlayStatus()
     {

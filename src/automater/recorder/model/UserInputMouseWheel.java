@@ -10,6 +10,6 @@ package automater.recorder.model;
  * 
  * @author Bytevi
  */
-public interface UserInputMouseWheel {
+public interface UserInputMouseWheel extends UserInputMouse {
     public int getScrollValue();
 }

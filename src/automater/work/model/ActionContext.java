@@ -5,6 +5,7 @@
  */
 package automater.work.model;
 
+import automater.work.BaseExecutorTimer;
 import java.awt.Robot;
 import java.util.HashSet;
 
@@ -14,19 +15,26 @@ import java.util.HashSet;
  */
 public class ActionContext implements BaseActionContext {
     private final Robot _robot;
+    private final BaseExecutorTimer _timer;
     
     private ActionSystemKeyModifiers _modifiers = ActionSystemKeyModifiers.none();
     
     private final HashSet<ActionSystemKey> _keysPressed = new HashSet<>();
     
-    public ActionContext(Robot robot)
+    public ActionContext(Robot robot, BaseExecutorTimer timer)
     {
         this._robot = robot;
+        this._timer = timer;
     }
 
     @Override
     public Robot getRobot() {
         return _robot;
+    }
+    
+    @Override
+    public BaseExecutorTimer getTimer() {
+        return _timer;
     }
     
     @Override
