@@ -51,10 +51,15 @@ public class Looper {
 
         return singleton;
     }
+    
+    public void subscribe(final LooperClient client, int delay)
+    {
+        _clientsManager.subscribe(client, delay);
+    }
 
     public void subscribe(final LooperClient client)
     {
-        _clientsManager.subscribe(client);
+        subscribe(client, 0);
     }
 
     public void unsubscribe(final LooperClient client)
@@ -85,15 +90,15 @@ public class Looper {
     
     class ClientsManager 
     {
-        private HashSet<LooperClient> _clients = new HashSet<>();
+        private HashSet<LooperClientSubscription> _subscriptions = new HashSet<>();
         
         private final Object _mainLock = new Object();
         
-        private void subscribe(final LooperClient client)
+        private void subscribe(final LooperClient client, int delay)
         {
             synchronized (_mainLock)
             {
-                _clients.add(client);
+                _subscriptions.add(new LooperClientSubscription(client, delay));
             }
         }
 
@@ -101,23 +106,34 @@ public class Looper {
         {
             synchronized (_mainLock)
             {
-                _clients.remove(client);
+                LooperClientSubscription subToRemove = null;
+                
+                for (LooperClientSubscription sub : _subscriptions)
+                {
+                    if (sub.client == client)
+                    {
+                        subToRemove = sub;
+                        break;
+                    }
+                }
+                
+                _subscriptions.remove(subToRemove);
             }
         }
         
        private void loop()
        {
-            Collection<LooperClient> clients;
+            Collection<LooperClientSubscription> subscriptions;
 
             synchronized (_mainLock)
             {
-                clients = CollectionUtilities.copyAsImmutable(_clients);
+                subscriptions = CollectionUtilities.copyAsImmutable(_subscriptions);
             }
             
-            for (LooperClient client : clients)
+            for (LooperClientSubscription sub : subscriptions)
             {
                 try {
-                    client.loop();
+                    sub.loop(LOOPER_INTERVAL_MSEC);
                 } catch (Exception e) {
                     Logger.error(this, "Uncaught exception in client loop: " + e.toString());
                     e.printStackTrace(System.out);
@@ -184,36 +200,71 @@ public class Looper {
             clearCallbacks();
         }
     }
+}
+
+class LooperClientSubscription {
+    public final LooperClient client;
     
-    class LooperCallback <T> {
-        public final SimpleCallback callback;
-        public final Callback<T> callbackWithParameter;
-        public final T parameter;
-        
-        private LooperCallback(SimpleCallback callback)
+    private final int _timer;
+    private int _currentTimer;
+    
+    LooperClientSubscription(LooperClient client, int timer)
+    {
+        this.client = client;
+        this._timer = timer;
+        this._currentTimer = timer;
+    }
+    
+    public void loop(int dt)
+    {
+        // Loop only every specific interval
+        if (_timer != 0)
         {
-            this.callback = callback;
-            this.callbackWithParameter = null;
-            this.parameter = null;
+            _currentTimer -= dt;
+            
+            if (_currentTimer > 0)
+            {
+                return;
+            }
+            
+            // Reset timer to original value
+            // Overkill time value is also added to the result
+            _currentTimer += _timer;
         }
         
-        private LooperCallback(Callback<T> callback, T parameter)
-        {
-            this.callback = null;
-            this.callbackWithParameter = callback;
-            this.parameter = parameter;
-        }
+        // Loop
+        this.client.loop();
+    }
+}
+
+class LooperCallback <T> {
+    public final SimpleCallback callback;
+    public final Callback<T> callbackWithParameter;
+    public final T parameter;
         
-        private void perform()
+    LooperCallback(SimpleCallback callback)
+    {
+        this.callback = callback;
+        this.callbackWithParameter = null;
+        this.parameter = null;
+    }
+    
+    LooperCallback(Callback<T> callback, T parameter)
+    {
+        this.callback = null;
+        this.callbackWithParameter = callback;
+        this.parameter = parameter;
+    }
+    
+    public void perform()
+    {
+        if (callback != null)
         {
-            if (callback != null)
-            {
-                this.callback.perform();
-            }
-            else
-            {
-                this.callbackWithParameter.perform(parameter);
-            }
+            this.callback.perform();
+        }
+        else
+        {
+            this.callbackWithParameter.perform(parameter);
         }
     }
 }
