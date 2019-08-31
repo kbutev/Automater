@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  * @author Bytevi
  */
 public class Looper {
-    public static int LOOPER_INTERVAL_MSEC = 100;
+    public static int LOOPER_INTERVAL_MSEC = 50;
 
     private static Looper singleton;
     
