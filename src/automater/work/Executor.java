@@ -9,6 +9,7 @@ import automater.recorder.model.RecorderUserInput;
 import automater.utilities.Logger;
 import automater.work.model.ExecutorState;
 import automater.work.model.Macro;
+import automater.work.model.MacroParameters;
 import java.util.Iterator;
 import java.util.List;
 import automater.work.parser.BaseActionsParser;
@@ -52,7 +53,12 @@ public class Executor {
     
     public BaseExecutorProcess performMacro(Macro macro, BaseActionsParser actionParser, ExecutorListener listener) throws Exception
     {
-        Logger.messageEvent(this, "Perform macro '" + macro.getName() + "'");
+        return performMacro(macro, MacroParameters.defaultValues(), actionParser, listener);
+    }
+    
+    public BaseExecutorProcess performMacro(Macro macro, MacroParameters parameters, BaseActionsParser actionParser, ExecutorListener listener) throws Exception
+    {
+        Logger.messageEvent(this, "Perform macro '" + macro.getName() + "' with parameters " + parameters.toString());
         
         synchronized (_lock)
         {
@@ -65,7 +71,7 @@ public class Executor {
             BaseExecutorProcess process = new ExecutorProcess(_robot, actions);
             process.setListener(listener);
             
-            _state.startProcess(process);
+            _state.startProcess(process, parameters);
             
             return process;
         }

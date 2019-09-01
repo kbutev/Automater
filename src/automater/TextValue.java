@@ -39,12 +39,19 @@ public enum TextValue {
     Play_DialogErrorTitle,
     Play_NotificationStartTitle, Play_NotificationStartMessage, Play_NotificationStartTooltip,
     Play_NotificationFinishTitle, Play_NotificationFinishMessage, Play_NotificationFinishTooltip,
+    Play_OptionsFormTitle,
+    
+    // Macro parameters
+    MacroParameters_Default,
+    MacroParameters_Playspeed,
+    MacroParameters_Repeat, MacroParameters_RepeatForever, MacroParameters_RepeatNever,
     
     // Dialog
     Dialog_OK,
     Dialog_SavedRecordingTitle, Dialog_SavedRecordingMessage,
     Dialog_SaveRecordingFailedTitle, Dialog_SaveRecordingFailedMessage,
     Dialog_ConfirmDeleteMacroTitle, Dialog_ConfirmDeleteMacroMessage,
+    
     
     End;
     
@@ -100,7 +107,7 @@ public enum TextValue {
         put(Record_HeaderText, "Record macro");
         put(Record_SwitchToOpenButtonTitle, "MACROS >");
         put(Record_SwitchToOpenButtonTip, "Switch to open macros screen");
-        put(Record_MacroActionListName, "Recorded actions; double click to modify");
+        put(Record_MacroActionListName, "Recorded actions");
         put(Record_IdleStatus, "Idle (Press %@ to RECORD/FINISH)");
         put(Record_MacroNameFieldDefaultText, "Untitled macro");
         put(Record_MacroNameFieldTip, "The name of the macro");
@@ -142,6 +149,14 @@ public enum TextValue {
         put(Play_NotificationFinishTitle, "Automater");
         put(Play_NotificationFinishMessage, "Finished playing '%@'");
         put(Play_NotificationFinishTooltip, "Finished playing '%@'");
+        put(Play_OptionsFormTitle, "Set play options");
+        
+        // Macro parameters
+        put(MacroParameters_Default, "Play once");
+        put(MacroParameters_Playspeed, "Playspeed: %@");
+        put(MacroParameters_Repeat, "Repeat: %@");
+        put(MacroParameters_RepeatForever, "Play forever");
+        put(MacroParameters_RepeatNever, "Play once");
         
         // Dialog
         put(Dialog_OK, "Ok");

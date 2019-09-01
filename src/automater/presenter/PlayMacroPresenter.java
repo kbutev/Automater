@@ -25,6 +25,7 @@ import automater.work.parser.BaseActionsParser;
 import java.util.List;
 import automater.work.ExecutorListener;
 import automater.work.model.ExecutorProgress;
+import automater.work.model.MacroParameters;
 
 /**
  *
@@ -46,6 +47,10 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     
     private final Recorder _recorder = Recorder.getDefault();
     private Hotkey _playOrStopHotkey;
+    
+    private MacroParameters _macroParameters = MacroParameters.defaultValues();
+    private boolean _displayStartNotifications = true;
+    private boolean _displayStopNotifications = true;
     
     public PlayMacroPresenter(RootViewController rootViewController, Macro macro)
     {
@@ -179,7 +184,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         Logger.messageEvent(this, "Play.");
         
         try {
-            _ongoingExecution = _executor.performMacro(_macro, _parser, this);
+            _ongoingExecution = _executor.performMacro(_macro, _macroParameters, _parser, this);
         } catch (Exception e) {
             Logger.error(this, "Failed to start executor: " + e.toString());
             _delegate.onErrorEncountered(e);
@@ -219,14 +224,29 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         _delegate.stopRecording();
     }
     
-    public void setOptions()
+    public void setNotificationOptions(boolean displayStart, boolean displayStop)
     {
-        
+        _displayStartNotifications = displayStart;
+        _displayStopNotifications = displayStop;
     }
     
-    public void resetOptions()
+    public MacroParameters getPlayParameters()
     {
+        return _macroParameters;
+    }
+    
+    public void setPlayParameters(MacroParameters parameters)
+    {
+        Logger.messageEvent(this, "Play parameters changed: " + parameters.toString());
         
+        _macroParameters = parameters;
+    }
+    
+    public void resetPlayParameters()
+    {
+       Logger.messageEvent(this, "Play parameters reset to their default values.");
+       
+        _macroParameters = MacroParameters.defaultValues();
     }
     
     public void navigateBack()
@@ -257,6 +277,11 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     
     private void displayPlayingStartedNotification()
     {
+        if (!_displayStartNotifications)
+        {
+            return;
+        }
+        
         String macroName = _macro.name;
         String macroHotkey = _playOrStopHotkey.key.toString();
         
@@ -269,6 +294,11 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     
     private void displayPlayingFinishedNotification()
     {
+        if (!_displayStopNotifications)
+        {
+            return;
+        }
+        
         String macroName = _macro.name;
         String macroHotkey = _playOrStopHotkey.key.toString();
         

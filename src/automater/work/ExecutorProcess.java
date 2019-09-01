@@ -12,6 +12,7 @@ import automater.utilities.Looper;
 import automater.utilities.LooperClient;
 import automater.work.model.ActionContext;
 import automater.work.model.ExecutorProgress;
+import automater.work.model.MacroParameters;
 import java.awt.Robot;
 import java.util.ArrayList;
 import java.util.Date;
@@ -126,7 +127,7 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     }
     
     @Override
-    public void start() throws Exception
+    public void start(MacroParameters parameters) throws Exception
     {
         Logger.messageEvent(this, "Start.");
         

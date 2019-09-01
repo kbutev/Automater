@@ -6,6 +6,7 @@
 package automater.work;
 
 import automater.work.model.ExecutorProgress;
+import automater.work.model.MacroParameters;
 
 /**
  * Represents an object that performs actions.
@@ -32,6 +33,6 @@ public interface BaseExecutorProcess {
     public void setExecutorTimer(BaseExecutorTimer timer);
     public void setListener(ExecutorListener listener);
     
-    public void start() throws Exception;
+    public void start(MacroParameters parameters) throws Exception;
     public void stop() throws Exception;
 }

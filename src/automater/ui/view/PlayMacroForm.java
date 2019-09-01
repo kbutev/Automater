@@ -18,6 +18,7 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
     public SimpleCallback onBackButtonCallback = SimpleCallback.createDoNothing();
     public SimpleCallback onPlayButtonCallback = SimpleCallback.createDoNothing();
     public SimpleCallback onStopButtonCallback = SimpleCallback.createDoNothing();
+    public SimpleCallback onOptionsButtonCallback = SimpleCallback.createDoNothing();
     
     /**
      * Creates new form PlayMacroForm
@@ -77,9 +78,14 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         });
 
         optionsButton.setText("Options");
+        optionsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                optionsButtonActionPerformed(evt);
+            }
+        });
 
         optionsLabel.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        optionsLabel.setText("Play once");
+        optionsLabel.setText("Play standart");
 
         macroNameLabel.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
         macroNameLabel.setText("Macro name");
@@ -153,6 +159,10 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
             onStopButtonCallback.perform();
         }
     }//GEN-LAST:event_playAndStopButtonActionPerformed
+
+    private void optionsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optionsButtonActionPerformed
+        onOptionsButtonCallback.perform();
+    }//GEN-LAST:event_optionsButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -272,6 +282,11 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         macroNameLabel.setText(macroName);
         macroDescriptionLabel.setText(macroDescription);
         macroActionsList.setModel(macroActionsDataSource);
+    }
+    
+    public void setMacroParametersValue(String value)
+    {
+        optionsLabel.setText(value);
     }
     
     public void setProgressBarValue(double value)

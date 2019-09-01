@@ -9,12 +9,15 @@ import automater.TextValue;
 import automater.presenter.BasePresenterDelegate;
 import automater.presenter.PlayMacroPresenter;
 import automater.ui.view.PlayMacroForm;
+import automater.ui.view.PlayMacroOptionsDialog;
 import automater.ui.view.StandartDescriptionsDataSource;
 import automater.utilities.AlertWindows;
 import automater.utilities.Description;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
 import automater.work.model.ExecutorProgress;
+import automater.work.model.MacroParameters;
+import java.awt.Frame;
 import java.awt.event.WindowEvent;
 import java.util.List;
 
@@ -26,6 +29,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     private final PlayMacroPresenter _presenter;
     
     private PlayMacroForm _form;
+    private PlayMacroOptionsDialog _optionsDialog;
     
     private StandartDescriptionsDataSource _dataSource;
     
@@ -57,6 +61,13 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
                 _presenter.stop();
             }
         };
+        
+        _form.onOptionsButtonCallback = new SimpleCallback() {
+            @Override
+            public void perform() {
+                displayOptionsWindow();
+            }
+        };
     }
     
     // # BaseViewController
@@ -68,6 +79,8 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         
         _form.setVisible(true);
         _form.onViewStart();
+        
+        updateFormMacroParameters(_presenter.getPlayParameters());
     }
 
     @Override
@@ -171,5 +184,75 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         String ok = TextValue.getText(TextValue.Dialog_OK);
         
         AlertWindows.showErrorMessage(_form, textTitle, textMessage, ok);
+    }
+    
+    // # Private
+    
+    private void initOptionsWindow()
+    {
+        if (_optionsDialog != null)
+        {
+            return;
+        }
+        
+        Frame frame = _form.getFrames()[0];
+        
+        _optionsDialog = new PlayMacroOptionsDialog(frame, true);
+        
+        _optionsDialog.onCancelButtonCallback = new SimpleCallback() {
+            @Override
+            public void perform() {
+                _optionsDialog.setVisible(false);
+            }
+        };
+        
+        _optionsDialog.onOKButtonCallback = new SimpleCallback() {
+            @Override
+            public void perform() {
+                updateOptionValues();
+                _optionsDialog.setVisible(false);
+            }
+        };
+    }
+    
+    private void displayOptionsWindow()
+    {
+        initOptionsWindow();
+        
+        _optionsDialog.setVisible(true);
+    }
+    
+    private void updateOptionValues()
+    {
+        boolean displayStart = _optionsDialog.isNotificationStartChecked();
+        boolean displayStop = _optionsDialog.isNotificationStopChecked();
+        
+        _presenter.setNotificationOptions(displayStart, displayStop);
+        
+        double playSpeed = _optionsDialog.getPlaySpeedValue();
+        
+        if (playSpeed < 0 || playSpeed > 10)
+        {
+            playSpeed = 1;
+        }
+        
+        int repeatTimes = _optionsDialog.getRepeatValue();
+        boolean repeatForever = false;
+        
+        if (repeatTimes == PlayMacroOptionsDialog.REPEAT_INFINITY_VALUE)
+        {
+            repeatTimes = 0;
+            repeatForever = true;
+        }
+        
+        MacroParameters parameters = new MacroParameters(playSpeed, repeatTimes, repeatForever);
+        _presenter.setPlayParameters(parameters);
+        
+        updateFormMacroParameters(parameters);
+    }
+    
+    private void updateFormMacroParameters(MacroParameters parameters)
+    {
+        _form.setMacroParametersValue(parameters.toString());
     }
 }
