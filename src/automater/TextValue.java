@@ -40,6 +40,8 @@ public enum TextValue {
     Play_NotificationStartTitle, Play_NotificationStartMessage, Play_NotificationStartTooltip,
     Play_NotificationFinishTitle, Play_NotificationFinishMessage, Play_NotificationFinishTooltip,
     Play_OptionsFormTitle,
+    Play_StatusIdle, Play_StatusFinished, Play_StatusWaiting, Play_StatusPerformedWaiting,
+    Play_StatusPerforming, Play_StatusPerformingRepeat,
     
     // Macro parameters
     MacroParameters_Default,
@@ -150,6 +152,11 @@ public enum TextValue {
         put(Play_NotificationFinishMessage, "Finished playing '%@'");
         put(Play_NotificationFinishTooltip, "Finished playing '%@'");
         put(Play_OptionsFormTitle, "Set play options");
+        put(Play_StatusIdle, "Idle");
+        put(Play_StatusFinished, "Finished");
+        put(Play_StatusWaiting, "Waiting");
+        put(Play_StatusPerforming, "Performing %@");
+        put(Play_StatusPerformingRepeat, "[%@] Performing %@");
         
         // Macro parameters
         put(MacroParameters_Default, "Play once");

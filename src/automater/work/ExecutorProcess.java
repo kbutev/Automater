@@ -5,6 +5,8 @@
  */
 package automater.work;
 
+import automater.TextValue;
+import static automater.TextValue.Play_StatusPerformingRepeat;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
@@ -27,6 +29,7 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     private final Object _lock = new Object();
     private final Object _timerLock = new Object();
     
+    // Basic
     private final Robot _robot;
     private ActionContext _context;
     private final List<BaseAction> _actions;
@@ -34,11 +37,16 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     private BaseExecutorTimer _timer;
     private ExecutorListener _listener;
     
+    private MacroParameters _parameters;
+    
+    // Current state
     private boolean _started = false;
     
+    private int _timesPlayed = 0;
     private BaseActionProcess _previousActionProcess;
     private BaseActionProcess _currentActionProcess;
     
+    // Timer
     private Date _previousDate = new Date();
     private long _currentTimeValue = 0;
     private double _timeScale = 1.0;
@@ -153,7 +161,16 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
             
             // Setup context
             _context = new ActionContext(_robot, _timer);
+            
+            // Set paremeters
+            _parameters = parameters;
+            
+            // Reset times played
+            _timesPlayed = 1;
         }
+        
+        // Set timescale
+        _timer.setTimeScale(parameters.playSpeed);
         
         // Listener alert
         if (_listener != null)
@@ -195,6 +212,17 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
             _currentTimeValue = firstAction.getPerformTime();
         }
     }
+    
+    @Override
+    public void reset() {
+        BaseAction firstAction = _actions.get(0);
+        
+        synchronized (_timerLock)
+        {
+            _previousDate = new Date();
+            _currentTimeValue = firstAction.getPerformTime();
+        }
+    }
 
     @Override
     public long getCurrentTimeValue() {
@@ -220,7 +248,6 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
         {
             return _timeScale;
         }
-        
     }
     
     @Override
@@ -263,7 +290,7 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     public String getCurrentStatus() {
         if (isFinished())
         {
-            return "Finished";
+            return TextValue.getText(TextValue.Play_StatusFinished);
         }
         
         if (isWaiting())
@@ -272,24 +299,37 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
             
             if (previous == null)
             {
-                return "Waiting for next";
+                return TextValue.getText(TextValue.Play_StatusWaiting);
             }
             
-            return "Performed " + previous.getAction().getDescription().getStandart() + ", waiting for next";
+            return TextValue.getText(TextValue.Play_StatusPerformedWaiting, previous.getAction().getDescription().getStandart());
         }
         
         BaseActionProcess current = getCurrentActionProcess();
         
         if (current == null)
         {
-            return "Idle";
+            return TextValue.getText(TextValue.Play_StatusIdle);
         }
         
-        return "Performing " + current.getAction().getDescription().getStandart();
+        String actionDescription = current.getAction().getDescription().getStandart();
+        
+        if (_parameters.repeatTimes > 0)
+        {
+            String repeatText = String.valueOf(_timesPlayed) + "/" + String.valueOf(_parameters.repeatTimes+1);
+            return TextValue.getText(TextValue.Play_StatusPerformingRepeat, repeatText, actionDescription);
+        }
+        
+        return TextValue.getText(TextValue.Play_StatusPerforming, actionDescription);
     }
 
     @Override
     public double getPercentageDone() {
+        if (isFinished())
+        {
+            return 1;
+        }
+        
         long start = _timer.getFirstTimeValue();
         long current = _timer.getCurrentTimeValue() - start;
         long end = _timer.getFinalTimeValue() - start;
@@ -322,6 +362,21 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     }
     
     // # Private
+    
+    private boolean canRepeat()
+    {
+        return _parameters.repeatForever || _timesPlayed <= _parameters.repeatTimes;
+    }
+    
+    private void repeat()
+    {
+        _timesPlayed += 1;
+        
+        _currentActionProcess = null;
+        _previousActionProcess = null;
+        
+        _timer.reset();
+    }
     
     private void setCurrentActionProcessSafely(BaseActionProcess p)
     {
@@ -508,6 +563,19 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
         // Finished? Just log message event
         if (isFinished())
         {
+            // Repeat
+            if (canRepeat())
+            {
+                Logger.messageEvent(this, "Loop. Repeat " + _timesPlayed + "/" + String.valueOf(_parameters.repeatTimes+1));
+                
+                synchronized (_lock)
+                {
+                    repeat();
+                }
+                
+                return;
+            }
+            
             Logger.messageEvent(this, "Finished.");
             
             // Listener alert

@@ -59,6 +59,6 @@ public class MacroParameters {
     
     public boolean isStandart()
     {
-        return playSpeed == 1 && repeatTimes == 0;
+        return playSpeed == 1 && repeatTimes == 0 && !repeatForever;
     }
 }

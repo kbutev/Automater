@@ -17,6 +17,8 @@ package automater.work;
 public interface BaseExecutorTimer {
     public void setup(BaseAction firstAction, BaseAction lastAction) throws Exception;
     
+    public void reset();
+    
     public long getCurrentTimeValue();
     public long getFirstTimeValue();
     public long getFinalTimeValue();
