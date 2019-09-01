@@ -50,7 +50,7 @@ public class Executor {
         }
     }
     
-    public BaseExecutorProcess performMacro(Macro macro, BaseActionsParser actionParser) throws Exception
+    public BaseExecutorProcess performMacro(Macro macro, BaseActionsParser actionParser, ExecutorListener listener) throws Exception
     {
         Logger.messageEvent(this, "Perform macro '" + macro.getName() + "'");
         
@@ -63,6 +63,7 @@ public class Executor {
             
             List<BaseAction> actions = parseMacroToActionsList(macro, actionParser);
             BaseExecutorProcess process = new ExecutorProcess(_robot, actions);
+            process.setListener(listener);
             
             _state.startProcess(process);
             

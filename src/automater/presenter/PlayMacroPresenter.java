@@ -5,6 +5,7 @@
  */
 package automater.presenter;
 
+import automater.TextValue;
 import automater.recorder.Recorder;
 import automater.recorder.RecorderHotkeyListener;
 import automater.settings.Hotkey;
@@ -14,6 +15,7 @@ import automater.ui.viewcontroller.RootViewController;
 import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
+import automater.utilities.OSUIEffects;
 import automater.work.BaseAction;
 import automater.work.BaseExecutorProcess;
 import automater.work.Executor;
@@ -99,7 +101,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     @Override
     public void onStart(int numberOfActions)
     {
-        
+        displayPlayingStartedNotification();
     }
     
     @Override
@@ -135,6 +137,8 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     @Override
     public void onFinish()
     {
+        displayPlayingFinishedNotification();
+        
         _ongoingExecution = null;
         
         _delegate.finishPlaying();
@@ -175,8 +179,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         Logger.messageEvent(this, "Play.");
         
         try {
-            _ongoingExecution = _executor.performMacro(_macro, _parser);
-            _ongoingExecution.setListener(this);
+            _ongoingExecution = _executor.performMacro(_macro, _parser, this);
         } catch (Exception e) {
             Logger.error(this, "Failed to start executor: " + e.toString());
             _delegate.onErrorEncountered(e);
@@ -250,5 +253,29 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         ExecutorProgress progress = _ongoingExecution.getProgress();
         
         _delegate.updatePlayStatus(progress);
+    }
+    
+    private void displayPlayingStartedNotification()
+    {
+        String macroName = _macro.name;
+        String macroHotkey = _playOrStopHotkey.key.toString();
+        
+        String title = TextValue.getText(TextValue.Play_NotificationStartTitle);
+        String message = TextValue.getText(TextValue.Play_NotificationStartMessage, macroName, macroHotkey);
+        String tooltip = TextValue.getText(TextValue.Play_NotificationStartTooltip, macroName);
+        
+        OSUIEffects.getShared().displayOSNotification(title, message, tooltip);
+    }
+    
+    private void displayPlayingFinishedNotification()
+    {
+        String macroName = _macro.name;
+        String macroHotkey = _playOrStopHotkey.key.toString();
+        
+        String title = TextValue.getText(TextValue.Play_NotificationFinishTitle);
+        String message = TextValue.getText(TextValue.Play_NotificationFinishMessage, macroName, macroHotkey);
+        String tooltip = TextValue.getText(TextValue.Play_NotificationFinishTooltip, macroName);
+        
+        OSUIEffects.getShared().displayOSNotification(title, message, tooltip);
     }
 }

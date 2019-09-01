@@ -166,7 +166,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         _form.cancel();
         
         // Show message alert
-        String textTitle = TextValue.getText(TextValue.Dialog_PlayErrorTitle);
+        String textTitle = TextValue.getText(TextValue.Play_DialogErrorTitle);
         String textMessage = e.toString();
         String ok = TextValue.getText(TextValue.Dialog_OK);
         

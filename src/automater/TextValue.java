@@ -23,6 +23,8 @@ public enum TextValue {
     Record_MacroNameFieldDefaultText, Record_MacroNameFieldTip,
     Record_BeginRecordingButtonTitle, Record_BeginRecordingButtonTip, Record_StopRecordingButtonTitle, Record_StopRecordingButtonTip,
     Record_SaveButton, Record_SaveButtonEnabledTip, Record_SaveButtonDisabledTip,
+    Record_NotificationStartTitle, Record_NotificationStartMessage, Record_NotificationStartTooltip,
+    Record_NotificationStopTitle, Record_NotificationStopMessage, Record_NotificationStopTooltip,
     
     // Open form
     Open_FormTitle, Open_HeaderText,
@@ -34,7 +36,9 @@ public enum TextValue {
     Play_FormTitle,
     Play_BackButtonTitle,
     Play_PlayButtonTitle, Play_StopButtonTitle,
-    Dialog_PlayErrorTitle,
+    Play_DialogErrorTitle,
+    Play_NotificationStartTitle, Play_NotificationStartMessage, Play_NotificationStartTooltip,
+    Play_NotificationFinishTitle, Play_NotificationFinishMessage, Play_NotificationFinishTooltip,
     
     // Dialog
     Dialog_OK,
@@ -107,6 +111,12 @@ public enum TextValue {
         put(Record_SaveButton, "Save");
         put(Record_SaveButtonEnabledTip, "Save macro with the recorded actions");
         put(Record_SaveButtonDisabledTip, "Record actions before saving");
+        put(Record_NotificationStartTitle, "Automater");
+        put(Record_NotificationStartMessage, "Recording... (Press %@ to stop)");
+        put(Record_NotificationStartTooltip, "Recording... (Press %@ to stop)");
+        put(Record_NotificationStopTitle, "Automater");
+        put(Record_NotificationStopMessage, "Recording finished!");
+        put(Record_NotificationStopTooltip, "Recording finished!");
         
         // Open form
         put(Open_FormTitle, "Automater - Macros");
@@ -125,7 +135,13 @@ public enum TextValue {
         put(Play_BackButtonTitle, "< BACK");
         put(Play_PlayButtonTitle, "Play (%@)");
         put(Play_StopButtonTitle, "Stop (%@)");
-        put(Dialog_PlayErrorTitle, "Failed to play Macro");
+        put(Play_DialogErrorTitle, "Failed to play Macro");
+        put(Play_NotificationStartTitle, "Automater");
+        put(Play_NotificationStartMessage, "Playing '%@' (Press %@ to stop)");
+        put(Play_NotificationStartTooltip, "Playing '%@' (Press %@ to stop)");
+        put(Play_NotificationFinishTitle, "Automater");
+        put(Play_NotificationFinishMessage, "Finished playing '%@'");
+        put(Play_NotificationFinishTooltip, "Finished playing '%@'");
         
         // Dialog
         put(Dialog_OK, "Ok");

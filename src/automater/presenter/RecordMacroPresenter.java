@@ -5,6 +5,7 @@
  */
 package automater.presenter;
 
+import automater.TextValue;
 import automater.recorder.BaseRecorderListener;
 import automater.recorder.Recorder;
 import automater.recorder.RecorderHotkeyListener;
@@ -22,6 +23,7 @@ import automater.utilities.CollectionUtilities;
 import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
+import automater.utilities.OSUIEffects;
 import automater.work.model.Macro;
 import java.util.ArrayList;
 import java.util.List;
@@ -132,10 +134,14 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         
         if (!_hasStartedMacroRecording)
         {
+            displayRecordingStartedNotification();
+            
             onStartRecording();
         }
         else
         {
+            displayRecordingStoppedNotification();
+            
             onStopRecording();
         }
     }
@@ -271,5 +277,27 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     private List<Description> getActionStringsData()
     {
         return CollectionUtilities.copyAsReversed(_macroActionDescriptionsList);
+    }
+    
+    private void displayRecordingStartedNotification()
+    {
+        String macroHotkey = _recordOrStopHotkey.key.toString();
+        
+        String title = TextValue.getText(TextValue.Record_NotificationStartTitle);
+        String message = TextValue.getText(TextValue.Record_NotificationStartMessage, macroHotkey);
+        String tooltip = TextValue.getText(TextValue.Record_NotificationStartTooltip);
+        
+        OSUIEffects.getShared().displayOSNotification(title, message, tooltip);
+    }
+    
+    private void displayRecordingStoppedNotification()
+    {
+        String macroHotkey = _recordOrStopHotkey.key.toString();
+        
+        String title = TextValue.getText(TextValue.Record_NotificationStopTitle);
+        String message = TextValue.getText(TextValue.Record_NotificationStopMessage, macroHotkey);
+        String tooltip = TextValue.getText(TextValue.Record_NotificationStopTooltip);
+        
+        OSUIEffects.getShared().displayOSNotification(title, message, tooltip);
     }
 }
