@@ -21,6 +21,8 @@ public interface BaseAction {
     public boolean isComplex();
     
     public long getPerformTime();
+    public long getPerformDuration();
+    public long getPerformEndTime();
     
     public Description getDescription();
     

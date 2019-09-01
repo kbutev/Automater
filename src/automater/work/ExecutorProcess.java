@@ -210,7 +210,7 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
 
     @Override
     public long getFinalTimeValue() {
-        return getLastAction().getPerformTime();
+        return getLastAction().getPerformEndTime();
     }
 
     @Override
@@ -290,10 +290,10 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     @Override
     public double getPercentageDone() {
         long start = _timer.getFirstTimeValue();
-        double current = _timer.getCurrentTimeValue() - start;
-        double end = _timer.getFinalTimeValue() - start;
+        long current = _timer.getCurrentTimeValue() - start;
+        long end = _timer.getFinalTimeValue() - start;
         
-        double result = current / end;
+        double result = (double)current / (double)end;
         
         if (result > 1)
         {

@@ -5,8 +5,6 @@
  */
 package automater.work;
 
-import java.util.List;
-
 /**
  * Keeps track of how much time has passed.
  * 

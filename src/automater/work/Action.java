@@ -69,6 +69,18 @@ public class Action implements BaseAction, Description {
     }
     
     @Override
+    public long getPerformDuration()
+    {
+        return 0;
+    }
+    
+    @Override
+    public long getPerformEndTime()
+    {
+        return getPerformTime();
+    }
+    
+    @Override
     public Description getDescription()
     {
         return this;
@@ -303,7 +315,8 @@ class ActionMouseMove extends Action {
 
 class ActionMouseMovement extends Action {
     final long time;
-    final List<UserInputMouseMove> movements;
+    final long duration;
+    final List<BaseAction> actions;
     final int maxNumberOfSubmovements;
     
     String standartDescription;
@@ -312,18 +325,15 @@ class ActionMouseMovement extends Action {
     ActionMouseMovement(long time, List<UserInputMouseMove> movements, int maxNumberOfSubmovements, Description description)
     {
         this.time = time;
-        this.movements = CollectionUtilities.copyAsImmutable(movements);
+        this.actions = parseMouseMoveActions(CollectionUtilities.copyAsImmutable(movements));
+        long lastPerformTime = this.actions.get(this.actions.size()-1).getPerformTime();
+        this.duration = lastPerformTime - time;
         this.maxNumberOfSubmovements = maxNumberOfSubmovements;
         
         if (description != null)
         {
             this.standartDescription = description.getStandart();
             this.verboseDescription = description.getVerbose();
-        }
-        
-        for (UserInputMouseMove m : this.movements)
-        {
-            Logger.message(this, "UserInputMouseMove with " + m.getTimestamp().getTime());
         }
     }
     
@@ -340,27 +350,38 @@ class ActionMouseMovement extends Action {
     }
     
     @Override
+    public long getPerformDuration()
+    {
+        return duration;
+    }
+    
+    @Override
+    public long getPerformEndTime()
+    {
+        return time + duration;
+    }
+    
+    @Override
     public void perform(BaseActionContext context)
     {
-        Logger.messageEvent(this, "Performing mouse motion action with " + String.valueOf(movements.size()) + " movements...");
+        Logger.messageEvent(this, "Performing mouse motion action with " + String.valueOf(actions.size()) + " movements...");
         
-        ArrayList<BaseAction> actions = parseMouseMoveActions();
         BaseExecutorTimer timer = context.getTimer();
         
-        while (actions.size() > 0)
+        for (int e = 0; e < actions.size(); )
         {
-            BaseAction action = actions.get(0);
+            BaseAction action = actions.get(e);
             
             if (timer.canPerformNextAction(action))
             {
                 action.perform(context);
-                actions.remove(0);
+                e++;
             }
             else
             {
                 try {
-                    wait(1);
-                } catch (Exception e) {
+                    wait(2);
+                } catch (Exception exc) {
                     
                 }
             }
@@ -379,33 +400,33 @@ class ActionMouseMovement extends Action {
         return verboseDescription;
     }
     
-    private ArrayList<BaseAction> parseMouseMoveActions()
+    private ArrayList<BaseAction> parseMouseMoveActions(List<UserInputMouseMove> movements)
     {
-        final int size = this.movements.size();
+        final int size = movements.size();
         
-        ArrayList<BaseAction> actions = new ArrayList<>();
+        ArrayList<BaseAction> result = new ArrayList<>();
         BaseAction previousAction = null;
         
         for (int e = 0; e < size; e++)
         {
-            UserInputMouseMove current = this.movements.get(e);
+            UserInputMouseMove current = movements.get(e);
             UserInputMouseMove next = null;
             
             if (e + 1 < size)
             {
-                next = this.movements.get(e+1);
+                next = movements.get(e+1);
             }
             
             ArrayList<BaseAction> subActions = parseMouseMoveAction(current, next);
-            actions.addAll(subActions);
+            result.addAll(subActions);
         }
         
-        return actions;
+        return result;
     }
     
     private ArrayList<BaseAction> parseMouseMoveAction(UserInputMouseMove current, UserInputMouseMove next)
     {
-        ArrayList<BaseAction> actions = new ArrayList<>();
+        ArrayList<BaseAction> result = new ArrayList<>();
         
         final long currentStartTime = translateDateToActionTime(current.getTimestamp());
         final int currentX = current.getX();
@@ -414,8 +435,8 @@ class ActionMouseMovement extends Action {
         // When next is null, create only one subaction
         if (next == null)
         {
-            actions.add(new ActionMouseMove(currentStartTime, currentX, currentY, null));
-            return actions;
+            result.add(new ActionMouseMove(currentStartTime, currentX, currentY, null));
+            return result;
         }
         
         final long nextStartTime = translateDateToActionTime(next.getTimestamp());
@@ -427,7 +448,7 @@ class ActionMouseMovement extends Action {
         final int xDiff = diff(currentX, nextX);
         final int yDiff = diff(currentY, nextY);
         
-        actions.add(new ActionMouseMove(currentStartTime, currentX, currentY, null));
+        result.add(new ActionMouseMove(currentStartTime, currentX, currentY, null));
         
         for (int e = maxNumberOfSubmovements; e > 0; e--)
         {
@@ -437,7 +458,7 @@ class ActionMouseMovement extends Action {
             actions.add(new ActionMouseMove(startTime, x, y, null));
         }
         
-        return actions;
+        return result;
     }
     
     private int diff(int a, int b)
