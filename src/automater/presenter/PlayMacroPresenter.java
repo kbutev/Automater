@@ -6,6 +6,7 @@
 package automater.presenter;
 
 import automater.TextValue;
+import static automater.TextValue.Play_NotificationRepeatForever;
 import automater.recorder.Recorder;
 import automater.recorder.RecorderHotkeyListener;
 import automater.settings.Hotkey;
@@ -51,6 +52,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     private MacroParameters _macroParameters = MacroParameters.defaultValues();
     private boolean _displayStartNotifications = true;
     private boolean _displayStopNotifications = true;
+    private boolean _displayRepeatNotifications = false;
     
     public PlayMacroPresenter(RootViewController rootViewController, Macro macro)
     {
@@ -131,6 +133,12 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     public void onWait()
     {
         updatePlayStatus();
+    }
+    
+    @Override
+    public void onRepeat(int numberOfTimesPlayed, int numberOfTimesToPlay)
+    {
+        displayPlayingRepeatNotification(numberOfTimesPlayed, numberOfTimesToPlay);
     }
     
     @Override
@@ -224,10 +232,11 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         _delegate.stopRecording();
     }
     
-    public void setNotificationOptions(boolean displayStart, boolean displayStop)
+    public void setNotificationOptions(boolean displayStart, boolean displayStop, boolean displayRepeat)
     {
         _displayStartNotifications = displayStart;
         _displayStopNotifications = displayStop;
+        _displayRepeatNotifications = displayRepeat;
     }
     
     public MacroParameters getPlayParameters()
@@ -303,8 +312,30 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         String macroHotkey = _playOrStopHotkey.key.toString();
         
         String title = TextValue.getText(TextValue.Play_NotificationFinishTitle);
-        String message = TextValue.getText(TextValue.Play_NotificationFinishMessage, macroName, macroHotkey);
+        String message = TextValue.getText(TextValue.Play_NotificationFinishMessage, macroName);
         String tooltip = TextValue.getText(TextValue.Play_NotificationFinishTooltip, macroName);
+        
+        OSUIEffects.getShared().displayOSNotification(title, message, tooltip);
+    }
+    
+    private void displayPlayingRepeatNotification(int numberOfTimesPlayed, int numberOfTimesToPlay)
+    {
+        if (!_displayRepeatNotifications)
+        {
+            return;
+        }
+        
+        String macroName = _macro.name;
+        String timesPlayed = String.valueOf(numberOfTimesPlayed) + "/" + String.valueOf(numberOfTimesToPlay);
+        
+        if (_macroParameters.repeatForever)
+        {
+            timesPlayed = TextValue.getText(TextValue.Play_NotificationRepeatForever);
+        }
+        
+        String title = TextValue.getText(TextValue.Play_NotificationRepeatTitle);
+        String message = TextValue.getText(TextValue.Play_NotificationRepeatMessage, macroName, timesPlayed);
+        String tooltip = TextValue.getText(TextValue.Play_NotificationRepeatTooltip, macroName, timesPlayed);
         
         OSUIEffects.getShared().displayOSNotification(title, message, tooltip);
     }

@@ -42,8 +42,16 @@
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="stopNotificationCheck" min="-2" max="-2" attributes="0"/>
-                          <Component id="repeatField" alignment="0" min="-2" pref="40" max="-2" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="stopNotificationCheck" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="repeatNotificationCheck" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="repeatField" min="-2" pref="40" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="repeatForeverCheck" min="-2" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
@@ -52,7 +60,7 @@
                       <Component id="cancelButton" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace pref="146" max="32767" attributes="0"/>
+              <EmptySpace pref="11" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -63,6 +71,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="startNotificationCheck" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="stopNotificationCheck" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="repeatNotificationCheck" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -70,8 +79,9 @@
                   <Component id="playSpeedField" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="repeatLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="repeatField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="repeatForeverCheck" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" pref="35" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="okButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cancelButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -129,6 +139,16 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cancelButtonActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="repeatNotificationCheck">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Repeat notification"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="repeatForeverCheck">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Repeat Forever"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

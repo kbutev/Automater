@@ -42,7 +42,7 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     // Current state
     private boolean _started = false;
     
-    private int _timesPlayed = 0;
+    private int _playCount = 0;
     private BaseActionProcess _previousActionProcess;
     private BaseActionProcess _currentActionProcess;
     
@@ -166,7 +166,7 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
             _parameters = parameters;
             
             // Reset times played
-            _timesPlayed = 1;
+            _playCount = 1;
         }
         
         // Set timescale
@@ -175,7 +175,7 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
         // Listener alert
         if (_listener != null)
         {
-            _listener.onStart(actionsSize);
+            _listener.onStart(_parameters.repeatTimes);
         }
     }
     
@@ -314,9 +314,12 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
         
         String actionDescription = current.getAction().getDescription().getStandart();
         
-        if (_parameters.repeatTimes > 0)
+        if (getTimesWillPlay() > 1 && !isRepeatForever())
         {
-            String repeatText = String.valueOf(_timesPlayed) + "/" + String.valueOf(_parameters.repeatTimes+1);
+            int timesPlayed = getPlayCount();
+            int timesWillPlay = getTimesWillPlay();
+            
+            String repeatText = String.valueOf(timesPlayed) + "/" + String.valueOf(timesWillPlay);
             return TextValue.getText(TextValue.Play_StatusPerformingRepeat, repeatText, actionDescription);
         }
         
@@ -361,16 +364,41 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
         return _actions.indexOf(process.getAction());
     }
     
+    // # Public
+    
+    public int getPlayCount()
+    {
+        synchronized (_lock)
+        {
+            return _playCount;
+        }
+    }
+    
+    public int getRepeatCount()
+    {
+        return _parameters.repeatTimes;
+    }
+    
+    public int getTimesWillPlay()
+    {
+        return _parameters.repeatTimes + 1;
+    }
+    
+    public boolean isRepeatForever()
+    {
+        return _parameters.repeatForever;
+    }
+    
     // # Private
     
     private boolean canRepeat()
     {
-        return _parameters.repeatForever || _timesPlayed <= _parameters.repeatTimes;
+        return _parameters.repeatForever || _playCount <= _parameters.repeatTimes;
     }
     
     private void repeat()
     {
-        _timesPlayed += 1;
+        _playCount += 1;
         
         _currentActionProcess = null;
         _previousActionProcess = null;
@@ -566,11 +594,20 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
             // Repeat
             if (canRepeat())
             {
-                Logger.messageEvent(this, "Loop. Repeat " + _timesPlayed + "/" + String.valueOf(_parameters.repeatTimes+1));
+                int timesPlayed = getPlayCount();
+                int timesWillPlay = getTimesWillPlay();
+                
+                Logger.messageEvent(this, "Repeat execution (" + timesPlayed + "/" + String.valueOf(timesWillPlay) + ")");
                 
                 synchronized (_lock)
                 {
                     repeat();
+                }
+                
+                // Listener alert
+                if (_listener != null)
+                {
+                    _listener.onRepeat(timesPlayed, timesWillPlay);
                 }
                 
                 return;

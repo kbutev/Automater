@@ -39,9 +39,15 @@ public enum TextValue {
     Play_DialogErrorTitle,
     Play_NotificationStartTitle, Play_NotificationStartMessage, Play_NotificationStartTooltip,
     Play_NotificationFinishTitle, Play_NotificationFinishMessage, Play_NotificationFinishTooltip,
-    Play_OptionsFormTitle,
+    Play_NotificationRepeatTitle, Play_NotificationRepeatMessage, Play_NotificationRepeatTooltip,
+    Play_NotificationRepeatForever,
     Play_StatusIdle, Play_StatusFinished, Play_StatusWaiting, Play_StatusPerformedWaiting,
     Play_StatusPerforming, Play_StatusPerformingRepeat,
+    
+    // Play options dialog
+    PlayOptions_Title,
+    PlayOptions_NotificationPlay, PlayOptions_NotificationStop, PlayOptions_NotificationRepeat,
+    PlayOptions_PlaySpeed, PlayOptions_Repeat, PlayOptions_RepeatForever,
     
     // Macro parameters
     MacroParameters_Default,
@@ -151,12 +157,24 @@ public enum TextValue {
         put(Play_NotificationFinishTitle, "Automater");
         put(Play_NotificationFinishMessage, "Finished playing '%@'");
         put(Play_NotificationFinishTooltip, "Finished playing '%@'");
-        put(Play_OptionsFormTitle, "Set play options");
+        put(Play_NotificationRepeatTitle, "Automater");
+        put(Play_NotificationRepeatMessage, "Repeat playing '%@' (%@)");
+        put(Play_NotificationRepeatTooltip, "Repeat playing '%@' (%@)");
+        put(Play_NotificationRepeatForever, "Repeat forever");
         put(Play_StatusIdle, "Idle");
         put(Play_StatusFinished, "Finished");
         put(Play_StatusWaiting, "Waiting");
         put(Play_StatusPerforming, "Performing %@");
         put(Play_StatusPerformingRepeat, "[%@] Performing %@");
+        
+        // Play options form
+        put(PlayOptions_Title, "Set play options");
+        put(PlayOptions_NotificationPlay, "Play notification");
+        put(PlayOptions_NotificationStop, "Stop notification");
+        put(PlayOptions_NotificationRepeat, "Repeat notification");
+        put(PlayOptions_PlaySpeed, "Play speed");
+        put(PlayOptions_Repeat, "Repeat");
+        put(PlayOptions_RepeatForever, "Repeat forever");
         
         // Macro parameters
         put(MacroParameters_Default, "Play once");

@@ -16,9 +16,6 @@ import javax.swing.event.DocumentListener;
  * @author Bytevi
  */
 public class PlayMacroOptionsDialog extends javax.swing.JDialog {
-    // Constants
-    public static int REPEAT_INFINITY_VALUE = -1;
-    
     // UI callbacks
     public SimpleCallback onCancelButtonCallback = SimpleCallback.createDoNothing();
     public SimpleCallback onOKButtonCallback = SimpleCallback.createDoNothing();
@@ -49,6 +46,8 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
         repeatField = new javax.swing.JTextField();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
+        repeatNotificationCheck = new javax.swing.JCheckBox();
+        repeatForeverCheck = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -85,6 +84,10 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
             }
         });
 
+        repeatNotificationCheck.setText("Repeat notification");
+
+        repeatForeverCheck.setText("Repeat Forever");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -103,13 +106,19 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
                                 .addComponent(repeatLabel)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(stopNotificationCheck)
-                            .addComponent(repeatField, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(stopNotificationCheck)
+                                .addGap(18, 18, 18)
+                                .addComponent(repeatNotificationCheck))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(repeatField, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(repeatForeverCheck))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(okButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cancelButton)))
-                .addContainerGap(146, Short.MAX_VALUE))
+                .addContainerGap(11, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -117,14 +126,16 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(startNotificationCheck)
-                    .addComponent(stopNotificationCheck))
+                    .addComponent(stopNotificationCheck)
+                    .addComponent(repeatNotificationCheck))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(playSpeedLabel)
                     .addComponent(playSpeedField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(repeatLabel)
-                    .addComponent(repeatField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(35, 35, 35)
+                    .addComponent(repeatField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(repeatForeverCheck))
+                .addGap(33, 33, 33)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(okButton)
                     .addComponent(cancelButton))
@@ -189,7 +200,15 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
     }
     
     private void setup() {
-        this.setTitle(TextValue.getText(TextValue.Play_OptionsFormTitle));
+        this.setTitle(TextValue.getText(TextValue.PlayOptions_Title));
+        
+        startNotificationCheck.setText(TextValue.getText(TextValue.PlayOptions_NotificationPlay));
+        stopNotificationCheck.setText(TextValue.getText(TextValue.PlayOptions_NotificationStop));
+        repeatNotificationCheck.setText(TextValue.getText(TextValue.PlayOptions_NotificationRepeat));
+        
+        playSpeedLabel.setText(TextValue.getText(TextValue.PlayOptions_PlaySpeed));
+        repeatLabel.setText(TextValue.getText(TextValue.PlayOptions_Repeat));
+        repeatForeverCheck.setText(TextValue.getText(TextValue.PlayOptions_RepeatForever));
         
         DocumentListener listener = new DocumentListener() {
             @Override
@@ -224,6 +243,11 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
         return stopNotificationCheck.isSelected();
     }
     
+    public boolean isNotificationRepeatChecked()
+    {
+        return repeatNotificationCheck.isSelected();
+    }
+    
     public double getPlaySpeedValue()
     {
         if (optionsAreValid)
@@ -244,6 +268,11 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
         return 0;
     }
     
+    public boolean isRepeatForeverChecked()
+    {
+        return repeatForeverCheck.isSelected();
+    }
+    
     // # Private
     
     private void updateOkButtonState()
@@ -257,22 +286,17 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
         else if (playSpeedField.getText().length() > 3)
         {
             optionsAreValid = false;
+        } else 
+        {
+            double playSpeedValue = getPlaySpeedValue();
+            
+            if (playSpeedValue <= 0.0)
+            {
+                optionsAreValid = false;
+            }
         }
         
         if (!StringFormatting.isStringANonNegativeInt(repeatField.getText()))
-        {
-            if (!StringFormatting.isStringAnInt(repeatField.getText()))
-            {
-                optionsAreValid = false;
-            } else 
-            {
-                if (getRepeatValue() != REPEAT_INFINITY_VALUE)
-                {
-                    optionsAreValid = false;
-                }
-            }
-        }
-        else if (repeatField.getText().length() > 3)
         {
             optionsAreValid = false;
         }
@@ -288,7 +312,9 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
     private javax.swing.JTextField playSpeedField;
     private javax.swing.JLabel playSpeedLabel;
     private javax.swing.JTextField repeatField;
+    private javax.swing.JCheckBox repeatForeverCheck;
     private javax.swing.JLabel repeatLabel;
+    private javax.swing.JCheckBox repeatNotificationCheck;
     private javax.swing.JCheckBox startNotificationCheck;
     private javax.swing.JCheckBox stopNotificationCheck;
     // End of variables declaration//GEN-END:variables

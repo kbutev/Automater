@@ -11,7 +11,7 @@ package automater.work;
  * @author Bytevi
  */
 public interface ExecutorListener {
-    public void onStart(int numberOfActions);
+    public void onStart(int repeatTimes);
     
     public void onActionExecute(BaseAction action);
     public void onActionUpdate(BaseAction action);
@@ -19,5 +19,6 @@ public interface ExecutorListener {
     
     public void onWait();
     public void onCancel();
+    public void onRepeat(int numberOfTimesPlayed, int numberOfTimesToPlay);
     public void onFinish();
 }

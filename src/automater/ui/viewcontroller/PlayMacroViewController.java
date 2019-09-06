@@ -226,8 +226,9 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     {
         boolean displayStart = _optionsDialog.isNotificationStartChecked();
         boolean displayStop = _optionsDialog.isNotificationStopChecked();
+        boolean displayRepeat = _optionsDialog.isNotificationRepeatChecked();
         
-        _presenter.setNotificationOptions(displayStart, displayStop);
+        _presenter.setNotificationOptions(displayStart, displayStop, displayRepeat);
         
         double playSpeed = _optionsDialog.getPlaySpeedValue();
         
@@ -237,13 +238,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         }
         
         int repeatTimes = _optionsDialog.getRepeatValue();
-        boolean repeatForever = false;
-        
-        if (repeatTimes == PlayMacroOptionsDialog.REPEAT_INFINITY_VALUE)
-        {
-            repeatTimes = 0;
-            repeatForever = true;
-        }
+        boolean repeatForever = _optionsDialog.isRepeatForeverChecked();
         
         MacroParameters parameters = new MacroParameters(playSpeed, repeatTimes, repeatForever);
         _presenter.setPlayParameters(parameters);
