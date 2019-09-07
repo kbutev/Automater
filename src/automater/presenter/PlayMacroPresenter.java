@@ -11,6 +11,7 @@ import automater.recorder.RecorderHotkeyListener;
 import automater.settings.Hotkey;
 import automater.storage.GeneralStorage;
 import automater.storage.MacroStorage;
+import automater.storage.PreferencesStorageValues;
 import automater.ui.viewcontroller.RootViewController;
 import automater.utilities.Description;
 import automater.utilities.Errors;
@@ -20,11 +21,9 @@ import automater.work.BaseAction;
 import automater.work.BaseExecutorProcess;
 import automater.work.Executor;
 import automater.work.model.Macro;
-import automater.work.parser.BaseActionsParser;
 import java.util.List;
 import automater.work.ExecutorListener;
 import automater.work.model.ExecutorProgress;
-import automater.work.model.MacroParameters;
 import java.util.Date;
 
 /**
@@ -47,10 +46,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     private final Recorder _recorder = Recorder.getDefault();
     private Hotkey _playOrStopHotkey;
     
-    private MacroParameters _macroParameters = MacroParameters.defaultValues();
-    private boolean _displayStartNotifications = true;
-    private boolean _displayStopNotifications = true;
-    private boolean _displayRepeatNotifications = false;
+    private PreferencesStorageValues _options = PreferencesStorageValues.defaultValues();
     
     public PlayMacroPresenter(RootViewController rootViewController, Macro macro)
     {
@@ -82,6 +78,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         Logger.message(this, "Start.");
         
         _delegate.onLoadedMacroFromStorage(_macro.name, _macro.getDescription(), _macroActionDescriptions);
+        _delegate.onLoadedPreferencesFromStorage(GeneralStorage.getDefault().getPreferencesStorage().getValues());
     }
     
     @Override
@@ -190,7 +187,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         Logger.messageEvent(this, "Play.");
         
         try {
-            _ongoingExecution = _executor.performMacro(_macro, _macroParameters, this);
+            _ongoingExecution = _executor.performMacro(_macro, _options.macroParameters, this);
         } catch (Exception e) {
             Logger.error(this, "Failed to start executor: " + e.toString());
             _delegate.onErrorEncountered(e);
@@ -231,30 +228,14 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         _delegate.stopRecording();
     }
     
-    public void setNotificationOptions(boolean displayStart, boolean displayStop, boolean displayRepeat)
+    public void setOptionValues(PreferencesStorageValues values)
     {
-        _displayStartNotifications = displayStart;
-        _displayStopNotifications = displayStop;
-        _displayRepeatNotifications = displayRepeat;
-    }
-    
-    public MacroParameters getPlayParameters()
-    {
-        return _macroParameters;
-    }
-    
-    public void setPlayParameters(MacroParameters parameters)
-    {
-        Logger.messageEvent(this, "Play parameters changed: " + parameters.toString());
+        Logger.messageEvent(this, "Play parameters changed: " + values.macroParameters.toString());
         
-        _macroParameters = parameters;
-    }
-    
-    public void resetPlayParameters()
-    {
-       Logger.messageEvent(this, "Play parameters reset to their default values.");
-       
-        _macroParameters = MacroParameters.defaultValues();
+        _options = values;
+        
+        // Save the option values to storage
+        GeneralStorage.getDefault().getPreferencesStorage().saveValues(values);
     }
     
     public void navigateBack()
@@ -290,7 +271,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     
     private void displayPlayingStartedNotification()
     {
-        if (!_displayStartNotifications)
+        if (!_options.displayStartNotification)
         {
             return;
         }
@@ -307,7 +288,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     
     private void displayPlayingFinishedNotification()
     {
-        if (!_displayStopNotifications)
+        if (!_options.displayStopNotification)
         {
             return;
         }
@@ -324,7 +305,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     
     private void displayPlayingRepeatNotification(int numberOfTimesPlayed, int numberOfTimesToPlay)
     {
-        if (!_displayRepeatNotifications)
+        if (!_options.displayRepeatNotification)
         {
             return;
         }
@@ -332,7 +313,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         String macroName = _macro.name;
         String timesPlayed = String.valueOf(numberOfTimesPlayed) + "/" + String.valueOf(numberOfTimesToPlay);
         
-        if (_macroParameters.repeatForever)
+        if (_options.macroParameters.repeatForever)
         {
             timesPlayed = TextValue.getText(TextValue.Play_NotificationRepeatForever);
         }

@@ -6,6 +6,7 @@
 package automater.ui.view;
 
 import automater.TextValue;
+import automater.storage.PreferencesStorageValues;
 import automater.utilities.SimpleCallback;
 import automater.utilities.StringFormatting;
 import javax.swing.event.DocumentEvent;
@@ -232,6 +233,17 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
     }
     
     // # Public
+    
+    public void setupWithStorageValues(PreferencesStorageValues values)
+    {
+        startNotificationCheck.setSelected(values.displayStartNotification);
+        stopNotificationCheck.setSelected(values.displayStopNotification);
+        repeatNotificationCheck.setSelected(values.displayRepeatNotification);
+        
+        playSpeedField.setText(String.valueOf(values.macroParameters.playSpeed));
+        repeatField.setText(String.valueOf(values.macroParameters.repeatTimes));
+        repeatForeverCheck.setSelected(values.macroParameters.repeatForever);
+    }
     
     public boolean isNotificationStartChecked()
     {

@@ -16,6 +16,7 @@ public class GeneralStorage {
     private final Object _lock = new Object();
     
     private final MacroStorage _macrosStorage = new MacroStorage();
+    private final PreferencesStorage _preferencesStorage = new PreferencesStorage();
     
     synchronized public static GeneralStorage getDefault()
     {
@@ -30,5 +31,10 @@ public class GeneralStorage {
     public MacroStorage getMacrosStorage()
     {
         return _macrosStorage;
+    }
+    
+    public PreferencesStorage getPreferencesStorage()
+    {
+        return _preferencesStorage;
     }
 }

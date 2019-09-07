@@ -8,6 +8,7 @@ package automater.ui.viewcontroller;
 import automater.TextValue;
 import automater.presenter.BasePresenterDelegate;
 import automater.presenter.PlayMacroPresenter;
+import automater.storage.PreferencesStorageValues;
 import automater.ui.view.PlayMacroForm;
 import automater.ui.view.PlayMacroOptionsDialog;
 import automater.ui.view.StandartDescriptionsDataSource;
@@ -32,6 +33,8 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     private PlayMacroOptionsDialog _optionsDialog;
     
     private StandartDescriptionsDataSource _dataSource;
+    
+    private PreferencesStorageValues _defaultPreferences = PreferencesStorageValues.defaultValues();
     
     public PlayMacroViewController(PlayMacroPresenter presenter)
     {
@@ -79,8 +82,6 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         
         _form.setVisible(true);
         _form.onViewStart();
-        
-        updateFormMacroParameters(_presenter.getPlayParameters());
     }
 
     @Override
@@ -170,6 +171,12 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     {
         _form.finish();
     }
+    
+    @Override
+    public void onLoadedPreferencesFromStorage(PreferencesStorageValues values)
+    {
+        _defaultPreferences = values;
+    }
 
     @Override
     public void onErrorEncountered(Exception e)
@@ -187,6 +194,11 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     }
     
     // # Private
+    
+    private void setMacroParametersDescription(MacroParameters parameters)
+    {
+        _form.setMacroParametersValue(parameters.toString());
+    }
     
     private void initOptionsWindow()
     {
@@ -209,7 +221,8 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         _optionsDialog.onOKButtonCallback = new SimpleCallback() {
             @Override
             public void perform() {
-                updateOptionValues();
+                PreferencesStorageValues values = getPreferenceValuesFromOptionsDialog();
+                setOptionValues(values);
                 _optionsDialog.setVisible(false);
             }
         };
@@ -219,16 +232,20 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     {
         initOptionsWindow();
         
+        // Setup default values
+        _optionsDialog.setupWithStorageValues(_defaultPreferences);
+        
+        // Display
         _optionsDialog.setVisible(true);
     }
     
-    private void updateOptionValues()
+    private PreferencesStorageValues getPreferenceValuesFromOptionsDialog()
     {
-        boolean displayStart = _optionsDialog.isNotificationStartChecked();
-        boolean displayStop = _optionsDialog.isNotificationStopChecked();
-        boolean displayRepeat = _optionsDialog.isNotificationRepeatChecked();
+        PreferencesStorageValues values = PreferencesStorageValues.defaultValues();
         
-        _presenter.setNotificationOptions(displayStart, displayStop, displayRepeat);
+        values.displayStartNotification = _optionsDialog.isNotificationStartChecked();
+        values.displayStopNotification = _optionsDialog.isNotificationStopChecked();
+        values.displayRepeatNotification = _optionsDialog.isNotificationRepeatChecked();
         
         double playSpeed = _optionsDialog.getPlaySpeedValue();
         
@@ -241,13 +258,18 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         boolean repeatForever = _optionsDialog.isRepeatForeverChecked();
         
         MacroParameters parameters = new MacroParameters(playSpeed, repeatTimes, repeatForever);
-        _presenter.setPlayParameters(parameters);
+        values.macroParameters = parameters;
         
-        updateFormMacroParameters(parameters);
+        return values;
     }
     
-    private void updateFormMacroParameters(MacroParameters parameters)
+    private void setOptionValues(PreferencesStorageValues values)
     {
-        _form.setMacroParametersValue(parameters.toString());
+        if (_optionsDialog != null)
+        {
+            _optionsDialog.setupWithStorageValues(values);
+        }
+        
+        _presenter.setOptionValues(values);
     }
 }

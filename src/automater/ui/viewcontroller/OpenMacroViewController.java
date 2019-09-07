@@ -8,6 +8,7 @@ package automater.ui.viewcontroller;
 import automater.TextValue;
 import automater.presenter.BasePresenterDelegate;
 import automater.presenter.OpenMacroPresenter;
+import automater.storage.PreferencesStorageValues;
 import automater.ui.view.OpenMacroForm;
 import automater.ui.view.StandartDescriptionsDataSource;
 import automater.utilities.AlertWindows;
@@ -174,6 +175,12 @@ public class OpenMacroViewController implements BaseViewController, BasePresente
     
     @Override
     public void finishPlaying()
+    {
+        
+    }
+    
+    @Override
+    public void onLoadedPreferencesFromStorage(PreferencesStorageValues values)
     {
         
     }

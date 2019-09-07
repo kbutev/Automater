@@ -5,6 +5,7 @@
  */
 package automater.presenter;
 
+import automater.storage.PreferencesStorageValues;
 import java.util.List;
 import automater.utilities.Description;
 import automater.work.model.ExecutorProgress;
@@ -28,6 +29,8 @@ public interface BasePresenterDelegate {
     public void updatePlayStatus(ExecutorProgress progress);
     public void cancelPlaying();
     public void finishPlaying();
+    
+    public void onLoadedPreferencesFromStorage(PreferencesStorageValues values);
     
     public void onErrorEncountered(Exception e);
 }

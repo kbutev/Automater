@@ -6,12 +6,13 @@
 package automater.work.model;
 
 import automater.TextValue;
+import java.io.Serializable;
 
 /**
  *
  * @author Bytevi
  */
-public class MacroParameters {
+public class MacroParameters implements Serializable {
     public final double playSpeed;
     public final int repeatTimes;
     public final boolean repeatForever;

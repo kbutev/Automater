@@ -8,6 +8,7 @@ package automater.ui.viewcontroller;
 import automater.TextValue;
 import automater.presenter.BasePresenterDelegate;
 import automater.presenter.RecordMacroPresenter;
+import automater.storage.PreferencesStorageValues;
 import automater.ui.view.RecordMacroForm;
 import automater.ui.view.StandartDescriptionsDataSource;
 import automater.utilities.AlertWindows;
@@ -175,6 +176,12 @@ public class RecordMacroViewController implements BaseViewController, BasePresen
     
     @Override
     public void finishPlaying()
+    {
+        
+    }
+    
+    @Override
+    public void onLoadedPreferencesFromStorage(PreferencesStorageValues values)
     {
         
     }
