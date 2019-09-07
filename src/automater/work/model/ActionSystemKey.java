@@ -6,12 +6,13 @@
 package automater.work.model;
 
 import automater.utilities.Description;
+import java.io.Serializable;
 
 /**
  *
  * @author Bytevi
  */
-public class ActionSystemKey implements Description {
+public class ActionSystemKey implements Serializable, Description {
     public static ActionSystemKey createKeyboardKey(int value)
     {
         return new ActionSystemKeyKeyboard(value);

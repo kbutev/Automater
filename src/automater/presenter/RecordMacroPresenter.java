@@ -24,8 +24,13 @@ import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.OSUIEffects;
+import automater.work.BaseAction;
 import automater.work.model.Macro;
+import automater.work.parser.ActionsFromMacroParser;
+import automater.work.parser.ActionsParserUtilities;
+import automater.work.parser.BaseActionsParser;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -44,6 +49,8 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     private final RecorderNativeParser _recorderMacroParser = new RecorderNativeParserSmart(_recordFlags);
     private boolean _hasStartedMacroRecording = false;
     private RecorderResult _recordedResult;
+    
+    private final BaseActionsParser _parser = new ActionsFromMacroParser();
     
     private final ArrayList<Description> _macroActionDescriptionsList = new ArrayList<>();
     
@@ -212,9 +219,20 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         
         RecorderResult result = _recordedResult;
         
-        Logger.message(this, "Recorded " + String.valueOf(result.userInputs.size()) + " events");
+        Logger.message(this, "Parsing " + String.valueOf(result.userInputs.size()) + " recorded events");
         
-        Macro macro = new Macro(name, _recordedResult);
+        List<BaseAction> actions;
+        
+        try {
+            actions = ActionsParserUtilities.parseUserInputs(result.userInputs, _parser);
+        } catch (Exception e) {
+            _delegate.onErrorEncountered(new Exception("Failed to save the recorded events: " + e.toString()));
+            return;
+        }
+        
+        Logger.message(this, "Successfully finished parsing the events!");
+        
+        Macro macro = new Macro(name, actions, new Date());
         
         macro.setDescription(description);
         

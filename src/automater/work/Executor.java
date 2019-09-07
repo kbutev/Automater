@@ -5,12 +5,11 @@
  */
 package automater.work;
 
-import automater.recorder.model.RecorderUserInput;
 import automater.utilities.Logger;
 import automater.work.model.ExecutorState;
 import automater.work.model.Macro;
 import automater.work.model.MacroParameters;
-import java.util.Iterator;
+import automater.work.parser.ActionsParserUtilities;
 import java.util.List;
 import automater.work.parser.BaseActionsParser;
 import java.awt.Robot;
@@ -51,12 +50,12 @@ public class Executor {
         }
     }
     
-    public BaseExecutorProcess performMacro(Macro macro, BaseActionsParser actionParser, ExecutorListener listener) throws Exception
+    public BaseExecutorProcess performMacro(Macro macro, ExecutorListener listener) throws Exception
     {
-        return performMacro(macro, MacroParameters.defaultValues(), actionParser, listener);
+        return performMacro(macro, MacroParameters.defaultValues(), listener);
     }
     
-    public BaseExecutorProcess performMacro(Macro macro, MacroParameters parameters, BaseActionsParser actionParser, ExecutorListener listener) throws Exception
+    public BaseExecutorProcess performMacro(Macro macro, MacroParameters parameters, ExecutorListener listener) throws Exception
     {
         Logger.messageEvent(this, "Perform macro '" + macro.getName() + "' with parameters " + parameters.toString());
         
@@ -67,8 +66,7 @@ public class Executor {
                 initRobot();
             }
             
-            List<BaseAction> actions = parseMacroToActionsList(macro, actionParser);
-            BaseExecutorProcess process = new ExecutorProcess(_robot, actions);
+            BaseExecutorProcess process = new ExecutorProcess(_robot, macro.actions);
             process.setListener(listener);
             
             _state.startProcess(process, parameters);
@@ -95,19 +93,5 @@ public class Executor {
         {
             _robot = new Robot();
         }
-    }
-    
-    private List<BaseAction> parseMacroToActionsList(Macro macro, BaseActionsParser actionParser) throws Exception
-    {
-        actionParser.onBeginParsing();
-        
-        Iterator<RecorderUserInput> it = macro.getData().getIteratorForUserInputs();
-        
-        while (it.hasNext())
-        {
-            actionParser.onParseInput(it.next());
-        }
-        
-        return actionParser.onFinishParsingMacro();
     }
 }

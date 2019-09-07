@@ -7,10 +7,14 @@ package automater.work.model;
 
 import automater.TextValue;
 import automater.recorder.model.RecorderResult;
+import automater.utilities.CollectionUtilities;
 import automater.utilities.DateUtilities;
 import automater.utilities.Description;
+import automater.work.BaseAction;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * A collection of user input operations.
@@ -19,23 +23,29 @@ import java.util.Date;
  */
 public class Macro implements Serializable, Description {
     public final String name;
-    private final RecorderResult _data;
+    public final List<BaseAction> actions;
+    public final List<Description> actionDescriptions;
     private String description = "";
     public final Date dateCreated;
     private int numberOfTimesPlayed = 0;
     private Date lastDatePlayed;
     
-    public Macro(String name, RecorderResult recorderResult)
+    public Macro(String name, List<BaseAction> actions, Date dateCreated)
     {
-        this.name = name;
-        this._data = recorderResult;
-        this.dateCreated = new Date();
-        this.lastDatePlayed = new Date();
+        this(name, actions, dateCreated, dateCreated);
     }
     
-    public RecorderResult getData()
+    public Macro(String name, List<BaseAction> actions, Date dateCreated, Date lastDatePlayed)
     {
-        return _data;
+        this.name = name;
+        this.actions = CollectionUtilities.copyAsImmutable(actions);
+        
+        ArrayList<Description> descriptions = new ArrayList<>();
+        descriptions.addAll(actions);
+        this.actionDescriptions = CollectionUtilities.copyAsImmutable(descriptions);
+        
+        this.dateCreated = dateCreated;
+        this.lastDatePlayed = lastDatePlayed;
     }
     
     // # Description
@@ -111,7 +121,7 @@ public class Macro implements Serializable, Description {
     
     public int getNumberOfActions()
     {
-        return getData().userInputs.size();
+        return actions.size();
     }
     
     public int getNumberOfTimesPlayed()

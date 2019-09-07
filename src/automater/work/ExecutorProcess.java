@@ -6,7 +6,6 @@
 package automater.work;
 
 import automater.TextValue;
-import static automater.TextValue.Play_StatusPerformingRepeat;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
@@ -554,12 +553,21 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
             
             if (performNext)
             {
+                boolean isComplex = nextAction.isComplex();
+                
                 BaseActionProcess p = new ActionProcess(nextAction);
                 setCurrentActionProcessSafely(p);
                 
                 String actionDescription = nextAction.getDescription().getStandart();
                 
-                Logger.messageEvent(this, "Perform next action: " + actionDescription);
+                if (!isComplex)
+                {
+                    Logger.messageEvent(this, "Perform next action: " + actionDescription);
+                }
+                else
+                {
+                    Logger.messageEvent(this, "Perform next complex action: " + actionDescription);
+                }
                 
                 // Listener alert
                 if (_listener != null)
@@ -582,7 +590,6 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
                 // Listener alert
                 if (_listener != null)
                 {
-                    Logger.messageEvent(this, "Finished action: " + actionDescription + "!");
                     _listener.onActionFinish(nextAction);
                 }
             }

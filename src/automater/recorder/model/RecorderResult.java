@@ -5,7 +5,6 @@
  */
 package automater.recorder.model;
 
-import automater.recorder.model.RecorderUserInput;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.Description;
 import java.io.Serializable;

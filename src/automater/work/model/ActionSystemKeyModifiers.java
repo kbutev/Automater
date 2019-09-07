@@ -6,6 +6,7 @@
 package automater.work.model;
 
 import automater.utilities.CollectionUtilities;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -14,7 +15,7 @@ import java.util.Set;
  *
  * @author Bytevi
  */
-public class ActionSystemKeyModifiers {
+public class ActionSystemKeyModifiers implements Serializable {
     public final Set<ActionSystemKeyModifierValue> modifiers;
     
     public ActionSystemKeyModifiers()

@@ -27,7 +27,7 @@ import java.util.Date;
  *
  * @author Bytevi
  */
-public class Action implements BaseAction, Description {
+public class Action extends BaseAction {
     public static Action createKeyClick(Date timestamp, UserInputKeyClick keyClick, Description description) throws Exception
     {
         if (keyClick.isPress())

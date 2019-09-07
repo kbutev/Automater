@@ -14,7 +14,6 @@ import automater.recorder.model.UserInputKeyClick;
 import automater.recorder.model.UserInputMouseMotion;
 import automater.utilities.Description;
 import automater.work.BaseAction;
-import java.awt.Point;
 import automater.recorder.model.UserInputMouseMove;
 
 /**

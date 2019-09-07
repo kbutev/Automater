@@ -83,6 +83,11 @@ public enum TextValue {
     
     private static String evaluateTextValue(String string, String arg1, String arg2)
     {
+        if (string == null)
+        {
+            return "";
+        }
+        
         if (arg1 != null)
         {
             string = string.replaceFirst(placeholderSymbol, arg1);
@@ -164,6 +169,7 @@ public enum TextValue {
         put(Play_StatusIdle, "Idle");
         put(Play_StatusFinished, "Finished");
         put(Play_StatusWaiting, "Waiting");
+        put(Play_StatusPerformedWaiting, "Finished %@, waiting for next");
         put(Play_StatusPerforming, "Performing %@");
         put(Play_StatusPerformingRepeat, "[%@] Performing %@");
         

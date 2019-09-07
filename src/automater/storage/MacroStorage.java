@@ -198,9 +198,9 @@ public class MacroStorage {
     
     public Exception getSaveMacroError(Macro macro)
     {
-        if (macro.getData().userInputs.isEmpty())
+        if (macro.actions.isEmpty())
         {
-            return new Exception("Macro requires at least one user input action.");
+            return new Exception("Macro requires at least one action.");
         }
         
         return getMacroNameIsUnavailableError(macro.name);

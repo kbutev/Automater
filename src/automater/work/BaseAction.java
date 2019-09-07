@@ -7,6 +7,7 @@ package automater.work;
 
 import automater.utilities.Description;
 import automater.work.model.BaseActionContext;
+import java.io.Serializable;
 
 /**
  * A stateless, program operation.
@@ -17,14 +18,14 @@ import automater.work.model.BaseActionContext;
  * 
  * @author Bytevi
  */
-public interface BaseAction {
-    public boolean isComplex();
+public abstract class BaseAction implements Serializable, Description {
+    public abstract boolean isComplex();
     
-    public long getPerformTime();
-    public long getPerformDuration();
-    public long getPerformEndTime();
+    public abstract long getPerformTime();
+    public abstract long getPerformDuration();
+    public abstract long getPerformEndTime();
     
-    public Description getDescription();
+    public abstract Description getDescription();
     
-    public void perform(BaseActionContext context);
+    public abstract void perform(BaseActionContext context);
 }

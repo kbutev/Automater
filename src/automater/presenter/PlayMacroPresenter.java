@@ -42,8 +42,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     private boolean _started = false;
     
     private final Macro _macro;
-    private final List<Description> _macroActions;
-    private final BaseActionsParser _parser = new ActionsFromMacroParser();
+    private final List<Description> _macroActionDescriptions;
     private BaseExecutorProcess _ongoingExecution;
     
     private final Recorder _recorder = Recorder.getDefault();
@@ -59,7 +58,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         _rootViewController = rootViewController;
         
         _macro = macro;
-        _macroActions = macro.getData().getUserInputAsDescriptions();
+        _macroActionDescriptions = macro.actionDescriptions;
     }
     
     // # BasePresenter
@@ -83,7 +82,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         
         Logger.message(this, "Start.");
         
-        _delegate.onLoadedMacroFromStorage(_macro.name, _macro.getDescription(), _macroActions);
+        _delegate.onLoadedMacroFromStorage(_macro.name, _macro.getDescription(), _macroActionDescriptions);
     }
     
     @Override
@@ -192,7 +191,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         Logger.messageEvent(this, "Play.");
         
         try {
-            _ongoingExecution = _executor.performMacro(_macro, _macroParameters, _parser, this);
+            _ongoingExecution = _executor.performMacro(_macro, _macroParameters, this);
         } catch (Exception e) {
             Logger.error(this, "Failed to start executor: " + e.toString());
             _delegate.onErrorEncountered(e);
