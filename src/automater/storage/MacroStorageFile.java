@@ -6,7 +6,6 @@
 package automater.storage;
 
 import automater.TextValue;
-import static automater.TextValue.Error_NameMustBeAlphaNumericWithSpecialSymbols;
 import automater.utilities.Archiver;
 import automater.utilities.Errors;
 import automater.utilities.FileSystem;
@@ -169,14 +168,32 @@ public class MacroStorageFile {
             Errors.throwSerializationFailed("Failed to create macro '" + _macro.name + "', already exists");
         }
         
-        writeToFile(getFile(), data);
+        // Update file
+        synchronized (_lock)
+        {
+            writeToFile(getFile(), data);
+        }
     }
     
     public void update(Macro macro) throws Exception
     {
+        String data = Archiver.serializeObject(_macro);
+        
+        if (data == null)
+        {
+            Errors.throwSerializationFailed("Failed to serialize macro '" + _macro.name + "'");
+        }
+        
+        // Update local variable
         synchronized (_lock)
         {
             _macro = macro;
+        }
+        
+        // Update file
+        synchronized (_lock)
+        {
+            writeToFile(getFile(), data);
         }
     }
     

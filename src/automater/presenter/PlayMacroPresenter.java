@@ -6,7 +6,6 @@
 package automater.presenter;
 
 import automater.TextValue;
-import static automater.TextValue.Play_NotificationRepeatForever;
 import automater.recorder.Recorder;
 import automater.recorder.RecorderHotkeyListener;
 import automater.settings.Hotkey;
@@ -21,12 +20,12 @@ import automater.work.BaseAction;
 import automater.work.BaseExecutorProcess;
 import automater.work.Executor;
 import automater.work.model.Macro;
-import automater.work.parser.ActionsFromMacroParser;
 import automater.work.parser.BaseActionsParser;
 import java.util.List;
 import automater.work.ExecutorListener;
 import automater.work.model.ExecutorProgress;
 import automater.work.model.MacroParameters;
+import java.util.Date;
 
 /**
  *
@@ -199,6 +198,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         }
         
         _macro.incrementNumberOfTimesPlayed();
+        _macro.setLastTimePlayedDate(new Date());
         
         try {
             _macrosStorage.updateMacroInStorage(_macro);
@@ -278,6 +278,11 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     
     private void updatePlayStatus()
     {
+        if (_ongoingExecution == null)
+        {
+            return;
+        }
+        
         ExecutorProgress progress = _ongoingExecution.getProgress();
         
         _delegate.updatePlayStatus(progress);

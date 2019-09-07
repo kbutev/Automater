@@ -100,7 +100,7 @@ public class MacroStorage {
     
     public void saveMacroToStorage(Macro macro) throws Exception
     {
-        Logger.message(this, "Saving macro '" + macro.name + "' to storage...");
+        Logger.message(this, "Saving new macro '" + macro.name + "' to storage...");
         
         if (macroExistsWithName(macro.name))
         {
@@ -132,6 +132,8 @@ public class MacroStorage {
     
     public void updateMacroInStorage(Macro macro) throws Exception
     {
+        Logger.message(this, "Updating macro " + macro.toString() + ".");
+        
         String macroName = macro.name;
         
         if (!macroExistsWithName(macroName))
@@ -165,14 +167,14 @@ public class MacroStorage {
     
     public void deleteMacro(Macro macro) throws Exception
     {
+        Logger.message(this, "Deleting macro " + macro.toString() + " from storage.");
+        
         ArrayList<MacroStorageFile> currentMacros = macros();
         
         if (!macroExistsWithName(macro.name))
         {
             Errors.throwInvalidArgument("Macro does not exist in storage");
         }
-        
-        Logger.message(this, "Deleting macro " + macro.toString() + " from storage.");
         
         MacroStorageFile fileToDelete = null;
         
