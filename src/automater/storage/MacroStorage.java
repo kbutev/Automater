@@ -6,16 +6,11 @@
 package automater.storage;
 
 import automater.TextValue;
-import automater.utilities.Archiver;
-import automater.utilities.CollectionUtilities;
 import automater.utilities.Errors;
 import automater.utilities.FileSystem;
 import automater.utilities.Logger;
 import automater.work.model.Macro;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,41 +20,53 @@ import java.util.List;
  * @author Bytevi
  */
 public class MacroStorage {
-    public static final String FILE_NAME = "macros_storage.txt";
-    public static final int MACRO_NAME_MIN_LENGTH = 3;
-    public static final int MACRO_NAME_MAX_LENGTH = 18;
     
     private final Object _lock = new Object();
     
-    private ArrayList<Macro> _macros = new ArrayList<Macro>();
+    private ArrayList<MacroStorageFile> _macros = new ArrayList<>();
     
     public MacroStorage()
     {
-        loadMacrosFromFile();
+        loadMacrosFromDevice();
     }
     
     public List<Macro> getMacros()
     {
-        return CollectionUtilities.copyAsImmutable(macros());
+        ArrayList<MacroStorageFile> currentMacros = macros();
+        ArrayList<Macro> macros = new ArrayList<>();
+        
+        for (MacroStorageFile macroFile : currentMacros)
+        {
+            macros.add(macroFile.getMacro());
+        }
+        
+        return macros;
     }
     
     public void reloadMacrosFromStorage()
     {
         synchronized (_lock)
         {
-            loadMacrosFromFile();
+            loadMacrosFromDevice();
         }
+    }
+    
+    // # Validators
+    
+    public boolean canSaveMacro(Macro macro)
+    {
+        return getSaveMacroError(macro) == null;
     }
     
     public boolean macroExistsWithName(String name)
     {
         synchronized (_lock)
         {
-            ArrayList<Macro> currentMacros = macros();
+            ArrayList<MacroStorageFile> currentMacros = macros();
             
-            for (Macro macro : currentMacros)
+            for (MacroStorageFile macro : currentMacros)
             {
-                if (macro.name.equals(name))
+                if (macro.name().equals(name))
                 {
                     return true;
                 }
@@ -69,11 +76,31 @@ public class MacroStorage {
         }
     }
     
+    public boolean isMacroNameAvailable(String name)
+    {
+        return MacroStorageFile.getMacroNameIsUnavailableError(name) == null;
+    }
+    
+    public Exception getSaveMacroError(Macro macro)
+    {
+        if (macro.actions.isEmpty())
+        {
+            return new Exception("Macro requires at least one action.");
+        }
+        
+        if (GeneralStorage.getDefault().getMacrosStorage().macroExistsWithName(macro.name))
+        {
+            return new Exception(TextValue.getText(TextValue.Error_NameIsTaken));
+        }
+        
+        return MacroStorageFile.getMacroNameIsUnavailableError(macro.name);
+    }
+    
+    // # Operations
+    
     public void saveMacroToStorage(Macro macro) throws Exception
     {
         Logger.message(this, "Saving macro '" + macro.name + "' to storage...");
-        
-        ArrayList<Macro> currentMacros = macros();
         
         if (macroExistsWithName(macro.name))
         {
@@ -81,26 +108,25 @@ public class MacroStorage {
             return;
         }
         
-        currentMacros.add(macro);
+        ArrayList<MacroStorageFile> currentMacros = macros();
         
-        try {
-            writeMacrosToFile(currentMacros);
-            Logger.messageEvent(this, "Macro '" + macro.name + "' saved to storage!");
-        } catch (Exception e) {
-            // Remove the failed archived object
-            currentMacros.remove(macro);
-            
-            String message = "Failed to save '" + macro.name + "' macro to storage!";
-            Logger.error(this, message);
-            Errors.throwSerializationFailed(message);
-        }
-    }
-    
-    public void saveMacrosToStorage(ArrayList<Macro> macros) throws Exception
-    {
-        for (int e = 0; e < macros.size(); e++)
+        MacroStorageFile macroFile = MacroStorageFile.createFromMacro(macro);
+        
+        synchronized (_lock)
         {
-            saveMacroToStorage(macros.get(e));
+            try {
+                // Try to create
+                macroFile.create();
+                
+                // Add to macros collection
+                currentMacros.add(macroFile);
+                
+                Logger.messageEvent(this, "Macro '" + macroFile.name() + "' saved to storage!");
+            } catch (Exception e) {
+                String message = "Failed to save '" + macroFile.name() + "' macro to storage!";
+                Logger.error(this, message);
+                Errors.throwSerializationFailed(message);
+            }
         }
     }
     
@@ -114,202 +140,132 @@ public class MacroStorage {
             return;
         }
         
-        ArrayList<Macro> currentMacros = macros();
-        int index = -1;
+        ArrayList<MacroStorageFile> currentMacros = macros();
+        MacroStorageFile fileToUpdate = null;
         
-        for (Macro m : currentMacros)
+        for (MacroStorageFile m : currentMacros)
         {
-            if (m.name.equals(macroName))
+            if (m.name().equals(macroName))
             {
-                index = currentMacros.indexOf(m);
+                fileToUpdate = m;
                 break;
             }
         }
         
-        if (index == -1)
+        if (fileToUpdate == null)
         {
-            Errors.throwInternalLogicError("Failed to update macro, cannot find macro.");
+            Logger.error(this, "Failed to update macro '" + macroName + "' in storage, macro does not exist.");
+            Errors.throwInternalLogicError("Failed to update macro, macro does not exist.");
+            return;
         }
         
         // Replace old macro with new macro
-        currentMacros.set(index, macro);
-        
-        // Save changes
-        writeMacrosToFile(currentMacros);
+        fileToUpdate.update(macro);
     }
     
     public void deleteMacro(Macro macro) throws Exception
     {
-        if (!_macros.contains(macro))
+        ArrayList<MacroStorageFile> currentMacros = macros();
+        
+        if (!macroExistsWithName(macro.name))
         {
             Errors.throwInvalidArgument("Macro does not exist in storage");
         }
         
         Logger.message(this, "Deleting macro " + macro.toString() + " from storage.");
         
-        _macros.remove(macro);
+        MacroStorageFile fileToDelete = null;
         
-        writeMacrosToFile(_macros);
+        for (MacroStorageFile file : currentMacros)
+        {
+            if (file.name().equals(macro.name))
+            {
+                fileToDelete = file;
+                break;
+            }
+        }
         
-        reloadMacrosFromStorage();
+        if (fileToDelete == null)
+        {
+            Logger.error(this, "Failed to delete macro '" + macro.name + "' from storage");
+            return;
+        }
+        
+        // Try to delete
+        fileToDelete.delete();
+        
+        // Remove from macros collection
+        synchronized (_lock)
+        {
+            currentMacros.remove(fileToDelete);
+        }
     }
     
     public void clearMacros()
     {
-        Logger.message(this, "Wiping out all macros from storage...");
+        Logger.message(this, "Deleting out all macros from storage...");
         
         clearFileData();
     }
     
-    public boolean isMacroNameAvailable(String name)
-    {
-        return getMacroNameIsUnavailableError(name) == null;
-    }
-    
-    public Exception getMacroNameIsUnavailableError(String name)
-    {
-        if (name.isEmpty())
-        {
-            return new Exception(TextValue.getText(TextValue.Error_NameIsEmpty));
-        }
-        
-        if (name.length() < MACRO_NAME_MIN_LENGTH)
-        {
-            return new Exception(TextValue.getText(TextValue.Error_NameIsTooShort,  String.valueOf(MACRO_NAME_MIN_LENGTH)));
-        }
-        
-        if (name.length() > MACRO_NAME_MAX_LENGTH)
-        {
-            return new Exception(TextValue.getText(TextValue.Error_NameIsTooLong,  String.valueOf(MACRO_NAME_MAX_LENGTH)));
-        }
-        
-        if (GeneralStorage.getDefault().getMacrosStorage().macroExistsWithName(name))
-        {
-            return new Exception(TextValue.getText(TextValue.Error_NameIsTaken));
-        }
-        
-        return null;
-    }
-    
-    public boolean canSaveMacro(Macro macro)
-    {
-        return getSaveMacroError(macro) == null;
-    }
-    
-    public Exception getSaveMacroError(Macro macro)
-    {
-        if (macro.actions.isEmpty())
-        {
-            return new Exception("Macro requires at least one action.");
-        }
-        
-        return getMacroNameIsUnavailableError(macro.name);
-    }
-    
     // # Private
     
-    private ArrayList<Macro> macros()
+    private ArrayList<MacroStorageFile> macros()
     {
         synchronized (_lock)
         {
             // Load macros
             if (_macros.isEmpty())
             {
-                loadMacrosFromFile();
+                loadMacrosFromDevice();
             }
             
             return _macros;
         }
     }
     
-    private File getFile() throws Exception
+    private void loadMacrosFromDevice()
     {
-        File file = new File(FileSystem.filePathRelativeToLocalPath(FILE_NAME));
-        return file;
+        // None of this is thread safe
+        // Call this method from synchronized context
+        
+        ArrayList<MacroStorageFile> currentMacros = _macros;
+        
+        String localPath = FileSystem.getLocalFilePath();
+        
+        List<File> files = FileSystem.getAllFilesInDirectory(localPath, MacroStorageFile.FILE_NAME_EXTENSION);
+        
+        Logger.message(this, "Loading macros from storage, found " + String.valueOf(files.size()) + " files");
+        
+        currentMacros.clear();
+        
+        for (File file : files)
+        {
+            MacroStorageFile macroFile = MacroStorageFile.createFromFile(file);
+            
+            if (macroFile != null)
+            {
+                currentMacros.add(macroFile);
+            }
+        }
     }
     
     private void clearFileData()
     {
-        try {
-            writeToFile("");
-        } catch (Exception e) {
-            
-        }
-    }
-    
-    private void writeToFile(String data) throws Exception
-    {
+        ArrayList<MacroStorageFile> currentMacros = macros();
+        
         synchronized (_lock)
         {
-            File file = getFile();
-            
-            PrintWriter writer = new PrintWriter(file);
-            
-            String[] lines = data.split("\n");
-            
-            for (String line : lines)
+            for (MacroStorageFile file : currentMacros)
             {
-                writer.println(line);
-            }
-            
-            writer.println();
-            
-            writer.close();
-        }
-    }
-    
-    private String readFromFile()
-    {
-        String data = "";
-        
-        synchronized (_lock)
-        {
-            try {
-                File file = getFile();
-                
-                BufferedReader reader = new BufferedReader(new FileReader(file));
-                
-                String line = reader.readLine();
-                
-                while (line != null)
-                {
-                    data = data.concat(line);
-                    line = reader.readLine();
+                try {
+                    file.delete();
+                } catch (Exception e) {
+                    
                 }
-                
-                reader.readLine();
-                reader.close();
-            } catch (Exception e) {
-                
             }
-        }
-        
-        return data;
-    }
-    
-    private void loadMacrosFromFile()
-    {
-        String macrosData = readFromFile();
-        
-        ArrayList<Macro> macrosLoaded = Archiver.deserializeArray(Macro.class, macrosData);
-        
-        if (macrosLoaded != null)
-        {
-            Logger.message(this, "Retrieved " + macrosLoaded.size() + " macros from storage");
             
-            this._macros = macrosLoaded;
+            currentMacros.clear();
         }
-    }
-    
-    private void writeMacrosToFile(ArrayList<Macro> macros) throws Exception
-    {
-        String data = Archiver.serializeObject(macros);
-        
-        if (data == null)
-        {
-            Errors.throwSerializationFailed("Failed to serialize macros");
-        }
-        
-        writeToFile(data);
     }
 }

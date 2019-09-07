@@ -6,7 +6,6 @@
 package automater.work.model;
 
 import automater.TextValue;
-import automater.recorder.model.RecorderResult;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.DateUtilities;
 import automater.utilities.Description;

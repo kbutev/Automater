@@ -13,7 +13,7 @@ import java.util.HashMap;
  */
 public enum TextValue {
     // Errors
-    Error_NameIsEmpty, Error_NameIsTooShort, Error_NameIsTooLong, Error_NameIsTaken,
+    Error_NameIsEmpty, Error_NameIsTooShort, Error_NameIsTooLong, Error_NameIsTaken, Error_NameMustBeAlphaNumeric, Error_NameMustBeAlphaNumericWithSpecialSymbols,
     
     // Record form
     Record_FormTitle, Record_HeaderText,
@@ -110,10 +110,12 @@ public enum TextValue {
     
     private static HashMap<TextValue, String> englishValues = new HashMap<TextValue, String>() {{
         // Errors
-        put(Error_NameIsEmpty, "Name cannot be empty");  
-        put(Error_NameIsTooShort, "Name must be longer than %@ characters");  
-        put(Error_NameIsTooLong, "Name must be shorter than %@ characters");  
-        put(Error_NameIsTaken, "Name already taken.");  
+        put(Error_NameIsEmpty, "Name cannot be empty");
+        put(Error_NameIsTooShort, "Name must be longer than %@ characters");
+        put(Error_NameIsTooLong, "Name must be shorter than %@ characters");
+        put(Error_NameIsTaken, "Name already taken.");
+        put(Error_NameMustBeAlphaNumeric, "Name must contain alpha/numeric chars only.");
+        put(Error_NameMustBeAlphaNumericWithSpecialSymbols, "Name must contain alphanumeric chars only and also may contain: %@");
         
         // Record form
         put(Record_FormTitle, "Automater - Record");   

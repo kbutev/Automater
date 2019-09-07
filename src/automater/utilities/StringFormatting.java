@@ -10,6 +10,21 @@ package automater.utilities;
  * @author Bytevi
  */
 public class StringFormatting {
+    public static boolean isStringAlphabetic(String string)
+    {
+        return string.matches("[A-Za-z]+");
+    }
+    
+    public static boolean isStringNumeric(String string)
+    {
+        return string.matches("[0-9]+");
+    }
+    
+    public static boolean isStringAlphanumeric(String string)
+    {
+        return string.matches("[A-Za-z0-9]+");
+    }
+    
     public static boolean isStringANumber(String string)
     {
         try {  
