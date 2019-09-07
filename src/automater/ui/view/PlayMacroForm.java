@@ -284,7 +284,7 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         macroActionsList.setModel(macroActionsDataSource);
     }
     
-    public void setMacroParametersValue(String value)
+    public void setMacroParametersDescription(String value)
     {
         optionsLabel.setText(value);
     }

@@ -176,6 +176,8 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     public void onLoadedPreferencesFromStorage(PreferencesStorageValues values)
     {
         _defaultPreferences = values;
+        
+        setMacroParametersDescription(values.macroParameters);
     }
 
     @Override
@@ -197,7 +199,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     
     private void setMacroParametersDescription(MacroParameters parameters)
     {
-        _form.setMacroParametersValue(parameters.toString());
+        _form.setMacroParametersDescription(parameters.toString());
     }
     
     private void initOptionsWindow()
@@ -271,5 +273,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         }
         
         _presenter.setOptionValues(values);
+        
+        setMacroParametersDescription(values.macroParameters);
     }
 }

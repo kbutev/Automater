@@ -78,7 +78,10 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         Logger.message(this, "Start.");
         
         _delegate.onLoadedMacroFromStorage(_macro.name, _macro.getDescription(), _macroActionDescriptions);
-        _delegate.onLoadedPreferencesFromStorage(GeneralStorage.getDefault().getPreferencesStorage().getValues());
+        
+        _options = GeneralStorage.getDefault().getPreferencesStorage().getValues();
+        
+        _delegate.onLoadedPreferencesFromStorage(_options);
     }
     
     @Override
