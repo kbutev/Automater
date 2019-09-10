@@ -18,7 +18,6 @@ import automater.utilities.SimpleCallback;
 import java.awt.event.WindowEvent;
 import java.util.List;
 import automater.utilities.Description;
-import automater.work.model.ExecutorProgress;
 
 /**
  *
@@ -162,7 +161,7 @@ public class OpenMacroViewController implements BaseViewController, BasePresente
     }
     
     @Override
-    public void updatePlayStatus(ExecutorProgress progress)
+    public void updatePlayStatus(automater.work.model.ExecutorProgress progress)
     {
         
     }
@@ -186,10 +185,18 @@ public class OpenMacroViewController implements BaseViewController, BasePresente
     }
     
     @Override
+    public void onEditMacroAction(automater.work.model.BaseEditableAction action)
+    {
+        
+    }
+    
+    @Override
     public void onErrorEncountered(Exception e)
     {
         Logger.error(this, "Error encountered: " + e.toString());
     }
+    
+    // # Public
     
     public void onSelectItem(int index)
     {

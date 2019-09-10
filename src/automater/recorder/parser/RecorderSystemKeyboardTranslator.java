@@ -5,10 +5,10 @@
  */
 package automater.recorder.parser;
 
-import automater.recorder.model.RecorderUserInputKey;
-import automater.recorder.model.RecorderUserInputKeyModifiers;
-import automater.recorder.model.RecorderUserInputKeyModifierValue;
-import automater.recorder.model.RecorderUserInputKeyValue;
+import automater.input.InputKey;
+import automater.input.InputKeyModifiers;
+import automater.input.InputKeyModifierValue;
+import automater.input.InputKeyValue;
 import automater.utilities.Logger;
 import java.util.HashMap;
 import org.jnativehook.keyboard.NativeKeyEvent;
@@ -19,32 +19,32 @@ import org.jnativehook.keyboard.NativeKeyEvent;
  * @author Bytevi
  */
 public class RecorderSystemKeyboardTranslator {
-    private static HashMap<Integer, RecorderUserInputKeyValue> _keyMapping = new HashMap<>();
+    private static HashMap<Integer, InputKeyValue> _keyMapping = new HashMap<>();
     
-    private RecorderUserInputKeyModifiers _mask = RecorderUserInputKeyModifiers.none();
+    private InputKeyModifiers _mask = InputKeyModifiers.none();
     
     public RecorderSystemKeyboardTranslator()
     {
         
     }
     
-    public RecorderUserInputKeyModifiers getCurrentMask()
+    public InputKeyModifiers getCurrentMask()
     {
         return _mask;
     }
     
-    public RecorderUserInputKey translate(NativeKeyEvent keyEvent)
+    public InputKey translate(NativeKeyEvent keyEvent)
     {
         return translate(false, keyEvent, true);
     }
     
-    public RecorderUserInputKey translate(boolean recordKeystroke, NativeKeyEvent keyEvent, boolean press)
+    public InputKey translate(boolean recordKeystroke, NativeKeyEvent keyEvent, boolean press)
     {
         int keyCode = keyEvent.getKeyCode();
         
-        RecorderUserInputKeyValue keyValue = keyValueForJNativeHookKey(keyCode);
+        InputKeyValue keyValue = keyValueForJNativeHookKey(keyCode);
         
-        if (keyValue == RecorderUserInputKeyValue.UNKNOWN)
+        if (keyValue == InputKeyValue.UNKNOWN)
         {
             Logger.error(this, "Unrecognized key value " + String.valueOf(keyCode));
             return null;
@@ -56,12 +56,12 @@ public class RecorderSystemKeyboardTranslator {
             return null;
         }
         
-        return new RecorderUserInputKey(keyValue , _mask);
+        return new InputKey(keyValue , _mask);
     }
     
-    private void handleMaskKey(RecorderUserInputKeyValue keyValue, boolean press)
+    private void handleMaskKey(InputKeyValue keyValue, boolean press)
     {
-        RecorderUserInputKeyModifierValue mask = maskValueFoKey(keyValue);
+        InputKeyModifierValue mask = maskValueFoKey(keyValue);
         
         if (press)
         {
@@ -73,149 +73,149 @@ public class RecorderSystemKeyboardTranslator {
         }
     }
     
-    public static synchronized HashMap<Integer, RecorderUserInputKeyValue> getKeyMapping()
+    public static synchronized HashMap<Integer, InputKeyValue> getKeyMapping()
     {
         if (_keyMapping.size() > 0)
         {
             return _keyMapping;
         }
         
-        _keyMapping.put(NativeKeyEvent.VC_0, RecorderUserInputKeyValue._0);
-        _keyMapping.put(NativeKeyEvent.VC_1, RecorderUserInputKeyValue._1);
-        _keyMapping.put(NativeKeyEvent.VC_2, RecorderUserInputKeyValue._2);
-        _keyMapping.put(NativeKeyEvent.VC_3, RecorderUserInputKeyValue._3);
-        _keyMapping.put(NativeKeyEvent.VC_4, RecorderUserInputKeyValue._4);
-        _keyMapping.put(NativeKeyEvent.VC_5, RecorderUserInputKeyValue._5);
-        _keyMapping.put(NativeKeyEvent.VC_6, RecorderUserInputKeyValue._6);
-        _keyMapping.put(NativeKeyEvent.VC_7, RecorderUserInputKeyValue._7);
-        _keyMapping.put(NativeKeyEvent.VC_8, RecorderUserInputKeyValue._8);
-        _keyMapping.put(NativeKeyEvent.VC_9, RecorderUserInputKeyValue._9);
+        _keyMapping.put(NativeKeyEvent.VC_0, InputKeyValue._0);
+        _keyMapping.put(NativeKeyEvent.VC_1, InputKeyValue._1);
+        _keyMapping.put(NativeKeyEvent.VC_2, InputKeyValue._2);
+        _keyMapping.put(NativeKeyEvent.VC_3, InputKeyValue._3);
+        _keyMapping.put(NativeKeyEvent.VC_4, InputKeyValue._4);
+        _keyMapping.put(NativeKeyEvent.VC_5, InputKeyValue._5);
+        _keyMapping.put(NativeKeyEvent.VC_6, InputKeyValue._6);
+        _keyMapping.put(NativeKeyEvent.VC_7, InputKeyValue._7);
+        _keyMapping.put(NativeKeyEvent.VC_8, InputKeyValue._8);
+        _keyMapping.put(NativeKeyEvent.VC_9, InputKeyValue._9);
         
-        _keyMapping.put(NativeKeyEvent.VC_A, RecorderUserInputKeyValue._A);
-        _keyMapping.put(NativeKeyEvent.VC_B, RecorderUserInputKeyValue._B);
-        _keyMapping.put(NativeKeyEvent.VC_C, RecorderUserInputKeyValue._C);
-        _keyMapping.put(NativeKeyEvent.VC_D, RecorderUserInputKeyValue._D);
-        _keyMapping.put(NativeKeyEvent.VC_E, RecorderUserInputKeyValue._E);
-        _keyMapping.put(NativeKeyEvent.VC_F, RecorderUserInputKeyValue._F);
-        _keyMapping.put(NativeKeyEvent.VC_G, RecorderUserInputKeyValue._G);
-        _keyMapping.put(NativeKeyEvent.VC_H, RecorderUserInputKeyValue._H);
-        _keyMapping.put(NativeKeyEvent.VC_I, RecorderUserInputKeyValue._I);
-        _keyMapping.put(NativeKeyEvent.VC_J, RecorderUserInputKeyValue._J);
-        _keyMapping.put(NativeKeyEvent.VC_K, RecorderUserInputKeyValue._K);
-        _keyMapping.put(NativeKeyEvent.VC_L, RecorderUserInputKeyValue._L);
-        _keyMapping.put(NativeKeyEvent.VC_M, RecorderUserInputKeyValue._M);
-        _keyMapping.put(NativeKeyEvent.VC_N, RecorderUserInputKeyValue._N);
-        _keyMapping.put(NativeKeyEvent.VC_0, RecorderUserInputKeyValue._O);
-        _keyMapping.put(NativeKeyEvent.VC_P, RecorderUserInputKeyValue._P);
-        _keyMapping.put(NativeKeyEvent.VC_Q, RecorderUserInputKeyValue._Q);
-        _keyMapping.put(NativeKeyEvent.VC_R, RecorderUserInputKeyValue._R);
-        _keyMapping.put(NativeKeyEvent.VC_S, RecorderUserInputKeyValue._S);
-        _keyMapping.put(NativeKeyEvent.VC_T, RecorderUserInputKeyValue._T);
-        _keyMapping.put(NativeKeyEvent.VC_U, RecorderUserInputKeyValue._U);
-        _keyMapping.put(NativeKeyEvent.VC_V, RecorderUserInputKeyValue._V);
-        _keyMapping.put(NativeKeyEvent.VC_W, RecorderUserInputKeyValue._W);
-        _keyMapping.put(NativeKeyEvent.VC_X, RecorderUserInputKeyValue._X);
-        _keyMapping.put(NativeKeyEvent.VC_Y, RecorderUserInputKeyValue._Y);
-        _keyMapping.put(NativeKeyEvent.VC_Z, RecorderUserInputKeyValue._Z);
+        _keyMapping.put(NativeKeyEvent.VC_A, InputKeyValue._A);
+        _keyMapping.put(NativeKeyEvent.VC_B, InputKeyValue._B);
+        _keyMapping.put(NativeKeyEvent.VC_C, InputKeyValue._C);
+        _keyMapping.put(NativeKeyEvent.VC_D, InputKeyValue._D);
+        _keyMapping.put(NativeKeyEvent.VC_E, InputKeyValue._E);
+        _keyMapping.put(NativeKeyEvent.VC_F, InputKeyValue._F);
+        _keyMapping.put(NativeKeyEvent.VC_G, InputKeyValue._G);
+        _keyMapping.put(NativeKeyEvent.VC_H, InputKeyValue._H);
+        _keyMapping.put(NativeKeyEvent.VC_I, InputKeyValue._I);
+        _keyMapping.put(NativeKeyEvent.VC_J, InputKeyValue._J);
+        _keyMapping.put(NativeKeyEvent.VC_K, InputKeyValue._K);
+        _keyMapping.put(NativeKeyEvent.VC_L, InputKeyValue._L);
+        _keyMapping.put(NativeKeyEvent.VC_M, InputKeyValue._M);
+        _keyMapping.put(NativeKeyEvent.VC_N, InputKeyValue._N);
+        _keyMapping.put(NativeKeyEvent.VC_0, InputKeyValue._O);
+        _keyMapping.put(NativeKeyEvent.VC_P, InputKeyValue._P);
+        _keyMapping.put(NativeKeyEvent.VC_Q, InputKeyValue._Q);
+        _keyMapping.put(NativeKeyEvent.VC_R, InputKeyValue._R);
+        _keyMapping.put(NativeKeyEvent.VC_S, InputKeyValue._S);
+        _keyMapping.put(NativeKeyEvent.VC_T, InputKeyValue._T);
+        _keyMapping.put(NativeKeyEvent.VC_U, InputKeyValue._U);
+        _keyMapping.put(NativeKeyEvent.VC_V, InputKeyValue._V);
+        _keyMapping.put(NativeKeyEvent.VC_W, InputKeyValue._W);
+        _keyMapping.put(NativeKeyEvent.VC_X, InputKeyValue._X);
+        _keyMapping.put(NativeKeyEvent.VC_Y, InputKeyValue._Y);
+        _keyMapping.put(NativeKeyEvent.VC_Z, InputKeyValue._Z);
         
-        _keyMapping.put(NativeKeyEvent.VC_SHIFT, RecorderUserInputKeyValue._SHIFT);
-        _keyMapping.put(NativeKeyEvent.VC_CONTROL, RecorderUserInputKeyValue._CONTROL);
-        _keyMapping.put(NativeKeyEvent.VC_ALT, RecorderUserInputKeyValue._ALT);
+        _keyMapping.put(NativeKeyEvent.VC_SHIFT, InputKeyValue._SHIFT);
+        _keyMapping.put(NativeKeyEvent.VC_CONTROL, InputKeyValue._CONTROL);
+        _keyMapping.put(NativeKeyEvent.VC_ALT, InputKeyValue._ALT);
         
-        _keyMapping.put(NativeKeyEvent.VC_SPACE, RecorderUserInputKeyValue._SPACE);
-        _keyMapping.put(NativeKeyEvent.VC_ENTER, RecorderUserInputKeyValue._ENTER);
-        _keyMapping.put(NativeKeyEvent.VC_ESCAPE, RecorderUserInputKeyValue._ESCAPE);
-        _keyMapping.put(NativeKeyEvent.VC_BACKSPACE, RecorderUserInputKeyValue._BACKSPACE);
-        _keyMapping.put(NativeKeyEvent.VC_MINUS, RecorderUserInputKeyValue._MINUS);
-        _keyMapping.put(NativeKeyEvent.VC_EQUALS, RecorderUserInputKeyValue._EQUALS);
-        _keyMapping.put(NativeKeyEvent.VC_TAB, RecorderUserInputKeyValue._TAB);
-        _keyMapping.put(NativeKeyEvent.VC_CAPS_LOCK, RecorderUserInputKeyValue._CAPS_LOCK);
+        _keyMapping.put(NativeKeyEvent.VC_SPACE, InputKeyValue._SPACE);
+        _keyMapping.put(NativeKeyEvent.VC_ENTER, InputKeyValue._ENTER);
+        _keyMapping.put(NativeKeyEvent.VC_ESCAPE, InputKeyValue._ESCAPE);
+        _keyMapping.put(NativeKeyEvent.VC_BACKSPACE, InputKeyValue._BACKSPACE);
+        _keyMapping.put(NativeKeyEvent.VC_MINUS, InputKeyValue._MINUS);
+        _keyMapping.put(NativeKeyEvent.VC_EQUALS, InputKeyValue._EQUALS);
+        _keyMapping.put(NativeKeyEvent.VC_TAB, InputKeyValue._TAB);
+        _keyMapping.put(NativeKeyEvent.VC_CAPS_LOCK, InputKeyValue._CAPS_LOCK);
         
-        _keyMapping.put(NativeKeyEvent.VC_F1, RecorderUserInputKeyValue._F1);
-        _keyMapping.put(NativeKeyEvent.VC_F2, RecorderUserInputKeyValue._F2);
-        _keyMapping.put(NativeKeyEvent.VC_F3, RecorderUserInputKeyValue._F3);
-        _keyMapping.put(NativeKeyEvent.VC_F4, RecorderUserInputKeyValue._F4);
-        _keyMapping.put(NativeKeyEvent.VC_F5, RecorderUserInputKeyValue._F5);
-        _keyMapping.put(NativeKeyEvent.VC_F6, RecorderUserInputKeyValue._F6);
-        _keyMapping.put(NativeKeyEvent.VC_F7, RecorderUserInputKeyValue._F7);
-        _keyMapping.put(NativeKeyEvent.VC_F8, RecorderUserInputKeyValue._F8);
-        _keyMapping.put(NativeKeyEvent.VC_F9, RecorderUserInputKeyValue._F9);
-        _keyMapping.put(NativeKeyEvent.VC_F10, RecorderUserInputKeyValue._F10);
-        _keyMapping.put(NativeKeyEvent.VC_F11, RecorderUserInputKeyValue._F11);
-        _keyMapping.put(NativeKeyEvent.VC_F12, RecorderUserInputKeyValue._F12);
+        _keyMapping.put(NativeKeyEvent.VC_F1, InputKeyValue._F1);
+        _keyMapping.put(NativeKeyEvent.VC_F2, InputKeyValue._F2);
+        _keyMapping.put(NativeKeyEvent.VC_F3, InputKeyValue._F3);
+        _keyMapping.put(NativeKeyEvent.VC_F4, InputKeyValue._F4);
+        _keyMapping.put(NativeKeyEvent.VC_F5, InputKeyValue._F5);
+        _keyMapping.put(NativeKeyEvent.VC_F6, InputKeyValue._F6);
+        _keyMapping.put(NativeKeyEvent.VC_F7, InputKeyValue._F7);
+        _keyMapping.put(NativeKeyEvent.VC_F8, InputKeyValue._F8);
+        _keyMapping.put(NativeKeyEvent.VC_F9, InputKeyValue._F9);
+        _keyMapping.put(NativeKeyEvent.VC_F10, InputKeyValue._F10);
+        _keyMapping.put(NativeKeyEvent.VC_F11, InputKeyValue._F11);
+        _keyMapping.put(NativeKeyEvent.VC_F12, InputKeyValue._F12);
         
-        _keyMapping.put(NativeKeyEvent.VC_BACKQUOTE, RecorderUserInputKeyValue._BACKQUOTE);
-        _keyMapping.put(NativeKeyEvent.VC_OPEN_BRACKET, RecorderUserInputKeyValue._OPEN_BRACKET);
-        _keyMapping.put(NativeKeyEvent.VC_CLOSE_BRACKET, RecorderUserInputKeyValue._CLOSE_BRACKET);
-        _keyMapping.put(NativeKeyEvent.VC_BACK_SLASH, RecorderUserInputKeyValue._BACK_SLASH);
-        _keyMapping.put(NativeKeyEvent.VC_SEMICOLON, RecorderUserInputKeyValue._SEMICOLON);
-        _keyMapping.put(NativeKeyEvent.VC_QUOTE, RecorderUserInputKeyValue._QUOTE);
-        _keyMapping.put(NativeKeyEvent.VC_COMMA, RecorderUserInputKeyValue._COMMA);
-        _keyMapping.put(NativeKeyEvent.VC_PERIOD, RecorderUserInputKeyValue._PERIOD);
-        _keyMapping.put(NativeKeyEvent.VC_SLASH, RecorderUserInputKeyValue._SLASH);
-        _keyMapping.put(NativeKeyEvent.VC_PRINTSCREEN, RecorderUserInputKeyValue._PRINTSCREEN);
-        _keyMapping.put(NativeKeyEvent.VC_SCROLL_LOCK, RecorderUserInputKeyValue._SCROLL_LOCK);
-        _keyMapping.put(NativeKeyEvent.VC_PAUSE, RecorderUserInputKeyValue._PAUSE);
-        _keyMapping.put(NativeKeyEvent.VC_INSERT, RecorderUserInputKeyValue._INSERT);
-        _keyMapping.put(NativeKeyEvent.VC_DELETE, RecorderUserInputKeyValue._DELETE);
-        _keyMapping.put(NativeKeyEvent.VC_HOME, RecorderUserInputKeyValue._HOME);
-        _keyMapping.put(NativeKeyEvent.VC_END, RecorderUserInputKeyValue._END);
-        _keyMapping.put(NativeKeyEvent.VC_PAGE_UP, RecorderUserInputKeyValue._PAGE_UP);
-        _keyMapping.put(NativeKeyEvent.VC_PAGE_DOWN, RecorderUserInputKeyValue._PAGE_DOWN);
-        _keyMapping.put(NativeKeyEvent.VC_UP, RecorderUserInputKeyValue._UP);
-        _keyMapping.put(NativeKeyEvent.VC_LEFT, RecorderUserInputKeyValue._LEFT);
-        _keyMapping.put(NativeKeyEvent.VC_CLEAR, RecorderUserInputKeyValue._CLEAR);
-        _keyMapping.put(NativeKeyEvent.VC_RIGHT, RecorderUserInputKeyValue._RIGHT);
-        _keyMapping.put(NativeKeyEvent.VC_DOWN, RecorderUserInputKeyValue._DOWN);
-        _keyMapping.put(NativeKeyEvent.VC_NUM_LOCK, RecorderUserInputKeyValue._NUM_LOCK);
-        _keyMapping.put(NativeKeyEvent.VC_SEPARATOR, RecorderUserInputKeyValue._SEPARATOR);
-        _keyMapping.put(NativeKeyEvent.VC_META, RecorderUserInputKeyValue._META);
-        _keyMapping.put(NativeKeyEvent.VC_CONTEXT_MENU, RecorderUserInputKeyValue._CONTEXT_MENU);
-        _keyMapping.put(NativeKeyEvent.VC_POWER, RecorderUserInputKeyValue._POWER);
-        _keyMapping.put(NativeKeyEvent.VC_SLEEP, RecorderUserInputKeyValue._SLEEP);
-        _keyMapping.put(NativeKeyEvent.VC_WAKE, RecorderUserInputKeyValue._WAKE);
-        _keyMapping.put(NativeKeyEvent.VC_MEDIA_PLAY, RecorderUserInputKeyValue._MEDIA_PLAY);
-        _keyMapping.put(NativeKeyEvent.VC_MEDIA_STOP, RecorderUserInputKeyValue._MEDIA_STOP);
-        _keyMapping.put(NativeKeyEvent.VC_MEDIA_PREVIOUS, RecorderUserInputKeyValue._MEDIA_PREVIOUS);
-        _keyMapping.put(NativeKeyEvent.VC_MEDIA_NEXT, RecorderUserInputKeyValue._MEDIA_NEXT);
-        _keyMapping.put(NativeKeyEvent.VC_MEDIA_SELECT, RecorderUserInputKeyValue._MEDIA_SELECT);
-        _keyMapping.put(NativeKeyEvent.VC_MEDIA_EJECT, RecorderUserInputKeyValue._MEDIA_EJECT);
-        _keyMapping.put(NativeKeyEvent.VC_VOLUME_MUTE, RecorderUserInputKeyValue._VOLUME_MUTE);
-        _keyMapping.put(NativeKeyEvent.VC_VOLUME_UP, RecorderUserInputKeyValue._VOLUME_UP);
-        _keyMapping.put(NativeKeyEvent.VC_VOLUME_DOWN, RecorderUserInputKeyValue._VOLUME_DOWN);
+        _keyMapping.put(NativeKeyEvent.VC_BACKQUOTE, InputKeyValue._BACKQUOTE);
+        _keyMapping.put(NativeKeyEvent.VC_OPEN_BRACKET, InputKeyValue._OPEN_BRACKET);
+        _keyMapping.put(NativeKeyEvent.VC_CLOSE_BRACKET, InputKeyValue._CLOSE_BRACKET);
+        _keyMapping.put(NativeKeyEvent.VC_BACK_SLASH, InputKeyValue._BACK_SLASH);
+        _keyMapping.put(NativeKeyEvent.VC_SEMICOLON, InputKeyValue._SEMICOLON);
+        _keyMapping.put(NativeKeyEvent.VC_QUOTE, InputKeyValue._QUOTE);
+        _keyMapping.put(NativeKeyEvent.VC_COMMA, InputKeyValue._COMMA);
+        _keyMapping.put(NativeKeyEvent.VC_PERIOD, InputKeyValue._PERIOD);
+        _keyMapping.put(NativeKeyEvent.VC_SLASH, InputKeyValue._SLASH);
+        _keyMapping.put(NativeKeyEvent.VC_PRINTSCREEN, InputKeyValue._PRINTSCREEN);
+        _keyMapping.put(NativeKeyEvent.VC_SCROLL_LOCK, InputKeyValue._SCROLL_LOCK);
+        _keyMapping.put(NativeKeyEvent.VC_PAUSE, InputKeyValue._PAUSE);
+        _keyMapping.put(NativeKeyEvent.VC_INSERT, InputKeyValue._INSERT);
+        _keyMapping.put(NativeKeyEvent.VC_DELETE, InputKeyValue._DELETE);
+        _keyMapping.put(NativeKeyEvent.VC_HOME, InputKeyValue._HOME);
+        _keyMapping.put(NativeKeyEvent.VC_END, InputKeyValue._END);
+        _keyMapping.put(NativeKeyEvent.VC_PAGE_UP, InputKeyValue._PAGE_UP);
+        _keyMapping.put(NativeKeyEvent.VC_PAGE_DOWN, InputKeyValue._PAGE_DOWN);
+        _keyMapping.put(NativeKeyEvent.VC_UP, InputKeyValue._UP);
+        _keyMapping.put(NativeKeyEvent.VC_LEFT, InputKeyValue._LEFT);
+        _keyMapping.put(NativeKeyEvent.VC_CLEAR, InputKeyValue._CLEAR);
+        _keyMapping.put(NativeKeyEvent.VC_RIGHT, InputKeyValue._RIGHT);
+        _keyMapping.put(NativeKeyEvent.VC_DOWN, InputKeyValue._DOWN);
+        _keyMapping.put(NativeKeyEvent.VC_NUM_LOCK, InputKeyValue._NUM_LOCK);
+        _keyMapping.put(NativeKeyEvent.VC_SEPARATOR, InputKeyValue._SEPARATOR);
+        _keyMapping.put(NativeKeyEvent.VC_META, InputKeyValue._META);
+        _keyMapping.put(NativeKeyEvent.VC_CONTEXT_MENU, InputKeyValue._CONTEXT_MENU);
+        _keyMapping.put(NativeKeyEvent.VC_POWER, InputKeyValue._POWER);
+        _keyMapping.put(NativeKeyEvent.VC_SLEEP, InputKeyValue._SLEEP);
+        _keyMapping.put(NativeKeyEvent.VC_WAKE, InputKeyValue._WAKE);
+        _keyMapping.put(NativeKeyEvent.VC_MEDIA_PLAY, InputKeyValue._MEDIA_PLAY);
+        _keyMapping.put(NativeKeyEvent.VC_MEDIA_STOP, InputKeyValue._MEDIA_STOP);
+        _keyMapping.put(NativeKeyEvent.VC_MEDIA_PREVIOUS, InputKeyValue._MEDIA_PREVIOUS);
+        _keyMapping.put(NativeKeyEvent.VC_MEDIA_NEXT, InputKeyValue._MEDIA_NEXT);
+        _keyMapping.put(NativeKeyEvent.VC_MEDIA_SELECT, InputKeyValue._MEDIA_SELECT);
+        _keyMapping.put(NativeKeyEvent.VC_MEDIA_EJECT, InputKeyValue._MEDIA_EJECT);
+        _keyMapping.put(NativeKeyEvent.VC_VOLUME_MUTE, InputKeyValue._VOLUME_MUTE);
+        _keyMapping.put(NativeKeyEvent.VC_VOLUME_UP, InputKeyValue._VOLUME_UP);
+        _keyMapping.put(NativeKeyEvent.VC_VOLUME_DOWN, InputKeyValue._VOLUME_DOWN);
         
         return _keyMapping;
     }
     
-    public static RecorderUserInputKeyValue keyValueForJNativeHookKey(int keyCode)
+    public static InputKeyValue keyValueForJNativeHookKey(int keyCode)
     {
-        RecorderUserInputKeyValue result = getKeyMapping().get(keyCode);
+        InputKeyValue result = getKeyMapping().get(keyCode);
         
         if (result == null)
         {
-            return RecorderUserInputKeyValue.UNKNOWN;
+            return InputKeyValue.UNKNOWN;
         }
         
         return result;
     }
     
-    public static RecorderUserInputKeyModifierValue maskValueFoKey(RecorderUserInputKeyValue keyValue)
+    public static InputKeyModifierValue maskValueFoKey(InputKeyValue keyValue)
     {
-        if (keyValue == RecorderUserInputKeyValue._SHIFT)
+        if (keyValue == InputKeyValue._SHIFT)
         {
-            return RecorderUserInputKeyModifierValue.SHIFT;
+            return InputKeyModifierValue.SHIFT;
         }
         
-        if (keyValue == RecorderUserInputKeyValue._CONTROL)
+        if (keyValue == InputKeyValue._CONTROL)
         {
-            return RecorderUserInputKeyModifierValue.CTRL;
+            return InputKeyModifierValue.CTRL;
         }
         
-        if (keyValue == RecorderUserInputKeyValue._ALT)
+        if (keyValue == InputKeyValue._ALT)
         {
-            return RecorderUserInputKeyModifierValue.ALT;
+            return InputKeyModifierValue.ALT;
         }
             
-        return RecorderUserInputKeyModifierValue.NONE;
+        return InputKeyModifierValue.NONE;
     }
 }

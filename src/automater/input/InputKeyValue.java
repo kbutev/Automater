@@ -3,14 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.recorder.model;
+package automater.input;
 
 /**
  * Represents a system key value.
  * 
+ * Use toString() and fromString() to display an appropriate user readable text
+ * value or to serialize the enum.
+ * 
  * @author Bytevi
  */
-public enum RecorderUserInputKeyValue {
+public enum InputKeyValue {
    UNKNOWN,
    
    _MOUSE_LEFT_CLICK,
@@ -188,8 +191,15 @@ public enum RecorderUserInputKeyValue {
    {
        String value = name();
        
-       value = value.replace("_", " ");
+       value = value.replaceFirst("_", "");
        
        return value;
+   }
+   
+   public static InputKeyValue fromString(String value)
+   {
+       value = "_" + value;
+       
+       return InputKeyValue.valueOf(value);
    }
 }

@@ -48,4 +48,16 @@ public class StandartDescriptionsDataSource implements ListModel<String> {
     public void removeListDataListener(ListDataListener l) {
         
     }
+    
+    public int indexOf(String str) {
+        for (int e = 0; e < data.size(); e++)
+        {
+            if (data.get(e).getStandart().equals(str))
+            {
+                return e;
+            }
+        }
+        
+        return -1;
+    }
 }

@@ -6,21 +6,23 @@
 package automater.recorder.model;
 
 import java.util.ArrayList;
+import automater.input.InputMouseMotion;
+import automater.input.InputMouseMove;
 
 /**
  * A series of mouse movements.
  *
  * @author Bytevi
  */
-public class RecorderUserInputMouseMotion extends RecorderUserInput implements UserInputMouseMotion {
-    private final ArrayList<UserInputMouseMove> _moves;
+public class RecorderUserInputMouseMotion extends RecorderUserInput implements InputMouseMotion {
+    private final ArrayList<InputMouseMove> _moves;
     
-    public static RecorderUserInputMouseMotion createMouseMovement(UserInputMouseMove firstMove)
+    public static RecorderUserInputMouseMotion createMouseMovement(InputMouseMove firstMove)
     {
         return new RecorderUserInputMouseMotion(firstMove);
     }
     
-    private RecorderUserInputMouseMotion(UserInputMouseMove firstMove)
+    private RecorderUserInputMouseMotion(InputMouseMove firstMove)
     {
         super(firstMove.getTimestamp());
         
@@ -37,7 +39,7 @@ public class RecorderUserInputMouseMotion extends RecorderUserInput implements U
     
     // # Public
     
-    public void addMovementPoint(UserInputMouseMove move)
+    public void addMovementPoint(InputMouseMove move)
     {
         _moves.add(move);
     }
@@ -48,17 +50,17 @@ public class RecorderUserInputMouseMotion extends RecorderUserInput implements U
     }
 
     @Override
-    public UserInputMouseMove getFirstMove() {
+    public InputMouseMove getFirstMove() {
         return _moves.get(0);
     }
 
     @Override
-    public UserInputMouseMove getLastMove() {
+    public InputMouseMove getLastMove() {
         return _moves.get(_moves.size()-1);
     }
 
     @Override
-    public UserInputMouseMove getMoveAt(int index) {
+    public InputMouseMove getMoveAt(int index) {
         return _moves.get(index);
     }
     

@@ -5,8 +5,6 @@
  */
 package automater.work;
 
-import automater.recorder.model.UserInputKeyClick;
-import automater.recorder.model.UserInputMouseMove;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.Description;
 import automater.utilities.Errors;
@@ -21,6 +19,12 @@ import java.awt.Robot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
+import automater.input.InputKeyClick;
+import automater.input.InputMouseMotion;
+import automater.input.InputMouseMove;
+import automater.input.InputKey;
+import automater.input.InputKeyValue;
+import automater.input.InputMouse;
 
 /**
  * Simulates user actions such as keyboard and mouse clicks.
@@ -28,8 +32,28 @@ import java.util.Date;
  * @author Bytevi
  */
 public class Action extends BaseAction {
-    public static Action createKeyClick(Date timestamp, UserInputKeyClick keyClick, Description description) throws Exception
+    public static Action createKeyClick(Date timestamp, InputKeyClick keyClick, Description description) throws Exception
     {
+        boolean isMouseClick = false;
+        InputKeyValue key = keyClick.getKeyValue().value;
+        
+        if (key == InputKeyValue._MOUSE_LEFT_CLICK || 
+                key == InputKeyValue._MOUSE_RIGHT_CLICK || 
+                key == InputKeyValue._MOUSE_MIDDLE_CLICK)
+        {
+            isMouseClick = true;
+        }
+        
+        if (isMouseClick)
+        {
+            if (keyClick.isPress())
+            {
+                return new ActionMouseKeyPress(translateDateToActionTime(timestamp), keyClick, description);
+            }
+            
+            return new ActionMouseKeyRelease(translateDateToActionTime(timestamp), keyClick, description);
+        }
+        
         if (keyClick.isPress())
         {
             return new ActionKeyPress(translateDateToActionTime(timestamp), keyClick, description);
@@ -43,7 +67,7 @@ public class Action extends BaseAction {
         return new ActionMouseMove(translateDateToActionTime(timestamp), x, y, description);
     }
     
-    public static Action createMouseMovement(Date timestamp, List<UserInputMouseMove> mouseMovements, Description description) throws Exception
+    public static Action createMouseMovement(Date timestamp, List<InputMouseMove> mouseMovements, Description description) throws Exception
     {
         int maxNumberOfSubmovements = ActionSettingsManager.getDefault().getMaxNumberOfSubmovements();
         
@@ -123,17 +147,19 @@ public class Action extends BaseAction {
     }
 }
 
-class ActionKeyPress extends Action {
+class ActionKeyPress extends Action implements InputKeyClick {
     long time;
+    InputKey inputKey;
     ActionSystemKey key;
     ActionSystemKeyModifiers modifiers;
     
     String standartDescription;
     String verboseDescription;
     
-    ActionKeyPress(long time, UserInputKeyClick keyClick, Description description) throws Exception
+    ActionKeyPress(long time, InputKeyClick keyClick, Description description) throws Exception
     {
         this.time = time;
+        this.inputKey = keyClick.getKeyValue();
         this.key = ActionKeyTranslator.translateKeystroke(keyClick.getKeyValue());
         this.modifiers = ActionKeyTranslator.translateModifiers(keyClick.getKeyValue());
         
@@ -191,19 +217,36 @@ class ActionKeyPress extends Action {
     public String getVerbose() {
         return verboseDescription;
     }
+
+    @Override
+    public InputKey getKeyValue() {
+        return inputKey;
+    }
+
+    @Override
+    public boolean isPress() {
+        return true;
+    }
+
+    @Override
+    public Date getTimestamp() {
+        return new Date(time);
+    }
 }
 
-class ActionKeyRelease extends Action {
+class ActionKeyRelease extends Action implements InputKeyClick {
     long time;
+    InputKey inputKey;
     ActionSystemKey key;
     ActionSystemKeyModifiers modifiers;
     
     String standartDescription;
     String verboseDescription;
     
-    ActionKeyRelease(long time, UserInputKeyClick keyClick, Description description) throws Exception
+    ActionKeyRelease(long time, InputKeyClick keyClick, Description description) throws Exception
     {
         this.time = time;
+        this.inputKey = keyClick.getKeyValue();
         this.key = ActionKeyTranslator.translateKeystroke(keyClick.getKeyValue());
         this.modifiers = ActionKeyTranslator.translateModifiers(keyClick.getKeyValue());
         
@@ -261,9 +304,38 @@ class ActionKeyRelease extends Action {
     public String getVerbose() {
         return verboseDescription;
     }
+
+    @Override
+    public InputKey getKeyValue() {
+        return inputKey;
+    }
+
+    @Override
+    public boolean isPress() {
+        return false;
+    }
+
+    @Override
+    public Date getTimestamp() {
+        return new Date(time);
+    }
 }
 
-class ActionMouseMove extends Action {
+class ActionMouseKeyPress extends ActionKeyPress implements InputMouse {
+    ActionMouseKeyPress(long time, InputKeyClick keyClick, Description description) throws Exception
+    {
+        super(time, keyClick, description);
+    }
+}
+
+class ActionMouseKeyRelease extends ActionKeyRelease implements InputMouse {
+    ActionMouseKeyRelease(long time, InputKeyClick keyClick, Description description) throws Exception
+    {
+        super(time, keyClick, description);
+    }
+}
+
+class ActionMouseMove extends Action implements InputMouseMove {
     final long time;
     final int x;
     final int y;
@@ -311,20 +383,37 @@ class ActionMouseMove extends Action {
     public String getVerbose() {
         return verboseDescription;
     }
+
+    @Override
+    public int getX() {
+        return x;
+    }
+
+    @Override
+    public int getY() {
+        return y;
+    }
+
+    @Override
+    public Date getTimestamp() {
+        return new Date(time);
+    }
 }
 
-class ActionMouseMovement extends Action {
+class ActionMouseMovement extends Action implements InputMouseMotion {
     final long time;
     final long duration;
+    final List<InputMouseMove> movements;
     final List<BaseAction> actions;
     final int maxNumberOfSubmovements;
     
     String standartDescription;
     String verboseDescription;
     
-    ActionMouseMovement(long time, List<UserInputMouseMove> movements, int maxNumberOfSubmovements, Description description)
+    ActionMouseMovement(long time, List<InputMouseMove> movements, int maxNumberOfSubmovements, Description description)
     {
         this.time = time;
+        this.movements = movements;
         this.actions = parseMouseMoveActions(CollectionUtilities.copyAsImmutable(movements));
         long lastPerformTime = this.actions.get(this.actions.size()-1).getPerformTime();
         this.duration = lastPerformTime - time;
@@ -400,7 +489,32 @@ class ActionMouseMovement extends Action {
         return verboseDescription;
     }
     
-    private ArrayList<BaseAction> parseMouseMoveActions(List<UserInputMouseMove> movements)
+    @Override
+    public int numberOfMovements() {
+        return movements.size();
+    }
+
+    @Override
+    public InputMouseMove getFirstMove() {
+        return movements.get(0);
+    }
+
+    @Override
+    public InputMouseMove getLastMove() {
+        return movements.get(movements.size()-1);
+    }
+
+    @Override
+    public InputMouseMove getMoveAt(int index) {
+        return movements.get(index);
+    }
+
+    @Override
+    public Date getTimestamp() {
+        return new Date(time);
+    }
+    
+    private ArrayList<BaseAction> parseMouseMoveActions(List<InputMouseMove> movements)
     {
         final int size = movements.size();
         
@@ -409,8 +523,8 @@ class ActionMouseMovement extends Action {
         
         for (int e = 0; e < size; e++)
         {
-            UserInputMouseMove current = movements.get(e);
-            UserInputMouseMove next = null;
+            InputMouseMove current = movements.get(e);
+            InputMouseMove next = null;
             
             if (e + 1 < size)
             {
@@ -424,7 +538,7 @@ class ActionMouseMovement extends Action {
         return result;
     }
     
-    private ArrayList<BaseAction> parseMouseMoveAction(UserInputMouseMove current, UserInputMouseMove next)
+    private ArrayList<BaseAction> parseMouseMoveAction(InputMouseMove current, InputMouseMove next)
     {
         ArrayList<BaseAction> result = new ArrayList<>();
         

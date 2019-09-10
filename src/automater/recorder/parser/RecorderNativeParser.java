@@ -6,7 +6,7 @@
 package automater.recorder.parser;
 
 import automater.recorder.model.RecorderUserInput;
-import automater.recorder.model.RecorderUserInputKey;
+import automater.input.InputKey;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.Logger;
 import java.awt.event.WindowEvent;
@@ -58,7 +58,7 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
         }
         
         Date timestamp = getCurrentTime();
-        RecorderUserInputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, press);
+        InputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, press);
         
         if (translatedKey == null)
         {
@@ -103,7 +103,7 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
         }
         
         Date timestamp = getCurrentTime();
-        RecorderUserInputKey mouseKey = _mouseTranslator.translate(mouseEvent);
+        InputKey mouseKey = _mouseTranslator.translate(mouseEvent);
         
         if (mouseKey == null)
         {
@@ -175,7 +175,7 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
     // Private logger
     private class EventLogger
     {
-        void logKeyboardClickEvent(NativeKeyEvent keyboardEvent, RecorderUserInputKey translatedKey)
+        void logKeyboardClickEvent(NativeKeyEvent keyboardEvent, InputKey translatedKey)
         {
             if (flags.contains(RecorderParserFlag.LOG_EVENTS))
             {
@@ -183,7 +183,7 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
             }
         }
         
-        void logMouseClickEvent(NativeMouseEvent keyboardEvent, RecorderUserInputKey translatedKey)
+        void logMouseClickEvent(NativeMouseEvent keyboardEvent, InputKey translatedKey)
         {
             if (flags.contains(RecorderParserFlag.LOG_EVENTS))
             {

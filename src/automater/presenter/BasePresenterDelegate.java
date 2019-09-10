@@ -5,10 +5,9 @@
  */
 package automater.presenter;
 
-import automater.storage.PreferencesStorageValues;
 import java.util.List;
+import automater.storage.PreferencesStorageValues;
 import automater.utilities.Description;
-import automater.work.model.ExecutorProgress;
 
 /**
  * Presenters delegates.
@@ -26,11 +25,13 @@ public interface BasePresenterDelegate {
     public void onLoadedMacroFromStorage(String macroName, String macroDescription, List<Description> macroActions);
     
     public void startPlaying();
-    public void updatePlayStatus(ExecutorProgress progress);
+    public void updatePlayStatus(automater.work.model.ExecutorProgress progress);
     public void cancelPlaying();
     public void finishPlaying();
     
     public void onLoadedPreferencesFromStorage(PreferencesStorageValues values);
+    
+    public void onEditMacroAction(automater.work.model.BaseEditableAction action);
     
     public void onErrorEncountered(Exception e);
 }

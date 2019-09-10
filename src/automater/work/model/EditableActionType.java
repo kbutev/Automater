@@ -3,14 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.recorder.model;
+package automater.work.model;
 
 /**
- * Represents a keyboard or mouse click input.
  *
  * @author Bytevi
  */
-public interface UserInputKeyClick extends UserInput {
-    public RecorderUserInputKey getKeyValue();
-    public boolean isPress();
+public enum EditableActionType {
+    SingleValue, DoubleValue, Hotkey, SpecificValues
 }

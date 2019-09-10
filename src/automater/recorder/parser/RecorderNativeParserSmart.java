@@ -14,8 +14,8 @@ import java.util.List;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseWheelEvent;
-import automater.recorder.model.UserInputMouseMove;
 import automater.utilities.Logger;
+import automater.input.InputMouseMove;
 
 /**
  * Optimizes mouse click inputs, by grouping them in a single record event.
@@ -67,14 +67,14 @@ public class RecorderNativeParserSmart extends RecorderNativeParser {
         RecorderUserInput result = super.evaluateMouseMove(mouseMoveEvent);
         
         // Not a mouse motion input, clear current mouse motion input
-        if (!(result instanceof UserInputMouseMove))
+        if (!(result instanceof InputMouseMove))
         {
             clearCurrentMouseMotion();
             
             return result;
         }
         
-        UserInputMouseMove mouseInput = (UserInputMouseMove)result;
+        InputMouseMove mouseInput = (InputMouseMove)result;
         
         Date timestamp = result.getTimestamp();
         

@@ -19,7 +19,7 @@ import javax.swing.event.DocumentListener;
 public class PlayMacroOptionsDialog extends javax.swing.JDialog {
     // UI callbacks
     public SimpleCallback onCancelButtonCallback = SimpleCallback.createDoNothing();
-    public SimpleCallback onOKButtonCallback = SimpleCallback.createDoNothing();
+    public SimpleCallback onSaveButtonCallback = SimpleCallback.createDoNothing();
     
     /**
      * Creates new form PlayMacroOptionsDialog
@@ -45,7 +45,7 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
         playSpeedField = new javax.swing.JTextField();
         repeatLabel = new javax.swing.JLabel();
         repeatField = new javax.swing.JTextField();
-        okButton = new javax.swing.JButton();
+        saveButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         repeatNotificationCheck = new javax.swing.JCheckBox();
         repeatForeverCheck = new javax.swing.JCheckBox();
@@ -71,10 +71,10 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
 
         repeatField.setText("0");
 
-        okButton.setText("OK");
-        okButton.addActionListener(new java.awt.event.ActionListener() {
+        saveButton.setText("OK");
+        saveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                okButtonActionPerformed(evt);
+                saveButtonActionPerformed(evt);
             }
         });
 
@@ -116,7 +116,7 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(repeatForeverCheck))))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(okButton)
+                        .addComponent(saveButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cancelButton)))
                 .addContainerGap(11, Short.MAX_VALUE))
@@ -138,7 +138,7 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
                     .addComponent(repeatForeverCheck))
                 .addGap(33, 33, 33)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(okButton)
+                    .addComponent(saveButton)
                     .addComponent(cancelButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -146,9 +146,9 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        onOKButtonCallback.perform();
-    }//GEN-LAST:event_okButtonActionPerformed
+    private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
+        onSaveButtonCallback.perform();
+    }//GEN-LAST:event_saveButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         onCancelButtonCallback.perform();
@@ -202,6 +202,9 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
     
     private void setup() {
         this.setTitle(TextValue.getText(TextValue.PlayOptions_Title));
+        
+        cancelButton.setText(TextValue.getText(TextValue.PlayOptions_CancelButtonTitle));
+        saveButton.setText(TextValue.getText(TextValue.PlayOptions_SaveButtonTitle));
         
         startNotificationCheck.setText(TextValue.getText(TextValue.PlayOptions_NotificationPlay));
         stopNotificationCheck.setText(TextValue.getText(TextValue.PlayOptions_NotificationStop));
@@ -313,20 +316,20 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
             optionsAreValid = false;
         }
         
-        okButton.setEnabled(optionsAreValid);
+        saveButton.setEnabled(optionsAreValid);
     }
     
     private boolean optionsAreValid = true;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
-    private javax.swing.JButton okButton;
     private javax.swing.JTextField playSpeedField;
     private javax.swing.JLabel playSpeedLabel;
     private javax.swing.JTextField repeatField;
     private javax.swing.JCheckBox repeatForeverCheck;
     private javax.swing.JLabel repeatLabel;
     private javax.swing.JCheckBox repeatNotificationCheck;
+    private javax.swing.JButton saveButton;
     private javax.swing.JCheckBox startNotificationCheck;
     private javax.swing.JCheckBox stopNotificationCheck;
     // End of variables declaration//GEN-END:variables

@@ -3,14 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.recorder.model;
+package automater.input;
+
+import java.util.Date;
 
 /**
- * Represents mouse movement input.
- *
+ * Represents a generic user input action.
+ * 
+ * Described only by a timestamp value.
+ * 
  * @author Bytevi
  */
-public interface UserInputMouseMove extends UserInputMouse {
-    public int getX();
-    public int getY();
+public interface Input {
+    public Date getTimestamp();
 }

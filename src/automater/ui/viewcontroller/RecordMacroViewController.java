@@ -163,7 +163,7 @@ public class RecordMacroViewController implements BaseViewController, BasePresen
     }
     
     @Override
-    public void updatePlayStatus(ExecutorProgress progress)
+    public void updatePlayStatus(automater.work.model.ExecutorProgress progress)
     {
         
     }
@@ -182,6 +182,12 @@ public class RecordMacroViewController implements BaseViewController, BasePresen
     
     @Override
     public void onLoadedPreferencesFromStorage(PreferencesStorageValues values)
+    {
+        
+    }
+    
+    @Override
+    public void onEditMacroAction(automater.work.model.BaseEditableAction action)
     {
         
     }

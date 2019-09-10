@@ -10,11 +10,11 @@ import automater.utilities.Errors;
 import automater.work.Action;
 import java.util.ArrayList;
 import java.util.List;
-import automater.recorder.model.UserInputKeyClick;
-import automater.recorder.model.UserInputMouseMotion;
 import automater.utilities.Description;
 import automater.work.BaseAction;
-import automater.recorder.model.UserInputMouseMove;
+import automater.input.InputKeyClick;
+import automater.input.InputMouseMotion;
+import automater.input.InputMouseMove;
 
 /**
  *
@@ -54,24 +54,24 @@ public class ActionsFromMacroParser implements BaseActionsParser {
         
         Action action = null;
         
-        if (input instanceof UserInputKeyClick)
+        if (input instanceof InputKeyClick)
         {
-            UserInputKeyClick keyClick = (UserInputKeyClick)input;
+            InputKeyClick keyClick = (InputKeyClick)input;
             Description description = input;
             action = Action.createKeyClick(input.getTimestamp(), keyClick, description);
         }
         
-        if (input instanceof UserInputMouseMove)
+        if (input instanceof InputMouseMove)
         {
-            UserInputMouseMove mouseMove = (UserInputMouseMove)input;
+            InputMouseMove mouseMove = (InputMouseMove)input;
             Description description = input;
             action = Action.createMouseMovement(mouseMove.getTimestamp(), mouseMove.getX(), mouseMove.getY(), description);
         }
         
-        if (input instanceof UserInputMouseMotion)
+        if (input instanceof InputMouseMotion)
         {
-            UserInputMouseMotion mouseMotion = (UserInputMouseMotion)input;
-            ArrayList<UserInputMouseMove> movements = new ArrayList<>();
+            InputMouseMotion mouseMotion = (InputMouseMotion)input;
+            ArrayList<InputMouseMove> movements = new ArrayList<>();
             
             for (int e = 0; e < mouseMotion.numberOfMovements(); e++)
             {

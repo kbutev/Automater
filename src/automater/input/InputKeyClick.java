@@ -3,17 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.recorder.model;
-
-import java.util.Date;
+package automater.input;
 
 /**
- * Represents a generic user input action.
- * 
- * Described only by a timestamp value.
- * 
+ * Represents a keyboard or mouse click input.
+ *
  * @author Bytevi
  */
-public interface UserInput {
-    public Date getTimestamp();
+public interface InputKeyClick extends Input {
+    public InputKey getKeyValue();
+    public boolean isPress();
 }

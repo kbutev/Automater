@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.recorder.model;
+package automater.input;
 
 /**
- * Represents a system action, thats not a keyboard or mouse input.
+ * Represents some mouse input.
  * 
  * @author Bytevi
  */
-public interface UserInputSpecialAction extends UserInput {
-    public boolean isCloseWindow();
+public interface InputMouse extends Input {
+    
 }

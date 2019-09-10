@@ -173,15 +173,7 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
     }//GEN-LAST:event_openMacroButtonActionPerformed
 
     private void macrosListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_macrosListValueChanged
-        int selectedIndex = macrosList.getSelectedIndex();
-        
-        // Selection event
-        if (_selectedIndex != selectedIndex)
-        {
-            _selectedIndex = selectedIndex;
-            selectedMacroAt(_selectedIndex);
-            onSelectItem.perform(_selectedIndex);
-        }
+        selectedMacroAt(macrosList.getSelectedIndex());
     }//GEN-LAST:event_macrosListValueChanged
 
     private void editMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editMacroButtonActionPerformed
@@ -195,13 +187,7 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
     private void macrosListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_macrosListMouseClicked
         int selectedIndex = macrosList.getSelectedIndex();
         
-        // Selection event
-        if (_selectedIndex != selectedIndex)
-        {
-            _selectedIndex = selectedIndex;
-            selectedMacroAt(_selectedIndex);
-            onSelectItem.perform(_selectedIndex);
-        }
+        selectedMacroAt(selectedIndex);
         
         // Click event
         if (evt.getClickCount() == 1)
@@ -293,7 +279,7 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
         
     }
     
-    // # Public properties getters/setters
+    // # Public
     
     public void setListDataSource(StandartDescriptionsDataSource dataSource)
     {
@@ -305,17 +291,22 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
         disableMacroFunctionality();
     }
     
-    // # Public UI operations
-    
-    // # Private
-    
-    private int getSelectionIndex()
+    public int getSelectionIndex()
     {
         return _selectedIndex;
     }
     
+    // # Private
+    
     private void selectedMacroAt(int index)
     {
+        if (_selectedIndex == index)
+        {
+            return;
+        }
+        
+        _selectedIndex = index;
+        
         if (index != -1)
         {
             enableMacroFunctionality();
@@ -325,6 +316,8 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
         {
             disableMacroFunctionality();
         }
+        
+        onSelectItem.perform(_selectedIndex);
     }
     
     private void enableMacroFunctionality()
@@ -370,8 +363,8 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
     }
     
     // Private
-    private StandartDescriptionsDataSource _dataSource;
     private int _selectedIndex = -1;
+    private StandartDescriptionsDataSource _dataSource;
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton deleteMacroButton;

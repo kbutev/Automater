@@ -63,7 +63,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     {
         if (_delegate == null)
         {
-            Errors.throwInternalLogicError("RecordPresenter delegate is not set before starting");
+            Errors.throwInternalLogicError("PlayMacroPresenter delegate is not set before starting");
         }
         
         _recorder.registerHotkeyListener(this);
@@ -89,7 +89,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     {
         if (_delegate != null)
         {
-            Errors.throwInternalLogicError("RecordPresenter delegate is already set");
+            Errors.throwInternalLogicError("PlayMacroPresenter delegate is already set");
         }
         
         _delegate = delegate;
@@ -158,13 +158,19 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     // # RecorderHotkeyListener
     
     @Override
+    public boolean isListeningForAnyHotkey()
+    {
+        return false;
+    }
+    
+    @Override
     public Hotkey getHotkey()
     {
         return _playOrStopHotkey;
     }
     
     @Override
-    public void onHotkeyPressed()
+    public void onHotkeyPressed(Hotkey hotkey)
     {
         Logger.message(this, "Play hotkey tapped!");
         

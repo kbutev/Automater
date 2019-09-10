@@ -3,13 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.recorder.model;
+package automater.input;
 
 /**
- * Represents some mouse input.
- * 
+ * Represents mouse movement input.
+ *
  * @author Bytevi
  */
-public interface UserInputMouse extends UserInput {
-    
+public interface InputMouseMove extends InputMouse {
+    public int getX();
+    public int getY();
 }

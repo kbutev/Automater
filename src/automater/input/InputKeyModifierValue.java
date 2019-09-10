@@ -3,14 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.recorder.model;
+package automater.input;
 
 /**
  * Represents a modifier for a system key value.
  * 
  * @author Bytevi
  */
-public enum RecorderUserInputKeyModifierValue {
+public enum InputKeyModifierValue {
     NONE,
     CTRL,
     ALT,
@@ -18,12 +18,12 @@ public enum RecorderUserInputKeyModifierValue {
     WINDOWS_OR_COMMAND,
     FUNCTION;
     
-    public String getSuffix()
+    public static String getSeparatorSymbol()
     {
         return "+";
     }
     
-    public boolean isOnWindowsPlatform()
+    public static boolean isOnWindowsPlatform()
     {
         return true;
     }
@@ -60,7 +60,7 @@ public enum RecorderUserInputKeyModifierValue {
         
         if (value.length() > 0)
         {
-            value = value.concat(getSuffix());
+            value = value.concat(getSeparatorSymbol());
         }
         
         return value;

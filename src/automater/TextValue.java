@@ -45,9 +45,21 @@ public enum TextValue {
     Play_StatusPerforming, Play_StatusPerformingRepeat,
     
     // Play options dialog
-    PlayOptions_Title,
+    PlayOptions_Title, PlayOptions_CancelButtonTitle, PlayOptions_SaveButtonTitle,
     PlayOptions_NotificationPlay, PlayOptions_NotificationStop, PlayOptions_NotificationRepeat,
     PlayOptions_PlaySpeed, PlayOptions_Repeat, PlayOptions_RepeatForever,
+    
+    // Edit form
+    Edit_FormTitle, Edit_BackButtonTitle,
+    Edit_Name, Edit_Actions, Edit_Description,
+    
+    // Edit Action dialog
+    EditAction_DialogTitle, EditAction_CancelButtonTitle, EditAction_SaveButtonTitle,
+    EditAction_ListeningToHotkey,
+    
+    // Edit Action types
+    EditAction_TypeKeyboardClick, EditAction_TypeMouseClick, EditAction_TypeMouseMove,
+    EditAction_TypeLeftMouseClick, EditAction_TypeRightMouseClick, EditAction_TypeMiddleMouseClick,
     
     // Macro parameters
     MacroParameters_Default,
@@ -177,12 +189,35 @@ public enum TextValue {
         
         // Play options form
         put(PlayOptions_Title, "Set play options");
+        put(PlayOptions_CancelButtonTitle, "Cancel");
+        put(PlayOptions_SaveButtonTitle, "Save");
         put(PlayOptions_NotificationPlay, "Play notification");
         put(PlayOptions_NotificationStop, "Stop notification");
         put(PlayOptions_NotificationRepeat, "Repeat notification");
         put(PlayOptions_PlaySpeed, "Play speed");
         put(PlayOptions_Repeat, "Repeat");
         put(PlayOptions_RepeatForever, "Repeat forever");
+        
+        // Edit form
+        put(Edit_FormTitle, "Automater - Edit");
+        put(Edit_BackButtonTitle, "< CANCEL");
+        put(Edit_Name, "Name");
+        put(Edit_Actions, "Actions");
+        put(Edit_Description, "Description");
+        
+        // Edit action dialog
+        put(EditAction_DialogTitle, "Automater - Edit Action");
+        put(EditAction_CancelButtonTitle, "Cancel");
+        put(EditAction_SaveButtonTitle, "Save");
+        put(EditAction_ListeningToHotkey, "Enter hotkey...");
+        
+        // Edit Action types
+        put(EditAction_TypeKeyboardClick, "Keyboard click");
+        put(EditAction_TypeMouseClick, "Mouse click");
+        put(EditAction_TypeMouseMove, "Mouse move");
+        put(EditAction_TypeLeftMouseClick, "Left Click");
+        put(EditAction_TypeRightMouseClick, "Right Click");
+        put(EditAction_TypeMiddleMouseClick, "Middle Click");
         
         // Macro parameters
         put(MacroParameters_Default, "Play once");

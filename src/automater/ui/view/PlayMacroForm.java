@@ -205,7 +205,7 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         backButton.setText(TextValue.getText(TextValue.Play_BackButtonTitle));
         playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, "F4"));
         
-        // Disable user selection for the macros list
+        // Set model from start
         macroActionsList.setSelectionModel(selectionModel);
     }
     
@@ -243,7 +243,7 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
     
     // # Public
     
-    public void play()
+    public void playRecording()
     {
         if (isPlaying)
         {
@@ -258,7 +258,7 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         setProgressBarValue(0);
     }
     
-    public void cancel()
+    public void cancelRecording()
     {
         if (!isPlaying)
         {
@@ -272,9 +272,9 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         optionsButton.setEnabled(true);
     }
     
-    public void finish()
+    public void finishRecording()
     {
-        cancel();
+        cancelRecording();
     }
     
     public void setMacroInfo(String macroName, String macroDescription, StandartDescriptionsDataSource macroActionsDataSource)

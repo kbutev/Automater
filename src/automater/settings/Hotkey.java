@@ -5,30 +5,30 @@
  */
 package automater.settings;
 
-import automater.recorder.model.RecorderUserInputKey;
-import automater.recorder.model.RecorderUserInputKeyModifiers;
-import automater.recorder.model.RecorderUserInputKeyValue;
+import automater.input.InputKey;
+import automater.input.InputKeyModifiers;
+import automater.input.InputKeyValue;
 
 /**
  *
  * @author Bytevi
  */
 public class Hotkey {
-    public final RecorderUserInputKeyValue key;
+    public final InputKeyValue key;
     
-    public Hotkey(RecorderUserInputKeyValue key)
+    public Hotkey(InputKeyValue key)
     {
         this.key = key;
     }
     
-    public boolean isEqualTo(RecorderUserInputKey key)
+    public boolean isEqualTo(InputKey key)
     {
         if (key == null)
         {
             return false;
         }
         
-        if (!key.modifiers.equals(RecorderUserInputKeyModifiers.none()))
+        if (!key.modifiers.equals(InputKeyModifiers.none()))
         {
             return false;
         }

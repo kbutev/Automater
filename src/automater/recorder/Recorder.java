@@ -9,7 +9,7 @@ import automater.recorder.model.RecorderResult;
 import automater.recorder.parser.RecorderJHookListenerDelegate;
 import automater.recorder.parser.RecorderJHookListener;
 import automater.recorder.model.RecorderUserInput;
-import automater.recorder.model.RecorderUserInputKey;
+import automater.input.InputKey;
 import automater.recorder.parser.BaseRecorderNativeParser;
 import automater.recorder.parser.RecorderParserFlag;
 import automater.recorder.parser.RecorderSystemKeyboardTranslator;
@@ -341,7 +341,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     @Override
     public RecorderUserInput evaluatePress(NativeKeyEvent keyboardEvent) {
         // Hotkey listeners update & alert
-        RecorderUserInputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, true);
+        InputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, true);
         boolean continueParsing = updateHotkeyListeners(translatedKey, true);
         
         if (!continueParsing)
@@ -363,7 +363,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     @Override
     public RecorderUserInput evaluateRelease(NativeKeyEvent keyboardEvent) {
         // Hotkey listeners update
-        RecorderUserInputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, false);
+        InputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, false);
         boolean continueParsing = updateHotkeyListeners(translatedKey, false);
         
         if (!continueParsing)
@@ -442,7 +442,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         return subparser.evaluateWindowEvent(windowEvent);
     }
     
-    private boolean updateHotkeyListeners(RecorderUserInputKey translatedKey, boolean performDelegateCall)
+    private boolean updateHotkeyListeners(InputKey translatedKey, boolean performDelegateCall)
     {
         boolean continueWithParsing = true;
         
@@ -455,11 +455,12 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         
         for (RecorderHotkeyListener l : listeners)
         {
-            if (isHotkeyEvent(l.getHotkey(), translatedKey))
+            if (l.isListeningForAnyHotkey() || isHotkeyEvent(l.getHotkey(), translatedKey))
             {
                 if (performDelegateCall)
                 {
-                    l.onHotkeyPressed();
+                    Hotkey hotkey = new Hotkey(translatedKey.value);
+                    l.onHotkeyPressed(hotkey);
                 }
                 
                 // Play/stop hotkey is never recorded
@@ -473,7 +474,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         return continueWithParsing;
     }
     
-    public boolean isHotkeyEvent(Hotkey hotkey, RecorderUserInputKey translatedKey)
+    public boolean isHotkeyEvent(Hotkey hotkey, InputKey translatedKey)
     {
         if (translatedKey == null)
         {

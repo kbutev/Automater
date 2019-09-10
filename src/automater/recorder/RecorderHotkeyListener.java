@@ -13,7 +13,9 @@ import automater.settings.Hotkey;
  * @author Bytevi
  */
 public interface RecorderHotkeyListener {
+    public boolean isListeningForAnyHotkey();
+    
     public Hotkey getHotkey();
     
-    public void onHotkeyPressed();
+    public void onHotkeyPressed(Hotkey hotkey);
 }

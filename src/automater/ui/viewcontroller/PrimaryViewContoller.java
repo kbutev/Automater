@@ -5,12 +5,11 @@
  */
 package automater.ui.viewcontroller;
 
+import automater.presenter.EditMacroPresenter;
 import automater.presenter.OpenMacroPresenter;
 import automater.presenter.PlayMacroPresenter;
 import automater.presenter.RecordMacroPresenter;
-import automater.recorder.model.RecorderUserInputKey;
-import automater.recorder.model.RecorderUserInputKeyModifiers;
-import automater.recorder.model.RecorderUserInputKeyValue;
+import automater.input.InputKeyValue;
 import automater.settings.Hotkey;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
@@ -23,6 +22,8 @@ import automater.work.model.Macro;
 public class PrimaryViewContoller implements RootViewController {
     private BaseViewController _currentViewController;
     
+    // Cached view controllers and their presenters
+    // These view controllers are never initialized twice
     private OpenMacroViewController _openMacroViewController;
     private OpenMacroPresenter _openMacroPresenter;
     private RecordMacroViewController _recordMacroViewController;
@@ -45,8 +46,7 @@ public class PrimaryViewContoller implements RootViewController {
             Errors.throwInternalLogicError("PrimaryViewController already started");
         }
         
-        // By default, we start with the record screen opened
-        switchScreenToRecord();
+        switchScreenToDefault();
     }
     
     // # RootViewController
@@ -75,7 +75,20 @@ public class PrimaryViewContoller implements RootViewController {
         switchScreenToPlay(macro);
     }
     
+    @Override
+    public void navigateToEditScreen(automater.work.model.Macro macro)
+    {
+        Logger.messageEvent(this, "Navigating to edit macro screen.");
+        
+        switchScreenToEdit(macro);
+    }
+    
     // # Private
+    
+    private void switchScreenToDefault()
+    {
+        switchScreenToOpen();
+    }
     
     private void switchScreenToOpen()
     {
@@ -115,7 +128,7 @@ public class PrimaryViewContoller implements RootViewController {
         if (recordViewControllerStart)
         {
             Hotkey playOrStopHotkey;
-            playOrStopHotkey = new Hotkey(RecorderUserInputKeyValue._F4);
+            playOrStopHotkey = new Hotkey(InputKeyValue._F4);
             _recordMacroPresenter = new RecordMacroPresenter(this);
             _recordMacroPresenter.setPlayOrStopHotkey(playOrStopHotkey);
             RecordMacroViewController vc = new RecordMacroViewController(_recordMacroPresenter);
@@ -145,11 +158,29 @@ public class PrimaryViewContoller implements RootViewController {
     private void switchScreenToPlay(Macro macro)
     {
         Hotkey playOrStopHotkey;
-        playOrStopHotkey = new Hotkey(RecorderUserInputKeyValue._F4);
+        playOrStopHotkey = new Hotkey(InputKeyValue._F4);
         
         PlayMacroPresenter presenter = new PlayMacroPresenter(this, macro);
         presenter.setPlayOrStopHotkey(playOrStopHotkey);
         PlayMacroViewController vc = new PlayMacroViewController(presenter);
+        presenter.setDelegate(vc);
+        
+        if (_currentViewController != null)
+        {
+            _currentViewController.suspend();
+        }
+        
+        _currentViewController = vc;
+        
+        _currentViewController.start();
+        
+        presenter.start();
+    }
+    
+    private void switchScreenToEdit(Macro macro)
+    {
+        EditMacroPresenter presenter = new EditMacroPresenter(this, macro);
+        EditMacroViewController vc = new EditMacroViewController(presenter);
         presenter.setDelegate(vc);
         
         if (_currentViewController != null)

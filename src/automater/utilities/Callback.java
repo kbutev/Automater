@@ -5,8 +5,6 @@
  */
 package automater.utilities;
 
-import java.util.function.Function;
-
 /**
  * A function callback that takes 1 paramter and returns no value.
  * 

@@ -43,7 +43,7 @@ public class OpenMacroPresenter implements BasePresenter {
     {
         if (_delegate == null)
         {
-            Errors.throwInternalLogicError("PlayPresenter delegate is not set before starting");
+            Errors.throwInternalLogicError("OpenMacroPresenter delegate is not set before starting");
         }
         
         Logger.message(this, "Start.");
@@ -56,7 +56,7 @@ public class OpenMacroPresenter implements BasePresenter {
     {
         if (_delegate != null)
         {
-            Errors.throwInternalLogicError("PlayPresenter delegate is already set");
+            Errors.throwInternalLogicError("OpenMacroPresenter delegate is already set");
         }
         
         _delegate = delegate;
@@ -95,6 +95,16 @@ public class OpenMacroPresenter implements BasePresenter {
     public void editMacroAt(int index)
     {
         Logger.messageEvent(this, "Edit macro at " + String.valueOf(index));
+        
+        if (index < 0 || index >= _macros.size())
+        {
+            Logger.error(this, "Cannot open macro at " + String.valueOf(index) + ", invalid index");
+            return;
+        }
+        
+        Macro macro = _macros.get(index);
+        
+        _rootViewController.navigateToEditScreen(macro);
     }
     
     public void deleteMacroAt(int index)

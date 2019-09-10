@@ -68,7 +68,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     {
         if (_delegate == null)
         {
-            Errors.throwInternalLogicError("RecordPresenter delegate is not set before starting");
+            Errors.throwInternalLogicError("RecordMacroPresenter delegate is not set before starting");
         }
         
         Logger.message(this, "Start.");
@@ -81,7 +81,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     {
         if (_delegate != null)
         {
-            Errors.throwInternalLogicError("RecordPresenter delegate is already set");
+            Errors.throwInternalLogicError("RecordMacroPresenter delegate is already set");
         }
         
         _delegate = delegate;
@@ -129,13 +129,19 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     // # RecorderHotkeyListener
     
     @Override
+    public boolean isListeningForAnyHotkey()
+    {
+        return false;
+    }
+    
+    @Override
     public Hotkey getHotkey()
     {
         return _recordOrStopHotkey;
     }
     
     @Override
-    public void onHotkeyPressed()
+    public void onHotkeyPressed(Hotkey hotkey)
     {
         Logger.message(this, "Record hotkey tapped!");
         

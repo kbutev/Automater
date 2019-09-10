@@ -5,8 +5,8 @@
  */
 package automater.recorder.parser;
 
-import automater.recorder.model.RecorderUserInputKey;
-import automater.recorder.model.RecorderUserInputKeyValue;
+import automater.input.InputKey;
+import automater.input.InputKeyValue;
 import org.jnativehook.mouse.NativeMouseEvent;
 
 /**
@@ -22,31 +22,31 @@ public class RecorderSystemMouseTranslator {
         this.keyboardTranslator = keyboardTranslator;
     }
     
-    public RecorderUserInputKey translate(NativeMouseEvent keyEvent)
+    public InputKey translate(NativeMouseEvent keyEvent)
     {
         int mouseKeyValue = keyEvent.getButton();
         
-        RecorderUserInputKeyValue key = RecorderUserInputKeyValue.UNKNOWN;
+        InputKeyValue key = InputKeyValue.UNKNOWN;
         
         switch(mouseKeyValue)
         {
             case 1:
-                key = RecorderUserInputKeyValue._MOUSE_LEFT_CLICK;
+                key = InputKeyValue._MOUSE_LEFT_CLICK;
                 break;
             case 2:
-                key = RecorderUserInputKeyValue._MOUSE_RIGHT_CLICK;
+                key = InputKeyValue._MOUSE_RIGHT_CLICK;
                 break;
             case 3:
-                key = RecorderUserInputKeyValue._MOUSE_MIDDLE_CLICK;
+                key = InputKeyValue._MOUSE_MIDDLE_CLICK;
                 break;
             case 4:
-                key = RecorderUserInputKeyValue._MOUSE_4_CLICK;
+                key = InputKeyValue._MOUSE_4_CLICK;
                 break;
             case 5:
-                key = RecorderUserInputKeyValue._MOUSE_5_CLICK;
+                key = InputKeyValue._MOUSE_5_CLICK;
                 break;
         }
         
-        return new RecorderUserInputKey(key, keyboardTranslator.getCurrentMask());
+        return new InputKey(key, keyboardTranslator.getCurrentMask());
     }
 }

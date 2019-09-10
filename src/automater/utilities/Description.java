@@ -17,4 +17,48 @@ public interface Description {
     public String getVerboseTooltip();
     public String getName();
     public String getDebug();
+    
+    public static Description createFromString(final String value)
+    {
+        return new DescriptionString(value);
+    }
+}
+
+class DescriptionString implements Description {
+    private final String value;
+    
+    DescriptionString(String value)
+    {
+        this.value = value;
+    }
+
+    @Override
+    public String getStandart() {
+        return value;
+    }
+
+    @Override
+    public String getVerbose() {
+        return value;
+    }
+
+    @Override
+    public String getStandartTooltip() {
+        return value;
+    }
+
+    @Override
+    public String getVerboseTooltip() {
+        return value;
+    }
+
+    @Override
+    public String getName() {
+        return value;
+    }
+
+    @Override
+    public String getDebug() {
+        return value;
+    }
 }

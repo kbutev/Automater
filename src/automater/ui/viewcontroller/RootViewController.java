@@ -14,4 +14,5 @@ public interface RootViewController {
     public void navigateToRecordScreen();
     public void navigateToOpenScreen();
     public void navigateToPlayScreen(automater.work.model.Macro macro);
+    public void navigateToEditScreen(automater.work.model.Macro macro);
 }

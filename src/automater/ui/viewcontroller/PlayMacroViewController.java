@@ -149,11 +149,11 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     @Override
     public void startPlaying() 
     {
-        _form.play();
+        _form.playRecording();
     }
     
     @Override
-    public void updatePlayStatus(ExecutorProgress progress)
+    public void updatePlayStatus(automater.work.model.ExecutorProgress progress)
     {
         _form.setProgressBarValue(progress.getPercentageDone());
         _form.setStatus(progress.getCurrentStatus());
@@ -163,13 +163,13 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     @Override
     public void cancelPlaying()
     {
-        _form.cancel();
+        _form.cancelRecording();
     }
     
     @Override
     public void finishPlaying()
     {
-        _form.finish();
+        _form.finishRecording();
     }
     
     @Override
@@ -179,13 +179,19 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         
         setMacroParametersDescription(values.macroParameters);
     }
+    
+    @Override
+    public void onEditMacroAction(automater.work.model.BaseEditableAction action)
+    {
+        
+    }
 
     @Override
     public void onErrorEncountered(Exception e)
     {
         Logger.error(this, "Error encountered: " + e.toString());
         
-        _form.cancel();
+        _form.cancelRecording();
         
         // Show message alert
         String textTitle = TextValue.getText(TextValue.Play_DialogErrorTitle);
@@ -220,7 +226,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
             }
         };
         
-        _optionsDialog.onOKButtonCallback = new SimpleCallback() {
+        _optionsDialog.onSaveButtonCallback = new SimpleCallback() {
             @Override
             public void perform() {
                 PreferencesStorageValues values = getPreferenceValuesFromOptionsDialog();
@@ -237,7 +243,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         // Setup default values
         _optionsDialog.setupWithStorageValues(_defaultPreferences);
         
-        // Display
+        // Make sure that this the last statement: show dialog
         _optionsDialog.setVisible(true);
     }
     
