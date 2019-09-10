@@ -5,6 +5,7 @@
  */
 package automater.work.model;
 
+import automater.utilities.Description;
 import automater.work.BaseAction;
 import java.util.List;
 
@@ -21,6 +22,8 @@ public interface BaseEditableAction {
     
     public long getTimestamp();
     public void setTimestamp(long timestamp);
+    
+    public Description getDescription();
     
     public String getFirstValueName();
     public String getFirstValue();

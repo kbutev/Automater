@@ -342,11 +342,15 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     public RecorderUserInput evaluatePress(NativeKeyEvent keyboardEvent) {
         // Hotkey listeners update & alert
         InputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, true);
-        boolean continueParsing = updateHotkeyListeners(translatedKey, true);
         
-        if (!continueParsing)
+        if (translatedKey != null)
         {
-            return null;
+            boolean continueParsing = updateHotkeyListeners(translatedKey, true);
+            
+            if (!continueParsing)
+            {
+                return null;
+            }
         }
         
         // Subparser delegation
@@ -455,11 +459,11 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         
         for (RecorderHotkeyListener l : listeners)
         {
-            if (l.isListeningForAnyHotkey() || isHotkeyEvent(l.getHotkey(), translatedKey))
+            if (hotkeyListenerIsEligibleForKeystrokeEvent(l, translatedKey))
             {
                 if (performDelegateCall)
                 {
-                    Hotkey hotkey = new Hotkey(translatedKey.value);
+                    Hotkey hotkey = new Hotkey(translatedKey);
                     l.onHotkeyPressed(hotkey);
                 }
                 
@@ -472,6 +476,11 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         }
         
         return continueWithParsing;
+    }
+    
+    public boolean hotkeyListenerIsEligibleForKeystrokeEvent(RecorderHotkeyListener l, InputKey translatedKey)
+    {
+        return l.isListeningForAnyHotkey() || isHotkeyEvent(l.getHotkey(), translatedKey);
     }
     
     public boolean isHotkeyEvent(Hotkey hotkey, InputKey translatedKey)

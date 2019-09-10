@@ -6,11 +6,13 @@
 package automater.ui.view;
 
 import automater.TextValue;
+import static automater.TextValue.EditAction_StatusError;
 import automater.utilities.SimpleCallback;
 import automater.work.model.BaseEditableAction;
 import automater.work.model.EditableActionType;
 import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.event.ListDataListener;
 
 /**
@@ -215,15 +217,33 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         typesDropdown.setEnabled(false);
         saveButton.setEnabled(false);
         
-        statusLabel.setText(TextValue.getText(TextValue.EditAction_ListeningToHotkey));
+        statusLabel.setText(TextValue.getText(TextValue.EditAction_StatusListeningToHotkey));
     }
     
-    public void endHotkeyListening()
+    public void endHotkeyListeningWithoutAnyKeyEntered()
     {
         typesDropdown.setEnabled(true);
         saveButton.setEnabled(true);
+    }
+    
+    public void endHotkeyListening(String hotkey)
+    {
+        endHotkeyListeningWithoutAnyKeyEntered();
+        
+        if (_hotkeyButton != null)
+        {
+            _hotkeyButton.setText(hotkey);
+        }
         
         statusLabel.setText("");
+        
+        // Update value
+        setHotkeyValue(hotkey);
+    }
+    
+    public void displayError(String error)
+    {
+        statusLabel.setText(TextValue.getText(TextValue.EditAction_StatusError, error));
     }
     
     // # Private
@@ -267,17 +287,21 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         
         final EditMacroActionDialog self = this;
         
-        JButton hotkeyButton = new JButton();
-        hotkeyButton.addActionListener(new java.awt.event.ActionListener() {
+        _hotkeyButton = new JButton();
+        _hotkeyButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 onHotkeyButtonCallback.perform();
             }
         });
         
-        hotkeyButton.setText(_editableAction.getFirstValue());
-        hotkeyButton.setSize(96, 24);
+        _hotkeyButton.setText(_editableAction.getFirstValue());
+        _hotkeyButton.setSize(96, 24);
         
-        panel.add(hotkeyButton);
+        _hotkeyCheck = new JCheckBox();
+        _hotkeyCheck.setSelected(Boolean.valueOf(_editableAction.getSecondValue()));
+        _hotkeyCheck.setSize(64, 24);
+        
+        panel.add(_hotkeyButton);
     }
     
     private void setupSpecificValuesPanel()
@@ -288,8 +312,21 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         }
     }
     
+    private void setHotkeyValue(String value)
+    {
+        if (_editableAction == null)
+        {
+            return;
+        }
+        
+        _editableAction.setFirstValue(value);
+    }
+    
     private EditMacroActionTypesModel _actionTypesModel;
     private BaseEditableAction _editableAction;
+    
+    private JButton _hotkeyButton;
+    private JCheckBox _hotkeyCheck;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;

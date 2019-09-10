@@ -5,13 +5,18 @@
  */
 package automater.work.model;
 
+import automater.input.InputKey;
 import automater.input.InputKeyClick;
 import automater.input.InputMouse;
 import automater.input.InputMouseMove;
+import automater.recorder.model.RecorderUserInput;
 import automater.utilities.CollectionUtilities;
+import automater.utilities.Description;
 import automater.utilities.Errors;
+import automater.work.Action;
 import automater.work.BaseAction;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,6 +27,8 @@ import java.util.List;
 public class StandartEditableAction implements BaseEditableAction {
     EditableActionType type;
     long timestamp;
+    Date timestampDate;
+    Description description;
     List<String> specificValues = new ArrayList<>();
     
     String firstName;
@@ -46,13 +53,19 @@ public class StandartEditableAction implements BaseEditableAction {
             a = new StandartEditableActionKeyboard(type, timestamp);
             a.firstName = StandartEditableActionConstants.KEYBOARD_CLICK_FIRST_NAME;
             a.firstValue = keyboardClick.getKeyValue().toString();
+            a.secondName = StandartEditableActionConstants.KEYBOARD_CLICK_SECOND_NAME;
+            a.secondValue = String.valueOf(keyboardClick.isPress());
         }
         
         // MouseClick
         if (isInputKeyClick && !isInputKeyboardClick)
         {
+            InputKeyClick mouseClick = (InputKeyClick)action;
             a = new StandartEditableActionMouse(type, timestamp);
             a.firstName = StandartEditableActionConstants.MOUSE_CLICK_FIRST_NAME;
+            a.firstValue = mouseClick.getKeyValue().toString();
+            a.secondName = StandartEditableActionConstants.MOUSE_CLICK_SECOND_NAME;
+            a.secondValue = String.valueOf(mouseClick.isPress());
             a.specificValues = StandartEditableActionConstants.getMouseClickSpecificValues();
         }
         
@@ -63,6 +76,14 @@ public class StandartEditableAction implements BaseEditableAction {
             a.firstName = StandartEditableActionConstants.MOUSE_MOVE_FIRST_NAME;
             a.secondName = StandartEditableActionConstants.MOUSE_MOVE_SECOND_NAME;
         }
+        
+        if (a == null)
+        {
+            return null;
+        }
+        
+        a.timestampDate = new Date(timestamp);
+        a.description = action.getDescription();
         
         return a;
     }
@@ -96,6 +117,11 @@ public class StandartEditableAction implements BaseEditableAction {
     @Override
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+    
+    @Override
+    public Description getDescription() {
+        return description;
     }
     
     @Override
@@ -142,9 +168,28 @@ class StandartEditableActionKeyboard extends StandartEditableAction {
     
     @Override
     public BaseAction buildAction() throws Exception {
+        InputKey inputKey = new InputKey(firstValue);
+        boolean isPress = Boolean.valueOf(secondValue);
         
+        RecorderUserInput userInput;
         
-        return null;
+        if (isPress)
+        {
+            userInput = RecorderUserInput.createKeyboardPress(timestampDate, inputKey);
+        }
+        else
+        {
+            userInput = RecorderUserInput.createKeyboardRelease(timestampDate, inputKey);
+        }
+        
+        if (!(userInput instanceof InputKeyClick))
+        {
+            return null;
+        }
+        
+        InputKeyClick keyClick = (InputKeyClick)userInput;
+        
+        return Action.createKeyClick(timestampDate, keyClick, userInput);
     }
 }
 
@@ -161,7 +206,7 @@ class StandartEditableActionMouse extends StandartEditableAction {
         
         if (x < 0 || y < 0)
         {
-            Errors.throwInvalidArgument("Must be non-negative value");
+            Errors.throwInvalidArgument("Enter non-negative x,y values");
         }
         
         return null;

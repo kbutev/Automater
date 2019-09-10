@@ -7,6 +7,7 @@ package automater.ui.viewcontroller;
 
 import automater.presenter.BasePresenterDelegate;
 import automater.presenter.EditMacroPresenter;
+import automater.settings.Hotkey;
 import automater.storage.PreferencesStorageValues;
 import automater.ui.view.EditMacroActionDialog;
 import automater.ui.view.EditMacroForm;
@@ -49,14 +50,14 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         _form.onEditButtonCallback = new Callback<Integer>() {
             @Override
             public void perform(Integer argument) {
-                _presenter.onEditMacroAt(argument);
+                _presenter.onStartEditMacroActionAt(argument);
             }
         };
         
         _form.onDoubleClickItem = new Callback<Integer>() {
             @Override
             public void perform(Integer argument) {
-                _presenter.onEditMacroAt(argument);
+                _presenter.onStartEditMacroActionAt(argument);
             }
         };
         
@@ -180,7 +181,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     @Override
     public void onErrorEncountered(Exception e)
     {
-        
+        _editActionDialog.displayError(e.getMessage());
     }
     
     // # Private
@@ -204,8 +205,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         _editActionDialog.onSaveButtonCallback = new SimpleCallback() {
             @Override
             public void perform() {
-                //_presenter.saveMacro();
-                closeEditMacroActionDialog();
+                tryToSaveAndCloseEditMacroActionDialog();
             }
         };
         
@@ -218,7 +218,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
                 } 
                 else 
                 {
-                    endHotkeyListening();
+                    endHotkeyListeningWithoutAnyKeyEntered();
                 }
             }
         };
@@ -257,21 +257,76 @@ public class EditMacroViewController implements BaseViewController, BasePresente
             return;
         }
         
+        if (_isHotkeyRecording)
+        {
+            _editActionDialog.endHotkeyListeningWithoutAnyKeyEntered();
+        }
+        
         _editActionDialog.setVisible(false);
         
         // Delete
         _editActionDialog = null;
     }
     
-    private void startHotkeyListening()
+    private void tryToSaveAndCloseEditMacroActionDialog()
     {
-        _isHotkeyRecording = true;
-        _editActionDialog.startHotkeyListening();
+        Exception exception = _presenter.canSuccessfullyEndEditMacroAction();
+        
+        if (exception == null)
+        {
+            closeEditMacroActionDialog();
+            _presenter.onEndEditMacroAction();
+        }
+        else
+        {
+            onErrorEncountered(exception);
+        }
     }
     
-    private void endHotkeyListening()
+    private void startHotkeyListening()
     {
+        if (_isHotkeyRecording)
+        {
+            return;
+        }
+        
+        _isHotkeyRecording = true;
+        _editActionDialog.startHotkeyListening();
+        
+        
+        Callback onHotkeyEnteredCallback = new Callback<Hotkey>() {
+            @Override
+            public void perform(Hotkey argument) {
+                endHotkeyListening(argument);
+            }
+        };
+        
+        _presenter.startListeningForKeystrokes(onHotkeyEnteredCallback);
+    }
+    
+    private void endHotkeyListeningWithoutAnyKeyEntered()
+    {
+        if (!_isHotkeyRecording)
+        {
+            return;
+        }
+        
         _isHotkeyRecording = false;
-        _editActionDialog.endHotkeyListening();
+        _editActionDialog.endHotkeyListeningWithoutAnyKeyEntered();
+        
+        _presenter.endListeningForKeystrokes();
+    }
+    
+    private void endHotkeyListening(Hotkey hotkeyEntered)
+    {
+        if (!_isHotkeyRecording)
+        {
+            return;
+        }
+        
+        _isHotkeyRecording = false;
+        _editActionDialog.endHotkeyListening(hotkeyEntered.key.toString());
+        
+        _presenter.endListeningForKeystrokes();
     }
 }

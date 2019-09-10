@@ -14,11 +14,16 @@ import automater.input.InputKeyValue;
  * @author Bytevi
  */
 public class Hotkey {
-    public final InputKeyValue key;
+    public final InputKey key;
     
-    public Hotkey(InputKeyValue key)
+    public Hotkey(InputKey key)
     {
         this.key = key;
+    }
+    
+    public Hotkey(InputKeyValue keyValue)
+    {
+        this.key = new InputKey(keyValue);
     }
     
     public boolean isEqualTo(InputKey key)
@@ -33,6 +38,6 @@ public class Hotkey {
             return false;
         }
         
-        return this.key == key.value;
+        return this.key.equals(key);
     }
 }

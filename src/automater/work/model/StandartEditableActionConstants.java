@@ -21,7 +21,9 @@ import java.util.List;
  */
 public class StandartEditableActionConstants {
     public static final String KEYBOARD_CLICK_FIRST_NAME = "Key";
+    public static final String KEYBOARD_CLICK_SECOND_NAME = "Press";
     public static final String MOUSE_CLICK_FIRST_NAME = "Mouse Key";
+    public static final String MOUSE_CLICK_SECOND_NAME = "Press";
     public static final String MOUSE_MOVE_FIRST_NAME = "x";
     public static final String MOUSE_MOVE_SECOND_NAME = "y";
     
@@ -56,7 +58,7 @@ public class StandartEditableActionConstants {
     
     public static EditableActionType getTypeFromAction(BaseAction action)
     {
-        EditableActionType type = EditableActionType.SingleValue;
+        EditableActionType type = EditableActionType.SingleString;
         
         if (action instanceof InputKeyClick)
         {
@@ -70,7 +72,7 @@ public class StandartEditableActionConstants {
         
         if (action instanceof InputMouseMotion)
         {
-            type = EditableActionType.DoubleValue;
+            type = EditableActionType.DoubleString;
         }
         
         return type;

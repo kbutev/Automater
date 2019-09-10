@@ -105,7 +105,7 @@ public class RecorderSystemKeyboardTranslator {
         _keyMapping.put(NativeKeyEvent.VC_L, InputKeyValue._L);
         _keyMapping.put(NativeKeyEvent.VC_M, InputKeyValue._M);
         _keyMapping.put(NativeKeyEvent.VC_N, InputKeyValue._N);
-        _keyMapping.put(NativeKeyEvent.VC_0, InputKeyValue._O);
+        _keyMapping.put(NativeKeyEvent.VC_O, InputKeyValue._O);
         _keyMapping.put(NativeKeyEvent.VC_P, InputKeyValue._P);
         _keyMapping.put(NativeKeyEvent.VC_Q, InputKeyValue._Q);
         _keyMapping.put(NativeKeyEvent.VC_R, InputKeyValue._R);
