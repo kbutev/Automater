@@ -52,11 +52,6 @@ public class MacroStorage {
     
     // # Validators
     
-    public boolean canSaveMacro(Macro macro)
-    {
-        return getSaveMacroError(macro) == null;
-    }
-    
     public boolean macroExistsWithName(String name)
     {
         synchronized (_lock)
@@ -87,12 +82,17 @@ public class MacroStorage {
             return new Exception("Macro requires at least one action.");
         }
         
-        if (GeneralStorage.getDefault().getMacrosStorage().macroExistsWithName(macro.name))
+        return null;
+    }
+    
+    public Exception getSaveMacroNameError(String name, boolean checkIfNameIsTaken)
+    {
+        if (checkIfNameIsTaken && GeneralStorage.getDefault().getMacrosStorage().macroExistsWithName(name))
         {
             return new Exception(TextValue.getText(TextValue.Error_NameIsTaken));
         }
         
-        return MacroStorageFile.getMacroNameIsUnavailableError(macro.name);
+        return MacroStorageFile.getMacroNameIsUnavailableError(name);
     }
     
     // # Operations
@@ -101,10 +101,20 @@ public class MacroStorage {
     {
         Logger.message(this, "Saving new macro '" + macro.name + "' to storage...");
         
-        if (macroExistsWithName(macro.name))
+        Exception saveMacroError = getSaveMacroError(macro);
+        
+        if (saveMacroError != null)
         {
-            Logger.error(this, "Failed to save macro '" + macro.name + "' to storage, already saved.");
-            return;
+            Logger.error(this, "Failed to save macro '" + macro.name + "' to storage: " + saveMacroError.toString());
+            throw saveMacroError;
+        }
+        
+        Exception saveMacroNameError = getSaveMacroNameError(macro.name, true);
+        
+        if (saveMacroNameError != null)
+        {
+            Logger.error(this, "Failed to save macro '" + macro.name + "' to storage: " + saveMacroNameError.toString());
+            throw saveMacroNameError;
         }
         
         ArrayList<MacroStorageFile> currentMacros = macros();
@@ -120,7 +130,7 @@ public class MacroStorage {
                 // Add to macros collection
                 currentMacros.add(macroFile);
                 
-                Logger.messageEvent(this, "Macro '" + macroFile.name() + "' saved to storage!");
+                Logger.messageEvent(this, "Succesfully saved macro '" + macroFile.name() + "' to storage!");
             } catch (Exception e) {
                 String message = "Failed to save '" + macroFile.name() + "' macro to storage!";
                 Logger.error(this, message);
@@ -133,12 +143,20 @@ public class MacroStorage {
     {
         Logger.message(this, "Updating macro " + macro.toString() + ".");
         
-        String macroName = macro.name;
+        Exception saveMacroError = getSaveMacroError(macro);
         
-        if (!macroExistsWithName(macroName))
+        if (saveMacroError != null)
         {
-            Logger.error(this, "Failed to update macro '" + macroName + "' in storage, macro does not exist.");
-            return;
+            Logger.error(this, "Failed to save macro '" + macro.name + "' to storage: " + saveMacroError.toString());
+            throw saveMacroError;
+        }
+        
+        Exception saveMacroNameError = getSaveMacroNameError(macro.name, false);
+        
+        if (saveMacroNameError != null)
+        {
+            Logger.error(this, "Failed to save macro '" + macro.name + "' to storage: " + saveMacroNameError.toString());
+            throw saveMacroNameError;
         }
         
         ArrayList<MacroStorageFile> currentMacros = macros();
@@ -146,7 +164,7 @@ public class MacroStorage {
         
         for (MacroStorageFile m : currentMacros)
         {
-            if (m.name().equals(macroName))
+            if (m.name().equals(macro.name))
             {
                 fileToUpdate = m;
                 break;
@@ -155,13 +173,16 @@ public class MacroStorage {
         
         if (fileToUpdate == null)
         {
-            Logger.error(this, "Failed to update macro '" + macroName + "' in storage, macro does not exist.");
+            Logger.error(this, "Failed to update macro '" + macro.name + "' in storage, macro does not exist.");
             Errors.throwInternalLogicError("Failed to update macro, macro does not exist.");
             return;
         }
         
         // Replace old macro with new macro
         fileToUpdate.update(macro);
+        
+        // Success
+        Logger.messageEvent(this, "Succesfully updated macro '" + macro.name + "' in storage!");
     }
     
     public void deleteMacro(Macro macro) throws Exception

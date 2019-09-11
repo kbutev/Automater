@@ -6,7 +6,7 @@
 package automater.ui.view;
 
 import automater.TextValue;
-import static automater.TextValue.EditAction_StatusError;
+import static automater.TextValue.EditAction_Time;
 import automater.utilities.SimpleCallback;
 import automater.work.model.BaseEditableAction;
 import automater.work.model.EditableActionType;
@@ -49,6 +49,8 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         saveButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         statusLabel = new javax.swing.JLabel();
+        timeField = new javax.swing.JTextField();
+        timeLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -86,6 +88,10 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
 
         statusLabel.setText("Status");
 
+        timeField.setText("0");
+
+        timeLabel.setText("Time");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -94,15 +100,21 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(typesDropdown, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(typesDropdown, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                    .addGap(5, 5, 5)
+                                    .addComponent(timeLabel)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(timeField, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(saveButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(cancelButton)))
-                        .addGap(0, 248, Short.MAX_VALUE))
-                    .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(0, 248, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -110,9 +122,13 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(typesDropdown, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(timeField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(timeLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(statusLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 19, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -184,7 +200,9 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         cancelButton.setText(TextValue.getText(TextValue.EditAction_CancelButtonTitle));
         saveButton.setText(TextValue.getText(TextValue.EditAction_SaveButtonTitle));
         
-        statusLabel.setText("");
+        statusLabel.setText(TextValue.getText(TextValue.EditAction_StatusDefault));
+        
+        timeLabel.setText(TextValue.getText(TextValue.EditAction_Time));
     }
     
     // # Public
@@ -254,6 +272,10 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         {
             return;
         }
+        
+        // Time
+        timeField.setText(String.valueOf(_editableAction.getTimestamp()));
+        timeField.setEditable(false);
         
         // Hotkey
         if (_editableAction.getType() == EditableActionType.Hotkey)
@@ -333,6 +355,8 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     private javax.swing.JPanel panel;
     private javax.swing.JButton saveButton;
     private javax.swing.JLabel statusLabel;
+    private javax.swing.JTextField timeField;
+    private javax.swing.JLabel timeLabel;
     private javax.swing.JComboBox<String> typesDropdown;
     // End of variables declaration//GEN-END:variables
 }

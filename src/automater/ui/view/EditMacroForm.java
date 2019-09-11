@@ -7,8 +7,6 @@ package automater.ui.view;
 
 import automater.TextValue;
 import automater.utilities.Callback;
-import automater.utilities.Description;
-import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
 
 /**
@@ -22,6 +20,7 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
     public Callback<Integer> onSelectItem = Callback.createDoNothing();
     public Callback<Integer> onClickItem = Callback.createDoNothing();
     public Callback<Integer> onDoubleClickItem = Callback.createDoNothing();
+    public Callback<Integer> onDeleteButtonCallback = Callback.createDoNothing();
     public Callback<Integer> onEditButtonCallback = Callback.createDoNothing();
     public Callback<Integer> onInsertAboveCallback = Callback.createDoNothing();
     public Callback<Integer> onInsertBelowCallback = Callback.createDoNothing();
@@ -56,6 +55,7 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
         macroNameField = new javax.swing.JTextField();
         macroNameLabel = new javax.swing.JLabel();
         actionsLabel = new javax.swing.JLabel();
+        deleteButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -129,6 +129,14 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
 
         actionsLabel.setText("Actions");
 
+        deleteButton.setText("Delete");
+        deleteButton.setEnabled(false);
+        deleteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -144,8 +152,10 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
                             .addComponent(backButton)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(66, 66, 66)
-                                .addComponent(editButton, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(30, 30, 30)
+                                .addComponent(deleteButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(editButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(insertAboveButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -153,7 +163,7 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
                             .addComponent(descriptionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(macroNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(actionsLabel))
-                        .addGap(0, 1, Short.MAX_VALUE)))
+                        .addGap(0, 11, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -178,7 +188,8 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
                     .addComponent(saveButton)
                     .addComponent(editButton)
                     .addComponent(insertAboveButton)
-                    .addComponent(insertBelowButton))
+                    .addComponent(insertBelowButton)
+                    .addComponent(deleteButton))
                 .addContainerGap())
         );
 
@@ -190,15 +201,15 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
     }//GEN-LAST:event_saveButtonActionPerformed
 
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
-        onEditButtonCallback.perform(getSelectionIndex());
+        onEditButtonCallback.perform(getSelectedIndex());
     }//GEN-LAST:event_editButtonActionPerformed
 
     private void insertAboveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertAboveButtonActionPerformed
-        onInsertAboveCallback.perform(getSelectionIndex());
+        onInsertAboveCallback.perform(getSelectedIndex());
     }//GEN-LAST:event_insertAboveButtonActionPerformed
 
     private void insertBelowButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertBelowButtonActionPerformed
-        onInsertBelowCallback.perform(getSelectionIndex());
+        onInsertBelowCallback.perform(getSelectedIndex());
     }//GEN-LAST:event_insertBelowButtonActionPerformed
 
     private void backButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backButtonActionPerformed
@@ -226,6 +237,10 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
             onDoubleClickItem.perform(_selectedIndex);
         }
     }//GEN-LAST:event_macroActionsListMouseClicked
+
+    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
+        onDeleteButtonCallback.perform(getSelectedIndex());
+    }//GEN-LAST:event_deleteButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -322,7 +337,7 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
         macroActionsList.clearSelection();
     }
     
-    public int getSelectionIndex()
+    public int getSelectedIndex()
     {
         return _selectedIndex;
     }
@@ -333,6 +348,11 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
         macroNameField.setText(macroName);
         macroDescriptionTextArea.setText(macroDescription);
         macroActionsList.setModel(macroActionsDataSource);
+    }
+    
+    public void deselectAll()
+    {
+        macroActionsList.clearSelection();
     }
     
     // # Private
@@ -360,6 +380,7 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
     
     private void enableEditing()
     {
+        deleteButton.setEnabled(true);
         editButton.setEnabled(true);
         insertAboveButton.setEnabled(true);
         insertBelowButton.setEnabled(true);
@@ -367,6 +388,7 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
     
     private void disableEditing()
     {
+        deleteButton.setEnabled(false);
         editButton.setEnabled(false);
         insertAboveButton.setEnabled(false);
         insertBelowButton.setEnabled(false);
@@ -378,6 +400,7 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel actionsLabel;
     private javax.swing.JButton backButton;
+    private javax.swing.JButton deleteButton;
     private javax.swing.JLabel descriptionLabel;
     private javax.swing.JButton editButton;
     private javax.swing.JButton insertAboveButton;

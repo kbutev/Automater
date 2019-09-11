@@ -55,7 +55,8 @@ public enum TextValue {
     
     // Edit Action dialog
     EditAction_DialogTitle, EditAction_CancelButtonTitle, EditAction_SaveButtonTitle,
-    EditAction_StatusListeningToHotkey, EditAction_StatusError,
+    EditAction_StatusDefault, EditAction_StatusListeningToHotkey, EditAction_StatusError,
+    EditAction_Time,
     
     // Edit Action types
     EditAction_TypeKeyboardClick, EditAction_TypeMouseClick, EditAction_TypeMouseMove,
@@ -209,8 +210,10 @@ public enum TextValue {
         put(EditAction_DialogTitle, "Automater - Edit Action");
         put(EditAction_CancelButtonTitle, "Cancel");
         put(EditAction_SaveButtonTitle, "Save");
+        put(EditAction_StatusDefault, "");
         put(EditAction_StatusListeningToHotkey, "Enter hotkey...");
         put(EditAction_StatusError, "Error: %@");
+        put(EditAction_Time, "Time");
         
         // Edit Action types
         put(EditAction_TypeKeyboardClick, "Keyboard click");

@@ -5,8 +5,6 @@
  */
 package automater.input;
 
-import java.util.Date;
-
 /**
  * Represents a generic user input action.
  * 
@@ -15,5 +13,5 @@ import java.util.Date;
  * @author Bytevi
  */
 public interface Input {
-    public Date getTimestamp();
+    public long getTimestamp();
 }

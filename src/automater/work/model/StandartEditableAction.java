@@ -5,18 +5,17 @@
  */
 package automater.work.model;
 
+import automater.input.InputDescriptions;
 import automater.input.InputKey;
 import automater.input.InputKeyClick;
 import automater.input.InputMouse;
 import automater.input.InputMouseMove;
-import automater.recorder.model.RecorderUserInput;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.work.Action;
 import automater.work.BaseAction;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,8 +26,6 @@ import java.util.List;
 public class StandartEditableAction implements BaseEditableAction {
     EditableActionType type;
     long timestamp;
-    Date timestampDate;
-    Description description;
     List<String> specificValues = new ArrayList<>();
     
     String firstName;
@@ -82,9 +79,6 @@ public class StandartEditableAction implements BaseEditableAction {
             return null;
         }
         
-        a.timestampDate = new Date(timestamp);
-        a.description = action.getDescription();
-        
         return a;
     }
     
@@ -121,7 +115,7 @@ public class StandartEditableAction implements BaseEditableAction {
     
     @Override
     public Description getDescription() {
-        return description;
+        return null;
     }
     
     @Override
@@ -171,25 +165,32 @@ class StandartEditableActionKeyboard extends StandartEditableAction {
         InputKey inputKey = new InputKey(firstValue);
         boolean isPress = Boolean.valueOf(secondValue);
         
-        RecorderUserInput userInput;
+        InputKeyClick keyClick = new InputKeyClick() {
+            @Override
+            public InputKey getKeyValue() {
+                return inputKey;
+            }
+
+            @Override
+            public boolean isPress() {
+                return isPress;
+            }
+
+            @Override
+            public long getTimestamp() {
+                return timestamp;
+            }
+        };
         
-        if (isPress)
-        {
-            userInput = RecorderUserInput.createKeyboardPress(timestampDate, inputKey);
-        }
-        else
-        {
-            userInput = RecorderUserInput.createKeyboardRelease(timestampDate, inputKey);
-        }
+        return Action.createKeyClick(timestamp, keyClick, getDescription());
+    }
+    
+    @Override
+    public Description getDescription() {
+        InputKey inputKey = new InputKey(firstValue);
+        boolean isPress = Boolean.valueOf(secondValue);
         
-        if (!(userInput instanceof InputKeyClick))
-        {
-            return null;
-        }
-        
-        InputKeyClick keyClick = (InputKeyClick)userInput;
-        
-        return Action.createKeyClick(timestampDate, keyClick, userInput);
+        return InputDescriptions.getKeyboardInputDescription(isPress, inputKey);
     }
 }
 
@@ -210,5 +211,13 @@ class StandartEditableActionMouse extends StandartEditableAction {
         }
         
         return null;
+    }
+    
+    @Override
+    public Description getDescription() {
+        InputKey inputKey = new InputKey(firstValue);
+        boolean isPress = Boolean.valueOf(secondValue);
+        
+        return InputDescriptions.getKeyboardInputDescription(isPress, inputKey);
     }
 }

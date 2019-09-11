@@ -185,14 +185,10 @@ public class MacroStorageFile {
         }
         
         // Update local variable
-        synchronized (_lock)
-        {
-            _macro = macro;
-        }
-        
         // Update file
         synchronized (_lock)
         {
+            _macro = macro;
             writeToFile(getFile(), data);
         }
     }

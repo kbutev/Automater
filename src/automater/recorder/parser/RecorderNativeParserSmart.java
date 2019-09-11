@@ -7,14 +7,11 @@ package automater.recorder.parser;
 
 import automater.recorder.model.RecorderUserInput;
 import automater.recorder.model.RecorderUserInputMouseMotion;
-import java.awt.Point;
 import java.awt.event.WindowEvent;
-import java.util.Date;
 import java.util.List;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseWheelEvent;
-import automater.utilities.Logger;
 import automater.input.InputMouseMove;
 
 /**
@@ -76,7 +73,7 @@ public class RecorderNativeParserSmart extends RecorderNativeParser {
         
         InputMouseMove mouseInput = (InputMouseMove)result;
         
-        Date timestamp = result.getTimestamp();
+        long timestamp = result.getTimestamp();
         
         // Not currently parsing a mouse motion input, create a new one
         // from scratch
@@ -87,7 +84,6 @@ public class RecorderNativeParserSmart extends RecorderNativeParser {
         // Else, just update the current one
         else
         {
-            Logger.message(this, "move " + mouseInput.getTimestamp().getTime());
             _currentMouseMotion.addMovementPoint(mouseInput);
         }
         

@@ -8,9 +8,10 @@ package automater.presenter;
 import automater.recorder.Recorder;
 import automater.recorder.RecorderHotkeyListener;
 import automater.settings.Hotkey;
+import automater.storage.GeneralStorage;
+import automater.storage.MacroStorage;
 import automater.ui.viewcontroller.RootViewController;
 import automater.utilities.Callback;
-import automater.utilities.CollectionUtilities;
 import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
@@ -21,6 +22,7 @@ import automater.work.model.BaseEditableAction;
 import automater.work.model.StandartEditableAction;
 import automater.work.model.StandartEditableActionConstants;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  *
@@ -30,7 +32,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     private final RootViewController _rootViewController;
     private BasePresenterDelegate _delegate;
     
-    private Macro _macro;
+    private final Macro _originalMacro;
     private ArrayList<BaseAction> _macroActions;
     private ArrayList<Description> _macroActionDescriptions;
     
@@ -47,7 +49,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     {
         _rootViewController = rootViewController;
         
-        _macro = macro;
+        _originalMacro = macro;
         _macroActions = new ArrayList<>();
         _macroActions.addAll(macro.actions);
         _macroActionDescriptions = new ArrayList<>();
@@ -141,6 +143,50 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _rootViewController.navigateToOpenScreen();
     }
     
+    public void onSaveMacro(String name, String description)
+    {
+        Logger.messageEvent(this, "Save macro and go back.");
+        
+        MacroStorage macroStorage = GeneralStorage.getDefault().getMacrosStorage();
+        
+        Macro macro = new Macro(name, _macroActions, new Date(), _originalMacro.getLastTimePlayedDate());
+        macro.setDescription(description);
+        
+        boolean nameChanged = !_originalMacro.name.equals(name);
+        
+        if (nameChanged)
+        {
+            Exception exception = macroStorage.getSaveMacroNameError(name, nameChanged);
+            
+            if (exception != null)
+            {
+                Logger.error(this, "Failed to save macro: " + exception.toString());
+                _delegate.onErrorEncountered(exception);
+                return;
+            }
+        }
+        
+        Exception exception = macroStorage.getSaveMacroError(macro);
+        
+        if (exception != null)
+        {
+            Logger.error(this, "Failed to save macro: " + exception.toString());
+            _delegate.onErrorEncountered(exception);
+            return;
+        }
+        
+        try {
+            macroStorage.updateMacroInStorage(macro);
+            Logger.messageEvent(this, "Successfully saved macro '" + macro.name + "'!");
+        } catch (Exception e) {
+            Logger.error(this, "Failed to save macro: " + e.toString());
+            _delegate.onErrorEncountered(e);
+            return;
+        }
+        
+        navigateBack();
+    }
+    
     public void onStartEditMacroActionAt(int index)
     {
         if (index < 0 || index >= _macroActions.size())
@@ -200,6 +246,23 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         updateDelegateWithMacroInfo();
     }
     
+    public void onDeleteMacroActionAt(int index)
+    {
+        if (index < 0 || index >= _macroActions.size())
+        {
+            return;
+        }
+        
+        BaseAction action = _macroActions.get(_actionBeingEditedIndex);
+        
+        Logger.messageEvent(this, "Delete macro action '" + action.toString() + "' at index " + String.valueOf(index) + "");
+        
+        _macroActions.remove(index);
+        _macroActionDescriptions.remove(index);
+        
+        updateDelegateWithMacroInfo();
+    }
+    
     public void startListeningForKeystrokes(Callback<Hotkey> onKeystrokeEnteredCallback)
     {
         if (_recording)
@@ -238,7 +301,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     
     private void updateDelegateWithMacroInfo()
     {
-        _delegate.onLoadedMacroFromStorage(_macro.name, _macro.getDescription(), _macroActionDescriptions);
+        _delegate.onLoadedMacroFromStorage(_originalMacro.name, _originalMacro.getDescription(), _macroActionDescriptions);
     }
     
     private void updateMacroWithEditedAction(BaseEditableAction a, int actionBeingEditedIndex)

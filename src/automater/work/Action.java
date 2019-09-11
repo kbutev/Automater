@@ -9,7 +9,6 @@ import automater.utilities.CollectionUtilities;
 import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
-import static automater.work.Action.translateDateToActionTime;
 import automater.work.model.ActionSystemKey;
 import automater.work.model.ActionSystemKeyModifierValue;
 import automater.work.model.ActionSystemKeyModifiers;
@@ -32,7 +31,7 @@ import automater.input.InputMouse;
  * @author Bytevi
  */
 public class Action extends BaseAction {
-    public static Action createKeyClick(Date timestamp, InputKeyClick keyClick, Description description) throws Exception
+    public static Action createKeyClick(long timestamp, InputKeyClick keyClick, Description description) throws Exception
     {
         boolean isMouseClick = false;
         InputKeyValue key = keyClick.getKeyValue().value;
@@ -48,35 +47,30 @@ public class Action extends BaseAction {
         {
             if (keyClick.isPress())
             {
-                return new ActionMouseKeyPress(translateDateToActionTime(timestamp), keyClick, description);
+                return new ActionMouseKeyPress(timestamp, keyClick, description);
             }
             
-            return new ActionMouseKeyRelease(translateDateToActionTime(timestamp), keyClick, description);
+            return new ActionMouseKeyRelease(timestamp, keyClick, description);
         }
         
         if (keyClick.isPress())
         {
-            return new ActionKeyPress(translateDateToActionTime(timestamp), keyClick, description);
+            return new ActionKeyPress(timestamp, keyClick, description);
         }
         
-        return new ActionKeyRelease(translateDateToActionTime(timestamp), keyClick, description);
+        return new ActionKeyRelease(timestamp, keyClick, description);
     }
     
-    public static Action createMouseMovement(Date timestamp, int x, int y, Description description) throws Exception
+    public static Action createMouseMovement(long timestamp, int x, int y, Description description) throws Exception
     {
-        return new ActionMouseMove(translateDateToActionTime(timestamp), x, y, description);
+        return new ActionMouseMove(timestamp, x, y, description);
     }
     
-    public static Action createMouseMovement(Date timestamp, List<InputMouseMove> mouseMovements, Description description) throws Exception
+    public static Action createMouseMovement(long timestamp, List<InputMouseMove> mouseMovements, Description description) throws Exception
     {
         int maxNumberOfSubmovements = ActionSettingsManager.getDefault().getMaxNumberOfSubmovements();
         
-        return new ActionMouseMovement(translateDateToActionTime(timestamp), mouseMovements, maxNumberOfSubmovements, description);
-    }
-    
-    public static long translateDateToActionTime(Date timestamp)
-    {
-        return timestamp.getTime();
+        return new ActionMouseMovement(timestamp, mouseMovements, maxNumberOfSubmovements, description);
     }
     
     @Override
@@ -229,8 +223,8 @@ class ActionKeyPress extends Action implements InputKeyClick {
     }
 
     @Override
-    public Date getTimestamp() {
-        return new Date(time);
+    public long getTimestamp() {
+        return time;
     }
 }
 
@@ -316,8 +310,8 @@ class ActionKeyRelease extends Action implements InputKeyClick {
     }
 
     @Override
-    public Date getTimestamp() {
-        return new Date(time);
+    public long getTimestamp() {
+        return time;
     }
 }
 
@@ -395,8 +389,8 @@ class ActionMouseMove extends Action implements InputMouseMove {
     }
 
     @Override
-    public Date getTimestamp() {
-        return new Date(time);
+    public long getTimestamp() {
+        return time;
     }
 }
 
@@ -510,8 +504,8 @@ class ActionMouseMovement extends Action implements InputMouseMotion {
     }
 
     @Override
-    public Date getTimestamp() {
-        return new Date(time);
+    public long getTimestamp() {
+        return time;
     }
     
     private ArrayList<BaseAction> parseMouseMoveActions(List<InputMouseMove> movements)
@@ -542,7 +536,7 @@ class ActionMouseMovement extends Action implements InputMouseMotion {
     {
         ArrayList<BaseAction> result = new ArrayList<>();
         
-        final long currentStartTime = translateDateToActionTime(current.getTimestamp());
+        final long currentStartTime = current.getTimestamp();
         final int currentX = current.getX();
         final int currentY = current.getY();
         
@@ -553,7 +547,7 @@ class ActionMouseMovement extends Action implements InputMouseMotion {
             return result;
         }
         
-        final long nextStartTime = translateDateToActionTime(next.getTimestamp());
+        final long nextStartTime = next.getTimestamp();
         final int nextX = next.getX();
         final int nextY = next.getY();
         

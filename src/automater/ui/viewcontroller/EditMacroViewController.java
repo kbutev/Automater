@@ -5,6 +5,7 @@
  */
 package automater.ui.viewcontroller;
 
+import automater.TextValue;
 import automater.presenter.BasePresenterDelegate;
 import automater.presenter.EditMacroPresenter;
 import automater.settings.Hotkey;
@@ -12,8 +13,10 @@ import automater.storage.PreferencesStorageValues;
 import automater.ui.view.EditMacroActionDialog;
 import automater.ui.view.EditMacroForm;
 import automater.ui.view.StandartDescriptionsDataSource;
+import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import automater.utilities.Description;
+import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
 import java.awt.event.WindowEvent;
 import java.util.List;
@@ -47,6 +50,14 @@ public class EditMacroViewController implements BaseViewController, BasePresente
             }
         };
         
+        _form.onDeleteButtonCallback = new Callback<Integer>() {
+            @Override
+            public void perform(Integer argument) {
+                _presenter.onDeleteMacroActionAt(argument);
+                _form.deselectAll();
+            }
+        };
+        
         _form.onEditButtonCallback = new Callback<Integer>() {
             @Override
             public void perform(Integer argument) {
@@ -64,7 +75,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         _form.onSaveButtonCallback = new SimpleCallback() {
             @Override
             public void perform() {
-                
+                onSaveMacro();
             }
         };
     }
@@ -181,10 +192,30 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     @Override
     public void onErrorEncountered(Exception e)
     {
-        _editActionDialog.displayError(e.getMessage());
+        Logger.error(this, "Error encountered: " + e.toString());
+        
+        if (_editActionDialog != null)
+        {
+            _editActionDialog.displayError(e.getMessage());
+            return;
+        }
+        
+        // Show message alert
+        String textTitle = TextValue.getText(TextValue.Dialog_SaveRecordingFailedTitle);
+        String textMessage = TextValue.getText(TextValue.Dialog_SaveRecordingFailedMessage, e.getMessage());
+        String ok = TextValue.getText(TextValue.Dialog_OK);
+        
+        AlertWindows.showErrorMessage(_form, textTitle, textMessage, ok);
     }
     
     // # Private
+    
+    private void onSaveMacro()
+    {
+        String name = _form.getMacroName();
+        String description = _form.getMacroDescription();
+        _presenter.onSaveMacro(name, description);
+    }
     
     private void initEditMacroActionDialog()
     {

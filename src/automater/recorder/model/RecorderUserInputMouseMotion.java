@@ -5,6 +5,7 @@
  */
 package automater.recorder.model;
 
+import automater.input.InputDescriptions;
 import java.util.ArrayList;
 import automater.input.InputMouseMotion;
 import automater.input.InputMouseMove;
@@ -34,7 +35,10 @@ public class RecorderUserInputMouseMotion extends RecorderUserInput implements I
     
     @Override
     public String getStandart() {
-        return "MouseMotion " + "(" + String.valueOf(numberOfMovements()) + "x)";
+        InputMouseMove firstMove = getFirstMove();
+        InputMouseMove lastMove = getLastMove();
+        
+        return InputDescriptions.getMouseMotionDescription(firstMove, lastMove, numberOfMovements()).getStandart();
     }
     
     // # Public

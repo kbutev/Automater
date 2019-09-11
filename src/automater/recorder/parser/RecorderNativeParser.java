@@ -28,14 +28,11 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
     private final RecorderSystemMouseTranslator _mouseTranslator = new RecorderSystemMouseTranslator(_keyboardTranslator);
     private final EventLogger _eventLogger = new EventLogger();
     
+    private Date _firstDate;
+    
     public RecorderNativeParser(List<RecorderParserFlag> flags)
     {
         this.flags = CollectionUtilities.copyAsImmutable(flags);
-    }
-    
-    public Date getCurrentTime()
-    {
-        return new Date();
     }
     
     @Override
@@ -57,7 +54,7 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
             return null;
         }
         
-        Date timestamp = getCurrentTime();
+        long timestamp = evaluteTimeForNextEvent();
         InputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, press);
         
         if (translatedKey == null)
@@ -102,7 +99,7 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
             return null;
         }
         
-        Date timestamp = getCurrentTime();
+        long timestamp = evaluteTimeForNextEvent();
         InputKey mouseKey = _mouseTranslator.translate(mouseEvent);
         
         if (mouseKey == null)
@@ -136,7 +133,7 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
             return null;
         }
         
-        Date timestamp = getCurrentTime();
+        long timestamp = evaluteTimeForNextEvent();
         int x, y;
         
         x = mouseMoveEvent.getX();
@@ -170,6 +167,20 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
         }
         
         return null;
+    }
+    
+    // # Private
+    
+    public long evaluteTimeForNextEvent()
+    {
+        if (_firstDate == null)
+        {
+            _firstDate = new Date();
+        }
+        
+        Date now = new Date();
+        
+        return now.getTime() - _firstDate.getTime();
     }
     
     // Private logger

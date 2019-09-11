@@ -16,7 +16,6 @@ import automater.utilities.AlertWindows;
 import automater.utilities.Description;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
-import automater.work.model.ExecutorProgress;
 import automater.work.model.MacroParameters;
 import java.awt.Frame;
 import java.awt.event.WindowEvent;
