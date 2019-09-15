@@ -15,13 +15,16 @@ import automater.utilities.Callback;
 import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
+import automater.work.Action;
 import automater.work.BaseAction;
 import automater.work.model.Macro;
 import java.util.List;
 import automater.work.model.BaseEditableAction;
 import automater.work.model.StandartEditableAction;
+import automater.work.model.StandartEditableActionTemplates;
 import automater.work.model.StandartEditableActionConstants;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 
 /**
@@ -36,9 +39,12 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     private ArrayList<BaseAction> _macroActions;
     private ArrayList<Description> _macroActionDescriptions;
     
+    private boolean _isEditingOrCreatingAction = false;
+    private boolean _isCreatingAction = false;
+    
     private int _actionBeingEditedIndex;
-    private BaseAction _actionBeingEdited;
-    private BaseEditableAction _actionEditedValues;
+    private int _actionTypeSelectedIndex = 0;
+    private BaseEditableAction _actionBeingEdited;
     
     private boolean _recording = false;
     private final Recorder _recorder = Recorder.getDefault();
@@ -126,7 +132,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     
     public int getActionTypeSelectedIndex()
     {
-        return StandartEditableActionConstants.getActionTypeSelectedIndex(_actionBeingEdited);
+        return _actionTypeSelectedIndex;
     }
     
     // # Public operations
@@ -176,15 +182,60 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         }
         
         try {
-            macroStorage.updateMacroInStorage(macro);
-            Logger.messageEvent(this, "Successfully saved macro '" + macro.name + "'!");
+            if (!nameChanged)
+            {
+                macroStorage.updateMacroInStorage(macro);
+                Logger.messageEvent(this, "Successfully updated macro '" + macro.name + "'!");
+            }
+            else
+            {
+                macroStorage.saveMacroToStorage(macro);
+                Logger.messageEvent(this, "Successfully saved new macro '" + macro.name + "'! Old macro will be deleted.");
+            }
         } catch (Exception e) {
             Logger.error(this, "Failed to save macro: " + e.toString());
             _delegate.onErrorEncountered(e);
             return;
         }
         
+        // Delete old macro
+        if (nameChanged)
+        {
+            try {
+                macroStorage.deleteMacro(_originalMacro);
+            } catch (Exception e) {
+                
+            }
+        }
+        
         navigateBack();
+    }
+    
+    public void onStartCreatingMacroActionAt(int index)
+    {
+        if (index < 0 || index > _macroActions.size())
+        {
+            return;
+        }
+        
+        if (_isEditingOrCreatingAction)
+        {
+            Errors.throwIllegalStateError("Already creating/editing a macro.");
+            return;
+        }
+        
+        _isEditingOrCreatingAction = true;
+        _isCreatingAction = true;
+        
+        BaseAction action = _macroActions.get(index);
+        _actionBeingEditedIndex = index;
+        _actionTypeSelectedIndex = StandartEditableActionConstants.getActionTypeSelectedIndex(action);
+        
+        _actionBeingEdited = StandartEditableAction.create(action);
+        
+        Logger.messageEvent(this, "Start creating new macro action '" + action.toString() + "' at index " + String.valueOf(index) + "");
+        
+        _delegate.onEditMacroAction(_actionBeingEdited);
     }
     
     public void onStartEditMacroActionAt(int index)
@@ -194,62 +245,97 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
             return;
         }
         
+        if (_isEditingOrCreatingAction)
+        {
+            Errors.throwIllegalStateError("Already creating/editing a macro.");
+            return;
+        }
+        
+        _isEditingOrCreatingAction = true;
+        _isCreatingAction = false;
+        
+        BaseAction action = _macroActions.get(index);
         _actionBeingEditedIndex = index;
+        _actionTypeSelectedIndex = StandartEditableActionConstants.getActionTypeSelectedIndex(action);
         
-        _actionBeingEdited = _macroActions.get(_actionBeingEditedIndex);
+        _actionBeingEdited = StandartEditableAction.create(action);
         
-        _actionEditedValues = StandartEditableAction.create(_actionBeingEdited);
+        Logger.messageEvent(this, "Start editing macro action '" + action.toString() + "' at index " + String.valueOf(index) + "");
         
-        Logger.messageEvent(this, "Start editing macro action '" + _actionBeingEdited.toString() + "' at index " + String.valueOf(index) + "");
-        
-        _delegate.onEditMacroAction(_actionEditedValues);
+        _delegate.onCreateMacroAction(_actionBeingEdited);
     }
     
     public Exception canSuccessfullyEndEditMacroAction()
     {
-        if (_actionEditedValues == null)
+        if (!_isEditingOrCreatingAction)
         {
             return null;
         }
         
         try {
-            _actionEditedValues.buildAction();
+            _actionBeingEdited.buildAction();
             return null;
         } catch (Exception e) {
             return e;
         }
     }
     
-    public void onEndEditMacroAction()
+    public void onEndCreateOrEditMacroAction(boolean save)
     {
-        if (_actionEditedValues == null)
+        if (!_isEditingOrCreatingAction)
         {
             return;
         }
         
-        Logger.messageEvent(this, "Ending editing action, save it.");
+        boolean isCreatingAction = _isCreatingAction;
         
-        if (_recording)
-        {
-            endListeningForKeystrokes();
-        }
+        _isEditingOrCreatingAction = false;
+        _isCreatingAction = false;
         
-        BaseEditableAction a = _actionEditedValues;
+        BaseEditableAction a = _actionBeingEdited;
         int actionBeingEditedIndex = _actionBeingEditedIndex;
         
         _actionBeingEditedIndex = 0;
         _actionBeingEdited = null;
-        _actionEditedValues = null;
+        
+        if (_recording)
+        {
+            Logger.warning(this, "Trying to finish creating/editing a macro without ending the keystrokes listener first!");
+            endListeningForKeystrokes();
+        }
+        
+        if (!save)
+        {
+            Logger.messageEvent(this, "Cancel creating/editing action.");
+            return;
+        }
+        
+        if (isCreatingAction)
+        {
+            Logger.messageEvent(this, "Ending creating new action, insert it at " + String.valueOf(actionBeingEditedIndex));
+        }
+        else
+        {
+            Logger.messageEvent(this, "Ending editing action, save it.");
+        }
         
         updateMacroWithEditedAction(a, actionBeingEditedIndex);
         
         updateDelegateWithMacroInfo();
+        
+        _delegate.onCreateMacroAction(a);
     }
     
     public void onDeleteMacroActionAt(int index)
     {
         if (index < 0 || index >= _macroActions.size())
         {
+            return;
+        }
+        
+        if (_isEditingOrCreatingAction)
+        {
+            Errors.throwIllegalStateError("Cannot delete macro while creating/editing a macro.");
             return;
         }
         
@@ -261,6 +347,43 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _macroActionDescriptions.remove(index);
         
         updateDelegateWithMacroInfo();
+    }
+    
+    public BaseEditableAction changeEditMacroActionTypeForTypeIndex(int index)
+    {
+        if (!_isEditingOrCreatingAction)
+        {
+            Errors.throwIllegalStateError("Cannot change macro type without already creating/editing a macro.");
+            return null;
+        }
+        
+        long timestamp = _actionBeingEdited.getTimestamp();
+        
+        BaseEditableAction a;
+        a = StandartEditableActionTemplates.buildTemplateFromTypeIndex(index, timestamp);
+        
+        if (a == null)
+        {
+            Errors.throwInvalidArgument("Failed to change edit macro action, invalid type index " + index);
+            return null;
+        }
+        
+        Description description = a.getDescription();
+        
+        if (description != null)
+        {
+            Logger.messageEvent(this, "Change macro action type to " + description.getName());
+        }
+        else
+        {
+            Logger.messageEvent(this, "Change macro action type");
+        }
+        
+        _actionTypeSelectedIndex = index;
+        
+        _actionBeingEdited = a;
+        
+        return a;
     }
     
     public void startListeningForKeystrokes(Callback<Hotkey> onKeystrokeEnteredCallback)
@@ -309,14 +432,34 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         try {
             BaseAction action = a.buildAction();
             
+            long originalTime = _originalMacro.actions.get(actionBeingEditedIndex).getPerformTime();
+            long newTime = a.getTimestamp();
+            
             _macroActions.set(actionBeingEditedIndex, action);
             _macroActionDescriptions.set(actionBeingEditedIndex, action.getDescription());
             
-            Logger.message(this, _macroActionDescriptions.toString());
+            if (originalTime != newTime)
+            {
+                Logger.message(this, "Action's timestamp was edited, must fully sort the actions array by time");
+                sortActions();
+            }
         } 
         catch (Exception e)
         {
             
         }
+    }
+    
+    private void sortActions()
+    {
+        Comparator comparator = new Comparator<BaseAction>() {
+            @Override
+            public int compare(BaseAction a, BaseAction b) {
+                int result = (int)(a.getPerformTime() - b.getPerformTime());
+                return result;
+        }};
+        
+        _macroActions.sort(comparator);
+        _macroActionDescriptions.sort(comparator);
     }
 }

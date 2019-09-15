@@ -9,6 +9,8 @@ import automater.input.InputDescriptions;
 import java.util.ArrayList;
 import automater.input.InputMouseMotion;
 import automater.input.InputMouseMove;
+import automater.utilities.CollectionUtilities;
+import java.util.List;
 
 /**
  * A series of mouse movements.
@@ -38,19 +40,27 @@ public class RecorderUserInputMouseMotion extends RecorderUserInput implements I
         InputMouseMove firstMove = getFirstMove();
         InputMouseMove lastMove = getLastMove();
         
-        return InputDescriptions.getMouseMotionDescription(firstMove, lastMove, numberOfMovements()).getStandart();
+        return InputDescriptions.getMouseMotionDescription(getTimestamp(), firstMove, lastMove, numberOfMovements()).getStandart();
     }
     
-    // # Public
-    
-    public void addMovementPoint(InputMouseMove move)
-    {
-        _moves.add(move);
+    @Override
+    public String getVerbose() {
+        InputMouseMove firstMove = getFirstMove();
+        InputMouseMove lastMove = getLastMove();
+        
+        return InputDescriptions.getMouseMotionDescription(getTimestamp(), firstMove, lastMove, numberOfMovements()).getVerbose();
     }
-
+    
+    // # InputMouseMotion
+    
     @Override
     public int numberOfMovements() {
         return _moves.size();
+    }
+    
+    @Override
+    public List<InputMouseMove> getMoves() {
+        return CollectionUtilities.copyAsImmutable(_moves);
     }
 
     @Override
@@ -68,4 +78,10 @@ public class RecorderUserInputMouseMotion extends RecorderUserInput implements I
         return _moves.get(index);
     }
     
+    // # Public
+    
+    public void addMovementPoint(InputMouseMove move)
+    {
+        _moves.add(move);
+    }
 }

@@ -17,7 +17,6 @@ import automater.work.parser.ActionKeyTranslator;
 import java.awt.Robot;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
 import automater.input.InputKeyClick;
 import automater.input.InputMouseMotion;
 import automater.input.InputMouseMove;
@@ -486,6 +485,11 @@ class ActionMouseMovement extends Action implements InputMouseMotion {
     @Override
     public int numberOfMovements() {
         return movements.size();
+    }
+    
+    @Override
+    public List<InputMouseMove> getMoves() {
+        return CollectionUtilities.copyAsImmutable(movements);
     }
 
     @Override

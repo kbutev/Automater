@@ -19,12 +19,27 @@ import javax.swing.event.ListDataListener;
 public class StandartDescriptionsDataSource implements ListModel<String> {
     public final List<Description> data;
     
-    public StandartDescriptionsDataSource()
+    public static StandartDescriptionsDataSource createGeneric()
+    {
+        return new StandartDescriptionsDataSource();
+    }
+    
+    public static StandartDescriptionsDataSource createDataSourceForStandartText(List<Description> actions)
+    {
+        return new StandartDescriptionsDataSource(actions);
+    }
+    
+    public static StandartDescriptionsDataSource createDataSourceForVerboseText(List<Description> actions)
+    {
+        return new StandartDescriptionsDataSourceVerbose(actions);
+    }
+    
+    protected StandartDescriptionsDataSource()
     {
         this.data = new ArrayList();
     }
     
-    public StandartDescriptionsDataSource(List<Description> actions)
+    protected StandartDescriptionsDataSource(List<Description> actions)
     {
         this.data = CollectionUtilities.copyAsImmutable(actions);
     }
@@ -59,5 +74,17 @@ public class StandartDescriptionsDataSource implements ListModel<String> {
         }
         
         return -1;
+    }
+}
+
+class StandartDescriptionsDataSourceVerbose extends StandartDescriptionsDataSource {
+    StandartDescriptionsDataSourceVerbose(List<Description> actions)
+    {
+        super(actions);
+    }
+    
+    @Override
+    public String getElementAt(int index) {
+        return data.get(index).getVerbose();
     }
 }

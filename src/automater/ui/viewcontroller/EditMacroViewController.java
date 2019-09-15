@@ -18,6 +18,7 @@ import automater.utilities.Callback;
 import automater.utilities.Description;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
+import automater.work.model.BaseEditableAction;
 import java.awt.event.WindowEvent;
 import java.util.List;
 
@@ -149,7 +150,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     @Override
     public void onLoadedMacroFromStorage(String macroName, String macroDescription, List<Description> macroActions)
     {
-        _dataSource = new StandartDescriptionsDataSource(macroActions);
+        _dataSource = StandartDescriptionsDataSource.createDataSourceForVerboseText(macroActions);
         _form.setMacroInfo(macroName, macroDescription, _dataSource);
     }
 
@@ -184,9 +185,21 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     }
     
     @Override
+    public void onCreateMacroAction(automater.work.model.BaseEditableAction action)
+    {
+        startEditingMacroAction(action);
+    }
+    
+    @Override
     public void onEditMacroAction(automater.work.model.BaseEditableAction action)
     {
         startEditingMacroAction(action);
+    }
+    
+    @Override
+    public void onSaveMacroAction(automater.work.model.BaseEditableAction action)
+    {
+        
     }
 
     @Override
@@ -229,7 +242,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         _editActionDialog.onCancelButtonCallback = new SimpleCallback() {
             @Override
             public void perform() {
-                closeEditMacroActionDialog();
+                cancelEditMacroActionDialog();
             }
         };
         
@@ -237,6 +250,13 @@ public class EditMacroViewController implements BaseViewController, BasePresente
             @Override
             public void perform() {
                 tryToSaveAndCloseEditMacroActionDialog();
+            }
+        };
+        
+        _editActionDialog.onTypeChangedCallback = new Callback<Integer>() {
+            @Override
+            public void perform(Integer argument) {
+                changeEditMacroActionTypeForTypeIndex(argument);
             }
         };
         
@@ -270,7 +290,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     {
         // Selectable types
         StandartDescriptionsDataSource actionTypes;
-        actionTypes = new StandartDescriptionsDataSource(_presenter.getActionTypes());
+        actionTypes = StandartDescriptionsDataSource.createDataSourceForVerboseText(_presenter.getActionTypes());
         
         _editActionDialog.setTypesDropdownModel(actionTypes);
         
@@ -306,11 +326,41 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         if (exception == null)
         {
             closeEditMacroActionDialog();
-            _presenter.onEndEditMacroAction();
+            _presenter.onEndCreateOrEditMacroAction(true);
         }
         else
         {
             onErrorEncountered(exception);
+        }
+    }
+    
+    private void cancelEditMacroActionDialog()
+    {
+        closeEditMacroActionDialog();
+        
+        // Alert presenter
+        _presenter.onEndCreateOrEditMacroAction(false);
+    }
+    
+    private void changeEditMacroActionTypeForTypeIndex(int index)
+    {
+        if (_isHotkeyRecording)
+        {
+            return;
+        }
+        
+        if (_editActionDialog == null)
+        {
+            return;
+        }
+        
+        BaseEditableAction a;
+        a = _presenter.changeEditMacroActionTypeForTypeIndex(index);
+        
+        if (a != null)
+        {
+            _editActionDialog.selectDropdownType(index);
+            _editActionDialog.setEditableAction(a);
         }
     }
     
@@ -323,7 +373,6 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         
         _isHotkeyRecording = true;
         _editActionDialog.startHotkeyListening();
-        
         
         Callback onHotkeyEnteredCallback = new Callback<Hotkey>() {
             @Override

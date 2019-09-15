@@ -10,5 +10,5 @@ package automater.work.model;
  * @author Bytevi
  */
 public enum EditableActionType {
-    SingleString, DoubleString, Hotkey, SpecificValues
+    KeyboardKey, MouseKey, MouseMove, MouseMotion
 }

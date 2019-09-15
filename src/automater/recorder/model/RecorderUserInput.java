@@ -160,7 +160,12 @@ class RecorderUserInputKeyboardPress extends RecorderUserInput implements InputK
     
     @Override
     public String getStandart() {
-        return InputDescriptions.getKeyboardInputDescription(true, key).getStandart();
+        return InputDescriptions.getKeyboardInputDescription(getTimestamp(), true, key).getStandart();
+    }
+    
+    @Override
+    public String getVerbose() {
+        return InputDescriptions.getKeyboardInputDescription(getTimestamp(), true, key).getVerbose();
     }
     
     // # UserInputKeyClick
@@ -190,7 +195,12 @@ class RecorderUserInputKeyboardRelease extends RecorderUserInput implements Inpu
     
     @Override
     public String getStandart() {
-        return InputDescriptions.getKeyboardInputDescription(false, key).getStandart();
+        return InputDescriptions.getKeyboardInputDescription(getTimestamp(), false, key).getStandart();
+    }
+    
+    @Override
+    public String getVerbose() {
+        return InputDescriptions.getKeyboardInputDescription(getTimestamp(), false, key).getVerbose();
     }
 
     // # UserInputKeyClick
@@ -250,7 +260,12 @@ class RecorderUserInputMousePress extends RecorderUserInput implements InputKeyC
     
     @Override
     public String getStandart() {
-        return InputDescriptions.getMouseInputDescription(true, key).getStandart();
+        return InputDescriptions.getMouseInputDescription(getTimestamp(), true, key).getStandart();
+    }
+    
+    @Override
+    public String getVerbose() {
+        return InputDescriptions.getMouseInputDescription(getTimestamp(), true, key).getVerbose();
     }
     
     // # UserInputKeyClick
@@ -310,7 +325,12 @@ class RecorderUserInputMouseRelease extends RecorderUserInput implements InputKe
     
     @Override
     public String getStandart() {
-        return InputDescriptions.getMouseInputDescription(false, key).getStandart();
+        return InputDescriptions.getMouseInputDescription(getTimestamp(), false, key).getStandart();
+    }
+    
+    @Override
+    public String getVerbose() {
+        return InputDescriptions.getMouseInputDescription(getTimestamp(), false, key).getVerbose();
     }
     
     // # UserInputKeyClick
@@ -342,7 +362,12 @@ class RecorderUserInputMouseMove extends RecorderUserInput implements InputMouse
     
     @Override
     public String getStandart() {
-        return InputDescriptions.getMouseMoveDescription(x, y).getStandart();
+        return InputDescriptions.getMouseMoveDescription(getTimestamp(), x, y).getStandart();
+    }
+    
+    @Override
+    public String getVerbose() {
+        return InputDescriptions.getMouseMoveDescription(getTimestamp(), x, y).getVerbose();
     }
 
     // # UserInputMouseMotion
@@ -371,7 +396,12 @@ class RecorderUserInputMouseWheel extends RecorderUserInput implements InputMous
     
     @Override
     public String getStandart() {
-        return InputDescriptions.getMouseWheelDescription(0).getStandart();
+        return InputDescriptions.getMouseWheelDescription(getTimestamp(), 0).getStandart();
+    }
+    
+    @Override
+    public String getVerbose() {
+        return InputDescriptions.getMouseWheelDescription(getTimestamp(), 0).getVerbose();
     }
     
     // # UserInputMouseWheel
@@ -393,6 +423,11 @@ class RecorderUserInputWindow extends RecorderUserInput implements InputSpecialA
     
     @Override
     public String getStandart() {
+        return "InputWindow";
+    }
+    
+    @Override
+    public String getVerbose() {
         return "InputWindow";
     }
     

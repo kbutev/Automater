@@ -6,13 +6,18 @@
 package automater.ui.view;
 
 import automater.TextValue;
-import static automater.TextValue.EditAction_Time;
+import automater.utilities.Callback;
 import automater.utilities.SimpleCallback;
+import automater.utilities.StringFormatting;
 import automater.work.model.BaseEditableAction;
 import automater.work.model.EditableActionType;
+import java.awt.BorderLayout;
+import java.util.List;
 import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataListener;
 
 /**
@@ -24,7 +29,10 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     public SimpleCallback onCancelButtonCallback = SimpleCallback.createDoNothing();
     public SimpleCallback onSaveButtonCallback = SimpleCallback.createDoNothing();
 
+    public Callback<Integer> onTypeChangedCallback = Callback.createDoNothing();
+    
     public SimpleCallback onHotkeyButtonCallback = SimpleCallback.createDoNothing();
+    public SimpleCallback onPressCheckCallback = SimpleCallback.createDoNothing();
     
     /**
      * Creates new form EditMacroActionDialog
@@ -60,6 +68,11 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         });
 
         typesDropdown.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        typesDropdown.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                typesDropdownActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
         panel.setLayout(panelLayout);
@@ -103,17 +116,17 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
                     .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(saveButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(cancelButton))
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addComponent(typesDropdown, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                     .addGap(5, 5, 5)
                                     .addComponent(timeLabel)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(timeField, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(saveButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(cancelButton)))
+                                    .addComponent(timeField, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGap(0, 248, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -151,6 +164,15 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     private void formWindowDeactivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowDeactivated
         onCancelButtonCallback.perform();
     }//GEN-LAST:event_formWindowDeactivated
+
+    private void typesDropdownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_typesDropdownActionPerformed
+        int index = typesDropdown.getSelectedIndex();
+        
+        if (_selectedTypeIndex != index)
+        {
+            onTypeChangedCallback.perform(index);
+        }
+    }//GEN-LAST:event_typesDropdownActionPerformed
 
     /**
      * @param args the command line arguments
@@ -220,6 +242,8 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
             return;
         }
         
+        _selectedTypeIndex = index;
+        
         typesDropdown.setSelectedIndex(index);
     }
     
@@ -232,16 +256,20 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     
     public void startHotkeyListening()
     {
+        updateSaveButtonState(false);
+        
         typesDropdown.setEnabled(false);
-        saveButton.setEnabled(false);
+        timeField.setEnabled(false);
         
         statusLabel.setText(TextValue.getText(TextValue.EditAction_StatusListeningToHotkey));
     }
     
     public void endHotkeyListeningWithoutAnyKeyEntered()
     {
+        updateSaveButtonState(true);
+        
         typesDropdown.setEnabled(true);
-        saveButton.setEnabled(true);
+        timeField.setEnabled(true);
     }
     
     public void endHotkeyListening(String hotkey)
@@ -253,7 +281,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
             _hotkeyButton.setText(hotkey);
         }
         
-        statusLabel.setText("");
+        updateStateDescription();
         
         // Update value
         setHotkeyValue(hotkey);
@@ -275,63 +303,175 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         
         // Time
         timeField.setText(String.valueOf(_editableAction.getTimestamp()));
-        timeField.setEditable(false);
+        timeField.setEditable(true);
         
-        // Hotkey
-        if (_editableAction.getType() == EditableActionType.Hotkey)
-        {
-            setupHotkeyPanel();
-        }
-    }
-    
-    private void setupSingleValuePanel()
-    {
-        if (_editableAction == null)
-        {
-            return;
-        }
-    }
-    
-    private void setupDoubleValuePanel()
-    {
-        if (_editableAction == null)
-        {
-            return;
-        }
-    }
-    
-    private void setupHotkeyPanel()
-    {
-        if (_editableAction == null)
-        {
-            return;
-        }
-        
-        final EditMacroActionDialog self = this;
-        
-        _hotkeyButton = new JButton();
-        _hotkeyButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                onHotkeyButtonCallback.perform();
+        DocumentListener listener = new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateTimestampValue();
+                onAnyValueChanged();
+                updateSaveButtonState();
             }
-        });
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateTimestampValue();
+                onAnyValueChanged();
+                updateSaveButtonState();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateTimestampValue();
+                onAnyValueChanged();
+                updateSaveButtonState();
+            }
+        };
         
-        _hotkeyButton.setText(_editableAction.getFirstValue());
-        _hotkeyButton.setSize(96, 24);
+        timeField.getDocument().addDocumentListener(listener);
         
-        _hotkeyCheck = new JCheckBox();
-        _hotkeyCheck.setSelected(Boolean.valueOf(_editableAction.getSecondValue()));
-        _hotkeyCheck.setSize(64, 24);
+        // Set state description
+        updateStateDescription();
         
-        panel.add(_hotkeyButton);
+        // Setup current panel
+        clearCurrentPanel();
+        
+        if (_editableAction.getType() == EditableActionType.KeyboardKey)
+        {
+            setupPickKeyboardKeyPanel();
+        }
+        
+        if (_editableAction.getType() == EditableActionType.MouseKey)
+        {
+            setupPickMouseKeyPanel();
+        }
+        
+        if (_editableAction.getType() == EditableActionType.MouseMove)
+        {
+            setupMouseMovePanel();
+        }
+        
+        if (_editableAction.getType() == EditableActionType.MouseMotion)
+        {
+            setupMouseMovePanel();
+        }
+        
+        // Save button
+        updateSaveButtonState();
     }
     
-    private void setupSpecificValuesPanel()
+    private void clearCurrentPanel()
+    {
+        panel.removeAll();
+    }
+    
+    private void setupPickKeyboardKeyPanel()
     {
         if (_editableAction == null)
         {
             return;
         }
+        
+        EditMacroActionHotkeyPanel view = new EditMacroActionHotkeyPanel();
+        _hotkeyButton = view.hotkeyButton;
+        
+        view.onHotkeyButtonCallback = onHotkeyButtonCallback;
+        
+        view.onPressCheckCallback = new Callback<Boolean>() {
+            @Override
+            public void perform(Boolean argument) {
+                _editableAction.setSecondValue(String.valueOf(view.pressCheck.isSelected()));
+                onAnyValueChanged();
+                onPressCheckCallback.perform();
+            }
+        };
+        
+        panel.add(view);
+        panel.setLayout(new BorderLayout());
+        panel.add(view, BorderLayout.NORTH);
+        
+        // Setup values and their labels
+        view.keyLabel.setText(_editableAction.getFirstValueName());
+        view.pressCheck.setText(_editableAction.getFirstValue());
+        
+        view.pressCheck.setSelected(Boolean.valueOf(_editableAction.getSecondValue()));
+        view.pressCheck.setText(_editableAction.getSecondValueName());
+    }
+    
+    private void setupPickMouseKeyPanel()
+    {
+        if (_editableAction == null)
+        {
+            return;
+        }
+        
+        List<String> values = _editableAction.getPossibleSpecificValues();
+        
+        EditMacroActionMouseKeyPanel view = new EditMacroActionMouseKeyPanel();
+        
+        view.onSelectedValueCallback = new Callback<String>() {
+            @Override
+            public void perform(String argument) {
+                _editableAction.setFirstValue(argument);
+                onAnyValueChanged();
+            }
+        };
+        
+        view.onPressCheckCallback = new Callback<Boolean>() {
+            @Override
+            public void perform(Boolean argument) {
+                _editableAction.setSecondValue(String.valueOf(view.pressCheck.isSelected()));
+                onAnyValueChanged();
+                onPressCheckCallback.perform();
+            }
+        };
+        
+        panel.add(view);
+        panel.setLayout(new BorderLayout());
+        panel.add(view, BorderLayout.NORTH);
+        
+        // Setup values and their labels
+        view.setSpecificValues(values);
+        view.selectSpecificValue(_editableAction.getFirstValue());
+        
+        view.keyLabel.setText(_editableAction.getFirstValueName());
+        
+        view.pressCheck.setText(_editableAction.getSecondValueName());
+        view.pressCheck.setSelected(Boolean.valueOf(_editableAction.getSecondValue()));
+    }
+    
+    private void setupMouseMovePanel()
+    {
+        if (_editableAction == null)
+        {
+            return;
+        }
+        
+        List<String> values = _editableAction.getPossibleSpecificValues();
+        
+        EditMacroActionMouseMovePanel view = new EditMacroActionMouseMovePanel();
+        view.onXValueChangedCallback = new Callback<String>() {
+            @Override
+            public void perform(String argument) {
+                _editableAction.setFirstValue(argument);
+                onAnyValueChanged();
+            }
+        };
+        view.onYValueChangedCallback = new Callback<String>() {
+            @Override
+            public void perform(String argument) {
+                _editableAction.setSecondValue(argument);
+                onAnyValueChanged();
+            }
+        };
+        
+        panel.add(view);
+        panel.setLayout(new BorderLayout());
+        panel.add(view, BorderLayout.NORTH);
+        
+        // Setup values and their labels
+        view.xLabel.setText(_editableAction.getFirstValueName());
+        view.yLabel.setText(_editableAction.getSecondValueName());
     }
     
     private void setHotkeyValue(String value)
@@ -344,12 +484,88 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         _editableAction.setFirstValue(value);
     }
     
+    private void onAnyValueChanged()
+    {
+        updateStateDescription();
+    }
+    
+    private boolean isTimestampValid()
+    {
+        String timetamp = timeField.getText();
+        
+        if (!StringFormatting.isStringANonNegativeInt(timetamp))
+        {
+            return false;
+        }
+        
+        if (timetamp.length() > 7)
+        {
+            return false;
+        }
+        
+        return true;
+    }
+    
+    private void updateSaveButtonState()
+    {
+        updateSaveButtonState(_saveButtonShouldBeEnabled);
+    }
+    
+    private void updateSaveButtonState(boolean enabled)
+    {
+        _saveButtonShouldBeEnabled = enabled;
+        
+        if (!isTimestampValid())
+        {
+            saveButton.setEnabled(false);
+            return;
+        }
+        
+        saveButton.setEnabled(_saveButtonShouldBeEnabled);
+    }
+    
+    private void updateTimestampValue()
+    {
+        if (_editableAction == null)
+        {
+            return;
+        }
+        
+        if (!isTimestampValid())
+        {
+            return;
+        }
+        
+        // Update value
+        long timestamp = Long.parseLong(timeField.getText());
+        
+        _editableAction.setTimestamp(timestamp);
+    }
+    
+    private void updateStateDescription()
+    {
+        if (_editableAction == null)
+        {
+            statusLabel.setText("");
+            return;
+        }
+        
+        if (!isTimestampValid())
+        {
+            statusLabel.setText(TextValue.getText(TextValue.EditAction_StatusError, "Invalid time!"));
+            return;
+        }
+        
+        statusLabel.setText(_editableAction.getStateDescription());
+    }
+    
+    private int _selectedTypeIndex = 0;
+    private boolean _saveButtonShouldBeEnabled = true;
     private EditMacroActionTypesModel _actionTypesModel;
     private BaseEditableAction _editableAction;
     
     private JButton _hotkeyButton;
-    private JCheckBox _hotkeyCheck;
-
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JPanel panel;

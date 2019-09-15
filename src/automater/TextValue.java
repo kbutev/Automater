@@ -56,11 +56,15 @@ public enum TextValue {
     // Edit Action dialog
     EditAction_DialogTitle, EditAction_CancelButtonTitle, EditAction_SaveButtonTitle,
     EditAction_StatusDefault, EditAction_StatusListeningToHotkey, EditAction_StatusError,
-    EditAction_Time,
+    EditAction_Time, EditAction_Key, EditAction_Press,
+    EditAction_X, EditAction_Y, EditAction_FinalX, EditAction_FinalY,
     
     // Edit Action types
     EditAction_TypeKeyboardClick, EditAction_TypeMouseClick, EditAction_TypeMouseMove,
-    EditAction_TypeLeftMouseClick, EditAction_TypeRightMouseClick, EditAction_TypeMiddleMouseClick,
+    
+    // Edit Action descriptions
+    EditAction_DescriptionKeyboardClick, EditAction_DescriptionMouseClick, EditAction_DescriptionMouseMove,
+    EditAction_DescriptionMouseMotion,
     
     // Macro parameters
     MacroParameters_Default,
@@ -214,14 +218,23 @@ public enum TextValue {
         put(EditAction_StatusListeningToHotkey, "Enter hotkey...");
         put(EditAction_StatusError, "Error: %@");
         put(EditAction_Time, "Time");
+        put(EditAction_Key, "Key");
+        put(EditAction_Press, "Press");
+        put(EditAction_X, "X");
+        put(EditAction_Y, "Y");
+        put(EditAction_FinalX, "Final X");
+        put(EditAction_FinalY, "Final Y");
         
         // Edit Action types
         put(EditAction_TypeKeyboardClick, "Keyboard click");
         put(EditAction_TypeMouseClick, "Mouse click");
         put(EditAction_TypeMouseMove, "Mouse move");
-        put(EditAction_TypeLeftMouseClick, "Left Click");
-        put(EditAction_TypeRightMouseClick, "Right Click");
-        put(EditAction_TypeMiddleMouseClick, "Middle Click");
+        
+        // Edit Action descriptions
+        put(EditAction_DescriptionKeyboardClick, "Simulates keyboard key press or release");
+        put(EditAction_DescriptionMouseClick, "Simulates mouse key press or release");
+        put(EditAction_DescriptionMouseMove, "Simulates one mouse movement, choose x and y");
+        put(EditAction_DescriptionMouseMotion, "Simulates %@x mouse movements, choose the final x and y");
         
         // Macro parameters
         put(MacroParameters_Default, "Play once");

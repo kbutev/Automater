@@ -144,7 +144,7 @@ public class OpenMacroViewController implements BaseViewController, BasePresente
     @Override
     public void onLoadedMacrosFromStorage(List<Description> macros)
     {
-        _dataSource = new StandartDescriptionsDataSource(macros);
+        _dataSource = StandartDescriptionsDataSource.createDataSourceForStandartText(macros);
         _form.setListDataSource(_dataSource);
     }
     
@@ -185,7 +185,19 @@ public class OpenMacroViewController implements BaseViewController, BasePresente
     }
     
     @Override
+    public void onCreateMacroAction(automater.work.model.BaseEditableAction action)
+    {
+        
+    }
+    
+    @Override
     public void onEditMacroAction(automater.work.model.BaseEditableAction action)
+    {
+        
+    }
+    
+    @Override
+    public void onSaveMacroAction(automater.work.model.BaseEditableAction action)
     {
         
     }

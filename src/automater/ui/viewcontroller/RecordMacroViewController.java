@@ -118,7 +118,7 @@ public class RecordMacroViewController implements BaseViewController, BasePresen
     @Override
     public void onActionsRecordedChange(List<Description> actions)
     {
-        _dataSource = new StandartDescriptionsDataSource(actions);
+        _dataSource = StandartDescriptionsDataSource.createDataSourceForStandartText(actions);
         _form.setListDataSource(_dataSource);
     }
     
@@ -187,7 +187,19 @@ public class RecordMacroViewController implements BaseViewController, BasePresen
     }
     
     @Override
+    public void onCreateMacroAction(automater.work.model.BaseEditableAction action)
+    {
+        
+    }
+    
+    @Override
     public void onEditMacroAction(automater.work.model.BaseEditableAction action)
+    {
+        
+    }
+    
+    @Override
+    public void onSaveMacroAction(automater.work.model.BaseEditableAction action)
     {
         
     }

@@ -5,14 +5,18 @@
  */
 package automater.work.model;
 
+import automater.TextValue;
 import automater.input.InputDescriptions;
 import automater.input.InputKey;
 import automater.input.InputKeyClick;
+import automater.input.InputKeyValue;
 import automater.input.InputMouse;
+import automater.input.InputMouseMotion;
 import automater.input.InputMouseMove;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.Description;
 import automater.utilities.Errors;
+import automater.utilities.StringFormatting;
 import automater.work.Action;
 import automater.work.BaseAction;
 import java.util.ArrayList;
@@ -47,10 +51,10 @@ public class StandartEditableAction implements BaseEditableAction {
         if (isInputKeyClick && isInputKeyboardClick)
         {
             InputKeyClick keyboardClick = (InputKeyClick)action;
-            a = new StandartEditableActionKeyboard(type, timestamp);
-            a.firstName = StandartEditableActionConstants.KEYBOARD_CLICK_FIRST_NAME;
+            a = new StandartEditableActionKeyboardClick(type, timestamp);
+            a.firstName = TextValue.getText(TextValue.EditAction_Key);
             a.firstValue = keyboardClick.getKeyValue().toString();
-            a.secondName = StandartEditableActionConstants.KEYBOARD_CLICK_SECOND_NAME;
+            a.secondName = TextValue.getText(TextValue.EditAction_Press);
             a.secondValue = String.valueOf(keyboardClick.isPress());
         }
         
@@ -58,10 +62,11 @@ public class StandartEditableAction implements BaseEditableAction {
         if (isInputKeyClick && !isInputKeyboardClick)
         {
             InputKeyClick mouseClick = (InputKeyClick)action;
-            a = new StandartEditableActionMouse(type, timestamp);
-            a.firstName = StandartEditableActionConstants.MOUSE_CLICK_FIRST_NAME;
-            a.firstValue = mouseClick.getKeyValue().toString();
-            a.secondName = StandartEditableActionConstants.MOUSE_CLICK_SECOND_NAME;
+            InputKeyValue keyValue = mouseClick.getKeyValue().value;
+            a = new StandartEditableActionMouseClick(type, timestamp);
+            a.firstName = TextValue.getText(TextValue.EditAction_Key);
+            a.firstValue = StandartEditableActionConstants.getMouseClickSpecificValueForKeyValue(keyValue);
+            a.secondName = TextValue.getText(TextValue.EditAction_Press);
             a.secondValue = String.valueOf(mouseClick.isPress());
             a.specificValues = StandartEditableActionConstants.getMouseClickSpecificValues();
         }
@@ -69,9 +74,28 @@ public class StandartEditableAction implements BaseEditableAction {
         // MouseMove
         if (action instanceof InputMouseMove)
         {
-            a = new StandartEditableAction(type, timestamp);
-            a.firstName = StandartEditableActionConstants.MOUSE_MOVE_FIRST_NAME;
-            a.secondName = StandartEditableActionConstants.MOUSE_MOVE_SECOND_NAME;
+            InputMouseMove move = (InputMouseMove)action;
+            
+            a = new StandartEditableActionMouseMove(type, timestamp);
+            a.firstName = TextValue.getText(TextValue.EditAction_X);
+            a.firstValue = String.valueOf(move.getX());
+            a.secondName = TextValue.getText(TextValue.EditAction_Y);
+            a.secondValue = String.valueOf(move.getY());
+        }
+        
+        // MouseMotion
+        if (action instanceof InputMouseMotion)
+        {
+            InputMouseMotion inputMotion = (InputMouseMotion)action;
+            StandartEditableActionMouseMotion motion;
+            motion = new StandartEditableActionMouseMotion(type, timestamp, inputMotion.getMoves());
+            a = motion;
+            
+            InputMouseMove lastMove = inputMotion.getLastMove();
+            a.firstName = TextValue.getText(TextValue.EditAction_FinalX);
+            a.firstValue = String.valueOf(lastMove.getX());
+            a.secondName = TextValue.getText(TextValue.EditAction_FinalY);
+            a.secondValue = String.valueOf(lastMove.getY());
         }
         
         if (a == null)
@@ -115,7 +139,12 @@ public class StandartEditableAction implements BaseEditableAction {
     
     @Override
     public Description getDescription() {
-        return null;
+        return Description.createFromString("unknown");
+    }
+    
+    @Override
+    public String getStateDescription() {
+        return "unknown";
     }
     
     @Override
@@ -154,8 +183,8 @@ public class StandartEditableAction implements BaseEditableAction {
     }
 }
 
-class StandartEditableActionKeyboard extends StandartEditableAction {
-    public StandartEditableActionKeyboard(EditableActionType type, long timestamp)
+class StandartEditableActionKeyboardClick extends StandartEditableAction {
+    public StandartEditableActionKeyboardClick(EditableActionType type, long timestamp)
     {
         super(type, timestamp);
     }
@@ -190,18 +219,106 @@ class StandartEditableActionKeyboard extends StandartEditableAction {
         InputKey inputKey = new InputKey(firstValue);
         boolean isPress = Boolean.valueOf(secondValue);
         
-        return InputDescriptions.getKeyboardInputDescription(isPress, inputKey);
+        Description d = InputDescriptions.getKeyboardInputDescription(getTimestamp(), isPress, inputKey);
+        
+        return d;
+    }
+    
+   @Override
+    public String getStateDescription() {
+        try {
+            buildAction();
+        } catch (Exception e) {
+            return TextValue.getText(TextValue.EditAction_StatusError, e.getMessage());
+        }
+        
+        return TextValue.getText(TextValue.EditAction_DescriptionKeyboardClick);
     }
 }
 
-class StandartEditableActionMouse extends StandartEditableAction {
-    public StandartEditableActionMouse(EditableActionType type, long timestamp)
+class StandartEditableActionMouseClick extends StandartEditableAction {
+    public StandartEditableActionMouseClick(EditableActionType type, long timestamp)
     {
         super(type, timestamp);
     }
     
     @Override
     public BaseAction buildAction() throws Exception {
+        InputKey inputKey = getMouseKey();
+        
+        if (inputKey == null)
+        {
+            return null;
+        }
+        
+        boolean isPress = Boolean.valueOf(secondValue);
+        
+        InputKeyClick keyClick = new InputKeyClick() {
+            @Override
+            public InputKey getKeyValue() {
+                return inputKey;
+            }
+
+            @Override
+            public boolean isPress() {
+                return isPress;
+            }
+
+            @Override
+            public long getTimestamp() {
+                return timestamp;
+            }
+        };
+        
+        return Action.createKeyClick(timestamp, keyClick, getDescription());
+    }
+    
+    @Override
+    public Description getDescription() {
+        InputKey inputKey = getMouseKey();
+        
+        if (inputKey == null)
+        {
+            return super.getDescription();
+        }
+        
+        boolean isPress = Boolean.valueOf(secondValue);
+        
+        Description d = InputDescriptions.getMouseInputDescription(getTimestamp(), isPress, inputKey);
+        
+        return d;
+    }
+    
+    @Override
+    public String getStateDescription() {
+        try {
+            buildAction();
+        } catch (Exception e) {
+            return TextValue.getText(TextValue.EditAction_StatusError, e.getMessage());
+        }
+        
+        return TextValue.getText(TextValue.EditAction_DescriptionMouseClick);
+    }
+    
+    public InputKey getMouseKey()
+    {
+        return StandartEditableActionConstants.getMouseKeyForTextValue(firstValue);
+    }
+}
+
+class StandartEditableActionMouseMove extends StandartEditableAction {
+    public StandartEditableActionMouseMove(EditableActionType type, long timestamp)
+    {
+        super(type, timestamp);
+    }
+    
+    @Override
+    public BaseAction buildAction() throws Exception {
+        if (!StringFormatting.isStringAnInt(firstValue) || !StringFormatting.isStringAnInt(secondValue))
+        {
+            Errors.throwInvalidArgument("Enter non-negative x,y values");
+        }
+        
         int x = Integer.parseInt(firstValue);
         int y = Integer.parseInt(secondValue);
         
@@ -210,14 +327,76 @@ class StandartEditableActionMouse extends StandartEditableAction {
             Errors.throwInvalidArgument("Enter non-negative x,y values");
         }
         
-        return null;
+        return Action.createMouseMovement(timestamp, x, y, getDescription());
     }
     
     @Override
     public Description getDescription() {
-        InputKey inputKey = new InputKey(firstValue);
-        boolean isPress = Boolean.valueOf(secondValue);
+        int x = Integer.parseInt(firstValue);
+        int y = Integer.parseInt(secondValue);
         
-        return InputDescriptions.getKeyboardInputDescription(isPress, inputKey);
+        Description d = InputDescriptions.getMouseMoveDescription(timestamp, x, y);
+        
+        return d;
+    }
+    
+    @Override
+    public String getStateDescription() {
+        try {
+            buildAction();
+        } catch (Exception e) {
+            return TextValue.getText(TextValue.EditAction_StatusError, e.getMessage());
+        }
+        
+        return TextValue.getText(TextValue.EditAction_DescriptionMouseMove);
+    }
+}
+
+class StandartEditableActionMouseMotion extends StandartEditableActionMouseMove {
+    List<InputMouseMove> moves;
+    
+    public StandartEditableActionMouseMotion(EditableActionType type, long timestamp, List<InputMouseMove> moves)
+    {
+        super(type, timestamp);
+        this.moves = moves;
+    }
+    
+    @Override
+    public BaseAction buildAction() throws Exception {
+        if (!StringFormatting.isStringAnInt(firstValue) || !StringFormatting.isStringAnInt(secondValue))
+        {
+            Errors.throwInvalidArgument("Enter non-negative x,y values");
+        }
+        
+        int x = Integer.parseInt(firstValue);
+        int y = Integer.parseInt(secondValue);
+        
+        if (x < 0 || y < 0)
+        {
+            Errors.throwInvalidArgument("Enter non-negative x,y values");
+        }
+        
+        return Action.createMouseMovement(timestamp, moves, getDescription());
+    }
+    
+    @Override
+    public Description getDescription() {
+        InputMouseMove first = moves.get(0);
+        InputMouseMove last = moves.get(moves.size()-1);
+        
+        Description d = InputDescriptions.getMouseMotionDescription(timestamp, first, last, moves.size());
+        
+        return d;
+    }
+    
+    @Override
+    public String getStateDescription() {
+        try {
+            buildAction();
+        } catch (Exception e) {
+            return TextValue.getText(TextValue.EditAction_StatusError, e.getMessage());
+        }
+        
+        return TextValue.getText(TextValue.EditAction_DescriptionMouseMotion, String.valueOf(moves.size()));
     }
 }

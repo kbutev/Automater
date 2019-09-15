@@ -141,7 +141,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     @Override
     public void onLoadedMacroFromStorage(String macroName, String macroDescription, List<Description> macroActions)
     {
-        _dataSource = new StandartDescriptionsDataSource(macroActions);
+        _dataSource = StandartDescriptionsDataSource.createDataSourceForStandartText(macroActions);
         _form.setMacroInfo(macroName, macroDescription, _dataSource);
     }
 
@@ -180,7 +180,19 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     }
     
     @Override
+    public void onCreateMacroAction(automater.work.model.BaseEditableAction action)
+    {
+        
+    }
+    
+    @Override
     public void onEditMacroAction(automater.work.model.BaseEditableAction action)
+    {
+        
+    }
+    
+    @Override
+    public void onSaveMacroAction(automater.work.model.BaseEditableAction action)
     {
         
     }

@@ -24,6 +24,7 @@ public interface BaseEditableAction {
     public void setTimestamp(long timestamp);
     
     public Description getDescription();
+    public String getStateDescription();
     
     public String getFirstValueName();
     public String getFirstValue();

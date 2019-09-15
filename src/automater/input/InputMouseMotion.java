@@ -5,6 +5,8 @@
  */
 package automater.input;
 
+import java.util.List;
+
 /**
  *
  * @author Bytevi
@@ -12,6 +14,7 @@ package automater.input;
 public interface InputMouseMotion extends InputMouse {
     public int numberOfMovements();
     
+    public List<InputMouseMove> getMoves();
     public InputMouseMove getFirstMove();
     public InputMouseMove getLastMove();
     public InputMouseMove getMoveAt(int index);

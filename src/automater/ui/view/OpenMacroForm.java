@@ -252,7 +252,7 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
     @Override
     public void onViewStart()
     {
-        macrosList.setModel(new StandartDescriptionsDataSource());
+        macrosList.setModel(StandartDescriptionsDataSource.createGeneric());
     }
     
     @Override

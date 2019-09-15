@@ -6,9 +6,12 @@
 package automater.work.model;
 
 import automater.TextValue;
+import automater.input.InputKey;
 import automater.input.InputKeyClick;
+import automater.input.InputKeyValue;
 import automater.input.InputMouse;
 import automater.input.InputMouseMotion;
+import automater.input.InputMouseMove;
 import automater.utilities.Description;
 import automater.work.BaseAction;
 import java.util.ArrayList;
@@ -20,12 +23,7 @@ import java.util.List;
  * @author Bytevi
  */
 public class StandartEditableActionConstants {
-    public static final String KEYBOARD_CLICK_FIRST_NAME = "Key";
-    public static final String KEYBOARD_CLICK_SECOND_NAME = "Press";
-    public static final String MOUSE_CLICK_FIRST_NAME = "Mouse Key";
-    public static final String MOUSE_CLICK_SECOND_NAME = "Press";
-    public static final String MOUSE_MOVE_FIRST_NAME = "x";
-    public static final String MOUSE_MOVE_SECOND_NAME = "y";
+    public static String MOUSE_KEY_REPLACEMENT_STRING = "MOUSE_";
     
     public static List<Description> getActionTypes()
     {
@@ -58,21 +56,26 @@ public class StandartEditableActionConstants {
     
     public static EditableActionType getTypeFromAction(BaseAction action)
     {
-        EditableActionType type = EditableActionType.SingleString;
+        EditableActionType type = EditableActionType.MouseKey;
         
         if (action instanceof InputKeyClick)
         {
             if (action instanceof InputMouse)
             {
-                return EditableActionType.SpecificValues;
+                return EditableActionType.MouseKey;
             }
             
-            return EditableActionType.Hotkey;
+            return EditableActionType.KeyboardKey;
+        }
+        
+        if (action instanceof InputMouseMove)
+        {
+            type = EditableActionType.MouseMove;
         }
         
         if (action instanceof InputMouseMotion)
         {
-            type = EditableActionType.DoubleString;
+            type = EditableActionType.MouseMotion;
         }
         
         return type;
@@ -81,9 +84,36 @@ public class StandartEditableActionConstants {
     public static List<String> getMouseClickSpecificValues()
     {
         ArrayList<String> values = new ArrayList<>();
-        values.add(TextValue.getText(TextValue.EditAction_TypeLeftMouseClick));
-        values.add(TextValue.getText(TextValue.EditAction_TypeRightMouseClick));
-        values.add(TextValue.getText(TextValue.EditAction_TypeMiddleMouseClick));
+        
+        values.add(getMouseClickSpecificValueForKeyValue(InputKeyValue._MOUSE_LEFT_CLICK));
+        values.add(getMouseClickSpecificValueForKeyValue(InputKeyValue._MOUSE_RIGHT_CLICK));
+        values.add(getMouseClickSpecificValueForKeyValue(InputKeyValue._MOUSE_MIDDLE_CLICK));
+        
         return values;
+    }
+    
+    public static String getMouseClickSpecificValueForKeyValue(InputKeyValue value)
+    {
+        String str;
+        String prefix = MOUSE_KEY_REPLACEMENT_STRING;
+        str = value.toString();
+        str = str.replaceFirst(prefix, "");
+        
+        return str;
+    }
+    
+    public static InputKey getMouseKeyForTextValue(String string)
+    {
+        string = MOUSE_KEY_REPLACEMENT_STRING + string;
+        
+        InputKeyValue key;
+        
+        try {
+            key = InputKeyValue.fromString(string);
+        } catch (Exception e) {
+            return null;
+        }
+        
+        return new InputKey(key);
     }
 }
