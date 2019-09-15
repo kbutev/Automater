@@ -20,7 +20,7 @@ import java.util.List;
 public class RecorderUserInputMouseMotion extends RecorderUserInput implements InputMouseMotion {
     private final ArrayList<InputMouseMove> _moves;
     
-    public static RecorderUserInputMouseMotion createMouseMovement(InputMouseMove firstMove)
+    public static RecorderUserInputMouseMotion create(InputMouseMove firstMove)
     {
         return new RecorderUserInputMouseMotion(firstMove);
     }

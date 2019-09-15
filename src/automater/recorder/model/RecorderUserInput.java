@@ -13,6 +13,7 @@ import automater.utilities.Logger;
 import java.io.Serializable;
 import automater.input.Input;
 import automater.input.InputDescriptions;
+import automater.input.InputDoNothing;
 import automater.input.InputKeyClick;
 import automater.input.InputMouse;
 import automater.input.InputMouseMove;
@@ -28,6 +29,11 @@ public class RecorderUserInput implements Input, Serializable, Description {
     private static final RecorderUserInput _logInstance = new RecorderUserInput();
     
     private final long _timestamp;
+    
+    public static RecorderUserInput createDoNothing(long timestamp)
+    {
+        return new RecorderUserInputDoNothing(timestamp);
+    }
     
     public static RecorderUserInput createKeyboardPress(long timestamp, InputKey key)
     {
@@ -137,12 +143,24 @@ public class RecorderUserInput implements Input, Serializable, Description {
 
     @Override
     public String getName() {
-        return "";
+        return this.getClass().getCanonicalName();
     }
 
     @Override
     public String getDebug() {
         return getVerbose();
+    }
+}
+
+class RecorderUserInputDoNothing extends RecorderUserInput implements InputDoNothing {
+    public RecorderUserInputDoNothing(long timestamp)
+    {
+        super(timestamp);
+    }
+    
+    @Override
+    public String getStandart() {
+        return InputDescriptions.getDoNothingDescription(getTimestamp()).getStandart();
     }
 }
 

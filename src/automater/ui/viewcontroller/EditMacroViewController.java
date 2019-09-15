@@ -59,13 +59,6 @@ public class EditMacroViewController implements BaseViewController, BasePresente
             }
         };
         
-        _form.onEditButtonCallback = new Callback<Integer>() {
-            @Override
-            public void perform(Integer argument) {
-                _presenter.onStartEditMacroActionAt(argument);
-            }
-        };
-        
         _form.onDoubleClickItem = new Callback<Integer>() {
             @Override
             public void perform(Integer argument) {
@@ -77,6 +70,20 @@ public class EditMacroViewController implements BaseViewController, BasePresente
             @Override
             public void perform() {
                 onSaveMacro();
+            }
+        };
+        
+        _form.onEditButtonCallback = new Callback<Integer>() {
+            @Override
+            public void perform(Integer argument) {
+                _presenter.onStartEditMacroActionAt(argument);
+            }
+        };
+        
+        _form.onInsertCallback = new Callback<Integer>() {
+            @Override
+            public void perform(Integer argument) {
+                _presenter.onStartCreatingMacroActionAt(argument);
             }
         };
     }
@@ -187,7 +194,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     @Override
     public void onCreateMacroAction(automater.work.model.BaseEditableAction action)
     {
-        startEditingMacroAction(action);
+        startCreatingMacroAction(action);
     }
     
     @Override
@@ -214,8 +221,8 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         }
         
         // Show message alert
-        String textTitle = TextValue.getText(TextValue.Dialog_SaveRecordingFailedTitle);
-        String textMessage = TextValue.getText(TextValue.Dialog_SaveRecordingFailedMessage, e.getMessage());
+        String textTitle = TextValue.getText(TextValue.Error_Generic);
+        String textMessage = e.getMessage();
         String ok = TextValue.getText(TextValue.Dialog_OK);
         
         AlertWindows.showErrorMessage(_form, textTitle, textMessage, ok);
@@ -273,6 +280,17 @@ public class EditMacroViewController implements BaseViewController, BasePresente
                 }
             }
         };
+    }
+    
+    private void startCreatingMacroAction(automater.work.model.BaseEditableAction action)
+    {
+        initEditMacroActionDialog();
+        
+        // Setup
+        setupEditingMacroActionDialog(action);
+        
+        // Make sure that this the last statement: show dialog
+        _editActionDialog.setVisible(true);
     }
     
     private void startEditingMacroAction(automater.work.model.BaseEditableAction action)

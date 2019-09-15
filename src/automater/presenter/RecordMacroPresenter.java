@@ -26,10 +26,11 @@ import automater.utilities.Logger;
 import automater.utilities.OSUIEffects;
 import automater.work.BaseAction;
 import automater.work.model.Macro;
-import automater.work.parser.ActionsFromMacroParser;
+import automater.work.parser.ActionsFromMacroInputsParser;
 import automater.work.parser.ActionsParserUtilities;
 import automater.work.parser.BaseActionsParser;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -50,7 +51,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     private boolean _hasStartedMacroRecording = false;
     private RecorderResult _recordedResult;
     
-    private final BaseActionsParser _parser = new ActionsFromMacroParser();
+    private final BaseActionsParser _parser = new ActionsFromMacroInputsParser();
     
     private final ArrayList<Description> _macroActionDescriptionsList = new ArrayList<>();
     
@@ -74,6 +75,11 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         Logger.message(this, "Start.");
         
         _recorder.registerPlayStopHotkeyListener(this);
+        
+        // Always start with one "do nothing" action, so user can save the macro even
+        // without recording a single action
+        setupDefaultRecordedInputData();
+        updateDelegateActionsData();
     }
     
     @Override
@@ -90,7 +96,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     @Override
     public void requestDataUpdate()
     {
-        
+        updateDelegateActionsData();
     }
     
     // # BaseRecorderListener
@@ -177,6 +183,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         }
         
         clearData();
+        updateDelegateActionsData();
         
         try {
             _recorder.start(_recorderMacroParser, _recorderModel, this);
@@ -272,6 +279,8 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     {
         clearData();
         
+        updateDelegateActionsData();
+        
         onSwitchToPlayScreen();
     }
     
@@ -285,13 +294,27 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     
     // # Private
     
+    private void setupDefaultRecordedInputData()
+    {
+        ArrayList<RecorderUserInput> userInputs;
+        userInputs = new ArrayList<>();
+        userInputs.add(RecorderUserInput.createDoNothing(0));
+        _recorderModel = new RecorderModel();
+        _recordedResult = new RecorderResult(userInputs);
+        
+        _macroActionDescriptionsList.add(userInputs.get(0));
+    }
+    
     private void clearData()
     {
         _recorderModel = new RecorderModel();
         _recordedResult = null;
         
         _macroActionDescriptionsList.clear();
-        
+    }
+    
+    private void updateDelegateActionsData()
+    {
         if (_delegate != null)
         {
             _delegate.onActionsRecordedChange(getActionStringsData());

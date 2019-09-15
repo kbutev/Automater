@@ -5,6 +5,7 @@
  */
 package automater.work.parser;
 
+import automater.input.InputDoNothing;
 import automater.recorder.model.RecorderUserInput;
 import automater.utilities.Errors;
 import automater.work.Action;
@@ -17,20 +18,21 @@ import automater.input.InputMouseMotion;
 import automater.input.InputMouseMove;
 
 /**
+ * Converts macro user input objects to actions.
  *
  * @author Bytevi
  */
-public class ActionsFromMacroParser implements BaseActionsParser {
+public class ActionsFromMacroInputsParser implements BaseActionsParser {
     public final ActionsParserFlags flags;
     
     private ArrayList<BaseAction> _actions = null;
     
-    public ActionsFromMacroParser()
+    public ActionsFromMacroInputsParser()
     {
         this(ActionsParserFlags.defaults());
     }
     
-    public ActionsFromMacroParser(ActionsParserFlags flags)
+    public ActionsFromMacroInputsParser(ActionsParserFlags flags)
     {
         this.flags = flags;
     }
@@ -80,6 +82,11 @@ public class ActionsFromMacroParser implements BaseActionsParser {
             
             Description description = input;
             action = Action.createMouseMovement(input.getTimestamp(), movements, description);
+        }
+        
+        if (input instanceof InputDoNothing)
+        {
+            action = Action.createDoNothing(input.getTimestamp());
         }
         
         if (action == null)

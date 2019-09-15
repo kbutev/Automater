@@ -6,6 +6,7 @@
 package automater.work.model;
 
 import automater.TextValue;
+import automater.input.InputDoNothing;
 import automater.input.InputKey;
 import automater.input.InputKeyClick;
 import automater.input.InputKeyValue;
@@ -28,6 +29,7 @@ public class StandartEditableActionConstants {
     public static List<Description> getActionTypes()
     {
         ArrayList<Description> types = new ArrayList<>();
+        types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeDoNothing)));
         types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeKeyboardClick)));
         types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeMouseClick)));
         types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeMouseMove)));
@@ -40,15 +42,20 @@ public class StandartEditableActionConstants {
         {
             if (action instanceof InputMouse)
             {
-                return 1;
+                return 2;
             }
             
-            return 0;
+            return 1;
         }
         
         if (action instanceof InputMouseMotion)
         {
-            return 2;
+            return 3;
+        }
+        
+        if (action instanceof InputDoNothing)
+        {
+            return 0;
         }
         
         return 0;

@@ -18,7 +18,6 @@ import automater.utilities.SimpleCallback;
 import java.awt.event.WindowEvent;
 import java.util.List;
 import automater.utilities.Description;
-import automater.work.model.ExecutorProgress;
 import java.util.ArrayList;
 
 /**

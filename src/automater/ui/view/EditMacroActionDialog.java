@@ -335,6 +335,11 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         // Setup current panel
         clearCurrentPanel();
         
+        if (_editableAction.getType() == EditableActionType.DoNothing)
+        {
+            setupPickDoNothingPanel();
+        }
+        
         if (_editableAction.getType() == EditableActionType.KeyboardKey)
         {
             setupPickKeyboardKeyPanel();
@@ -362,6 +367,20 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     private void clearCurrentPanel()
     {
         panel.removeAll();
+    }
+    
+    private void setupPickDoNothingPanel()
+    {
+        if (_editableAction == null)
+        {
+            return;
+        }
+        
+        EditMacroActionDoNothingPanel view = new EditMacroActionDoNothingPanel();
+        
+        panel.add(view);
+        panel.setLayout(new BorderLayout());
+        panel.add(view, BorderLayout.NORTH);
     }
     
     private void setupPickKeyboardKeyPanel()

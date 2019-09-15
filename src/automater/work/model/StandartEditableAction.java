@@ -7,6 +7,7 @@ package automater.work.model;
 
 import automater.TextValue;
 import automater.input.InputDescriptions;
+import automater.input.InputDoNothing;
 import automater.input.InputKey;
 import automater.input.InputKeyClick;
 import automater.input.InputKeyValue;
@@ -37,6 +38,11 @@ public class StandartEditableAction implements BaseEditableAction {
     String secondName;
     String secondValue;
     
+    public static BaseEditableAction createDoNothing(long timestamp)
+    {
+        return new StandartEditableActionDoNothing(timestamp);
+    }
+    
     public static BaseEditableAction create(BaseAction action)
     {
         EditableActionType type = StandartEditableActionConstants.getTypeFromAction(action);
@@ -46,6 +52,12 @@ public class StandartEditableAction implements BaseEditableAction {
         
         boolean isInputKeyClick = action instanceof InputKeyClick;
         boolean isInputKeyboardClick = !(action instanceof InputMouse);
+        
+        // DoNothing
+        if (action instanceof InputDoNothing)
+        {
+            return createDoNothing(timestamp);
+        }
         
         // KeyboardClick
         if (isInputKeyClick && isInputKeyboardClick)
@@ -180,6 +192,30 @@ public class StandartEditableAction implements BaseEditableAction {
     @Override
     public List<String> getPossibleSpecificValues() {
         return CollectionUtilities.copyAsImmutable(specificValues);
+    }
+}
+
+class StandartEditableActionDoNothing extends StandartEditableAction implements InputDoNothing {
+    public StandartEditableActionDoNothing(long timestamp)
+    {
+        super(EditableActionType.DoNothing, timestamp);
+    }
+    
+    @Override
+    public BaseAction buildAction() throws Exception {
+        return Action.createDoNothing(timestamp);
+    }
+    
+    @Override
+    public Description getDescription() {
+        Description d = InputDescriptions.getDoNothingDescription(timestamp);
+        
+        return d;
+    }
+    
+   @Override
+    public String getStateDescription() {
+        return TextValue.getText(TextValue.EditAction_DescriptionDoNothing);
     }
 }
 

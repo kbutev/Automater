@@ -74,7 +74,6 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
 
         saveMacroButton.setText("Save");
         saveMacroButton.setToolTipText("");
-        saveMacroButton.setEnabled(false);
         saveMacroButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveMacroButtonActionPerformed(evt);

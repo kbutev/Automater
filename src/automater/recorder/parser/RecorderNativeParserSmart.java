@@ -79,7 +79,7 @@ public class RecorderNativeParserSmart extends RecorderNativeParser {
         // from scratch
         if (_currentMouseMotion == null)
         {
-            _currentMouseMotion = RecorderUserInputMouseMotion.createMouseMovement(mouseInput);
+            _currentMouseMotion = RecorderUserInputMouseMotion.create(mouseInput);
         }
         // Else, just update the current one
         else

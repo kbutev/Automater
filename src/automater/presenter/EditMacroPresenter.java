@@ -32,6 +32,8 @@ import java.util.Date;
  * @author Bytevi
  */
 public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener {
+    public final static int CREATE_ACTION_DEFAULT_TYPE_VALUE = 0;
+    
     private final RootViewController _rootViewController;
     private BasePresenterDelegate _delegate;
     
@@ -224,18 +226,39 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
             return;
         }
         
+        long timestamp = 0;
+        
+        if (index < _macroActions.size())
+        {
+            timestamp = _macroActions.get(index).getPerformTime();
+        }
+        else
+        {
+            timestamp = _macroActions.get(_macroActions.size()-1).getPerformTime();
+        }
+        
         _isEditingOrCreatingAction = true;
         _isCreatingAction = true;
         
-        BaseAction action = _macroActions.get(index);
         _actionBeingEditedIndex = index;
-        _actionTypeSelectedIndex = StandartEditableActionConstants.getActionTypeSelectedIndex(action);
+        _actionTypeSelectedIndex = CREATE_ACTION_DEFAULT_TYPE_VALUE;
         
-        _actionBeingEdited = StandartEditableAction.create(action);
+        _actionBeingEdited = StandartEditableActionTemplates.buildTemplateFromTypeIndex(_actionTypeSelectedIndex, timestamp);
         
-        Logger.messageEvent(this, "Start creating new macro action '" + action.toString() + "' at index " + String.valueOf(index) + "");
+        Logger.messageEvent(this, "Start creating new macro action at index " + String.valueOf(index) + "");
         
-        _delegate.onEditMacroAction(_actionBeingEdited);
+        if (_actionBeingEdited == null)
+        {
+            _isEditingOrCreatingAction = false;
+            _isCreatingAction = false;
+            _actionBeingEditedIndex = 0;
+            
+            Exception e = new Exception("Failed to create macro action at index " + index + ", cannot recognize action type");
+            _delegate.onErrorEncountered(e);
+            return;
+        }
+        
+        _delegate.onCreateMacroAction(_actionBeingEdited);
     }
     
     public void onStartEditMacroActionAt(int index)
@@ -261,6 +284,17 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _actionBeingEdited = StandartEditableAction.create(action);
         
         Logger.messageEvent(this, "Start editing macro action '" + action.toString() + "' at index " + String.valueOf(index) + "");
+        
+        if (_actionBeingEdited == null)
+        {
+            _isEditingOrCreatingAction = false;
+            _isCreatingAction = false;
+            _actionBeingEditedIndex = 0;
+            
+            Exception e = new Exception("Failed to edit macro action at index " + index + ", cannot recognize action type");
+            _delegate.onErrorEncountered(e);
+            return;
+        }
         
         _delegate.onCreateMacroAction(_actionBeingEdited);
     }
@@ -312,14 +346,14 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         
         if (isCreatingAction)
         {
+            updateMacroWithNewCreatedAction(a, actionBeingEditedIndex);
             Logger.messageEvent(this, "Ending creating new action, insert it at " + String.valueOf(actionBeingEditedIndex));
         }
         else
         {
+            updateMacroWithEditedAction(a, actionBeingEditedIndex);
             Logger.messageEvent(this, "Ending editing action, save it.");
         }
-        
-        updateMacroWithEditedAction(a, actionBeingEditedIndex);
         
         updateDelegateWithMacroInfo();
         
@@ -427,6 +461,22 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _delegate.onLoadedMacroFromStorage(_originalMacro.name, _originalMacro.getDescription(), _macroActionDescriptions);
     }
     
+    private void updateMacroWithNewCreatedAction(BaseEditableAction a, int actionBeingEditedIndex)
+    {
+        try {
+            BaseAction action = a.buildAction();
+            
+            _macroActions.add(actionBeingEditedIndex, action);
+            _macroActionDescriptions.add(actionBeingEditedIndex, action.getDescription());
+            
+            sortActions();
+        } 
+        catch (Exception e)
+        {
+            Logger.error(this, "Failed to update macro with new created action: " + e.toString());
+        }
+    }
+    
     private void updateMacroWithEditedAction(BaseEditableAction a, int actionBeingEditedIndex)
     {
         try {
@@ -446,7 +496,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         } 
         catch (Exception e)
         {
-            
+            Logger.error(this, "Failed to update macro with edited action: " + e.toString());
         }
     }
     

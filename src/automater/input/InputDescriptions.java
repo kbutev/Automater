@@ -6,12 +6,24 @@
 package automater.input;
 
 import automater.utilities.Description;
+import java.io.Serializable;
 
 /**
  *
  * @author Bytevi
  */
 public class InputDescriptions {
+    public static Description getDoNothingDescription(long timestamp)
+    {
+        String name = "DoNothing";
+        String time = String.valueOf(timestamp);
+        String description = name;
+        String verbose = time + " " + description;
+        String tooltip = description;
+        
+        return new InputDescription(name, description, verbose, tooltip);
+    }
+    
     public static Description getKeyboardInputDescription(long timestamp, boolean press, InputKey key)
     {
         String time = String.valueOf(timestamp);
@@ -90,7 +102,7 @@ public class InputDescriptions {
     }
 }
 
-class InputDescription implements Description {
+class InputDescription implements Description, Serializable {
     String name;
     String value;
     String verbose;

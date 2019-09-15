@@ -22,16 +22,23 @@ public class StandartEditableActionTemplates {
         switch (typeIndex)
         {
             case 0:
-                return buildTemplateKeyboardClick(timestamp);
+                return buildTemplateDoNothing(timestamp);
             case 1:
-                return buildTemplateMouseClick(timestamp);
+                return buildTemplateKeyboardClick(timestamp);
             case 2:
+                return buildTemplateMouseClick(timestamp);
+            case 3:
                 return buildTemplateMouseMove(timestamp);
             default:
                 break;
         }
         
         return null;
+    }
+    
+    public static BaseEditableAction buildTemplateDoNothing(long timestamp)
+    {
+        return new StandartEditableActionDoNothing(timestamp);
     }
     
     public static BaseEditableAction buildTemplateKeyboardClick(long timestamp)

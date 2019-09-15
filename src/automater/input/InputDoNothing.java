@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.work.model;
+package automater.input;
 
 /**
  *
- * @author Bytevi
+ * @author Byti
  */
-public enum EditableActionType {
-    DoNothing, KeyboardKey, MouseKey, MouseMove, MouseMotion
+public interface InputDoNothing extends Input {
+    
 }

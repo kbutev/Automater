@@ -5,6 +5,8 @@
  */
 package automater.work;
 
+import automater.input.InputDescriptions;
+import automater.input.InputDoNothing;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.Description;
 import automater.utilities.Errors;
@@ -30,6 +32,11 @@ import automater.input.InputMouse;
  * @author Bytevi
  */
 public class Action extends BaseAction {
+    public static Action createDoNothing(long timestamp)
+    {
+        return new ActionDoNothing(timestamp);
+    }
+    
     public static Action createKeyClick(long timestamp, InputKeyClick keyClick, Description description) throws Exception
     {
         boolean isMouseClick = false;
@@ -137,6 +144,44 @@ public class Action extends BaseAction {
     @Override
     public String getDebug() {
         return getVerbose();
+    }
+}
+
+class ActionDoNothing extends Action implements InputDoNothing {
+    long time;
+    Description description;
+    
+    ActionDoNothing(long time)
+    {
+        this.time = time;
+        this.description = InputDescriptions.getDoNothingDescription(time);
+    }
+    
+    @Override
+    public long getPerformTime()
+    {
+        return time;
+    }
+    
+    @Override
+    public void perform(BaseActionContext context)
+    {
+        
+    }
+    
+    @Override
+    public String getStandart() {
+        return description.getStandart();
+    }
+    
+    @Override
+    public String getVerbose() {
+        return description.getVerbose();
+    }
+    
+    @Override
+    public long getTimestamp() {
+        return time;
     }
 }
 

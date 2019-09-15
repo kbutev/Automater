@@ -13,7 +13,10 @@ import java.util.HashMap;
  */
 public enum TextValue {
     // Errors
-    Error_NameIsEmpty, Error_NameIsTooShort, Error_NameIsTooLong, Error_NameIsTaken, Error_NameMustBeAlphaNumeric, Error_NameMustBeAlphaNumericWithSpecialSymbols,
+    Error_Generic,
+    Error_NameIsEmpty,
+    Error_NameIsTooShort, Error_NameIsTooLong, Error_NameIsTaken,
+    Error_NameMustBeAlphaNumeric, Error_NameMustBeAlphaNumericWithSpecialSymbols,
     
     // Record form
     Record_FormTitle, Record_HeaderText,
@@ -52,6 +55,7 @@ public enum TextValue {
     // Edit form
     Edit_FormTitle, Edit_BackButtonTitle,
     Edit_Name, Edit_Actions, Edit_Description,
+    Edit_Delete, Edit_Edit, Edit_Insert,
     
     // Edit Action dialog
     EditAction_DialogTitle, EditAction_CancelButtonTitle, EditAction_SaveButtonTitle,
@@ -60,9 +64,10 @@ public enum TextValue {
     EditAction_X, EditAction_Y, EditAction_FinalX, EditAction_FinalY,
     
     // Edit Action types
-    EditAction_TypeKeyboardClick, EditAction_TypeMouseClick, EditAction_TypeMouseMove,
+    EditAction_TypeDoNothing, EditAction_TypeKeyboardClick, EditAction_TypeMouseClick, EditAction_TypeMouseMove,
     
     // Edit Action descriptions
+    EditAction_DescriptionDoNothing,
     EditAction_DescriptionKeyboardClick, EditAction_DescriptionMouseClick, EditAction_DescriptionMouseMove,
     EditAction_DescriptionMouseMotion,
     
@@ -127,6 +132,7 @@ public enum TextValue {
     
     private static HashMap<TextValue, String> englishValues = new HashMap<TextValue, String>() {{
         // Errors
+        put(Error_Generic, "Error");
         put(Error_NameIsEmpty, "Name cannot be empty");
         put(Error_NameIsTooShort, "Name must be longer than %@ characters");
         put(Error_NameIsTooLong, "Name must be shorter than %@ characters");
@@ -209,6 +215,9 @@ public enum TextValue {
         put(Edit_Name, "Name");
         put(Edit_Actions, "Actions");
         put(Edit_Description, "Description");
+        put(Edit_Delete, "Delete");
+        put(Edit_Edit, "Edit");
+        put(Edit_Insert, "Create");
         
         // Edit action dialog
         put(EditAction_DialogTitle, "Automater - Edit Action");
@@ -226,11 +235,13 @@ public enum TextValue {
         put(EditAction_FinalY, "Final Y");
         
         // Edit Action types
+        put(EditAction_TypeDoNothing, "Do Nothing");
         put(EditAction_TypeKeyboardClick, "Keyboard click");
         put(EditAction_TypeMouseClick, "Mouse click");
         put(EditAction_TypeMouseMove, "Mouse move");
         
         // Edit Action descriptions
+        put(EditAction_DescriptionDoNothing, "Do nothing");
         put(EditAction_DescriptionKeyboardClick, "Simulates keyboard key press or release");
         put(EditAction_DescriptionMouseClick, "Simulates mouse key press or release");
         put(EditAction_DescriptionMouseMove, "Simulates one mouse movement, choose x and y");
