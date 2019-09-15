@@ -217,7 +217,7 @@ public enum TextValue {
         put(EditAction_StatusDefault, "");
         put(EditAction_StatusListeningToHotkey, "Enter hotkey...");
         put(EditAction_StatusError, "Error: %@");
-        put(EditAction_Time, "Time");
+        put(EditAction_Time, "Time (ms)");
         put(EditAction_Key, "Key");
         put(EditAction_Press, "Press");
         put(EditAction_X, "X");

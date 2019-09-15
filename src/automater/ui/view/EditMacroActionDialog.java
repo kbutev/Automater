@@ -15,7 +15,6 @@ import java.awt.BorderLayout;
 import java.util.List;
 import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataListener;
@@ -392,7 +391,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         
         // Setup values and their labels
         view.keyLabel.setText(_editableAction.getFirstValueName());
-        view.pressCheck.setText(_editableAction.getFirstValue());
+        _hotkeyButton.setText(_editableAction.getFirstValue());
         
         view.pressCheck.setSelected(Boolean.valueOf(_editableAction.getSecondValue()));
         view.pressCheck.setText(_editableAction.getSecondValueName());
