@@ -489,7 +489,9 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         
         // Setup values and their labels
         view.xLabel.setText(_editableAction.getFirstValueName());
+        view.xField.setText(_editableAction.getFirstValue());
         view.yLabel.setText(_editableAction.getSecondValueName());
+        view.yField.setText(_editableAction.getSecondValue());
     }
     
     private void setHotkeyValue(String value)

@@ -7,13 +7,16 @@ package automater.work;
 
 import automater.TextValue;
 import automater.utilities.CollectionUtilities;
+import automater.utilities.DeviceScreen;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.Looper;
 import automater.utilities.LooperClient;
 import automater.work.model.ActionContext;
 import automater.work.model.ExecutorProgress;
+import automater.work.model.Macro;
 import automater.work.model.MacroParameters;
+import java.awt.Dimension;
 import java.awt.Robot;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,6 +43,8 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     
     // Current state
     private boolean _started = false;
+    
+    private Macro _macro;
     
     private int _playCount = 0;
     private BaseActionProcess _previousActionProcess;
@@ -98,6 +103,12 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     }
     
     @Override
+    public Macro getMacro()
+    {
+        return _macro;
+    }
+    
+    @Override
     public BaseActionProcess getCurrentActionProcess()
     {
         synchronized (_lock)
@@ -134,7 +145,7 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     }
     
     @Override
-    public void start(MacroParameters parameters) throws Exception
+    public void start(Macro macro, MacroParameters parameters) throws Exception
     {
         Logger.messageEvent(this, "Start.");
         
@@ -148,6 +159,9 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
                 return;
             }
             
+            // Save macro
+            _macro = macro;
+            
             // Setup timer
             this._timer.setup(getFirstAction(), getLastAction());
             
@@ -159,7 +173,9 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
             actionsSize = _actions.size();
             
             // Setup context
-            _context = new ActionContext(_robot, _timer);
+            Dimension recordedScreenSize = macro.screenSize;
+            Dimension currentScreenSize = DeviceScreen.getPrimaryScreenSize();
+            _context = new ActionContext(_robot, _timer, recordedScreenSize, currentScreenSize);
             
             // Set paremeters
             _parameters = parameters;

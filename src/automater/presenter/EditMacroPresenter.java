@@ -157,7 +157,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         
         MacroStorage macroStorage = GeneralStorage.getDefault().getMacrosStorage();
         
-        Macro macro = new Macro(name, _macroActions, new Date(), _originalMacro.getLastTimePlayedDate());
+        Macro macro = new Macro(name, _macroActions, new Date(), _originalMacro.getLastTimePlayedDate(), _originalMacro.screenSize);
         macro.setDescription(description);
         
         boolean nameChanged = !_originalMacro.name.equals(name);

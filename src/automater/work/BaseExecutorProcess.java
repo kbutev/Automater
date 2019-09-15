@@ -6,6 +6,7 @@
 package automater.work;
 
 import automater.work.model.ExecutorProgress;
+import automater.work.model.Macro;
 import automater.work.model.MacroParameters;
 
 /**
@@ -25,6 +26,8 @@ public interface BaseExecutorProcess {
     public boolean isWaiting();
     public boolean isFinished();
     
+    public Macro getMacro();
+    
     public BaseActionProcess getCurrentActionProcess();
     public BaseActionProcess getPreviousActionProcess();
     
@@ -33,6 +36,6 @@ public interface BaseExecutorProcess {
     public void setExecutorTimer(BaseExecutorTimer timer);
     public void setListener(ExecutorListener listener);
     
-    public void start(MacroParameters parameters) throws Exception;
+    public void start(Macro macro, MacroParameters parameters) throws Exception;
     public void stop() throws Exception;
 }

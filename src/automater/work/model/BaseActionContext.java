@@ -6,6 +6,7 @@
 package automater.work.model;
 
 import automater.work.BaseExecutorTimer;
+import java.awt.Dimension;
 import java.awt.Robot;
 
 /**
@@ -23,6 +24,8 @@ import java.awt.Robot;
 public interface BaseActionContext {
     public Robot getRobot();
     public BaseExecutorTimer getTimer();
+    public Dimension getRecordedScreenSize();
+    public Dimension getCurrentScreenSize();
     
     public ActionSystemKeyModifiers getPressedModifiers();
     public boolean isModifierPressed(ActionSystemKeyModifierValue modifier);

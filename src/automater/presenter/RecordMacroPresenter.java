@@ -21,6 +21,7 @@ import automater.storage.MacroStorage;
 import automater.ui.viewcontroller.RootViewController;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.Description;
+import automater.utilities.DeviceScreen;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.OSUIEffects;
@@ -29,6 +30,7 @@ import automater.work.model.Macro;
 import automater.work.parser.ActionsFromMacroInputsParser;
 import automater.work.parser.ActionsParserUtilities;
 import automater.work.parser.BaseActionsParser;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -245,7 +247,9 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         
         Logger.message(this, "Successfully finished parsing the events!");
         
-        Macro macro = new Macro(name, actions, new Date());
+        Dimension currentScreenSize = DeviceScreen.getPrimaryScreenSize();
+        
+        Macro macro = new Macro(name, actions, new Date(), currentScreenSize);
         
         macro.setDescription(description);
         

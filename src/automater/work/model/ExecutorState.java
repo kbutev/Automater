@@ -31,7 +31,7 @@ public class ExecutorState implements LooperClient {
         }
     }
     
-    public void startProcess(BaseExecutorProcess process, MacroParameters parameters) throws Exception
+    public void startProcess(BaseExecutorProcess process, Macro macro, MacroParameters parameters) throws Exception
     {
         boolean isIdle = isIdle();
         
@@ -47,7 +47,7 @@ public class ExecutorState implements LooperClient {
             
             _processes.add(process);
             
-            process.start(parameters);
+            process.start(macro, parameters);
         }
     }
     

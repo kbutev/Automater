@@ -15,7 +15,10 @@ import automater.recorder.parser.RecorderParserFlag;
 import automater.recorder.parser.RecorderSystemKeyboardTranslator;
 import automater.settings.Hotkey;
 import automater.utilities.CollectionUtilities;
+import automater.utilities.DeviceScreen;
 import automater.utilities.Logger;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,6 +48,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
     private BaseRecorderNativeParser _inputParser;
     private BaseRecorderModel _recorderModel;
     private Hotkey _stopHotkey;
+    private Dimension _recordingSize;
     
     private Recorder()
     {
@@ -70,7 +74,9 @@ public class Recorder implements RecorderJHookListenerDelegate {
     
     public void start(BaseRecorderNativeParser parser, BaseRecorderModel model, BaseRecorderListener listener, Hotkey stopHotkey) throws Exception
     {
-        Logger.messageEvent(this, "Start...");
+        Dimension size = DeviceScreen.getPrimaryScreenSize();
+        
+        Logger.messageEvent(this, "Start recording on screen size " + size.width + "x" + size.height + "...");
         
         synchronized (_lock)
         {
@@ -78,6 +84,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
             _recorderModel = model;
             _listener = listener;
             _stopHotkey = stopHotkey;
+            _recordingSize = size;
             
             _masterParser.setSubparser(_inputParser);
         }

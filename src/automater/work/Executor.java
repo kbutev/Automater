@@ -69,7 +69,7 @@ public class Executor {
             BaseExecutorProcess process = new ExecutorProcess(_robot, macro.actions);
             process.setListener(listener);
             
-            _state.startProcess(process, parameters);
+            _state.startProcess(process, macro, parameters);
             
             return process;
         }

@@ -10,6 +10,7 @@ import automater.utilities.CollectionUtilities;
 import automater.utilities.DateUtilities;
 import automater.utilities.Description;
 import automater.work.BaseAction;
+import java.awt.Dimension;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,13 +29,14 @@ public class Macro implements Serializable, Description {
     public final Date dateCreated;
     private int numberOfTimesPlayed = 0;
     private Date lastDatePlayed;
+    public final Dimension screenSize;
     
-    public Macro(String name, List<BaseAction> actions, Date dateCreated)
+    public Macro(String name, List<BaseAction> actions, Date dateCreated, Dimension screenSize)
     {
-        this(name, actions, dateCreated, dateCreated);
+        this(name, actions, dateCreated, dateCreated, screenSize);
     }
     
-    public Macro(String name, List<BaseAction> actions, Date dateCreated, Date lastDatePlayed)
+    public Macro(String name, List<BaseAction> actions, Date dateCreated, Date lastDatePlayed, Dimension screenSize)
     {
         this.name = name;
         this.actions = CollectionUtilities.copyAsImmutable(actions);
@@ -45,6 +47,8 @@ public class Macro implements Serializable, Description {
         
         this.dateCreated = dateCreated;
         this.lastDatePlayed = lastDatePlayed;
+        
+        this.screenSize = screenSize;
     }
     
     // # Description

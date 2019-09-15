@@ -384,8 +384,8 @@ class ActionMouseMove extends Action implements InputMouseMove {
     ActionMouseMove(long time, int x, int y, Description description)
     {
         this.time = time;
-        this.x = x;
-        this.y = y;
+        this.x = x > 0 ? x : 0;
+        this.y = y > 0 ? y : 0;
         
         if (description != null)
         {
@@ -409,7 +409,15 @@ class ActionMouseMove extends Action implements InputMouseMove {
     @Override
     public void perform(BaseActionContext context)
     {
-        context.getRobot().mouseMove(x, y);
+        float screenScaleX = context.getCurrentScreenSize().width;
+        screenScaleX /= context.getRecordedScreenSize().width;
+        float screenScaleY = context.getCurrentScreenSize().height;
+        screenScaleY /= context.getRecordedScreenSize().height;
+        
+        int resultX = (int)(x * screenScaleX);
+        int resultY = (int)(y * screenScaleY);
+        
+        context.getRobot().mouseMove(resultX, resultY);
     }
     
     @Override

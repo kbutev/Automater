@@ -199,6 +199,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
             _ongoingExecution = _executor.performMacro(_macro, _options.macroParameters, this);
         } catch (Exception e) {
             Logger.error(this, "Failed to start executor: " + e.toString());
+            e.printStackTrace(System.out);
             _delegate.onErrorEncountered(e);
             return;
         }

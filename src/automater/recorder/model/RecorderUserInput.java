@@ -372,8 +372,8 @@ class RecorderUserInputMouseMove extends RecorderUserInput implements InputMouse
     RecorderUserInputMouseMove(long timestamp, int x, int y)
     {
         super(timestamp);
-        this.x = x;
-        this.y = y;
+        this.x = x > 0 ? x : 0;
+        this.y = y > 0 ? y : 0;
     }
     
     // # Description

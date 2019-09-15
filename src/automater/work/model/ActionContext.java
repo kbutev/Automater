@@ -8,6 +8,7 @@ package automater.work.model;
 import automater.work.BaseExecutorTimer;
 import java.awt.Robot;
 import java.util.HashSet;
+import java.awt.Dimension;
 
 /**
  *
@@ -16,15 +17,19 @@ import java.util.HashSet;
 public class ActionContext implements BaseActionContext {
     private final Robot _robot;
     private final BaseExecutorTimer _timer;
+    private final Dimension _recordedScreenSize;
+    private final Dimension _currentScreenSize;
     
     private ActionSystemKeyModifiers _modifiers = ActionSystemKeyModifiers.none();
     
     private final HashSet<ActionSystemKey> _keysPressed = new HashSet<>();
     
-    public ActionContext(Robot robot, BaseExecutorTimer timer)
+    public ActionContext(Robot robot, BaseExecutorTimer timer, Dimension recordedScreenSize, Dimension currentScreenSize)
     {
         this._robot = robot;
         this._timer = timer;
+        this._recordedScreenSize = recordedScreenSize;
+        this._currentScreenSize = currentScreenSize;
     }
 
     @Override
@@ -35,6 +40,18 @@ public class ActionContext implements BaseActionContext {
     @Override
     public BaseExecutorTimer getTimer() {
         return _timer;
+    }
+    
+    @Override
+    public Dimension getRecordedScreenSize()
+    {
+        return _recordedScreenSize;
+    }
+    
+    @Override
+    public Dimension getCurrentScreenSize()
+    {
+        return _currentScreenSize;
     }
     
     @Override
