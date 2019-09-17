@@ -155,21 +155,14 @@ public class Recorder implements RecorderJHookListenerDelegate {
             return;
         }
         
-        // Ignore null inputs
-        if (input == null)
-        {
-            return;
-        }
-        
-        boolean success;
-        
-        // Process the input that native hook listener has translated for us
+        // Add the parsed input to the model
         try {
-            success = _recorderModel.addInput(input);
+            _recorderModel.addInput(input);
         } catch (Exception e) {
             try {
                 Logger.messageEvent(this, "Cancel! Exception encountered: " + e.toString());
                 e.printStackTrace(System.out);
+                _listener.onFailedRecordedUserInput(input);
                 cancel(false, e);
             } catch (Exception e2) {
                 
@@ -184,13 +177,13 @@ public class Recorder implements RecorderJHookListenerDelegate {
             return;
         }
         
-        if (success)
+        if (input != null)
         {
             _listener.onRecordedUserInput(input);
         }
         else
         {
-            _listener.onFailedRecordedUserInput(input);
+            _listener.onRecordedUserInputChanged();
         }
     }
     

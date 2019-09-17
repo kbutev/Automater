@@ -15,7 +15,6 @@ import automater.recorder.model.RecorderUserInput;
  * they can later be retrieved by retrieveRecordedData().
  * 
  * The method addInput() takes an input object and adds it to the data.
- * Returns the true if add operation was successful; false otherwise.
  * Method is capable of throwing exceptions indicating that parsing should stop.
  * 
  * The method retrieveRecordedData() gets the processed data by the parser.
@@ -28,7 +27,7 @@ public interface BaseRecorderModel {
     public RecorderUserInput getFirstAddedInput();
     public RecorderUserInput getLastAddedInput();
     
-    public boolean addInput(RecorderUserInput input) throws Exception;
+    public void addInput(RecorderUserInput input) throws Exception;
     
     public RecorderResult retrieveRecordedData();
 }

@@ -43,16 +43,11 @@ public class RecorderModel implements BaseRecorderModel {
     }
     
     @Override
-    public boolean addInput(RecorderUserInput input) throws Exception
+    public void addInput(RecorderUserInput input) throws Exception
     {
         if (input == null)
         {
-            return false;
-        }
-        
-        if (_lastInput == input)
-        {
-            return false;
+            return;
         }
         
         Logger.message(this, "Add input " + input.toString());
@@ -65,8 +60,6 @@ public class RecorderModel implements BaseRecorderModel {
         }
         
         _lastInput = input;
-        
-        return true;
     }
     
     @Override

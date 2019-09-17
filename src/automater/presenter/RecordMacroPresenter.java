@@ -32,7 +32,6 @@ import automater.work.parser.ActionsParserUtilities;
 import automater.work.parser.BaseActionsParser;
 import java.awt.Dimension;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -115,6 +114,12 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         
         _macroActionDescriptionsList.add(input);
         
+        _delegate.onActionsRecordedChange(getActionStringsData());
+    }
+    
+    @Override
+    public void onRecordedUserInputChanged()
+    {
         _delegate.onActionsRecordedChange(getActionStringsData());
     }
     
