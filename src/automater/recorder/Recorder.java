@@ -18,7 +18,6 @@ import automater.utilities.CollectionUtilities;
 import automater.utilities.DeviceScreen;
 import automater.utilities.Logger;
 import java.awt.Dimension;
-import java.awt.Rectangle;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -132,6 +131,12 @@ public class Recorder implements RecorderJHookListenerDelegate {
     {
         // If not recording, do nothing
         if (_recorderModel == null)
+        {
+            return;
+        }
+        
+        // Ignore null inputs
+        if (input == null)
         {
             return;
         }

@@ -6,8 +6,6 @@
 package automater.recorder.model;
 
 import automater.recorder.BaseRecorderModel;
-import automater.recorder.model.RecorderUserInput;
-import automater.utilities.Errors;
 import automater.utilities.Logger;
 import java.util.ArrayList;
 
@@ -30,12 +28,6 @@ public class RecorderModel implements BaseRecorderModel {
     public int getSize()
     {
         return _recordedInput.size();
-    }
-    
-    @Override
-    public boolean allowsDuplicateInputs()
-    {
-        return false;
     }
     
     @Override
@@ -63,12 +55,7 @@ public class RecorderModel implements BaseRecorderModel {
             return false;
         }
         
-        Logger.message(this, "add input " + input.toString());
-        
-        if (_recordedInput.contains(input))
-        {
-            return false;
-        }
+        Logger.message(this, "Add input " + input.toString());
         
         _recordedInput.add(input);
         

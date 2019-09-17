@@ -73,21 +73,16 @@ public class RecorderNativeParserSmart extends RecorderNativeParser {
         
         InputMouseMove mouseInput = (InputMouseMove)result;
         
-        long timestamp = result.getTimestamp();
-        
         // Not currently parsing a mouse motion input, create a new one
         // from scratch
         if (_currentMouseMotion == null)
         {
             _currentMouseMotion = RecorderUserInputMouseMotion.create(mouseInput);
+            return _currentMouseMotion;
         }
-        // Else, just update the current one
-        else
-        {
-            _currentMouseMotion.addMovementPoint(mouseInput);
-        }
-        
-        return _currentMouseMotion;
+        // Else, just mutate the current one and return null
+        _currentMouseMotion.addMovementPoint(mouseInput);
+        return null;
     }
     
     @Override
