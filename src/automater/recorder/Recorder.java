@@ -16,6 +16,7 @@ import automater.recorder.parser.RecorderSystemKeyboardTranslator;
 import automater.settings.Hotkey;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.DeviceScreen;
+import automater.utilities.Errors;
 import automater.utilities.Logger;
 import java.awt.Dimension;
 import java.awt.event.WindowEvent;
@@ -43,6 +44,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
     private RecorderJHookListener _nativeListener;
     private RecorderMasterNativeParser _masterParser;
     
+    private boolean _recording = false;
     private BaseRecorderListener _listener;
     private BaseRecorderNativeParser _inputParser;
     private BaseRecorderModel _recorderModel;
@@ -79,6 +81,15 @@ public class Recorder implements RecorderJHookListenerDelegate {
         
         synchronized (_lock)
         {
+            if (_recording)
+            {
+                Errors.throwIllegalStateError("Cannot start Recorder, already started");
+            }
+        }
+        
+        synchronized (_lock)
+        {
+            _recording = true;
             _inputParser = parser;
             _recorderModel = model;
             _listener = listener;
@@ -92,6 +103,15 @@ public class Recorder implements RecorderJHookListenerDelegate {
     public void stop() throws Exception
     {
         Logger.messageEvent(this, "Stop!");
+        
+        synchronized (_lock)
+        {
+            if (!_recording)
+            {
+                Errors.throwIllegalStateError("Cannot stop Recorder, must be recording first");
+            }
+                
+        }
         
         cancel(false, null);
     }
@@ -130,7 +150,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
     public void onParseInput(RecorderUserInput input)
     {
         // If not recording, do nothing
-        if (_recorderModel == null)
+        if (!_recording)
         {
             return;
         }
@@ -197,6 +217,13 @@ public class Recorder implements RecorderJHookListenerDelegate {
     {
         synchronized (_lock)
         {
+            if (!_recording)
+            {
+                return;
+            }
+            
+            _recording = false;
+            
             _masterParser.setSubparser(null);
             
             BaseRecorderListener listener = _listener;
