@@ -397,7 +397,52 @@ class StandartMutableActionMouseMotion extends StandartMutableAction {
     @Override
     public Description getDescription() {
         InputMouseMove first = moves.get(0);
+        InputMouseMove last = getEnteredLastMove();
         
+        Description d = InputDescriptions.getMouseMotionDescription(timestamp, first, last, moves.size());
+        
+        return d;
+    }
+    
+    @Override
+    public String getStateDescription() {
+        return TextValue.getText(TextValue.EditAction_DescriptionMouseMotion, String.valueOf(moves.size()));
+    }
+    
+    @Override
+    public BaseAction buildAction() throws Exception {
+        String sX = getFirstProperty().getValue();
+        String sY = getSecondProperty().getValue();
+        
+        if (!StringFormatting.isStringAnInt(sX) || !StringFormatting.isStringAnInt(sY))
+        {
+            Errors.throwInvalidArgument("Enter non-negative x,y values");
+        }
+        
+        int x = Integer.parseInt(sX);
+        int y = Integer.parseInt(sY);
+        
+        if (x < 0 || y < 0)
+        {
+            Errors.throwInvalidArgument("Enter non-negative x,y values");
+        }
+        
+        InputMouseMove last = getEnteredLastMove();
+        
+        if (last == null)
+        {
+            Errors.throwInvalidArgument("Enter valid x,y values");
+        }
+        
+        ArrayList<InputMouseMove> newMoves = new ArrayList<>(this.moves);
+        newMoves.remove(newMoves.size()-1);
+        newMoves.add(last);
+        
+        return Action.createMouseMovement(timestamp, newMoves, getDescription());
+    }
+    
+    private InputMouseMove getEnteredLastMove()
+    {
         String sX = getFirstProperty().getValue();
         String sY = getSecondProperty().getValue();
         
@@ -433,34 +478,6 @@ class StandartMutableActionMouseMotion extends StandartMutableAction {
             }
         };
         
-        Description d = InputDescriptions.getMouseMotionDescription(timestamp, first, last, moves.size());
-        
-        return d;
-    }
-    
-    @Override
-    public String getStateDescription() {
-        return TextValue.getText(TextValue.EditAction_DescriptionMouseMotion, String.valueOf(moves.size()));
-    }
-    
-    @Override
-    public BaseAction buildAction() throws Exception {
-        String sX = getFirstProperty().getValue();
-        String sY = getSecondProperty().getValue();
-        
-        if (!StringFormatting.isStringAnInt(sX) || !StringFormatting.isStringAnInt(sY))
-        {
-            Errors.throwInvalidArgument("Enter non-negative x,y values");
-        }
-        
-        int x = Integer.parseInt(sX);
-        int y = Integer.parseInt(sY);
-        
-        if (x < 0 || y < 0)
-        {
-            Errors.throwInvalidArgument("Enter non-negative x,y values");
-        }
-        
-        return Action.createMouseMovement(timestamp, moves, getDescription());
+        return last;
     }
 }
