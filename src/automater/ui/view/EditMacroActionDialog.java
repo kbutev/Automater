@@ -18,6 +18,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataListener;
 import automater.mutableaction.BaseMutableAction;
+import automater.mutableaction.BaseMutableActionProperty;
+import automater.mutableaction.MutableActionPropertyList;
 
 /**
  *
@@ -255,8 +257,6 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     
     public void startHotkeyListening()
     {
-        updateSaveButtonState(false);
-        
         typesDropdown.setEnabled(false);
         timeField.setEnabled(false);
         
@@ -265,8 +265,6 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     
     public void endHotkeyListeningWithoutAnyKeyEntered()
     {
-        updateSaveButtonState(true);
-        
         typesDropdown.setEnabled(true);
         timeField.setEnabled(true);
     }
@@ -280,10 +278,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
             _hotkeyButton.setText(hotkey);
         }
         
-        updateStateDescription();
-        
-        // Update value
-        setHotkeyValue(hotkey);
+        setActionFirstValue(hotkey);
     }
     
     public void displayError(String error)
@@ -291,7 +286,38 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         statusLabel.setText(TextValue.getText(TextValue.EditAction_StatusError, error));
     }
     
-    // # Private
+    // # Private - properties
+    
+    private void setActionFirstValue(String value)
+    {
+        if (_mutableAction == null)
+        {
+            return;
+        }
+        
+        _mutableAction.getFirstProperty().setValue(value);
+        
+        onAnyValueChanged();
+    }
+    
+    private void setActionSecondValue(String value)
+    {
+        if (_mutableAction == null)
+        {
+            return;
+        }
+        
+        _mutableAction.getSecondProperty().setValue(value);
+        
+        onAnyValueChanged();
+    }
+    
+    // # Private - setup view
+    
+    private void clearCurrentPanel()
+    {
+        panel.removeAll();
+    }
     
     private void setupMutableAction()
     {
@@ -307,30 +333,24 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         DocumentListener listener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                updateTimestampValue();
-                onAnyValueChanged();
-                updateSaveButtonState();
+                updateActionWithNewestTimestamp();
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                updateTimestampValue();
-                onAnyValueChanged();
-                updateSaveButtonState();
+                updateActionWithNewestTimestamp();
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                updateTimestampValue();
-                onAnyValueChanged();
-                updateSaveButtonState();
+                updateActionWithNewestTimestamp();
             }
         };
         
         timeField.getDocument().addDocumentListener(listener);
         
-        // Set state description
-        updateStateDescription();
+        // Setup state
+        updateState();
         
         // Setup current panel
         clearCurrentPanel();
@@ -359,14 +379,6 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         {
             setupMouseMovePanel();
         }
-        
-        // Save button
-        updateSaveButtonState();
-    }
-    
-    private void clearCurrentPanel()
-    {
-        panel.removeAll();
     }
     
     private void setupPickDoNothingPanel()
@@ -390,6 +402,11 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
             return;
         }
         
+        // Properties
+        BaseMutableActionProperty first = _mutableAction.getFirstProperty();
+        BaseMutableActionProperty second = _mutableAction.getSecondProperty();
+        
+        // Setup view
         EditMacroActionHotkeyPanel view = new EditMacroActionHotkeyPanel();
         _hotkeyButton = view.hotkeyButton;
         
@@ -398,8 +415,8 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         view.onPressCheckCallback = new Callback<Boolean>() {
             @Override
             public void perform(Boolean argument) {
-                _mutableAction.setSecondValue(String.valueOf(view.pressCheck.isSelected()));
-                onAnyValueChanged();
+                String newValue = String.valueOf(view.pressCheck.isSelected());
+                setActionFirstValue(newValue);
                 onPressCheckCallback.perform();
             }
         };
@@ -409,11 +426,11 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         panel.add(view, BorderLayout.NORTH);
         
         // Setup values and their labels
-        view.keyLabel.setText(_mutableAction.getFirstValueName());
-        _hotkeyButton.setText(_mutableAction.getFirstValue());
+        view.keyLabel.setText(first.getName());
+        _hotkeyButton.setText(first.getValue());
         
-        view.pressCheck.setSelected(Boolean.valueOf(_mutableAction.getSecondValue()));
-        view.pressCheck.setText(_mutableAction.getSecondValueName());
+        view.pressCheck.setText(second.getName());
+        view.pressCheck.setSelected(Boolean.valueOf(second.getValue()));
     }
     
     private void setupPickMouseKeyPanel()
@@ -423,23 +440,37 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
             return;
         }
         
-        List<String> values = _mutableAction.getPossibleSpecificValues();
+        // Properties
+        BaseMutableActionProperty first = _mutableAction.getFirstProperty();
+        BaseMutableActionProperty second = _mutableAction.getSecondProperty();
         
+        List<String> values;
+        
+        if (first instanceof MutableActionPropertyList)
+        {
+            values = ((MutableActionPropertyList)first).getValues();
+        }
+        else
+        {
+            return;
+        }
+        
+        // Setup view
         EditMacroActionMouseKeyPanel view = new EditMacroActionMouseKeyPanel();
         
         view.onSelectedValueCallback = new Callback<String>() {
             @Override
             public void perform(String argument) {
-                _mutableAction.setFirstValue(argument);
-                onAnyValueChanged();
+                String newValue = argument;
+                setActionFirstValue(newValue);
             }
         };
         
         view.onPressCheckCallback = new Callback<Boolean>() {
             @Override
             public void perform(Boolean argument) {
-                _mutableAction.setSecondValue(String.valueOf(view.pressCheck.isSelected()));
-                onAnyValueChanged();
+                String newValue = String.valueOf(view.pressCheck.isSelected());
+                setActionSecondValue(newValue);
                 onPressCheckCallback.perform();
             }
         };
@@ -450,12 +481,12 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         
         // Setup values and their labels
         view.setSpecificValues(values);
-        view.selectSpecificValue(_mutableAction.getFirstValue());
         
-        view.keyLabel.setText(_mutableAction.getFirstValueName());
+        view.selectSpecificValue(first.getValue());
+        view.keyLabel.setText(first.getName());
         
-        view.pressCheck.setText(_mutableAction.getSecondValueName());
-        view.pressCheck.setSelected(Boolean.valueOf(_mutableAction.getSecondValue()));
+        view.pressCheck.setSelected(Boolean.valueOf(second.getValue()));
+        view.pressCheck.setText(second.getName());
     }
     
     private void setupMouseMovePanel()
@@ -465,21 +496,24 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
             return;
         }
         
-        List<String> values = _mutableAction.getPossibleSpecificValues();
+        // Properties
+        BaseMutableActionProperty first = _mutableAction.getFirstProperty();
+        BaseMutableActionProperty second = _mutableAction.getSecondProperty();
         
+        // Setup view
         EditMacroActionMouseMovePanel view = new EditMacroActionMouseMovePanel();
         view.onXValueChangedCallback = new Callback<String>() {
             @Override
             public void perform(String argument) {
-                _mutableAction.setFirstValue(argument);
-                onAnyValueChanged();
+                String newValue = argument;
+                setActionFirstValue(newValue);
             }
         };
         view.onYValueChangedCallback = new Callback<String>() {
             @Override
             public void perform(String argument) {
-                _mutableAction.setSecondValue(argument);
-                onAnyValueChanged();
+                String newValue = argument;
+                setActionSecondValue(newValue);
             }
         };
         
@@ -488,26 +522,13 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         panel.add(view, BorderLayout.NORTH);
         
         // Setup values and their labels
-        view.xLabel.setText(_mutableAction.getFirstValueName());
-        view.xField.setText(_mutableAction.getFirstValue());
-        view.yLabel.setText(_mutableAction.getSecondValueName());
-        view.yField.setText(_mutableAction.getSecondValue());
+        view.xLabel.setText(first.getName());
+        view.xField.setText(first.getValue());
+        view.yLabel.setText(second.getName());
+        view.yField.setText(second.getValue());
     }
     
-    private void setHotkeyValue(String value)
-    {
-        if (_mutableAction == null)
-        {
-            return;
-        }
-        
-        _mutableAction.setFirstValue(value);
-    }
-    
-    private void onAnyValueChanged()
-    {
-        updateStateDescription();
-    }
+    // # Private - validators
     
     private boolean isTimestampValid()
     {
@@ -526,43 +547,39 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         return true;
     }
     
-    private void updateSaveButtonState()
+    private String isPropertyValueValid(BaseMutableActionProperty p)
     {
-        updateSaveButtonState(_saveButtonShouldBeEnabled);
+        return null;
     }
-    
-    private void updateSaveButtonState(boolean enabled)
-    {
-        _saveButtonShouldBeEnabled = enabled;
-        
-        if (!isTimestampValid())
-        {
-            saveButton.setEnabled(false);
-            return;
-        }
-        
-        saveButton.setEnabled(_saveButtonShouldBeEnabled);
-    }
-    
-    private void updateTimestampValue()
+     
+    private String isEnteredPropertyValuesValid()
     {
         if (_mutableAction == null)
         {
-            return;
+            return null;
         }
         
-        if (!isTimestampValid())
+        for (BaseMutableActionProperty p : _mutableAction.getProperties())
         {
-            return;
+            String error = p.getInvalidError();
+            
+            if (error != null)
+            {
+                return error;
+            }
         }
         
-        // Update value
-        long timestamp = Long.parseLong(timeField.getText());
-        
-        _mutableAction.setTimestamp(timestamp);
+        return null;
     }
     
-    private void updateStateDescription()
+    // # Private - state operations
+    
+    private void onAnyValueChanged()
+    {
+        updateState();
+    }
+    
+    private void updateState()
     {
         if (_mutableAction == null)
         {
@@ -573,14 +590,44 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         if (!isTimestampValid())
         {
             statusLabel.setText(TextValue.getText(TextValue.EditAction_StatusError, "Invalid time!"));
+            saveButton.setEnabled(false);
+            return;
+        }
+        
+        String propertyError = isEnteredPropertyValuesValid();
+        
+        if (propertyError != null)
+        {
+            statusLabel.setText(TextValue.getText(TextValue.EditAction_StatusError, propertyError));
+            saveButton.setEnabled(false);
             return;
         }
         
         statusLabel.setText(_mutableAction.getStateDescription());
+        saveButton.setEnabled(true);
+    }
+    
+    private void updateActionWithNewestTimestamp()
+    {
+        if (_mutableAction == null)
+        {
+            return;
+        }
+        
+        if (!isTimestampValid())
+        {
+            onAnyValueChanged();
+            return;
+        }
+        
+        // Update value
+        long timestamp = Long.parseLong(timeField.getText());
+        
+        _mutableAction.setTimestamp(timestamp);
+        onAnyValueChanged();
     }
     
     private int _selectedTypeIndex = 0;
-    private boolean _saveButtonShouldBeEnabled = true;
     private EditMacroActionTypesModel _actionTypesModel;
     private BaseMutableAction _mutableAction;
     

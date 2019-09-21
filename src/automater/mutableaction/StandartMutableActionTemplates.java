@@ -18,7 +18,7 @@ import automater.work.BaseAction;
  * @author Byti
  */
 public class StandartMutableActionTemplates {
-    public static BaseMutableAction buildTemplateFromTypeIndex(int typeIndex, long timestamp)
+    public static StandartMutableAction buildTemplateFromTypeIndex(int typeIndex, long timestamp)
     {
         switch (typeIndex)
         {
@@ -37,12 +37,12 @@ public class StandartMutableActionTemplates {
         return null;
     }
     
-    public static BaseMutableAction buildTemplateDoNothing(long timestamp)
+    public static StandartMutableAction buildTemplateDoNothing(long timestamp)
     {
         return new StandartMutableActionDoNothing(timestamp);
     }
     
-    public static BaseMutableAction buildTemplateKeyboardClick(long timestamp)
+    public static StandartMutableAction buildTemplateKeyboardClick(long timestamp)
     {
         final InputKey key = new InputKey(InputKeyValue._A);
         
@@ -74,7 +74,7 @@ public class StandartMutableActionTemplates {
         return StandartMutableAction.create(action);
     }
     
-    public static BaseMutableAction buildTemplateMouseClick(long timestamp)
+    public static StandartMutableAction buildTemplateMouseClick(long timestamp)
     {
         final InputKey key = new InputKey(InputKeyValue._MOUSE_LEFT_CLICK);
         
@@ -106,7 +106,7 @@ public class StandartMutableActionTemplates {
         return StandartMutableAction.create(action);
     }
     
-    public static BaseMutableAction buildTemplateMouseMove(long timestamp)
+    public static StandartMutableAction buildTemplateMouseMove(long timestamp)
     {
         BaseAction action;
         

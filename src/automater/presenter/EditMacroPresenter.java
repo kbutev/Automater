@@ -46,7 +46,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     
     private int _actionBeingEditedIndex;
     private int _actionTypeSelectedIndex = 0;
-    private BaseMutableAction _actionBeingEdited;
+    private StandartMutableAction _actionBeingEdited;
     
     private boolean _recording = false;
     private final Recorder _recorder = Recorder.getDefault();
@@ -326,7 +326,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _isEditingOrCreatingAction = false;
         _isCreatingAction = false;
         
-        BaseMutableAction a = _actionBeingEdited;
+        StandartMutableAction a = _actionBeingEdited;
         int actionBeingEditedIndex = _actionBeingEditedIndex;
         
         _actionBeingEditedIndex = 0;
@@ -393,7 +393,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         
         long timestamp = _actionBeingEdited.getTimestamp();
         
-        BaseMutableAction a;
+        StandartMutableAction a;
         a = StandartMutableActionTemplates.buildTemplateFromTypeIndex(index, timestamp);
         
         if (a == null)
@@ -461,7 +461,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _delegate.onLoadedMacroFromStorage(_originalMacro.name, _originalMacro.getDescription(), _macroActionDescriptions);
     }
     
-    private void updateMacroWithNewCreatedAction(BaseMutableAction a, int actionBeingEditedIndex)
+    private void updateMacroWithNewCreatedAction(StandartMutableAction a, int actionBeingEditedIndex)
     {
         try {
             BaseAction action = a.buildAction();
@@ -477,7 +477,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         }
     }
     
-    private void updateMacroWithEditedAction(BaseMutableAction a, int actionBeingEditedIndex)
+    private void updateMacroWithEditedAction(StandartMutableAction a, int actionBeingEditedIndex)
     {
         try {
             BaseAction action = a.buildAction();

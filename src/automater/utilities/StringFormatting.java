@@ -62,4 +62,32 @@ public class StringFormatting {
             return false;  
         }  
     }
+    
+    public static boolean isStringADouble(String string)
+    {
+        try {  
+            Double.parseDouble(string);
+            return true;
+        } catch (NumberFormatException e){  
+            return false;  
+        }  
+    }
+    
+    public static boolean isStringAPositiveDouble(String string)
+    {
+        try {  
+            return Double.parseDouble(string) > 0; 
+        } catch (NumberFormatException e){  
+            return false;  
+        }  
+    }
+    
+    public static boolean isStringANonNegativeDouble(String string)
+    {
+        try {  
+            return Double.parseDouble(string) >= 0; 
+        } catch (NumberFormatException e){  
+            return false;  
+        }  
+    }
 }
