@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.work.model;
+package automater.mutableaction;
 
 import automater.utilities.Description;
 import automater.work.BaseAction;
@@ -14,11 +14,11 @@ import java.util.List;
  *
  * @author Bytevi
  */
-public interface BaseEditableAction {
+public interface BaseMutableAction {
     public BaseAction buildAction() throws Exception;
     
-    public EditableActionType getType();
-    public void setType(EditableActionType type);
+    public MutableActionType getType();
+    public void setType(MutableActionType type);
     
     public long getTimestamp();
     public void setTimestamp(long timestamp);

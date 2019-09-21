@@ -9,8 +9,7 @@ import automater.TextValue;
 import automater.utilities.Callback;
 import automater.utilities.SimpleCallback;
 import automater.utilities.StringFormatting;
-import automater.work.model.BaseEditableAction;
-import automater.work.model.EditableActionType;
+import automater.mutableaction.MutableActionType;
 import java.awt.BorderLayout;
 import java.util.List;
 import javax.swing.ComboBoxModel;
@@ -18,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataListener;
+import automater.mutableaction.BaseMutableAction;
 
 /**
  *
@@ -246,11 +246,11 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         typesDropdown.setSelectedIndex(index);
     }
     
-    public void setEditableAction(BaseEditableAction editableAction)
+    public void setMutableAction(BaseMutableAction mutableAction)
     {
-        _editableAction = editableAction;
+        _mutableAction = mutableAction;
         
-        setupEditableAction();
+        setupMutableAction();
     }
     
     public void startHotkeyListening()
@@ -293,15 +293,15 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     
     // # Private
     
-    private void setupEditableAction()
+    private void setupMutableAction()
     {
-        if (_editableAction == null)
+        if (_mutableAction == null)
         {
             return;
         }
         
         // Time
-        timeField.setText(String.valueOf(_editableAction.getTimestamp()));
+        timeField.setText(String.valueOf(_mutableAction.getTimestamp()));
         timeField.setEditable(true);
         
         DocumentListener listener = new DocumentListener() {
@@ -335,27 +335,27 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         // Setup current panel
         clearCurrentPanel();
         
-        if (_editableAction.getType() == EditableActionType.DoNothing)
+        if (_mutableAction.getType() == MutableActionType.DoNothing)
         {
             setupPickDoNothingPanel();
         }
         
-        if (_editableAction.getType() == EditableActionType.KeyboardKey)
+        if (_mutableAction.getType() == MutableActionType.KeyboardKey)
         {
             setupPickKeyboardKeyPanel();
         }
         
-        if (_editableAction.getType() == EditableActionType.MouseKey)
+        if (_mutableAction.getType() == MutableActionType.MouseKey)
         {
             setupPickMouseKeyPanel();
         }
         
-        if (_editableAction.getType() == EditableActionType.MouseMove)
+        if (_mutableAction.getType() == MutableActionType.MouseMove)
         {
             setupMouseMovePanel();
         }
         
-        if (_editableAction.getType() == EditableActionType.MouseMotion)
+        if (_mutableAction.getType() == MutableActionType.MouseMotion)
         {
             setupMouseMovePanel();
         }
@@ -371,7 +371,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     
     private void setupPickDoNothingPanel()
     {
-        if (_editableAction == null)
+        if (_mutableAction == null)
         {
             return;
         }
@@ -385,7 +385,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     
     private void setupPickKeyboardKeyPanel()
     {
-        if (_editableAction == null)
+        if (_mutableAction == null)
         {
             return;
         }
@@ -398,7 +398,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         view.onPressCheckCallback = new Callback<Boolean>() {
             @Override
             public void perform(Boolean argument) {
-                _editableAction.setSecondValue(String.valueOf(view.pressCheck.isSelected()));
+                _mutableAction.setSecondValue(String.valueOf(view.pressCheck.isSelected()));
                 onAnyValueChanged();
                 onPressCheckCallback.perform();
             }
@@ -409,28 +409,28 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         panel.add(view, BorderLayout.NORTH);
         
         // Setup values and their labels
-        view.keyLabel.setText(_editableAction.getFirstValueName());
-        _hotkeyButton.setText(_editableAction.getFirstValue());
+        view.keyLabel.setText(_mutableAction.getFirstValueName());
+        _hotkeyButton.setText(_mutableAction.getFirstValue());
         
-        view.pressCheck.setSelected(Boolean.valueOf(_editableAction.getSecondValue()));
-        view.pressCheck.setText(_editableAction.getSecondValueName());
+        view.pressCheck.setSelected(Boolean.valueOf(_mutableAction.getSecondValue()));
+        view.pressCheck.setText(_mutableAction.getSecondValueName());
     }
     
     private void setupPickMouseKeyPanel()
     {
-        if (_editableAction == null)
+        if (_mutableAction == null)
         {
             return;
         }
         
-        List<String> values = _editableAction.getPossibleSpecificValues();
+        List<String> values = _mutableAction.getPossibleSpecificValues();
         
         EditMacroActionMouseKeyPanel view = new EditMacroActionMouseKeyPanel();
         
         view.onSelectedValueCallback = new Callback<String>() {
             @Override
             public void perform(String argument) {
-                _editableAction.setFirstValue(argument);
+                _mutableAction.setFirstValue(argument);
                 onAnyValueChanged();
             }
         };
@@ -438,7 +438,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         view.onPressCheckCallback = new Callback<Boolean>() {
             @Override
             public void perform(Boolean argument) {
-                _editableAction.setSecondValue(String.valueOf(view.pressCheck.isSelected()));
+                _mutableAction.setSecondValue(String.valueOf(view.pressCheck.isSelected()));
                 onAnyValueChanged();
                 onPressCheckCallback.perform();
             }
@@ -450,35 +450,35 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         
         // Setup values and their labels
         view.setSpecificValues(values);
-        view.selectSpecificValue(_editableAction.getFirstValue());
+        view.selectSpecificValue(_mutableAction.getFirstValue());
         
-        view.keyLabel.setText(_editableAction.getFirstValueName());
+        view.keyLabel.setText(_mutableAction.getFirstValueName());
         
-        view.pressCheck.setText(_editableAction.getSecondValueName());
-        view.pressCheck.setSelected(Boolean.valueOf(_editableAction.getSecondValue()));
+        view.pressCheck.setText(_mutableAction.getSecondValueName());
+        view.pressCheck.setSelected(Boolean.valueOf(_mutableAction.getSecondValue()));
     }
     
     private void setupMouseMovePanel()
     {
-        if (_editableAction == null)
+        if (_mutableAction == null)
         {
             return;
         }
         
-        List<String> values = _editableAction.getPossibleSpecificValues();
+        List<String> values = _mutableAction.getPossibleSpecificValues();
         
         EditMacroActionMouseMovePanel view = new EditMacroActionMouseMovePanel();
         view.onXValueChangedCallback = new Callback<String>() {
             @Override
             public void perform(String argument) {
-                _editableAction.setFirstValue(argument);
+                _mutableAction.setFirstValue(argument);
                 onAnyValueChanged();
             }
         };
         view.onYValueChangedCallback = new Callback<String>() {
             @Override
             public void perform(String argument) {
-                _editableAction.setSecondValue(argument);
+                _mutableAction.setSecondValue(argument);
                 onAnyValueChanged();
             }
         };
@@ -488,20 +488,20 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         panel.add(view, BorderLayout.NORTH);
         
         // Setup values and their labels
-        view.xLabel.setText(_editableAction.getFirstValueName());
-        view.xField.setText(_editableAction.getFirstValue());
-        view.yLabel.setText(_editableAction.getSecondValueName());
-        view.yField.setText(_editableAction.getSecondValue());
+        view.xLabel.setText(_mutableAction.getFirstValueName());
+        view.xField.setText(_mutableAction.getFirstValue());
+        view.yLabel.setText(_mutableAction.getSecondValueName());
+        view.yField.setText(_mutableAction.getSecondValue());
     }
     
     private void setHotkeyValue(String value)
     {
-        if (_editableAction == null)
+        if (_mutableAction == null)
         {
             return;
         }
         
-        _editableAction.setFirstValue(value);
+        _mutableAction.setFirstValue(value);
     }
     
     private void onAnyValueChanged()
@@ -546,7 +546,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     
     private void updateTimestampValue()
     {
-        if (_editableAction == null)
+        if (_mutableAction == null)
         {
             return;
         }
@@ -559,12 +559,12 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         // Update value
         long timestamp = Long.parseLong(timeField.getText());
         
-        _editableAction.setTimestamp(timestamp);
+        _mutableAction.setTimestamp(timestamp);
     }
     
     private void updateStateDescription()
     {
-        if (_editableAction == null)
+        if (_mutableAction == null)
         {
             statusLabel.setText("");
             return;
@@ -576,13 +576,13 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
             return;
         }
         
-        statusLabel.setText(_editableAction.getStateDescription());
+        statusLabel.setText(_mutableAction.getStateDescription());
     }
     
     private int _selectedTypeIndex = 0;
     private boolean _saveButtonShouldBeEnabled = true;
     private EditMacroActionTypesModel _actionTypesModel;
-    private BaseEditableAction _editableAction;
+    private BaseMutableAction _mutableAction;
     
     private JButton _hotkeyButton;
     

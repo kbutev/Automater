@@ -185,19 +185,19 @@ public class OpenMacroViewController implements BaseViewController, BasePresente
     }
     
     @Override
-    public void onCreateMacroAction(automater.work.model.BaseEditableAction action)
+    public void onCreateMacroAction(automater.mutableaction.BaseMutableAction action)
     {
         
     }
     
     @Override
-    public void onEditMacroAction(automater.work.model.BaseEditableAction action)
+    public void onEditMacroAction(automater.mutableaction.BaseMutableAction action)
     {
         
     }
     
     @Override
-    public void onSaveMacroAction(automater.work.model.BaseEditableAction action)
+    public void onSaveMacroAction(automater.mutableaction.BaseMutableAction action)
     {
         
     }

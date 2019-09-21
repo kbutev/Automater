@@ -18,9 +18,9 @@ import automater.utilities.Callback;
 import automater.utilities.Description;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
-import automater.work.model.BaseEditableAction;
 import java.awt.event.WindowEvent;
 import java.util.List;
+import automater.mutableaction.BaseMutableAction;
 
 /**
  *
@@ -192,19 +192,19 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     }
     
     @Override
-    public void onCreateMacroAction(automater.work.model.BaseEditableAction action)
+    public void onCreateMacroAction(automater.mutableaction.BaseMutableAction action)
     {
         startCreatingMacroAction(action);
     }
     
     @Override
-    public void onEditMacroAction(automater.work.model.BaseEditableAction action)
+    public void onEditMacroAction(automater.mutableaction.BaseMutableAction action)
     {
         startEditingMacroAction(action);
     }
     
     @Override
-    public void onSaveMacroAction(automater.work.model.BaseEditableAction action)
+    public void onSaveMacroAction(automater.mutableaction.BaseMutableAction action)
     {
         
     }
@@ -282,7 +282,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         };
     }
     
-    private void startCreatingMacroAction(automater.work.model.BaseEditableAction action)
+    private void startCreatingMacroAction(automater.mutableaction.BaseMutableAction action)
     {
         initEditMacroActionDialog();
         
@@ -293,7 +293,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         _editActionDialog.setVisible(true);
     }
     
-    private void startEditingMacroAction(automater.work.model.BaseEditableAction action)
+    private void startEditingMacroAction(automater.mutableaction.BaseMutableAction action)
     {
         initEditMacroActionDialog();
         
@@ -304,7 +304,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         _editActionDialog.setVisible(true);
     }
     
-    private void setupEditingMacroActionDialog(automater.work.model.BaseEditableAction action)
+    private void setupEditingMacroActionDialog(automater.mutableaction.BaseMutableAction action)
     {
         // Selectable types
         StandartDescriptionsDataSource actionTypes;
@@ -315,8 +315,8 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         // Action type
         _editActionDialog.selectDropdownType(_presenter.getActionTypeSelectedIndex());
         
-        // Set editable action
-        _editActionDialog.setEditableAction(action);
+        // Set mutable action
+        _editActionDialog.setMutableAction(action);
     }
     
     private void closeEditMacroActionDialog()
@@ -372,13 +372,13 @@ public class EditMacroViewController implements BaseViewController, BasePresente
             return;
         }
         
-        BaseEditableAction a;
+        BaseMutableAction a;
         a = _presenter.changeEditMacroActionTypeForTypeIndex(index);
         
         if (a != null)
         {
             _editActionDialog.selectDropdownType(index);
-            _editActionDialog.setEditableAction(a);
+            _editActionDialog.setMutableAction(a);
         }
     }
     

@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.work.model;
+package automater.mutableaction;
 
 /**
- *
+ * Mutable action type.
+ * 
  * @author Bytevi
  */
-public enum EditableActionType {
+public enum MutableActionType {
     DoNothing, KeyboardKey, MouseKey, MouseMove, MouseMotion
 }

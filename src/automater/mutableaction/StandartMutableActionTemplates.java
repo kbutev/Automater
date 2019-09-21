@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.work.model;
+package automater.mutableaction;
 
 import automater.input.InputKey;
 import automater.input.InputKeyClick;
@@ -13,11 +13,12 @@ import automater.work.Action;
 import automater.work.BaseAction;
 
 /**
+ * Builder for BaseMutableActions.
  *
  * @author Byti
  */
-public class StandartEditableActionTemplates {
-    public static BaseEditableAction buildTemplateFromTypeIndex(int typeIndex, long timestamp)
+public class StandartMutableActionTemplates {
+    public static BaseMutableAction buildTemplateFromTypeIndex(int typeIndex, long timestamp)
     {
         switch (typeIndex)
         {
@@ -36,12 +37,12 @@ public class StandartEditableActionTemplates {
         return null;
     }
     
-    public static BaseEditableAction buildTemplateDoNothing(long timestamp)
+    public static BaseMutableAction buildTemplateDoNothing(long timestamp)
     {
-        return new StandartEditableActionDoNothing(timestamp);
+        return new StandartMutableActionDoNothing(timestamp);
     }
     
-    public static BaseEditableAction buildTemplateKeyboardClick(long timestamp)
+    public static BaseMutableAction buildTemplateKeyboardClick(long timestamp)
     {
         final InputKey key = new InputKey(InputKeyValue._A);
         
@@ -70,10 +71,10 @@ public class StandartEditableActionTemplates {
             return null;
         }
         
-        return StandartEditableAction.create(action);
+        return StandartMutableAction.create(action);
     }
     
-    public static BaseEditableAction buildTemplateMouseClick(long timestamp)
+    public static BaseMutableAction buildTemplateMouseClick(long timestamp)
     {
         final InputKey key = new InputKey(InputKeyValue._MOUSE_LEFT_CLICK);
         
@@ -102,10 +103,10 @@ public class StandartEditableActionTemplates {
             return null;
         }
         
-        return StandartEditableAction.create(action);
+        return StandartMutableAction.create(action);
     }
     
-    public static BaseEditableAction buildTemplateMouseMove(long timestamp)
+    public static BaseMutableAction buildTemplateMouseMove(long timestamp)
     {
         BaseAction action;
         
@@ -115,6 +116,6 @@ public class StandartEditableActionTemplates {
             return null;
         }
         
-        return StandartEditableAction.create(action);
+        return StandartMutableAction.create(action);
     }
 }

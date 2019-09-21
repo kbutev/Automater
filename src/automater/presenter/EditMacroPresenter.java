@@ -19,13 +19,13 @@ import automater.work.Action;
 import automater.work.BaseAction;
 import automater.work.model.Macro;
 import java.util.List;
-import automater.work.model.BaseEditableAction;
-import automater.work.model.StandartEditableAction;
-import automater.work.model.StandartEditableActionTemplates;
-import automater.work.model.StandartEditableActionConstants;
+import automater.mutableaction.StandartMutableAction;
+import automater.mutableaction.StandartMutableActionTemplates;
+import automater.mutableaction.StandartMutableActionConstants;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import automater.mutableaction.BaseMutableAction;
 
 /**
  *
@@ -46,7 +46,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     
     private int _actionBeingEditedIndex;
     private int _actionTypeSelectedIndex = 0;
-    private BaseEditableAction _actionBeingEdited;
+    private BaseMutableAction _actionBeingEdited;
     
     private boolean _recording = false;
     private final Recorder _recorder = Recorder.getDefault();
@@ -129,7 +129,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     
     public List<Description> getActionTypes()
     {
-        return StandartEditableActionConstants.getActionTypes();
+        return StandartMutableActionConstants.getActionTypes();
     }
     
     public int getActionTypeSelectedIndex()
@@ -243,7 +243,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _actionBeingEditedIndex = index;
         _actionTypeSelectedIndex = CREATE_ACTION_DEFAULT_TYPE_VALUE;
         
-        _actionBeingEdited = StandartEditableActionTemplates.buildTemplateFromTypeIndex(_actionTypeSelectedIndex, timestamp);
+        _actionBeingEdited = StandartMutableActionTemplates.buildTemplateFromTypeIndex(_actionTypeSelectedIndex, timestamp);
         
         Logger.messageEvent(this, "Start creating new macro action at index " + String.valueOf(index) + "");
         
@@ -279,9 +279,9 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         
         BaseAction action = _macroActions.get(index);
         _actionBeingEditedIndex = index;
-        _actionTypeSelectedIndex = StandartEditableActionConstants.getActionTypeSelectedIndex(action);
+        _actionTypeSelectedIndex = StandartMutableActionConstants.getActionTypeSelectedIndex(action);
         
-        _actionBeingEdited = StandartEditableAction.create(action);
+        _actionBeingEdited = StandartMutableAction.create(action);
         
         Logger.messageEvent(this, "Start editing macro action '" + action.toString() + "' at index " + String.valueOf(index) + "");
         
@@ -326,7 +326,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _isEditingOrCreatingAction = false;
         _isCreatingAction = false;
         
-        BaseEditableAction a = _actionBeingEdited;
+        BaseMutableAction a = _actionBeingEdited;
         int actionBeingEditedIndex = _actionBeingEditedIndex;
         
         _actionBeingEditedIndex = 0;
@@ -383,7 +383,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         updateDelegateWithMacroInfo();
     }
     
-    public BaseEditableAction changeEditMacroActionTypeForTypeIndex(int index)
+    public BaseMutableAction changeEditMacroActionTypeForTypeIndex(int index)
     {
         if (!_isEditingOrCreatingAction)
         {
@@ -393,8 +393,8 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         
         long timestamp = _actionBeingEdited.getTimestamp();
         
-        BaseEditableAction a;
-        a = StandartEditableActionTemplates.buildTemplateFromTypeIndex(index, timestamp);
+        BaseMutableAction a;
+        a = StandartMutableActionTemplates.buildTemplateFromTypeIndex(index, timestamp);
         
         if (a == null)
         {
@@ -461,7 +461,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _delegate.onLoadedMacroFromStorage(_originalMacro.name, _originalMacro.getDescription(), _macroActionDescriptions);
     }
     
-    private void updateMacroWithNewCreatedAction(BaseEditableAction a, int actionBeingEditedIndex)
+    private void updateMacroWithNewCreatedAction(BaseMutableAction a, int actionBeingEditedIndex)
     {
         try {
             BaseAction action = a.buildAction();
@@ -477,7 +477,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         }
     }
     
-    private void updateMacroWithEditedAction(BaseEditableAction a, int actionBeingEditedIndex)
+    private void updateMacroWithEditedAction(BaseMutableAction a, int actionBeingEditedIndex)
     {
         try {
             BaseAction action = a.buildAction();

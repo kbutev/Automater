@@ -31,9 +31,9 @@ public interface BasePresenterDelegate {
     
     public void onLoadedPreferencesFromStorage(PreferencesStorageValues values);
     
-    public void onCreateMacroAction(automater.work.model.BaseEditableAction action);
-    public void onEditMacroAction(automater.work.model.BaseEditableAction action);
-    public void onSaveMacroAction(automater.work.model.BaseEditableAction action);
+    public void onCreateMacroAction(automater.mutableaction.BaseMutableAction action);
+    public void onEditMacroAction(automater.mutableaction.BaseMutableAction action);
+    public void onSaveMacroAction(automater.mutableaction.BaseMutableAction action);
     
     public void onErrorEncountered(Exception e);
 }

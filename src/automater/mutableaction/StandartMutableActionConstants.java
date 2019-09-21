@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.work.model;
+package automater.mutableaction;
 
 import automater.TextValue;
 import automater.input.InputDoNothing;
@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * List of mandatory and commonly used values for the standart EditableAction implementation.
+ * List of mandatory and commonly used values for the standart BaseMutableAction implementation.
  *
  * @author Bytevi
  */
-public class StandartEditableActionConstants {
+public class StandartMutableActionConstants {
     public static String MOUSE_KEY_REPLACEMENT_STRING = "MOUSE_";
     
     public static List<Description> getActionTypes()
@@ -61,28 +61,28 @@ public class StandartEditableActionConstants {
         return 0;
     }
     
-    public static EditableActionType getTypeFromAction(BaseAction action)
+    public static MutableActionType getTypeFromAction(BaseAction action)
     {
-        EditableActionType type = EditableActionType.MouseKey;
+        MutableActionType type = MutableActionType.MouseKey;
         
         if (action instanceof InputKeyClick)
         {
             if (action instanceof InputMouse)
             {
-                return EditableActionType.MouseKey;
+                return MutableActionType.MouseKey;
             }
             
-            return EditableActionType.KeyboardKey;
+            return MutableActionType.KeyboardKey;
         }
         
         if (action instanceof InputMouseMove)
         {
-            type = EditableActionType.MouseMove;
+            type = MutableActionType.MouseMove;
         }
         
         if (action instanceof InputMouseMotion)
         {
-            type = EditableActionType.MouseMotion;
+            type = MutableActionType.MouseMotion;
         }
         
         return type;

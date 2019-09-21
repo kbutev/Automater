@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package automater.work.model;
+package automater.mutableaction;
 
 import automater.TextValue;
 import automater.input.InputDescriptions;
@@ -24,12 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Standart EditableAction implementation.
+ * Standart implementation for BaseMutableAction.
  *
  * @author Bytevi
  */
-public class StandartEditableAction implements BaseEditableAction {
-    EditableActionType type;
+public class StandartMutableAction implements BaseMutableAction {
+    MutableActionType type;
     long timestamp;
     List<String> specificValues = new ArrayList<>();
     
@@ -38,17 +38,17 @@ public class StandartEditableAction implements BaseEditableAction {
     String secondName;
     String secondValue;
     
-    public static BaseEditableAction createDoNothing(long timestamp)
+    public static BaseMutableAction createDoNothing(long timestamp)
     {
-        return new StandartEditableActionDoNothing(timestamp);
+        return new StandartMutableActionDoNothing(timestamp);
     }
     
-    public static BaseEditableAction create(BaseAction action)
+    public static BaseMutableAction create(BaseAction action)
     {
-        EditableActionType type = StandartEditableActionConstants.getTypeFromAction(action);
+        MutableActionType type = StandartMutableActionConstants.getTypeFromAction(action);
         long timestamp = action.getPerformTime();
         
-        StandartEditableAction a = null;
+        StandartMutableAction a = null;
         
         boolean isInputKeyClick = action instanceof InputKeyClick;
         boolean isInputKeyboardClick = !(action instanceof InputMouse);
@@ -63,7 +63,7 @@ public class StandartEditableAction implements BaseEditableAction {
         if (isInputKeyClick && isInputKeyboardClick)
         {
             InputKeyClick keyboardClick = (InputKeyClick)action;
-            a = new StandartEditableActionKeyboardClick(type, timestamp);
+            a = new StandartMutableActionKeyboardClick(type, timestamp);
             a.firstName = TextValue.getText(TextValue.EditAction_Key);
             a.firstValue = keyboardClick.getKeyValue().toString();
             a.secondName = TextValue.getText(TextValue.EditAction_Press);
@@ -75,12 +75,12 @@ public class StandartEditableAction implements BaseEditableAction {
         {
             InputKeyClick mouseClick = (InputKeyClick)action;
             InputKeyValue keyValue = mouseClick.getKeyValue().value;
-            a = new StandartEditableActionMouseClick(type, timestamp);
+            a = new StandartMutableActionMouseClick(type, timestamp);
             a.firstName = TextValue.getText(TextValue.EditAction_Key);
-            a.firstValue = StandartEditableActionConstants.getMouseClickSpecificValueForKeyValue(keyValue);
+            a.firstValue = StandartMutableActionConstants.getMouseClickSpecificValueForKeyValue(keyValue);
             a.secondName = TextValue.getText(TextValue.EditAction_Press);
             a.secondValue = String.valueOf(mouseClick.isPress());
-            a.specificValues = StandartEditableActionConstants.getMouseClickSpecificValues();
+            a.specificValues = StandartMutableActionConstants.getMouseClickSpecificValues();
         }
         
         // MouseMove
@@ -88,7 +88,7 @@ public class StandartEditableAction implements BaseEditableAction {
         {
             InputMouseMove move = (InputMouseMove)action;
             
-            a = new StandartEditableActionMouseMove(type, timestamp);
+            a = new StandartMutableActionMouseMove(type, timestamp);
             a.firstName = TextValue.getText(TextValue.EditAction_X);
             a.firstValue = String.valueOf(move.getX());
             a.secondName = TextValue.getText(TextValue.EditAction_Y);
@@ -99,8 +99,8 @@ public class StandartEditableAction implements BaseEditableAction {
         if (action instanceof InputMouseMotion)
         {
             InputMouseMotion inputMotion = (InputMouseMotion)action;
-            StandartEditableActionMouseMotion motion;
-            motion = new StandartEditableActionMouseMotion(type, timestamp, inputMotion.getMoves());
+            StandartMutableActionMouseMotion motion;
+            motion = new StandartMutableActionMouseMotion(type, timestamp, inputMotion.getMoves());
             a = motion;
             
             InputMouseMove lastMove = inputMotion.getLastMove();
@@ -118,7 +118,7 @@ public class StandartEditableAction implements BaseEditableAction {
         return a;
     }
     
-    public StandartEditableAction(EditableActionType type, long timestamp)
+    public StandartMutableAction(MutableActionType type, long timestamp)
     {
         this.type = type;
         this.timestamp = timestamp;
@@ -130,12 +130,12 @@ public class StandartEditableAction implements BaseEditableAction {
     }
     
     @Override
-    public EditableActionType getType() {
+    public MutableActionType getType() {
         return type;
     }
 
     @Override
-    public void setType(EditableActionType type) {
+    public void setType(MutableActionType type) {
         this.type = type;
     }
 
@@ -195,10 +195,10 @@ public class StandartEditableAction implements BaseEditableAction {
     }
 }
 
-class StandartEditableActionDoNothing extends StandartEditableAction implements InputDoNothing {
-    public StandartEditableActionDoNothing(long timestamp)
+class StandartMutableActionDoNothing extends StandartMutableAction implements InputDoNothing {
+    public StandartMutableActionDoNothing(long timestamp)
     {
-        super(EditableActionType.DoNothing, timestamp);
+        super(MutableActionType.DoNothing, timestamp);
     }
     
     @Override
@@ -219,8 +219,8 @@ class StandartEditableActionDoNothing extends StandartEditableAction implements 
     }
 }
 
-class StandartEditableActionKeyboardClick extends StandartEditableAction {
-    public StandartEditableActionKeyboardClick(EditableActionType type, long timestamp)
+class StandartMutableActionKeyboardClick extends StandartMutableAction {
+    public StandartMutableActionKeyboardClick(MutableActionType type, long timestamp)
     {
         super(type, timestamp);
     }
@@ -272,8 +272,8 @@ class StandartEditableActionKeyboardClick extends StandartEditableAction {
     }
 }
 
-class StandartEditableActionMouseClick extends StandartEditableAction {
-    public StandartEditableActionMouseClick(EditableActionType type, long timestamp)
+class StandartMutableActionMouseClick extends StandartMutableAction {
+    public StandartMutableActionMouseClick(MutableActionType type, long timestamp)
     {
         super(type, timestamp);
     }
@@ -338,12 +338,12 @@ class StandartEditableActionMouseClick extends StandartEditableAction {
     
     public InputKey getMouseKey()
     {
-        return StandartEditableActionConstants.getMouseKeyForTextValue(firstValue);
+        return StandartMutableActionConstants.getMouseKeyForTextValue(firstValue);
     }
 }
 
-class StandartEditableActionMouseMove extends StandartEditableAction {
-    public StandartEditableActionMouseMove(EditableActionType type, long timestamp)
+class StandartMutableActionMouseMove extends StandartMutableAction {
+    public StandartMutableActionMouseMove(MutableActionType type, long timestamp)
     {
         super(type, timestamp);
     }
@@ -388,10 +388,10 @@ class StandartEditableActionMouseMove extends StandartEditableAction {
     }
 }
 
-class StandartEditableActionMouseMotion extends StandartEditableActionMouseMove {
+class StandartMutableActionMouseMotion extends StandartMutableActionMouseMove {
     List<InputMouseMove> moves;
     
-    public StandartEditableActionMouseMotion(EditableActionType type, long timestamp, List<InputMouseMove> moves)
+    public StandartMutableActionMouseMotion(MutableActionType type, long timestamp, List<InputMouseMove> moves)
     {
         super(type, timestamp);
         this.moves = moves;
