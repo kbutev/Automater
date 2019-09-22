@@ -5,6 +5,9 @@
  */
 package automater.work;
 
+import automater.work.model.MacroParameters;
+import java.util.List;
+
 /**
  * Keeps track of how much time has passed.
  * 
@@ -15,7 +18,7 @@ package automater.work;
  * @author Bytevi
  */
 public interface BaseExecutorTimer {
-    public void setup(BaseAction firstAction, BaseAction lastAction) throws Exception;
+    public void setup(List<BaseAction> actions, MacroParameters parameters) throws Exception;
     
     public void reset();
     
@@ -26,7 +29,7 @@ public interface BaseExecutorTimer {
     public double getTimeScale();
     public void setTimeScale(double scale);
     
-    public long updateCurrentTime(long dt);
-    
     public boolean canPerformNextAction(BaseAction action);
+    
+    public long updateCurrentTime(long dt);
 }

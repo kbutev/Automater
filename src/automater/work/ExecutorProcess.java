@@ -149,8 +149,6 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     {
         Logger.messageEvent(this, "Start.");
         
-        int actionsSize;
-        
         synchronized (_lock)
         {
             if (_started)
@@ -163,14 +161,12 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
             _macro = macro;
             
             // Setup timer
-            this._timer.setup(getFirstAction(), getLastAction());
+            this._timer.setup(macro.actions, parameters);
             
             // Start
             _started = true;
             
             Looper.getShared().subscribe(this);
-            
-            actionsSize = _actions.size();
             
             // Setup context
             Dimension recordedScreenSize = macro.screenSize;
@@ -183,9 +179,6 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
             // Reset times played
             _playCount = 1;
         }
-        
-        // Set timescale
-        _timer.setTimeScale(parameters.playSpeed);
         
         // Listener alert
         if (_listener != null)
@@ -220,11 +213,15 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     // # ExecutorTimer
     
     @Override
-    public void setup(BaseAction firstAction, BaseAction lastAction) throws Exception {
+    public void setup(List<BaseAction> actions, MacroParameters parameters) throws Exception {
+        BaseAction firstAction = actions.get(0);
+        
         synchronized (_timerLock)
         {
             _previousDate = new Date();
             _currentTimeValue = firstAction.getPerformTime();
+            
+            _timer.setTimeScale(parameters.playSpeed);
         }
     }
     
@@ -272,7 +269,13 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
             _timeScale = scale;
         }
     }
-
+    
+    @Override
+    public boolean canPerformNextAction(BaseAction action) {
+        long currentTime = getCurrentTimeValue();
+        return action.getPerformTime() <= currentTime;
+    }
+    
     @Override
     public long updateCurrentTime(long dt) {
         synchronized (_timerLock)
@@ -283,12 +286,6 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
             
             return _currentTimeValue;
         }
-    }
-    
-    @Override
-    public boolean canPerformNextAction(BaseAction action) {
-        long currentTime = getCurrentTimeValue();
-        return action.getPerformTime() <= currentTime;
     }
     
     // # LooperClient

@@ -9,9 +9,6 @@ import automater.utilities.Logger;
 import automater.work.model.ExecutorState;
 import automater.work.model.Macro;
 import automater.work.model.MacroParameters;
-import automater.work.parser.ActionsParserUtilities;
-import java.util.List;
-import automater.work.parser.BaseActionsParser;
 import java.awt.Robot;
 
 /**
