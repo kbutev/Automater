@@ -156,7 +156,8 @@ public class RecorderJHookListener {
 
         @Override
         public void nativeMouseDragged(NativeMouseEvent nme) {
-            
+            RecorderUserInput input = _parser.evaluateMouseMove(nme);
+            _delegate.onParseInput(input);
         }
 
         @Override
