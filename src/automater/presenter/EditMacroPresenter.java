@@ -15,7 +15,6 @@ import automater.utilities.Callback;
 import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
-import automater.work.Action;
 import automater.work.BaseAction;
 import automater.work.model.Macro;
 import java.util.List;
@@ -32,14 +31,14 @@ import automater.mutableaction.BaseMutableAction;
  * @author Bytevi
  */
 public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener {
-    public final static int CREATE_ACTION_DEFAULT_TYPE_VALUE = 0;
+    public final static int CREATE_ACTION_DEFAULT_TYPE = 0;
     
     private final RootViewController _rootViewController;
     private BasePresenterDelegate _delegate;
     
     private final Macro _originalMacro;
-    private ArrayList<BaseAction> _macroActions;
-    private ArrayList<Description> _macroActionDescriptions;
+    private final ArrayList<BaseAction> _macroActions;
+    private final ArrayList<Description> _macroActionDescriptions;
     
     private boolean _isEditingOrCreatingAction = false;
     private boolean _isCreatingAction = false;
@@ -215,8 +214,9 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     
     public void onStartCreatingMacroActionAt(int index)
     {
-        if (index < 0 || index > _macroActions.size())
+        if (index < 0 || index >= _macroActions.size())
         {
+            Errors.throwInvalidArgument("Invalid index given to Edit macro presenter to create a new action");
             return;
         }
         
@@ -241,7 +241,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _isCreatingAction = true;
         
         _actionBeingEditedIndex = index;
-        _actionTypeSelectedIndex = CREATE_ACTION_DEFAULT_TYPE_VALUE;
+        _actionTypeSelectedIndex = CREATE_ACTION_DEFAULT_TYPE;
         
         _actionBeingEdited = StandartMutableActionTemplates.buildTemplateFromTypeIndex(_actionTypeSelectedIndex, timestamp);
         
@@ -265,6 +265,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     {
         if (index < 0 || index >= _macroActions.size())
         {
+            Errors.throwInvalidArgument("Invalid index given to Edit macro presenter to edit action");
             return;
         }
         
@@ -346,7 +347,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         
         if (isCreatingAction)
         {
-            updateMacroWithNewCreatedAction(a, actionBeingEditedIndex);
+            updateMacroWithNewCreatedAction(a);
             Logger.messageEvent(this, "Ending creating new action, insert it at " + String.valueOf(actionBeingEditedIndex));
         }
         else
@@ -461,13 +462,13 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _delegate.onLoadedMacroFromStorage(_originalMacro.name, _originalMacro.getDescription(), _macroActionDescriptions);
     }
     
-    private void updateMacroWithNewCreatedAction(StandartMutableAction a, int actionBeingEditedIndex)
+    private void updateMacroWithNewCreatedAction(StandartMutableAction a)
     {
         try {
             BaseAction action = a.buildAction();
             
-            _macroActions.add(actionBeingEditedIndex, action);
-            _macroActionDescriptions.add(actionBeingEditedIndex, action.getDescription());
+            _macroActions.add(action);
+            _macroActionDescriptions.add(action.getDescription());
             
             sortActions();
         } 
@@ -482,7 +483,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         try {
             BaseAction action = a.buildAction();
             
-            long originalTime = _originalMacro.actions.get(actionBeingEditedIndex).getPerformTime();
+            long originalTime = _macroActions.get(actionBeingEditedIndex).getPerformTime();
             long newTime = a.getTimestamp();
             
             _macroActions.set(actionBeingEditedIndex, action);
