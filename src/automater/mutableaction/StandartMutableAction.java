@@ -30,6 +30,7 @@ import java.util.List;
  * @author Bytevi
  */
 public class StandartMutableAction implements BaseMutableAction {
+    public static final int MAX_WAIT_VALUE = 999999;
     public static final int MAX_MOVE_X_VALUE = 9999;
     public static final int MAX_MOVE_Y_VALUE = 9999;
     
@@ -42,7 +43,7 @@ public class StandartMutableAction implements BaseMutableAction {
         return new StandartMutableActionDoNothing(timestamp);
     }
     
-    public static StandartMutableAction create(BaseAction action)
+    public static StandartMutableAction createFromAction(BaseAction action)
     {
         MutableActionType type = StandartMutableActionConstants.getTypeFromAction(action);
         long timestamp = action.getPerformTime();
@@ -53,10 +54,22 @@ public class StandartMutableAction implements BaseMutableAction {
         boolean isInputKeyClick = action instanceof InputKeyClick;
         boolean isInputKeyboardClick = !(action instanceof InputMouse);
         
-        // DoNothing
+        // Do Nothing & Wait
         if (action instanceof InputDoNothing)
         {
-            return createDoNothing(timestamp);
+            InputDoNothing input = (InputDoNothing)action;
+            
+            if (input.getDuration() == 0)
+            {
+                return createDoNothing(timestamp);
+            }
+            else
+            {
+                int duration = (int)input.getDuration();
+                a = new StandartMutableActionWait(timestamp, duration);
+                return a;
+            }
+            
         }
         
         // KeyboardClick
@@ -64,6 +77,7 @@ public class StandartMutableAction implements BaseMutableAction {
         {
             InputKeyClick keyboardClick = (InputKeyClick)action;
             a = new StandartMutableActionKeyboardClick(type, timestamp, keyboardClick);
+            return a;
         }
         
         // MouseClick
@@ -71,6 +85,7 @@ public class StandartMutableAction implements BaseMutableAction {
         {
             InputKeyClick mouseClick = (InputKeyClick)action;
             a = new StandartMutableActionMouseClick(type, timestamp, mouseClick);
+            return a;
         }
         
         // MouseMove
@@ -79,6 +94,7 @@ public class StandartMutableAction implements BaseMutableAction {
             InputMouseMove move = (InputMouseMove)action;
             
             a = new StandartMutableActionMouseMove(type, timestamp, move);
+            return a;
         }
         
         // MouseMotion
@@ -89,14 +105,10 @@ public class StandartMutableAction implements BaseMutableAction {
             StandartMutableActionMouseMotion motion;
             motion = new StandartMutableActionMouseMotion(type, timestamp, inputMotion.getMoves(), lastMove);
             a = motion;
+            return a;
         }
         
-        if (a == null)
-        {
-            return null;
-        }
-        
-        return a;
+        return null;
     }
     
     public StandartMutableAction(MutableActionType type, long timestamp)
@@ -163,7 +175,7 @@ class StandartMutableActionDoNothing extends StandartMutableAction implements In
         return d;
     }
     
-   @Override
+    @Override
     public String getStateDescription() {
         return TextValue.getText(TextValue.EditAction_DescriptionDoNothing);
     }
@@ -171,6 +183,59 @@ class StandartMutableActionDoNothing extends StandartMutableAction implements In
     @Override
     public BaseAction buildAction() throws Exception {
         return Action.createDoNothing(timestamp);
+    }
+    
+    @Override
+    public long getDuration() {
+        return 0;
+    }
+}
+
+class StandartMutableActionWait extends StandartMutableAction implements InputDoNothing {
+    public StandartMutableActionWait(long timestamp, int wait)
+    {
+        super(MutableActionType.Wait, timestamp);
+        
+        String name = TextValue.getText(TextValue.EditAction_Wait);
+        
+        properties.add(StandartMutableActionProperties.createNonNegativeInt(name, wait, MAX_WAIT_VALUE));
+    }
+    
+    @Override
+    public Description getDescription() {
+        Description d = InputDescriptions.getWaitDescription(timestamp, getDuration());
+        
+        return d;
+    }
+    
+    @Override
+    public String getStateDescription() {
+        return TextValue.getText(TextValue.EditAction_DescriptionWait);
+    }
+    
+    @Override
+    public BaseAction buildAction() throws Exception {
+        String value = getFirstProperty().getValue();
+        
+        if (!StringFormatting.isStringANonNegativeInt(value))
+        {
+            Errors.throwInvalidArgument("Enter a non-negative wait int");
+        }
+        
+        long wait = Long.parseLong(value);
+        return Action.createWait(timestamp, wait);
+    }
+
+    @Override
+    public long getDuration() {
+        String value = getFirstProperty().getValue();
+        
+        if (!StringFormatting.isStringANonNegativeInt(value))
+        {
+            return 0;
+        }
+        
+        return Long.parseLong(value);
     }
 }
 
@@ -198,14 +263,8 @@ class StandartMutableActionKeyboardClick extends StandartMutableAction {
         return d;
     }
     
-   @Override
+    @Override
     public String getStateDescription() {
-        try {
-            buildAction();
-        } catch (Exception e) {
-            return TextValue.getText(TextValue.EditAction_StatusError, e.getMessage());
-        }
-        
         return TextValue.getText(TextValue.EditAction_DescriptionKeyboardClick);
     }
     
@@ -270,12 +329,6 @@ class StandartMutableActionMouseClick extends StandartMutableAction {
     
     @Override
     public String getStateDescription() {
-        try {
-            buildAction();
-        } catch (Exception e) {
-            return TextValue.getText(TextValue.EditAction_StatusError, e.getMessage());
-        }
-        
         return TextValue.getText(TextValue.EditAction_DescriptionMouseClick);
     }
     
@@ -346,12 +399,6 @@ class StandartMutableActionMouseMove extends StandartMutableAction {
     
     @Override
     public String getStateDescription() {
-        try {
-            buildAction();
-        } catch (Exception e) {
-            return TextValue.getText(TextValue.EditAction_StatusError, e.getMessage());
-        }
-        
         return TextValue.getText(TextValue.EditAction_DescriptionMouseMove);
     }
     
@@ -398,6 +445,11 @@ class StandartMutableActionMouseMotion extends StandartMutableAction {
     public Description getDescription() {
         InputMouseMove first = moves.get(0);
         InputMouseMove last = getEnteredLastMove();
+        
+        if (last == null)
+        {
+            return null;
+        }
         
         Description d = InputDescriptions.getMouseMotionDescription(timestamp, first, last, moves.size());
         
@@ -461,23 +513,14 @@ class StandartMutableActionMouseMotion extends StandartMutableAction {
             y = 0;
         }
         
-        InputMouseMove last = new InputMouseMove() {
-            @Override
-            public int getX() {
-                return x;
-            }
-
-            @Override
-            public int getY() {
-                return y;
-            }
-
-            @Override
-            public long getTimestamp() {
-                return lastTimestamp;
-            }
-        };
+        Description description = InputDescriptions.getMouseMoveDescription(lastTimestamp, x, y);
         
-        return last;
+        try {
+            return (InputMouseMove)Action.createMouseMovement(lastTimestamp, x, y, description);
+        } catch (Exception e) {
+            
+        }
+        
+        return null;
     }
 }

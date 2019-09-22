@@ -21,6 +21,8 @@ import java.io.Serializable;
 public abstract class BaseAction implements Serializable, Description {
     public abstract boolean isComplex();
     
+    public abstract long getWaitTime();
+    
     public abstract long getPerformTime();
     public abstract long getPerformDuration();
     public abstract long getPerformEndTime();

@@ -25,10 +25,12 @@ public class StandartMutableActionTemplates {
             case 0:
                 return buildTemplateDoNothing(timestamp);
             case 1:
-                return buildTemplateKeyboardClick(timestamp);
+                return buildTemplateWait(timestamp);
             case 2:
-                return buildTemplateMouseClick(timestamp);
+                return buildTemplateKeyboardClick(timestamp);
             case 3:
+                return buildTemplateMouseClick(timestamp);
+            case 4:
                 return buildTemplateMouseMove(timestamp);
             default:
                 break;
@@ -40,6 +42,11 @@ public class StandartMutableActionTemplates {
     public static StandartMutableAction buildTemplateDoNothing(long timestamp)
     {
         return new StandartMutableActionDoNothing(timestamp);
+    }
+    
+    public static StandartMutableAction buildTemplateWait(long timestamp)
+    {
+        return new StandartMutableActionWait(timestamp, 0);
     }
     
     public static StandartMutableAction buildTemplateKeyboardClick(long timestamp)
@@ -71,7 +78,7 @@ public class StandartMutableActionTemplates {
             return null;
         }
         
-        return StandartMutableAction.create(action);
+        return StandartMutableAction.createFromAction(action);
     }
     
     public static StandartMutableAction buildTemplateMouseClick(long timestamp)
@@ -103,7 +110,7 @@ public class StandartMutableActionTemplates {
             return null;
         }
         
-        return StandartMutableAction.create(action);
+        return StandartMutableAction.createFromAction(action);
     }
     
     public static StandartMutableAction buildTemplateMouseMove(long timestamp)
@@ -116,6 +123,6 @@ public class StandartMutableActionTemplates {
             return null;
         }
         
-        return StandartMutableAction.create(action);
+        return StandartMutableAction.createFromAction(action);
     }
 }

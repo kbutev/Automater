@@ -60,14 +60,18 @@ public enum TextValue {
     // Edit Action dialog
     EditAction_DialogTitle, EditAction_CancelButtonTitle, EditAction_SaveButtonTitle,
     EditAction_StatusDefault, EditAction_StatusListeningToHotkey, EditAction_StatusError,
-    EditAction_Time, EditAction_Key, EditAction_Press,
+    EditAction_Time,
+    EditAction_Wait,
+    EditAction_Key, EditAction_Press,
     EditAction_X, EditAction_Y, EditAction_FinalX, EditAction_FinalY,
     
     // Edit Action types
-    EditAction_TypeDoNothing, EditAction_TypeKeyboardClick, EditAction_TypeMouseClick, EditAction_TypeMouseMove,
+    EditAction_TypeDoNothing, EditAction_TypeWait,
+    EditAction_TypeKeyboardClick, EditAction_TypeMouseClick, EditAction_TypeMouseMove,
     
     // Edit Action descriptions
     EditAction_DescriptionDoNothing,
+    EditAction_DescriptionWait,
     EditAction_DescriptionKeyboardClick, EditAction_DescriptionMouseClick, EditAction_DescriptionMouseMove,
     EditAction_DescriptionMouseMotion,
     
@@ -227,6 +231,7 @@ public enum TextValue {
         put(EditAction_StatusListeningToHotkey, "Enter hotkey...");
         put(EditAction_StatusError, "Error: %@");
         put(EditAction_Time, "Time (ms)");
+        put(EditAction_Wait, "Wait (ms)");
         put(EditAction_Key, "Key");
         put(EditAction_Press, "Press");
         put(EditAction_X, "X");
@@ -236,12 +241,14 @@ public enum TextValue {
         
         // Edit Action types
         put(EditAction_TypeDoNothing, "Do Nothing");
+        put(EditAction_TypeWait, "Wait");
         put(EditAction_TypeKeyboardClick, "Keyboard click");
         put(EditAction_TypeMouseClick, "Mouse click");
         put(EditAction_TypeMouseMove, "Mouse move");
         
         // Edit Action descriptions
         put(EditAction_DescriptionDoNothing, "Do nothing");
+        put(EditAction_DescriptionWait, "Waits for a specific amount of time");
         put(EditAction_DescriptionKeyboardClick, "Simulates keyboard key press or release");
         put(EditAction_DescriptionMouseClick, "Simulates mouse key press or release");
         put(EditAction_DescriptionMouseMove, "Simulates one mouse movement, choose x and y");

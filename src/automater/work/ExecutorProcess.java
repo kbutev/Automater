@@ -276,11 +276,10 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
             return 1;
         }
         
-        long start = _timer.getFirstTimeValue();
-        long current = _timer.getCurrentTimeValue() - start;
-        long end = _timer.getFinalTimeValue() - start;
+        long durationPassed = _timer.getDurationPassed();
+        long duration = _timer.getTotalDuration();
         
-        double result = (double)current / (double)end;
+        double result = (double)durationPassed / (double)duration;
         
         if (result > 1)
         {
@@ -498,20 +497,31 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
             if (performNext)
             {
                 boolean isComplex = nextAction.isComplex();
+                boolean waits = nextAction.getWaitTime() > 0;
                 
                 BaseActionProcess p = new ActionProcess(nextAction);
                 setCurrentActionProcessSafely(p);
                 
                 String actionDescription = nextAction.getDescription().getStandart();
                 
-                if (!isComplex)
+                if (!isComplex && !waits)
                 {
                     Logger.messageEvent(this, "Perform next action: " + actionDescription);
                 }
                 else
                 {
-                    Logger.messageEvent(this, "Perform next complex action: " + actionDescription);
+                    if (!waits)
+                    {
+                        Logger.messageEvent(this, "Perform next complex action: " + actionDescription);
+                    }
+                    else
+                    {
+                        Logger.messageEvent(this, "Perform next wait action: " + actionDescription);
+                    }
                 }
+                
+                // Timer alert
+                _timer.willPerformNextAction(nextAction);
                 
                 // Listener alert
                 if (_listener != null)

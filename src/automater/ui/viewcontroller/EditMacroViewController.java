@@ -158,9 +158,10 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     public void onLoadedMacroFromStorage(String macroName, String macroDescription, List<Description> macroActions)
     {
         _dataSource = StandartDescriptionsDataSource.createDataSourceForVerboseText(macroActions);
-        _form.setMacroInfo(macroName, macroDescription, _dataSource);
+        _form.setMacroInfo(macroName, macroDescription);
+        _form.setMacroDataSource(_dataSource);
     }
-
+    
     @Override
     public void startPlaying()
     {
@@ -207,6 +208,13 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     public void onSaveMacroAction(automater.mutableaction.BaseMutableAction action)
     {
         
+    }
+    
+    @Override
+    public void onEditedMacroActions(List<Description> newMacroActions)
+    {
+        _dataSource = StandartDescriptionsDataSource.createDataSourceForVerboseText(newMacroActions);
+        _form.setMacroDataSource(_dataSource);
     }
 
     @Override

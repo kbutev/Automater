@@ -30,6 +30,7 @@ public class StandartMutableActionConstants {
     {
         ArrayList<Description> types = new ArrayList<>();
         types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeDoNothing)));
+        types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeWait)));
         types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeKeyboardClick)));
         types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeMouseClick)));
         types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeMouseMove)));
@@ -42,20 +43,25 @@ public class StandartMutableActionConstants {
         {
             if (action instanceof InputMouse)
             {
-                return 2;
+                return 3;
             }
             
-            return 1;
+            return 2;
         }
         
         if (action instanceof InputMouseMotion)
         {
-            return 3;
+            return 4;
         }
         
         if (action instanceof InputDoNothing)
         {
-            return 0;
+            if (((InputDoNothing)action).getDuration() == 0)
+            {
+                return 0;
+            }
+            
+            return 1;
         }
         
         return 0;
@@ -63,7 +69,7 @@ public class StandartMutableActionConstants {
     
     public static MutableActionType getTypeFromAction(BaseAction action)
     {
-        MutableActionType type = MutableActionType.MouseKey;
+        MutableActionType type = MutableActionType.DoNothing;
         
         if (action instanceof InputKeyClick)
         {
@@ -83,6 +89,16 @@ public class StandartMutableActionConstants {
         if (action instanceof InputMouseMotion)
         {
             type = MutableActionType.MouseMotion;
+        }
+        
+        if (action instanceof InputDoNothing)
+        {
+            if (((InputDoNothing)action).getDuration() == 0)
+            {
+                return MutableActionType.DoNothing;
+            }
+            
+            return MutableActionType.Wait;
         }
         
         return type;

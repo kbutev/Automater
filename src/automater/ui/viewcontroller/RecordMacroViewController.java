@@ -204,6 +204,12 @@ public class RecordMacroViewController implements BaseViewController, BasePresen
     }
     
     @Override
+    public void onEditedMacroActions(List<Description> newMacroActions)
+    {
+        
+    }
+    
+    @Override
     public void onErrorEncountered(Exception e)
     {
         Logger.error(this, "Error encountered: " + e.toString());

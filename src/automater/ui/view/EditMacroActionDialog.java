@@ -357,17 +357,22 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         
         if (_mutableAction.getType() == MutableActionType.DoNothing)
         {
-            setupPickDoNothingPanel();
+            setupDoNothingPanel();
+        }
+        
+        if (_mutableAction.getType() == MutableActionType.Wait)
+        {
+            setupWaitPanel();
         }
         
         if (_mutableAction.getType() == MutableActionType.KeyboardKey)
         {
-            setupPickKeyboardKeyPanel();
+            setupHotkeyPanel();
         }
         
         if (_mutableAction.getType() == MutableActionType.MouseKey)
         {
-            setupPickMouseKeyPanel();
+            setupMouseKeyPanel();
         }
         
         if (_mutableAction.getType() == MutableActionType.MouseMove)
@@ -381,13 +386,14 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         }
     }
     
-    private void setupPickDoNothingPanel()
+    private void setupDoNothingPanel()
     {
         if (_mutableAction == null)
         {
             return;
         }
         
+        // Setup view
         EditMacroActionDoNothingPanel view = new EditMacroActionDoNothingPanel();
         
         panel.add(view);
@@ -395,7 +401,38 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         panel.add(view, BorderLayout.NORTH);
     }
     
-    private void setupPickKeyboardKeyPanel()
+    private void setupWaitPanel()
+    {
+        if (_mutableAction == null)
+        {
+            return;
+        }
+        
+        // Properties
+        BaseMutableActionProperty first = _mutableAction.getFirstProperty();
+        
+        // Setup view
+        EditMacroActionWaitPanel view = new EditMacroActionWaitPanel();
+        
+        view.onWaitTimeCallback = new Callback<String>() {
+            @Override
+            public void perform(String argument) {
+                String newValue = argument;
+                setActionFirstValue(newValue);
+                onPressCheckCallback.perform();
+            }
+        };
+        
+        panel.add(view);
+        panel.setLayout(new BorderLayout());
+        panel.add(view, BorderLayout.NORTH);
+        
+        // Setup values and their labels
+        view.waitLabel.setText(first.getName());
+        view.waitField.setText(first.getValue());
+    }
+    
+    private void setupHotkeyPanel()
     {
         if (_mutableAction == null)
         {
@@ -433,7 +470,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         view.pressCheck.setSelected(Boolean.valueOf(second.getValue()));
     }
     
-    private void setupPickMouseKeyPanel()
+    private void setupMouseKeyPanel()
     {
         if (_mutableAction == null)
         {

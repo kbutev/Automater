@@ -37,6 +37,11 @@ public class Action extends BaseAction {
         return new ActionDoNothing(timestamp);
     }
     
+    public static Action createWait(long timestamp, long milliseconds)
+    {
+        return new ActionWait(timestamp, milliseconds);
+    }
+    
     public static Action createKeyClick(long timestamp, InputKeyClick keyClick, Description description) throws Exception
     {
         boolean isMouseClick = false;
@@ -82,7 +87,13 @@ public class Action extends BaseAction {
     @Override
     public boolean isComplex()
     {
-        return false;
+        return getWaitTime() > 0;
+    }
+    
+    @Override
+    public long getWaitTime()
+    {
+        return 0;
     }
     
     @Override
@@ -182,6 +193,71 @@ class ActionDoNothing extends Action implements InputDoNothing {
     @Override
     public long getTimestamp() {
         return time;
+    }
+
+    @Override
+    public long getDuration() {
+        return 0;
+    }
+}
+
+class ActionWait extends Action implements InputDoNothing {
+    long time;
+    long wait;
+    Description description;
+    
+    ActionWait(long time, long wait)
+    {
+        this.time = time;
+        this.wait = wait;
+        this.description = InputDescriptions.getWaitDescription(time, wait);
+    }
+    
+    @Override
+    public long getWaitTime()
+    {
+        return wait;
+    }
+    
+    @Override
+    public long getPerformTime()
+    {
+        return time;
+    }
+    
+    @Override
+    public void perform(BaseActionContext context)
+    {
+        double waitTime = wait;
+        waitTime /= context.getTimer().getTimeScale();
+        
+        long actualWaitTime = (long)waitTime;
+        
+        try {
+            Thread.sleep(actualWaitTime);
+        } catch (Exception e) {
+            
+        }
+    }
+    
+    @Override
+    public String getStandart() {
+        return description.getStandart();
+    }
+    
+    @Override
+    public String getVerbose() {
+        return description.getVerbose();
+    }
+    
+    @Override
+    public long getTimestamp() {
+        return time;
+    }
+    
+    @Override
+    public long getDuration() {
+        return wait;
     }
 }
 

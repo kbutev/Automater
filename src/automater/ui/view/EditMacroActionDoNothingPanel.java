@@ -16,6 +16,7 @@ public class EditMacroActionDoNothingPanel extends javax.swing.JPanel {
      */
     public EditMacroActionDoNothingPanel() {
         initComponents();
+        setup();
     }
 
     /**
@@ -35,10 +36,14 @@ public class EditMacroActionDoNothingPanel extends javax.swing.JPanel {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 37, Short.MAX_VALUE)
+            .addGap(0, 42, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void setup()
+    {
+        
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables

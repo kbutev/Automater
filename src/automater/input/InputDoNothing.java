@@ -10,5 +10,5 @@ package automater.input;
  * @author Byti
  */
 public interface InputDoNothing extends Input {
-    
+    public long getDuration();
 }

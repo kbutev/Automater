@@ -162,6 +162,11 @@ class RecorderUserInputDoNothing extends RecorderUserInput implements InputDoNot
     public String getStandart() {
         return InputDescriptions.getDoNothingDescription(getTimestamp()).getStandart();
     }
+
+    @Override
+    public long getDuration() {
+        return 0;
+    }
 }
 
 class RecorderUserInputKeyboardPress extends RecorderUserInput implements InputKeyClick

@@ -13,7 +13,7 @@ import java.util.List;
  * 
  * Use canPerformNextAction() is used to check if the next action can be performed.
  * willPerformNextAction() MUST be used when an action is about to be performed,
- * in order to notify the timer so it can keep track of whats going on.
+ * in order to notify the timer so it can keep track of execution state.
  * 
  * @author Bytevi
  */
@@ -22,9 +22,10 @@ public interface BaseExecutorTimer {
     
     public void reset();
     
+    public long getTotalDuration();
+    public long getDurationPassed();
+    
     public long getCurrentTimeValue();
-    public long getFirstTimeValue();
-    public long getFinalTimeValue();
     
     public double getTimeScale();
     public void setTimeScale(double scale);

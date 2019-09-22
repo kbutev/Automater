@@ -25,7 +25,7 @@ import java.util.List;
 public class MacroStorageFile {
     public static String FILE_NAME_EXTENSION = ".txt";
     public static final int MACRO_NAME_MIN_LENGTH = 3;
-    public static final int MACRO_NAME_MAX_LENGTH = 18;
+    public static final int MACRO_NAME_MAX_LENGTH = 32;
     
     private final Object _lock = new Object();
     

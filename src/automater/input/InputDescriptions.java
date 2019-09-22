@@ -24,6 +24,17 @@ public class InputDescriptions {
         return new InputDescription(name, description, verbose, tooltip);
     }
     
+    public static Description getWaitDescription(long timestamp, long wait)
+    {
+        String name = "Wait";
+        String time = String.valueOf(timestamp);
+        String description = name + " " + " for " + String.valueOf(wait) + "ms";
+        String verbose = time + " " + description;
+        String tooltip = description;
+        
+        return new InputDescription(name, description, verbose, tooltip);
+    }
+    
     public static Description getKeyboardInputDescription(long timestamp, boolean press, InputKey key)
     {
         String time = String.valueOf(timestamp);

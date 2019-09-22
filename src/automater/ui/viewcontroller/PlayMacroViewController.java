@@ -196,6 +196,12 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     {
         
     }
+    
+    @Override
+    public void onEditedMacroActions(List<Description> newMacroActions)
+    {
+        
+    }
 
     @Override
     public void onErrorEncountered(Exception e)

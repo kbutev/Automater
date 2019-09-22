@@ -331,11 +331,15 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
         return _selectedIndex;
     }
     
-    public void setMacroInfo(String macroName, String macroDescription, StandartDescriptionsDataSource macroActionsDataSource)
+    public void setMacroInfo(String macroName, String macroDescription)
     {
         macroNameLabel.setText(TextValue.getText(TextValue.Edit_Name));
         macroNameField.setText(macroName);
         macroDescriptionTextArea.setText(macroDescription);
+    }
+    
+    public void setMacroDataSource(StandartDescriptionsDataSource macroActionsDataSource)
+    {
         macroActionsList.setModel(macroActionsDataSource);
     }
     

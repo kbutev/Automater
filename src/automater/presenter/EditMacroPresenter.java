@@ -32,6 +32,7 @@ import automater.mutableaction.BaseMutableAction;
  */
 public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener {
     public final static int CREATE_ACTION_DEFAULT_TYPE = 0;
+    public final static int CREATE_NEW_ACTION_TIMESTAMP_OFFSET = 1;
     
     private final RootViewController _rootViewController;
     private BasePresenterDelegate _delegate;
@@ -75,7 +76,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         
         Logger.message(this, "Start.");
         
-        updateDelegateWithMacroInfo();
+        _delegate.onLoadedMacroFromStorage(_originalMacro.name, _originalMacro.getDescription(), _macroActionDescriptions);
     }
 
     @Override
@@ -237,6 +238,8 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
             timestamp = _macroActions.get(_macroActions.size()-1).getPerformTime();
         }
         
+        timestamp += CREATE_NEW_ACTION_TIMESTAMP_OFFSET;
+        
         _isEditingOrCreatingAction = true;
         _isCreatingAction = true;
         
@@ -282,7 +285,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _actionBeingEditedIndex = index;
         _actionTypeSelectedIndex = StandartMutableActionConstants.getActionTypeSelectedIndex(action);
         
-        _actionBeingEdited = StandartMutableAction.create(action);
+        _actionBeingEdited = StandartMutableAction.createFromAction(action);
         
         Logger.messageEvent(this, "Start editing macro action '" + action.toString() + "' at index " + String.valueOf(index) + "");
         
@@ -356,7 +359,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
             Logger.messageEvent(this, "Ending editing action, save it.");
         }
         
-        updateDelegateWithMacroInfo();
+        _delegate.onEditedMacroActions(_macroActionDescriptions);
         
         _delegate.onCreateMacroAction(a);
     }
@@ -381,7 +384,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _macroActions.remove(index);
         _macroActionDescriptions.remove(index);
         
-        updateDelegateWithMacroInfo();
+        _delegate.onEditedMacroActions(_macroActionDescriptions);
     }
     
     public BaseMutableAction changeEditMacroActionTypeForTypeIndex(int index)
@@ -456,11 +459,6 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     }
     
     // # Private
-    
-    private void updateDelegateWithMacroInfo()
-    {
-        _delegate.onLoadedMacroFromStorage(_originalMacro.name, _originalMacro.getDescription(), _macroActionDescriptions);
-    }
     
     private void updateMacroWithNewCreatedAction(StandartMutableAction a)
     {
