@@ -150,8 +150,6 @@ public class StandartExecutorTimer implements BaseExecutorTimer {
     
     private long updateWaitTime(long dt)
     {
-        Logger.message(this, "Waiting, time left: " + String.valueOf(_timeToWait) + " total wait: " + String.valueOf(_totalTimeWaited));
-        
         _totalTimeWaited += dt;
         _timeToWait -= dt;
         
