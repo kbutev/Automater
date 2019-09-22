@@ -33,7 +33,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     
     private StandartDescriptionsDataSource _dataSource;
     
-    private PreferencesStorageValues _defaultPreferences = PreferencesStorageValues.defaultValues();
+    private PreferencesStorageValues _currentPreferences = PreferencesStorageValues.defaultValues();
     
     public PlayMacroViewController(PlayMacroPresenter presenter)
     {
@@ -174,7 +174,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     @Override
     public void onLoadedPreferencesFromStorage(PreferencesStorageValues values)
     {
-        _defaultPreferences = values;
+        _currentPreferences = values;
         
         setMacroParametersDescription(values.macroParameters);
     }
@@ -247,7 +247,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
             @Override
             public void perform() {
                 PreferencesStorageValues values = getPreferenceValuesFromOptionsDialog();
-                setOptionValues(values);
+                saveOptionValues(values);
                 _optionsDialog.setVisible(false);
             }
         };
@@ -258,7 +258,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         initOptionsWindow();
         
         // Setup default values
-        _optionsDialog.setupWithStorageValues(_defaultPreferences);
+        _optionsDialog.setupWithStorageValues(_currentPreferences);
         
         // Make sure that this the last statement: show dialog
         _optionsDialog.setVisible(true);
@@ -288,12 +288,14 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         return values;
     }
     
-    private void setOptionValues(PreferencesStorageValues values)
+    private void saveOptionValues(PreferencesStorageValues values)
     {
         if (_optionsDialog != null)
         {
             _optionsDialog.setupWithStorageValues(values);
         }
+        
+        _currentPreferences = values;
         
         _presenter.setOptionValues(values);
         
