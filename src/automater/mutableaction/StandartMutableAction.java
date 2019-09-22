@@ -425,11 +425,16 @@ class StandartMutableActionMouseMove extends StandartMutableAction {
 }
 
 class StandartMutableActionMouseMotion extends StandartMutableAction {
+    long originalTimestamp;
+    long originalTimestampForLastMove;
     List<InputMouseMove> moves;
     
     public StandartMutableActionMouseMotion(MutableActionType type, long timestamp, List<InputMouseMove> moves, InputMouseMove lastMove)
     {
         super(type, timestamp);
+        
+        this.originalTimestamp = timestamp;
+        this.originalTimestampForLastMove = moves.get(moves.size()-1).getTimestamp();
         this.moves = moves;
         
         String xName = TextValue.getText(TextValue.EditAction_FinalX);
@@ -444,7 +449,7 @@ class StandartMutableActionMouseMotion extends StandartMutableAction {
     @Override
     public Description getDescription() {
         InputMouseMove first = moves.get(0);
-        InputMouseMove last = getEnteredLastMove();
+        InputMouseMove last = getEnteredLastMove(0);
         
         if (last == null)
         {
@@ -479,28 +484,32 @@ class StandartMutableActionMouseMotion extends StandartMutableAction {
             Errors.throwInvalidArgument("Enter non-negative x,y values");
         }
         
-        InputMouseMove last = getEnteredLastMove();
+        // Create new moves based on the difference if the new timestamp (may be 0)
+        // Create new last move input and remove old last move input
+        long timestampOffset = timestamp - originalTimestamp;
+        
+        InputMouseMove last = getEnteredLastMove(timestampOffset);
         
         if (last == null)
         {
             Errors.throwInvalidArgument("Enter valid x,y values");
         }
         
-        ArrayList<InputMouseMove> newMoves = new ArrayList<>(this.moves);
+        ArrayList<InputMouseMove> newMoves = getNewMovesWithTimestampOffset(timestampOffset);
         newMoves.remove(newMoves.size()-1);
         newMoves.add(last);
         
         return Action.createMouseMovement(timestamp, newMoves, getDescription());
     }
     
-    private InputMouseMove getEnteredLastMove()
+    private InputMouseMove getEnteredLastMove(long timestampOffset)
     {
         String sX = getFirstProperty().getValue();
         String sY = getSecondProperty().getValue();
         
         int x;
         int y;
-        final long lastTimestamp = timestamp;
+        final long lastTimestamp = originalTimestampForLastMove + timestampOffset;
         
         if (StringFormatting.isStringAnInt(sX) && StringFormatting.isStringAnInt(sY))
         {
@@ -522,5 +531,26 @@ class StandartMutableActionMouseMotion extends StandartMutableAction {
         }
         
         return null;
+    }
+    
+    private ArrayList<InputMouseMove> getNewMovesWithTimestampOffset(long timestampOffset) throws Exception
+    {
+        ArrayList<InputMouseMove> newMoves = new ArrayList<>();
+        
+        for (InputMouseMove oldMove : this.moves)
+        {
+            long updatedTimestamp = oldMove.getTimestamp() + timestampOffset;
+            int x = oldMove.getX();
+            int y = oldMove.getY();
+            
+            Description description = InputDescriptions.getMouseMoveDescription(updatedTimestamp, x, y);
+            
+            InputMouseMove newMove;
+            newMove = (InputMouseMove)Action.createMouseMovement(updatedTimestamp, x, y, description);
+            
+            newMoves.add(newMove);
+        }
+        
+        return newMoves;
     }
 }
