@@ -5,6 +5,7 @@
  */
 package automater.input;
 
+import automater.TextValue;
 import automater.utilities.Description;
 import java.io.Serializable;
 
@@ -17,7 +18,7 @@ public class InputDescriptions {
     {
         String name = "DoNothing";
         String time = String.valueOf(timestamp);
-        String description = name;
+        String description = TextValue.getText(TextValue.Input_DoNothing);
         String verbose = time + " " + description;
         String tooltip = description;
         
@@ -28,7 +29,7 @@ public class InputDescriptions {
     {
         String name = "Wait";
         String time = String.valueOf(timestamp);
-        String description = name + " for " + String.valueOf(wait) + "ms";
+        String description = TextValue.getText(TextValue.Input_Wait, String.valueOf(wait));
         String verbose = time + " " + description;
         String tooltip = description;
         
@@ -42,7 +43,7 @@ public class InputDescriptions {
         if (press)
         {
             String name = "KeyboardPress";
-            String description = name + " " + "'" + key.toString() + "'";
+            String description = TextValue.getText(TextValue.Input_KeyboardPress, key.toString());
             String verbose = time + " " + description;
             String tooltip = description;
             
@@ -50,7 +51,7 @@ public class InputDescriptions {
         }
         
         String name = "KeyboardRelease";
-        String description = name + " " + "'" + key.toString() + "'";
+        String description = TextValue.getText(TextValue.Input_KeyboardRelease, key.toString());
         String verbose = time + " " + description;
         String tooltip = description;
         
@@ -64,7 +65,7 @@ public class InputDescriptions {
         if (press)
         {
             String name = "MousePress";
-            String description = name + " " + "'" + key.toString() + "'";
+            String description = TextValue.getText(TextValue.Input_MousePress, key.toString());
             String verbose = timestamp + " " + description;
             String tooltip = description;
             
@@ -72,7 +73,7 @@ public class InputDescriptions {
         }
         
         String name = "MouseRelease";
-        String description = name + " " + "'" + key.toString() + "'";
+        String description = TextValue.getText(TextValue.Input_MouseRelease, key.toString());
         String verbose = time + " " + description;
         String tooltip = description;
         
@@ -83,7 +84,7 @@ public class InputDescriptions {
     {
         String name = "MouseMove";
         String time = String.valueOf(timestamp);
-        String description = name + " " + "(" + x + "," + y + ")";
+        String description = TextValue.getText(TextValue.Input_MouseMove, String.valueOf(x), String.valueOf(y));
         String verbose = time + " " + description;
         String tooltip = description;
         
@@ -92,9 +93,12 @@ public class InputDescriptions {
     
     public static Description getMouseMotionDescription(long timestamp, InputMouseMove first, InputMouseMove last, int numberOfMovements)
     {
+        int x = last.getX();
+        int y = last.getY();
+        
         String name = "MouseMotion";
         String time = String.valueOf(timestamp);
-        String description = name + " (" + String.valueOf(numberOfMovements) + "x) ends at (" + last.getX() + ", " + last.getY() + ")";
+        String description = TextValue.getText(TextValue.Input_MouseMotion, String.valueOf(numberOfMovements), String.valueOf(x), String.valueOf(y));
         String verbose = time + " " + description;
         String tooltip = description;
         
@@ -105,7 +109,7 @@ public class InputDescriptions {
     {
         String name = "MouseWheel";
         String time = String.valueOf(timestamp);
-        String description = name + " " + "(" + value + ")";
+        String description = TextValue.getText(TextValue.Input_MouseWheel, String.valueOf(value));
         String verbose = time + " " + description;
         String tooltip = description;
         

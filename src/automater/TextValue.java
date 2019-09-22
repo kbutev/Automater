@@ -18,6 +18,12 @@ public enum TextValue {
     Error_NameIsTooShort, Error_NameIsTooLong, Error_NameIsTaken,
     Error_NameMustBeAlphaNumeric, Error_NameMustBeAlphaNumericWithSpecialSymbols,
     
+    // Input descriptions
+    Input_DoNothing, Input_Wait,
+    Input_KeyboardPress, Input_KeyboardRelease,
+    Input_MousePress, Input_MouseRelease,
+    Input_MouseMove, Input_MouseMotion, Input_MouseWheel,
+    
     // Record form
     Record_FormTitle, Record_HeaderText,
     Record_SwitchToOpenButtonTitle, Record_SwitchToOpenButtonTip,
@@ -99,15 +105,20 @@ public enum TextValue {
     
     public static String getText(TextValue value, String arg1)
     {
-        return evaluateTextValue(getValues().get(value), arg1, null);
+        return evaluateTextValue(getValues().get(value), arg1, null, null);
     }
     
     public static String getText(TextValue value, String arg1, String arg2)
     {
-        return evaluateTextValue(getValues().get(value), arg1, arg2);
+        return evaluateTextValue(getValues().get(value), arg1, arg2, null);
     }
     
-    private static String evaluateTextValue(String string, String arg1, String arg2)
+    public static String getText(TextValue value, String arg1, String arg2, String arg3)
+    {
+        return evaluateTextValue(getValues().get(value), arg1, arg2, arg3);
+    }
+    
+    private static String evaluateTextValue(String string, String arg1, String arg2, String arg3)
     {
         if (string == null)
         {
@@ -121,6 +132,11 @@ public enum TextValue {
             if (arg2 != null)
             {
                 string = string.replaceFirst(placeholderSymbol, arg2);
+                
+                if (arg3 != null)
+                {
+                    string = string.replaceFirst(placeholderSymbol, arg3);
+                }
             }
         }
         
@@ -143,6 +159,17 @@ public enum TextValue {
         put(Error_NameIsTaken, "Name already taken.");
         put(Error_NameMustBeAlphaNumeric, "Name must contain alpha/numeric chars only.");
         put(Error_NameMustBeAlphaNumericWithSpecialSymbols, "Name must contain alphanumeric chars only and also may contain: %@");
+        
+        // Input descriptions
+        put(Input_DoNothing, "DoNothing");   
+        put(Input_Wait, "Wait for %@ms");   
+        put(Input_KeyboardPress, "KeyboardPress '%@'");   
+        put(Input_KeyboardRelease, "KeyboardRelease '%@'");   
+        put(Input_MousePress, "MousePress '%@'");   
+        put(Input_MouseRelease, "MouseRelease '%@'");   
+        put(Input_MouseMove, "MouseMove %@,%@");
+        put(Input_MouseMotion, "MouseMotion %@x moves, ends at %@,%@");
+        put(Input_MouseWheel, "MouseWheel %@");
         
         // Record form
         put(Record_FormTitle, "Automater - Record");   
