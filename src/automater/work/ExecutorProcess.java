@@ -27,9 +27,8 @@ import java.util.List;
  * 
  * @author Bytevi
  */
-public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, LooperClient, ExecutorProgress {
+public class ExecutorProcess implements BaseExecutorProcess, LooperClient, ExecutorProgress {
     private final Object _lock = new Object();
-    private final Object _timerLock = new Object();
     
     // Basic
     private final Robot _robot;
@@ -51,11 +50,20 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
     private BaseActionProcess _currentActionProcess;
     
     // Timer
-    private Date _previousDate = new Date();
-    private long _currentTimeValue = 0;
-    private double _timeScale = 1.0;
+    private Date _previousDate;
     
-    public ExecutorProcess(Robot robot, List<BaseAction> actions) throws Exception
+    public static ExecutorProcess create(Robot robot, List<BaseAction> actions, BaseExecutorTimer timer)
+    {
+        try {
+            return new ExecutorProcess(robot, actions, timer);
+        } catch (Exception e) {
+            
+        }
+        
+        return null;
+    }
+    
+    protected ExecutorProcess(Robot robot, List<BaseAction> actions, BaseExecutorTimer timer) throws Exception
     {
         if (actions.isEmpty())
         {
@@ -64,7 +72,7 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
         
         this._robot = robot;
         this._actions = CollectionUtilities.copyAsImmutable(actions);
-        this._timer = this;
+        this._timer = timer;
         this._currentActionProcess = null;
     }
     
@@ -161,6 +169,7 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
             _macro = macro;
             
             // Setup timer
+            _previousDate = new Date();
             this._timer.setup(macro.actions, parameters);
             
             // Start
@@ -207,84 +216,6 @@ public class ExecutorProcess implements BaseExecutorProcess, BaseExecutorTimer, 
         if (_listener != null)
         {
             _listener.onCancel();
-        }
-    }
-    
-    // # ExecutorTimer
-    
-    @Override
-    public void setup(List<BaseAction> actions, MacroParameters parameters) throws Exception {
-        BaseAction firstAction = actions.get(0);
-        
-        synchronized (_timerLock)
-        {
-            _previousDate = new Date();
-            _currentTimeValue = firstAction.getPerformTime();
-            
-            _timer.setTimeScale(parameters.playSpeed);
-        }
-    }
-    
-    @Override
-    public void reset() {
-        BaseAction firstAction = _actions.get(0);
-        
-        synchronized (_timerLock)
-        {
-            _previousDate = new Date();
-            _currentTimeValue = firstAction.getPerformTime();
-        }
-    }
-
-    @Override
-    public long getCurrentTimeValue() {
-        synchronized (_timerLock)
-        {
-            return _currentTimeValue;
-        }
-    }
-
-    @Override
-    public long getFirstTimeValue() {
-        return getFirstAction().getPerformTime();
-    }
-
-    @Override
-    public long getFinalTimeValue() {
-        return getLastAction().getPerformEndTime();
-    }
-
-    @Override
-    public double getTimeScale() {
-        synchronized (_timerLock)
-        {
-            return _timeScale;
-        }
-    }
-    
-    @Override
-    public void setTimeScale(double scale) {
-        synchronized (_timerLock)
-        {
-            _timeScale = scale;
-        }
-    }
-    
-    @Override
-    public boolean canPerformNextAction(BaseAction action) {
-        long currentTime = getCurrentTimeValue();
-        return action.getPerformTime() <= currentTime;
-    }
-    
-    @Override
-    public long updateCurrentTime(long dt) {
-        synchronized (_timerLock)
-        {
-            dt *= _timeScale;
-            
-            _currentTimeValue += dt;
-            
-            return _currentTimeValue;
         }
     }
     

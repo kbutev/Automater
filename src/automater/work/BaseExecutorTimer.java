@@ -11,9 +11,9 @@ import java.util.List;
 /**
  * Keeps track of how much time has passed.
  * 
- * Use getNextAction(List) to either:
- * get an action to execute if the time has come right
- * or get null, meaning caller should wait
+ * Use canPerformNextAction() is used to check if the next action can be performed.
+ * willPerformNextAction() MUST be used when an action is about to be performed,
+ * in order to notify the timer so it can keep track of whats going on.
  * 
  * @author Bytevi
  */
@@ -30,6 +30,7 @@ public interface BaseExecutorTimer {
     public void setTimeScale(double scale);
     
     public boolean canPerformNextAction(BaseAction action);
+    public void willPerformNextAction(BaseAction action);
     
     public long updateCurrentTime(long dt);
 }
