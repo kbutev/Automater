@@ -311,6 +311,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         _recorderModel = new RecorderModel();
         _recordedResult = new RecorderResult(userInputs);
         
+        _macroActionDescriptionsList.clear();
         _macroActionDescriptionsList.add(userInputs.get(0));
     }
     
