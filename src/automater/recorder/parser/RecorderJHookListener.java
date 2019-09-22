@@ -162,7 +162,8 @@ public class RecorderJHookListener {
 
         @Override
         public void nativeMouseWheelMoved(NativeMouseWheelEvent nmwe) {
-            
+            RecorderUserInput input = _parser.evaluateMouseWheel(nmwe);
+            _delegate.onParseInput(input);
         }
 
         @Override

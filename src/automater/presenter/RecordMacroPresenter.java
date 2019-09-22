@@ -46,7 +46,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     private final MacroStorage _storage = GeneralStorage.getDefault().getMacrosStorage();
     
     private final Recorder _recorder = Recorder.getDefault();
-    private final List<RecorderParserFlag> _recordFlags = _recorder.defaults.getRecordOnlyKeyClicksAndMouseMotionFlags();
+    private final List<RecorderParserFlag> _recordFlags = _recorder.defaults.getDefaultRecordFlags();
     private RecorderModel _recorderModel = new RecorderModel();
     private RecorderNativeParser _recorderMacroParser;
     private boolean _hasStartedMacroRecording = false;

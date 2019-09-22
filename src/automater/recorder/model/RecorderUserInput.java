@@ -92,9 +92,9 @@ public class RecorderUserInput implements Input, Serializable, Description {
         return new RecorderUserInputMouseMove(timestamp, x, y);
     }
     
-    public static RecorderUserInput createMouseWheel(long timestamp)
+    public static RecorderUserInput createMouseWheel(long timestamp, int scrollValue)
     {
-        return new RecorderUserInputMouseWheel(timestamp);
+        return new RecorderUserInputMouseWheel(timestamp, scrollValue);
     }
     
     public static RecorderUserInput createWindow(long timestamp)
@@ -410,28 +410,31 @@ class RecorderUserInputMouseMove extends RecorderUserInput implements InputMouse
 
 class RecorderUserInputMouseWheel extends RecorderUserInput implements InputMouseWheel, InputMouse
 {
-    RecorderUserInputMouseWheel(long timestamp)
+    int scrollValue;
+    
+    RecorderUserInputMouseWheel(long timestamp, int scrollValue)
     {
         super(timestamp);
+        this.scrollValue = scrollValue;
     }
     
     // # Description
     
     @Override
     public String getStandart() {
-        return InputDescriptions.getMouseWheelDescription(getTimestamp(), 0).getStandart();
+        return InputDescriptions.getMouseWheelDescription(getTimestamp(), scrollValue).getStandart();
     }
     
     @Override
     public String getVerbose() {
-        return InputDescriptions.getMouseWheelDescription(getTimestamp(), 0).getVerbose();
+        return InputDescriptions.getMouseWheelDescription(getTimestamp(), scrollValue).getVerbose();
     }
     
     // # UserInputMouseWheel
 
     @Override
     public int getScrollValue() {
-        return 0;
+        return scrollValue;
     }
 }
 

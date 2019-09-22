@@ -25,6 +25,7 @@ import automater.input.InputMouseMove;
 import automater.input.InputKey;
 import automater.input.InputKeyValue;
 import automater.input.InputMouse;
+import automater.input.InputMouseWheel;
 
 /**
  * Simulates user actions such as keyboard and mouse clicks.
@@ -82,6 +83,11 @@ public class Action extends BaseAction {
         int maxNumberOfSubmovements = ActionSettingsManager.getDefault().getMaxNumberOfSubmovements();
         
         return new ActionMouseMovement(timestamp, mouseMovements, maxNumberOfSubmovements, description);
+    }
+    
+    public static Action createMouseWheel(long timestamp, int scrollValue, Description description) throws Exception
+    {
+        return new ActionMouseWheel(timestamp, scrollValue, description);
     }
     
     @Override
@@ -724,5 +730,69 @@ class ActionMouseMovement extends Action implements InputMouseMotion {
         }
         
         return result;
+    }
+}
+
+class ActionMouseWheel extends Action implements InputMouseWheel {
+    final long time;
+    final int scrollValue;
+    
+    String standartDescription;
+    String verboseDescription;
+    
+    ActionMouseWheel(long time, int scrollValue, Description description)
+    {
+        this.time = time;
+        this.scrollValue = scrollValue;
+        
+        if (description != null)
+        {
+            this.standartDescription = description.getStandart();
+            this.verboseDescription = description.getVerbose();
+        }
+    }
+    
+    @Override
+    public boolean isComplex()
+    {
+        return false;
+    }
+    
+    @Override
+    public long getPerformTime()
+    {
+        return time;
+    }
+    
+    @Override
+    public void perform(BaseActionContext context)
+    {
+        int amount = convertScrollWheelValueToRobotWheelValue(scrollValue);
+        context.getRobot().mouseWheel(amount);
+    }
+    
+    @Override
+    public String getStandart() {
+        return standartDescription;
+    }
+    
+    @Override
+    public String getVerbose() {
+        return verboseDescription;
+    }
+
+    @Override
+    public int getScrollValue() {
+        return scrollValue;
+    }
+    
+    @Override
+    public long getTimestamp() {
+        return time;
+    }
+    
+    private int convertScrollWheelValueToRobotWheelValue(int value)
+    {
+        return (value / -2);
     }
 }

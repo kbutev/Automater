@@ -38,16 +38,16 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
     @Override
     public RecorderUserInput evaluatePress(NativeKeyEvent keyboardEvent)
     {
-        return evaluate(keyboardEvent, true);
+        return evaluateKeyboard(keyboardEvent, true);
     }
     
     @Override
     public RecorderUserInput evaluateRelease(NativeKeyEvent keyboardEvent)
     {
-        return evaluate(keyboardEvent, false);
+        return evaluateKeyboard(keyboardEvent, false);
     }
     
-    private RecorderUserInput evaluate(NativeKeyEvent keyboardEvent, boolean press)
+    private RecorderUserInput evaluateKeyboard(NativeKeyEvent keyboardEvent, boolean press)
     {
         if (!flags.contains(RecorderParserFlag.RECORD_KEYBOARD_EVENTS))
         {
@@ -83,16 +83,16 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
     @Override
     public RecorderUserInput evaluatePress(NativeMouseEvent mouseEvent)
     {
-        return evaluate(mouseEvent, true);
+        return evaluateMouse(mouseEvent, true);
     }
     
     @Override
     public RecorderUserInput evaluateRelease(NativeMouseEvent mouseEvent)
     {
-        return evaluate(mouseEvent, false);
+        return evaluateMouse(mouseEvent, false);
     }
     
-    private RecorderUserInput evaluate(NativeMouseEvent mouseEvent, boolean press)
+    private RecorderUserInput evaluateMouse(NativeMouseEvent mouseEvent, boolean press)
     {
         if (!flags.contains(RecorderParserFlag.RECORD_MOUSE_CLICKS))
         {
@@ -155,7 +155,20 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
             return null;
         }
         
-        return null;
+        long timestamp = evaluteTimeForNextEvent();
+        int value = mouseWheelEvent.getScrollAmount();
+        
+        if (mouseWheelEvent.getWheelRotation() == 1)
+        {
+            value *= -1;
+        }
+        
+        _eventLogger.logMouseWheelEvent(mouseWheelEvent);
+        
+        RecorderUserInput userInput;
+        userInput = RecorderUserInput.createMouseWheel(timestamp, value);
+        
+        return userInput;
     }
     
     @Override

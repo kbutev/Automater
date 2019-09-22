@@ -16,6 +16,7 @@ import automater.work.BaseAction;
 import automater.input.InputKeyClick;
 import automater.input.InputMouseMotion;
 import automater.input.InputMouseMove;
+import automater.input.InputMouseWheel;
 
 /**
  * Converts macro user input objects to actions.
@@ -82,6 +83,13 @@ public class ActionsFromMacroInputsParser implements BaseActionsParser {
             
             Description description = input;
             action = Action.createMouseMovement(input.getTimestamp(), movements, description);
+        }
+        
+        if (input instanceof InputMouseWheel)
+        {
+            InputMouseWheel mouseWheel = (InputMouseWheel)input;
+            Description description = input;
+            action = Action.createMouseWheel(input.getTimestamp(), mouseWheel.getScrollValue(), description);
         }
         
         if (input instanceof InputDoNothing)
