@@ -28,7 +28,7 @@ public class InputDescriptions {
     {
         String name = "Wait";
         String time = String.valueOf(timestamp);
-        String description = name + " " + " for " + String.valueOf(wait) + "ms";
+        String description = name + " for " + String.valueOf(wait) + "ms";
         String verbose = time + " " + description;
         String tooltip = description;
         
