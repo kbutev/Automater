@@ -384,6 +384,11 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         {
             setupMouseMovePanel();
         }
+        
+        if (_mutableAction.getType() == MutableActionType.SystemCommand)
+        {
+            setupSystemCommandPanel();
+        }
     }
     
     private void setupDoNothingPanel()
@@ -563,6 +568,46 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         view.xField.setText(first.getValue());
         view.yLabel.setText(second.getName());
         view.yField.setText(second.getValue());
+    }
+    
+    private void setupSystemCommandPanel()
+    {
+        if (_mutableAction == null)
+        {
+            return;
+        }
+        
+        // Properties
+        BaseMutableActionProperty first = _mutableAction.getFirstProperty();
+        BaseMutableActionProperty second = _mutableAction.getSecondProperty();
+        
+        // Setup view
+        EditMacroActionCommandPanel view = new EditMacroActionCommandPanel();
+        view.onCommandValueChanged = new Callback<String>() {
+            @Override
+            public void perform(String argument) {
+                String newValue = argument;
+                setActionFirstValue(newValue);
+            }
+        };
+        
+         view.onReportErrorChanged = new Callback<Boolean>() {
+            @Override
+            public void perform(Boolean argument) {
+                String newValue = String.valueOf(argument);
+                setActionSecondValue(newValue);
+            }
+        };
+        
+        panel.add(view);
+        panel.setLayout(new BorderLayout());
+        panel.add(view, BorderLayout.NORTH);
+        
+        // Setup values and their labels
+        view.commandLabel.setText(first.getName());
+        view.setCommandText(first.getValue());
+        view.reportErrorCheck.setText(second.getName());
+        view.reportErrorCheck.setSelected(Boolean.parseBoolean(second.getValue()));
     }
     
     // # Private - validators

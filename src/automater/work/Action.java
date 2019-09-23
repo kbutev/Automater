@@ -5,6 +5,7 @@
  */
 package automater.work;
 
+import automater.TextValue;
 import automater.input.InputDescriptions;
 import automater.input.InputDoNothing;
 import automater.utilities.CollectionUtilities;
@@ -26,6 +27,8 @@ import automater.input.InputKey;
 import automater.input.InputKeyValue;
 import automater.input.InputMouse;
 import automater.input.InputMouseWheel;
+import automater.input.InputSystemCommand;
+import automater.utilities.DeviceNotifications;
 
 /**
  * Simulates user actions such as keyboard and mouse clicks.
@@ -88,6 +91,11 @@ public class Action extends BaseAction {
     public static Action createMouseWheel(long timestamp, int scrollValue, Description description) throws Exception
     {
         return new ActionMouseWheel(timestamp, scrollValue, description);
+    }
+    
+    public static Action createSystemCommand(long timestamp, String value, boolean reportsErrors, Description description) throws Exception
+    {
+        return new ActionSystemCommand(timestamp, value, reportsErrors, description);
     }
     
     @Override
@@ -794,5 +802,78 @@ class ActionMouseWheel extends Action implements InputMouseWheel {
     private int convertScrollWheelValueToRobotWheelValue(int value)
     {
         return (value / -2);
+    }
+}
+
+class ActionSystemCommand extends Action implements InputSystemCommand {
+    final long time;
+    
+    final String value;
+    final boolean reportsErrors;
+    
+    String standartDescription;
+    String verboseDescription;
+    
+    ActionSystemCommand(long time, String value, boolean reportsErrors, Description description)
+    {
+        this.time = time;
+        this.value = value;
+        this.reportsErrors = reportsErrors;
+        
+        if (description != null)
+        {
+            this.standartDescription = description.getStandart();
+            this.verboseDescription = description.getVerbose();
+        }
+    }
+    
+    @Override
+    public boolean isComplex()
+    {
+        return false;
+    }
+    
+    @Override
+    public long getPerformTime()
+    {
+        return time;
+    }
+    
+    @Override
+    public void perform(BaseActionContext context)
+    {
+        try {
+            Runtime.getRuntime().exec(value);
+        } catch (Exception e) {
+            Logger.warning(this, "Failed to perform command '" + value + "' because " + e.getMessage());
+            
+            if (reportsErrors)
+            {
+                String title = TextValue.getText(TextValue.Commands_NotificationErrorTitle, value);
+                String message = TextValue.getText(TextValue.Commands_NotificationErrorMessage, e.getMessage());
+                
+                DeviceNotifications.getShared().displayOSNotification(title, message, message);
+            }
+        }
+    }
+    
+    @Override
+    public String getStandart() {
+        return standartDescription;
+    }
+    
+    @Override
+    public String getVerbose() {
+        return verboseDescription;
+    }
+    
+    @Override
+    public String getValue() {
+        return value;
+    }
+    
+    @Override
+    public boolean reportsErrors() {
+        return reportsErrors;
     }
 }

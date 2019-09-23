@@ -5,7 +5,9 @@
  */
 package automater;
 
+import automater.utilities.Logger;
 import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  *
@@ -23,6 +25,7 @@ public enum TextValue {
     Input_KeyboardPress, Input_KeyboardRelease,
     Input_MousePress, Input_MouseRelease,
     Input_MouseMove, Input_MouseMotion, Input_MouseWheel,
+    Input_SystemCommand,
     
     // Record form
     Record_FormTitle, Record_HeaderText,
@@ -70,21 +73,27 @@ public enum TextValue {
     EditAction_Wait,
     EditAction_Key, EditAction_Press,
     EditAction_X, EditAction_Y, EditAction_FinalX, EditAction_FinalY,
+    EditAction_Command, EditAction_ReportsErrors,
     
     // Edit Action types
     EditAction_TypeDoNothing, EditAction_TypeWait,
     EditAction_TypeKeyboardClick, EditAction_TypeMouseClick, EditAction_TypeMouseMove,
+    EditAction_TypeSystemCommand,
     
     // Edit Action descriptions
     EditAction_DescriptionDoNothing,
     EditAction_DescriptionWait,
     EditAction_DescriptionKeyboardClick, EditAction_DescriptionMouseClick, EditAction_DescriptionMouseMove,
     EditAction_DescriptionMouseMotion,
+    EditAction_DescriptionSystemCommand,
     
     // Macro parameters
     MacroParameters_Default,
     MacroParameters_Playspeed,
     MacroParameters_Repeat, MacroParameters_RepeatForever, MacroParameters_RepeatNever,
+    
+    // Commands
+    Commands_NotificationErrorTitle, Commands_NotificationErrorMessage,
     
     // Dialog
     Dialog_OK,
@@ -100,28 +109,37 @@ public enum TextValue {
     
     public static String getText(TextValue value)
     {
-        return getValues().get(value);
+        String string = getValues().get(value);
+        
+        return evaluateTextValue(value, string, null, null, null);
     }
     
     public static String getText(TextValue value, String arg1)
     {
-        return evaluateTextValue(getValues().get(value), arg1, null, null);
+        String string = getValues().get(value);
+        
+        return evaluateTextValue(value, string, arg1, null, null);
     }
     
     public static String getText(TextValue value, String arg1, String arg2)
     {
-        return evaluateTextValue(getValues().get(value), arg1, arg2, null);
+        String string = getValues().get(value);
+        
+        return evaluateTextValue(value, string, arg1, arg2, null);
     }
     
     public static String getText(TextValue value, String arg1, String arg2, String arg3)
     {
-        return evaluateTextValue(getValues().get(value), arg1, arg2, arg3);
+        String string = getValues().get(value);
+        
+        return evaluateTextValue(value, string, arg1, arg2, arg3);
     }
     
-    private static String evaluateTextValue(String string, String arg1, String arg2, String arg3)
+    public static String evaluateTextValue(TextValue value, String string, String arg1, String arg2, String arg3)
     {
         if (string == null)
         {
+            recordMissingValue(value);
             return "";
         }
         
@@ -143,12 +161,28 @@ public enum TextValue {
         return string;
     }
     
+    private static void recordMissingValue(TextValue value)
+    {
+        String key = value.name();
+        
+        boolean alreadyRecorded = !missingValues.add(key);
+        
+        if (!alreadyRecorded)
+        {
+            Logger.warning(TextValue.class.getCanonicalName(), "Could not find string for text value " + key + "!");
+        }  
+    }
+    
     // Values
     private static HashMap<TextValue, String> getValues()
     {
-        // You can return a different map here, depending on the app language
+        // You can return a different map here, depending on the app currently selected language
         return englishValues;
     }
+    
+    // Any invalid request values will be added to this set.
+    // This is done to prevent warning log spam.
+    private static HashSet<String> missingValues = new HashSet<>();
     
     private static HashMap<TextValue, String> englishValues = new HashMap<TextValue, String>() {{
         // Errors
@@ -170,6 +204,7 @@ public enum TextValue {
         put(Input_MouseMove, "MouseMove %@,%@");
         put(Input_MouseMotion, "MouseMotion %@x moves, ends at %@,%@");
         put(Input_MouseWheel, "MouseWheel %@");
+        put(Input_SystemCommand, "SystemCommand %@");
         
         // Record form
         put(Record_FormTitle, "Automater - Record");   
@@ -265,6 +300,8 @@ public enum TextValue {
         put(EditAction_Y, "Y");
         put(EditAction_FinalX, "Final X");
         put(EditAction_FinalY, "Final Y");
+        put(EditAction_Command, "Command");
+        put(EditAction_ReportsErrors, "Reports errors");
         
         // Edit Action types
         put(EditAction_TypeDoNothing, "Do Nothing");
@@ -272,6 +309,7 @@ public enum TextValue {
         put(EditAction_TypeKeyboardClick, "Keyboard click");
         put(EditAction_TypeMouseClick, "Mouse click");
         put(EditAction_TypeMouseMove, "Mouse move");
+        put(EditAction_TypeSystemCommand, "System command");
         
         // Edit Action descriptions
         put(EditAction_DescriptionDoNothing, "Do nothing");
@@ -280,6 +318,7 @@ public enum TextValue {
         put(EditAction_DescriptionMouseClick, "Simulates mouse key press or release");
         put(EditAction_DescriptionMouseMove, "Simulates one mouse movement, choose x and y");
         put(EditAction_DescriptionMouseMotion, "Simulates %@x mouse movements, choose the final x and y");
+        put(EditAction_DescriptionSystemCommand, "Execute system command line");
         
         // Macro parameters
         put(MacroParameters_Default, "Play once");
@@ -287,6 +326,10 @@ public enum TextValue {
         put(MacroParameters_Repeat, "Repeat: %@");
         put(MacroParameters_RepeatForever, "Play forever");
         put(MacroParameters_RepeatNever, "Play once");
+        
+        // Commands
+        put(Commands_NotificationErrorTitle, "Automater failed command");
+        put(Commands_NotificationErrorMessage, "Error: %@");
         
         // Dialog
         put(Dialog_OK, "Ok");

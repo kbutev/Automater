@@ -115,6 +115,19 @@ public class InputDescriptions {
         
         return new InputDescription(name, description, verbose, tooltip);
     }
+    
+    public static Description getSystemCommand(long timestamp, String value)
+    {
+        String commandValue = value;
+        
+        String name = "SystemCommand";
+        String time = String.valueOf(timestamp);
+        String description = TextValue.getText(TextValue.Input_SystemCommand, commandValue);
+        String verbose = time + " " + description;
+        String tooltip = description;
+        
+        return new InputDescription(name, description, verbose, tooltip);
+    }
 }
 
 class InputDescription implements Description, Serializable {

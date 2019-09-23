@@ -11,5 +11,6 @@ package automater.mutableaction;
  * @author Bytevi
  */
 public enum MutableActionType {
-    DoNothing, Wait, KeyboardKey, MouseKey, MouseMove, MouseMotion
+    DoNothing, Wait, KeyboardKey, MouseKey, MouseMove, MouseMotion,
+    SystemCommand
 }

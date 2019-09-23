@@ -5,6 +5,7 @@
  */
 package automater.mutableaction;
 
+import automater.input.InputDescriptions;
 import automater.input.InputKey;
 import automater.input.InputKeyClick;
 import automater.input.InputKeyValue;
@@ -32,6 +33,8 @@ public class StandartMutableActionTemplates {
                 return buildTemplateMouseClick(timestamp);
             case 4:
                 return buildTemplateMouseMove(timestamp);
+            case 5:
+                return buildTemplateSystemCommand(timestamp);
             default:
                 break;
         }
@@ -73,7 +76,8 @@ public class StandartMutableActionTemplates {
         BaseAction action;
         
         try {
-            action = Action.createKeyClick(timestamp, keyClick, Description.createFromString("KeyboardClick"));
+            Description description = InputDescriptions.getKeyboardInputDescription(timestamp, keyClick.isPress(), key);
+            action = Action.createKeyClick(timestamp, keyClick, description);
         } catch (Exception e) {
             return null;
         }
@@ -105,7 +109,8 @@ public class StandartMutableActionTemplates {
         BaseAction action;
         
         try {
-            action = Action.createKeyClick(timestamp, keyClick, Description.createFromString("MouseClick"));
+            Description description = InputDescriptions.getKeyboardInputDescription(timestamp, keyClick.isPress(), key);
+            action = Action.createKeyClick(timestamp, keyClick, description);
         } catch (Exception e) {
             return null;
         }
@@ -118,7 +123,22 @@ public class StandartMutableActionTemplates {
         BaseAction action;
         
         try {
-            action = Action.createMouseMovement(timestamp, 0, 0, Description.createFromString("MouseMove"));
+            Description description = InputDescriptions.getMouseMoveDescription(timestamp, 0, 0);
+            action = Action.createMouseMovement(timestamp, 0, 0, description);
+        } catch (Exception e) {
+            return null;
+        }
+        
+        return StandartMutableAction.createFromAction(action);
+    }
+    
+    public static StandartMutableAction buildTemplateSystemCommand(long timestamp)
+    {
+        BaseAction action;
+        
+        try {
+            Description description = InputDescriptions.getSystemCommand(timestamp, "");
+            action = Action.createSystemCommand(timestamp, "", true, description);
         } catch (Exception e) {
             return null;
         }

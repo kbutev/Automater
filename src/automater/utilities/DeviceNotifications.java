@@ -13,13 +13,13 @@ import java.awt.TrayIcon.MessageType;
  * 
  * @author Bytevi
  */
-public class OSUIEffects {
-    private static OSUIEffects singleton;
+public class DeviceNotifications {
+    private static DeviceNotifications singleton;
     
     private final boolean _active;
     private final SystemTray _tray;
     
-    private OSUIEffects()
+    private DeviceNotifications()
     {
         _active = SystemTray.isSupported();
         
@@ -33,11 +33,11 @@ public class OSUIEffects {
         }
     }
 
-    synchronized public static OSUIEffects getShared()
+    synchronized public static DeviceNotifications getShared()
     {
         if (singleton == null)
         {
-            singleton = new OSUIEffects();
+            singleton = new DeviceNotifications();
         }
 
         return singleton;

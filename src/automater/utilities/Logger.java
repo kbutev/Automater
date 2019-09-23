@@ -30,6 +30,11 @@ public class Logger {
         System.out.println(generateText(origin, "", string));
     }
     
+    public static <T> void message(String prefix, String string)
+    {
+        System.out.println(generateText(prefix, string));
+    }
+    
     public static <T> void messageAction(T origin, String string)
     {
         System.out.println(generateText(origin, MESSAGE_ACTION_PREFIX, string));
@@ -40,6 +45,13 @@ public class Logger {
         System.out.println(generateText(origin, MESSAGE_EVENT_PREFIX, string));
     }
     
+    public static <T> void warning(String prefix, String string)
+    {
+        prefix = WARNING_PREFIX + " " + prefix;
+        
+        System.out.println(generateText(prefix, string));
+    }
+    
     public static <T> void warning(T origin, String string)
     {
         System.out.println(generateText(origin, WARNING_PREFIX, string));
@@ -48,6 +60,13 @@ public class Logger {
     public static <T> void error(T origin, String string)
     {
         System.out.println(generateText(origin, ERROR_PREFIX, string));
+    }
+    
+    public static <T> void error(String prefix, String string)
+    {
+        prefix = ERROR_PREFIX + " " + prefix;
+        
+        System.out.println(generateText(prefix, string));
     }
     
     public static <T> void utilityError(T origin, String string)
@@ -69,8 +88,15 @@ public class Logger {
     {
         String reportingClass = origin != null ? origin.getClass().getSimpleName() : "Static";
         String textPrefix = generatePrefix(prefix);
+        textPrefix = textPrefix + " " + reportingClass;
+        return generateText(textPrefix, text);
+    }
+    
+    private static <T> String generateText(String prefix, String text)
+    {
+        String textPrefix = generatePrefix(prefix);
         
-        return textPrefix + " " + reportingClass + ": " + text;
+        return textPrefix + ": " + text;
     }
     
     private static String generatePrefix(String prefix)

@@ -24,7 +24,7 @@ import automater.utilities.Description;
 import automater.utilities.DeviceScreen;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
-import automater.utilities.OSUIEffects;
+import automater.utilities.DeviceNotifications;
 import automater.work.BaseAction;
 import automater.work.model.Macro;
 import automater.work.parser.ActionsFromMacroInputsParser;
@@ -345,7 +345,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         String message = TextValue.getText(TextValue.Record_NotificationStartMessage, macroHotkey);
         String tooltip = TextValue.getText(TextValue.Record_NotificationStartTooltip);
         
-        OSUIEffects.getShared().displayOSNotification(title, message, tooltip);
+        DeviceNotifications.getShared().displayOSNotification(title, message, tooltip);
     }
     
     private void displayRecordingStoppedNotification()
@@ -356,6 +356,6 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         String message = TextValue.getText(TextValue.Record_NotificationStopMessage, macroHotkey);
         String tooltip = TextValue.getText(TextValue.Record_NotificationStopTooltip);
         
-        OSUIEffects.getShared().displayOSNotification(title, message, tooltip);
+        DeviceNotifications.getShared().displayOSNotification(title, message, tooltip);
     }
 }

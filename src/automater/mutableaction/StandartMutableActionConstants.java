@@ -13,6 +13,7 @@ import automater.input.InputKeyValue;
 import automater.input.InputMouse;
 import automater.input.InputMouseMotion;
 import automater.input.InputMouseMove;
+import automater.input.InputSystemCommand;
 import automater.utilities.Description;
 import automater.work.BaseAction;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class StandartMutableActionConstants {
         types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeKeyboardClick)));
         types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeMouseClick)));
         types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeMouseMove)));
+        types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeSystemCommand)));
         return types;
     }
     
@@ -62,6 +64,11 @@ public class StandartMutableActionConstants {
             }
             
             return 1;
+        }
+        
+        if (action instanceof InputSystemCommand)
+        {
+            return 5;
         }
         
         return 0;
@@ -99,6 +106,11 @@ public class StandartMutableActionConstants {
             }
             
             return MutableActionType.Wait;
+        }
+        
+        if (action instanceof InputSystemCommand)
+        {
+            type = MutableActionType.SystemCommand;
         }
         
         return type;

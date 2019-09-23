@@ -29,12 +29,12 @@ public class StandartMutableActionProperties {
         return new StandartMutableActionPropertyNonNegativeDouble(name, value, max);
     }
     
-    public static BaseMutableActionProperty createString(String name, String value, byte max)
+    public static BaseMutableActionProperty createString(String name, String value, int max)
     {
-        return new StandartMutableActionPropertyString(name, value, (byte)0, max);
+        return new StandartMutableActionPropertyString(name, value, 0, max);
     }
     
-    public static BaseMutableActionProperty createString(String name, String value, byte min, byte max)
+    public static BaseMutableActionProperty createString(String name, String value, int min, int max)
     {
         return new StandartMutableActionPropertyString(name, value, min, max);
     }
@@ -177,10 +177,10 @@ class StandartMutableActionPropertyNonNegativeDouble extends StandartMutableActi
 }
 
 class StandartMutableActionPropertyString extends StandartMutableActionPropertyGeneric implements MutableActionPropertyString {
-    final byte min;
-    final byte max;
+    final int min;
+    final int max;
     
-    StandartMutableActionPropertyString(String name, String value, byte min, byte max)
+    StandartMutableActionPropertyString(String name, String value, int min, int max)
     {
         super(name, value);
         
@@ -190,14 +190,14 @@ class StandartMutableActionPropertyString extends StandartMutableActionPropertyG
     
     @Override
     public String getInvalidError() {
-        String value = getValue();
+        String string = getValue();
         
-        if (value.length() < min)
+        if (string.length() < min)
         {
             return getName() + " must be at least " + String.valueOf(min) + " chars";
         }
         
-        if (value.length() > max)
+        if (string.length() > max)
         {
             return getName() + " cannot be longer than " + String.valueOf(max) + " chars";
         }

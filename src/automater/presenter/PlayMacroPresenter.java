@@ -16,7 +16,7 @@ import automater.ui.viewcontroller.RootViewController;
 import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
-import automater.utilities.OSUIEffects;
+import automater.utilities.DeviceNotifications;
 import automater.work.BaseAction;
 import automater.work.BaseExecutorProcess;
 import automater.work.Executor;
@@ -293,7 +293,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         String message = TextValue.getText(TextValue.Play_NotificationStartMessage, macroName, macroHotkey);
         String tooltip = TextValue.getText(TextValue.Play_NotificationStartTooltip, macroName);
         
-        OSUIEffects.getShared().displayOSNotification(title, message, tooltip);
+        DeviceNotifications.getShared().displayOSNotification(title, message, tooltip);
     }
     
     private void displayPlayingFinishedNotification()
@@ -310,7 +310,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         String message = TextValue.getText(TextValue.Play_NotificationFinishMessage, macroName);
         String tooltip = TextValue.getText(TextValue.Play_NotificationFinishTooltip, macroName);
         
-        OSUIEffects.getShared().displayOSNotification(title, message, tooltip);
+        DeviceNotifications.getShared().displayOSNotification(title, message, tooltip);
     }
     
     private void displayPlayingRepeatNotification(int numberOfTimesPlayed, int numberOfTimesToPlay)
@@ -332,6 +332,6 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         String message = TextValue.getText(TextValue.Play_NotificationRepeatMessage, macroName, timesPlayed);
         String tooltip = TextValue.getText(TextValue.Play_NotificationRepeatTooltip, macroName, timesPlayed);
         
-        OSUIEffects.getShared().displayOSNotification(title, message, tooltip);
+        DeviceNotifications.getShared().displayOSNotification(title, message, tooltip);
     }
 }

@@ -14,6 +14,7 @@ import automater.input.InputKeyValue;
 import automater.input.InputMouse;
 import automater.input.InputMouseMotion;
 import automater.input.InputMouseMove;
+import automater.input.InputSystemCommand;
 import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.utilities.StringFormatting;
@@ -105,6 +106,15 @@ public class StandartMutableAction implements BaseMutableAction {
             StandartMutableActionMouseMotion motion;
             motion = new StandartMutableActionMouseMotion(type, timestamp, inputMotion.getMoves(), lastMove);
             a = motion;
+            return a;
+        }
+        
+        // System command
+        if (action instanceof InputSystemCommand)
+        {
+            InputSystemCommand inputCommand = (InputSystemCommand)action;
+            
+            a = new StandartMutableActionSystemCommand(type, timestamp, inputCommand.getValue(), inputCommand.reportsErrors());
             return a;
         }
         
@@ -552,5 +562,40 @@ class StandartMutableActionMouseMotion extends StandartMutableAction {
         }
         
         return newMoves;
+    }
+}
+
+class StandartMutableActionSystemCommand extends StandartMutableAction {
+    public StandartMutableActionSystemCommand(MutableActionType type, long timestamp, String value, boolean reportsErrors)
+    {
+        super(type, timestamp);
+        
+        String firstName = TextValue.getText(TextValue.EditAction_Command);
+        String secondName = TextValue.getText(TextValue.EditAction_ReportsErrors);
+        
+        properties.add(StandartMutableActionProperties.createString(firstName, value, 255));
+        properties.add(StandartMutableActionProperties.createBoolean(secondName, reportsErrors));
+    }
+    
+    @Override
+    public Description getDescription() {
+        Description d = InputDescriptions.getSystemCommand(timestamp, getFirstProperty().getValue());
+        
+        return d;
+    }
+    
+    @Override
+    public String getStateDescription() {
+        return TextValue.getText(TextValue.EditAction_DescriptionSystemCommand);
+    }
+    
+    @Override
+    public BaseAction buildAction() throws Exception {
+        String commandValue = getFirstProperty().getValue();
+        boolean reportsErrors = Boolean.parseBoolean(getSecondProperty().getValue());
+        
+        Description d = InputDescriptions.getSystemCommand(timestamp, commandValue);
+        
+        return Action.createSystemCommand(timestamp, commandValue, reportsErrors, d);
     }
 }
