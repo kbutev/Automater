@@ -83,6 +83,13 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         _form.onInsertCallback = new Callback<Integer>() {
             @Override
             public void perform(Integer argument) {
+                // -1 is used to express that no selection has been made
+                // We need to pass a non-negative value to the presenter
+                if (argument < 0)
+                {
+                    argument = 0;
+                }
+                
                 _presenter.onStartCreatingMacroActionAt(argument);
             }
         };

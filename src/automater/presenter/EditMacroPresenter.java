@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import automater.mutableaction.BaseMutableAction;
+import automater.work.Action;
 
 /**
  *
@@ -384,6 +385,16 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _macroActions.remove(index);
         _macroActionDescriptions.remove(index);
         
+        // Check if no actions are left
+        // So that we can add a do nothing action always to prevent empty actions
+        if (_macroActions.isEmpty())
+        {
+            BaseAction doNothing = Action.createDoNothing(0);
+            _macroActions.add(doNothing);
+            _macroActionDescriptions.add(doNothing.getDescription());
+        }
+        
+        // Update delegate
         _delegate.onEditedMacroActions(_macroActionDescriptions);
     }
     
