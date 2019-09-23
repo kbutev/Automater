@@ -47,7 +47,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         _form.onBackButtonCallback = new SimpleCallback() {
             @Override
             public void perform() {
-                _presenter.navigateBack();
+                _presenter.onCloseMacroWithoutSaving();
             }
         };
         
@@ -91,6 +91,20 @@ public class EditMacroViewController implements BaseViewController, BasePresente
                 }
                 
                 _presenter.onStartCreatingMacroActionAt(argument);
+            }
+        };
+        
+        _form.onNameChangedCallback = new Callback<String>() {
+            @Override
+            public void perform(String argument) {
+                _presenter.onMacroNameChanged(argument);
+            }
+        };
+        
+        _form.onDescriptionChangedCallback = new Callback<String>() {
+            @Override
+            public void perform(String argument) {
+                _presenter.onMacroDescriptionChanged(argument);
             }
         };
     }
@@ -225,6 +239,21 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     }
 
     @Override
+    public void onClosingMacroWithoutSavingChanges()
+    {
+        // Show confirm alert
+        String textTitle = TextValue.getText(TextValue.Edit_CloseWithoutSavingTitle);
+        String textMessage = TextValue.getText(TextValue.Edit_CloseWithoutSavingMessage);
+        
+        AlertWindows.showConfirmationMessage(_form, textTitle, textMessage, new SimpleCallback() {
+            @Override
+            public void perform() {
+                _presenter.navigateBack();
+            }
+        }, null);
+    }
+    
+    @Override
     public void onErrorEncountered(Exception e)
     {
         Logger.error(this, "Error encountered: " + e.toString());
@@ -236,7 +265,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         }
         
         // Show message alert
-        String textTitle = TextValue.getText(TextValue.Error_Generic);
+        String textTitle = TextValue.getText(TextValue.Play_DialogErrorTitle);
         String textMessage = e.getMessage();
         String ok = TextValue.getText(TextValue.Dialog_OK);
         
@@ -247,9 +276,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     
     private void onSaveMacro()
     {
-        String name = _form.getMacroName();
-        String description = _form.getMacroDescription();
-        _presenter.onSaveMacro(name, description);
+        _presenter.onSaveMacro();
     }
     
     private void initEditMacroActionDialog()

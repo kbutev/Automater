@@ -35,6 +35,7 @@ public interface BasePresenterDelegate {
     public void onEditMacroAction(automater.mutableaction.BaseMutableAction action);
     public void onSaveMacroAction(automater.mutableaction.BaseMutableAction action);
     public void onEditedMacroActions(List<Description> newMacroActions);
+    public void onClosingMacroWithoutSavingChanges();
     
     public void onErrorEncountered(Exception e);
 }

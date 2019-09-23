@@ -39,9 +39,14 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     private BasePresenterDelegate _delegate;
     
     private final Macro _originalMacro;
+    
+    // New values
+    private String _name;
+    private String _description;
     private final ArrayList<BaseAction> _macroActions;
     private final ArrayList<Description> _macroActionDescriptions;
     
+    // Edit action
     private boolean _isEditingOrCreatingAction = false;
     private boolean _isCreatingAction = false;
     
@@ -49,16 +54,24 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     private int _actionTypeSelectedIndex = 0;
     private StandartMutableAction _actionBeingEdited;
     
+    // Hotkey recording
     private boolean _recording = false;
     private final Recorder _recorder = Recorder.getDefault();
     private Callback _onKeystrokeEnteredCallback = Callback.createDoNothing();
     private Hotkey _hotkeyRecorded;
+    
+    // Edit detection
+    private boolean _wasEdited = false;
     
     public EditMacroPresenter(RootViewController rootViewController, Macro macro)
     {
         _rootViewController = rootViewController;
         
         _originalMacro = macro;
+        
+        _name = macro.getName();
+        _description = macro.getDescription();
+        
         _macroActions = new ArrayList<>();
         _macroActions.addAll(macro.actions);
         _macroActionDescriptions = new ArrayList<>();
@@ -152,9 +165,25 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _rootViewController.navigateToOpenScreen();
     }
     
-    public void onSaveMacro(String name, String description)
+    public void onCloseMacroWithoutSaving()
+    {
+        Logger.messageEvent(this, "Close without saving changes.");
+        
+        if (wasEdited())
+        {
+            _delegate.onClosingMacroWithoutSavingChanges();
+            return;
+        }
+        
+        navigateBack();
+    }
+    
+    public void onSaveMacro()
     {
         Logger.messageEvent(this, "Save macro and go back.");
+        
+        String name = _name;
+        String description = _description;
         
         MacroStorage macroStorage = GeneralStorage.getDefault().getMacrosStorage();
         
@@ -378,6 +407,8 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
             return;
         }
         
+        _wasEdited = true;
+        
         BaseAction action = _macroActions.get(_actionBeingEditedIndex);
         
         Logger.messageEvent(this, "Delete macro action '" + action.toString() + "' at index " + String.valueOf(index) + "");
@@ -469,10 +500,31 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _recorder.unregisterHotkeyListener(this);
     }
     
+    public void onMacroNameChanged(String name)
+    {
+        _wasEdited = true;
+        
+        _name = name;
+    }
+    
+    public void onMacroDescriptionChanged(String description)
+    {
+        _wasEdited = true;
+        
+        _description = description;
+    }
+    
     // # Private
+    
+    private boolean wasEdited()
+    {
+        return _wasEdited;
+    }
     
     private void updateMacroWithNewCreatedAction(StandartMutableAction a)
     {
+        _wasEdited = true;
+        
         try {
             BaseAction action = a.buildAction();
             
@@ -489,6 +541,8 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     
     private void updateMacroWithEditedAction(StandartMutableAction a, int actionBeingEditedIndex)
     {
+        _wasEdited = true;
+        
         try {
             BaseAction action = a.buildAction();
             

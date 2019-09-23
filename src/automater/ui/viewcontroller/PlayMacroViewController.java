@@ -202,6 +202,12 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     {
         
     }
+    
+    @Override
+    public void onClosingMacroWithoutSavingChanges()
+    {
+        
+    }
 
     @Override
     public void onErrorEncountered(Exception e)

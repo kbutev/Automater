@@ -210,6 +210,12 @@ public class RecordMacroViewController implements BaseViewController, BasePresen
     }
     
     @Override
+    public void onClosingMacroWithoutSavingChanges()
+    {
+        
+    }
+    
+    @Override
     public void onErrorEncountered(Exception e)
     {
         Logger.error(this, "Error encountered: " + e.toString());

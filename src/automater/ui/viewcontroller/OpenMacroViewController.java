@@ -209,6 +209,12 @@ public class OpenMacroViewController implements BaseViewController, BasePresente
     }
     
     @Override
+    public void onClosingMacroWithoutSavingChanges()
+    {
+        
+    }
+    
+    @Override
     public void onErrorEncountered(Exception e)
     {
         Logger.error(this, "Error encountered: " + e.toString());

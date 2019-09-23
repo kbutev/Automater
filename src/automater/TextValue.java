@@ -64,7 +64,8 @@ public enum TextValue {
     // Edit form
     Edit_FormTitle, Edit_BackButtonTitle,
     Edit_Name, Edit_Actions, Edit_Description,
-    Edit_Delete, Edit_Edit, Edit_Insert,
+    Edit_Delete, Edit_Edit, Edit_Create,
+    Edit_CloseWithoutSavingTitle, Edit_CloseWithoutSavingMessage,
     
     // Edit Action dialog
     EditAction_DialogTitle, EditAction_CancelButtonTitle, EditAction_SaveButtonTitle,
@@ -283,7 +284,9 @@ public enum TextValue {
         put(Edit_Description, "Description");
         put(Edit_Delete, "Delete");
         put(Edit_Edit, "Edit");
-        put(Edit_Insert, "Create");
+        put(Edit_Create, "Create");
+        put(Edit_CloseWithoutSavingTitle, "Cancel edit macro");
+        put(Edit_CloseWithoutSavingMessage, "Are you sure you want to close without saving the changes?");
         
         // Edit action dialog
         put(EditAction_DialogTitle, "Automater - Edit Action");

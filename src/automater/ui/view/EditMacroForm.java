@@ -8,6 +8,8 @@ package automater.ui.view;
 import automater.TextValue;
 import automater.utilities.Callback;
 import automater.utilities.SimpleCallback;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  *
@@ -23,6 +25,8 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
     public Callback<Integer> onDeleteButtonCallback = Callback.createDoNothing();
     public Callback<Integer> onEditButtonCallback = Callback.createDoNothing();
     public Callback<Integer> onInsertCallback = Callback.createDoNothing();
+    public Callback<String> onNameChangedCallback = Callback.createDoNothing();
+    public Callback<String> onDescriptionChangedCallback = Callback.createDoNothing();
 
     /**
      * Creates new form EditMacroForm
@@ -272,7 +276,51 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
         
         deleteButton.setText(TextValue.getText(TextValue.Edit_Delete));
         editButton.setText(TextValue.getText(TextValue.Edit_Edit));
-        createButton.setText(TextValue.getText(TextValue.Edit_Insert));
+        createButton.setText(TextValue.getText(TextValue.Edit_Create));
+        
+        DocumentListener listener = new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                String name = macroNameField.getText();
+                onNameChangedCallback.perform(name);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                String name = macroNameField.getText();
+                onNameChangedCallback.perform(name);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                String name = macroNameField.getText();
+                onNameChangedCallback.perform(name);
+            }
+        };
+        
+        macroNameField.getDocument().addDocumentListener(listener);
+        
+        listener = new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                String description = macroDescriptionTextArea.getText();
+                onDescriptionChangedCallback.perform(description);
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                String description = macroDescriptionTextArea.getText();
+                onDescriptionChangedCallback.perform(description);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                String description = macroDescriptionTextArea.getText();
+                onDescriptionChangedCallback.perform(description);
+            }
+        };
+        
+        macroDescriptionTextArea.getDocument().addDocumentListener(listener);
     }
     
     @Override
