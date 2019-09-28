@@ -7,6 +7,7 @@ package automater.input;
 
 import automater.TextValue;
 import automater.utilities.Description;
+import automater.utilities.FileSystem;
 import java.io.Serializable;
 
 /**
@@ -129,19 +130,7 @@ public class InputDescriptions {
     
     public static Description getScreenshot(long timestamp, String path)
     {
-        String fileName = "*invalid*";
-        int lastIndexOfSlash;
-        
-        if (path.contains("\\"))
-        {
-            lastIndexOfSlash = path.lastIndexOf("\\");
-        } else {
-            lastIndexOfSlash = path.lastIndexOf("/");
-        }
-        
-        if (lastIndexOfSlash != -1 && lastIndexOfSlash+1 < path.length()) {
-            fileName = path.substring(lastIndexOfSlash+1);
-        }
+        String fileName = FileSystem.createFileNameFromFilePath(path);
         
         String name = "Screenshot";
         String time = String.valueOf(timestamp);

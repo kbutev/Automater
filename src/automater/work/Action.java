@@ -30,6 +30,7 @@ import automater.input.InputMouseWheel;
 import automater.input.InputScreenshot;
 import automater.input.InputSystemCommand;
 import automater.utilities.DeviceNotifications;
+import automater.utilities.FileSystem;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -905,7 +906,7 @@ class ActionScreenshot extends Action implements InputScreenshot {
     
     final long time;
     
-    final String path;
+    final String screenshotPath;
     
     String standartDescription;
     String verboseDescription;
@@ -913,7 +914,7 @@ class ActionScreenshot extends Action implements InputScreenshot {
     ActionScreenshot(long time, String path, Description description)
     {
         this.time = time;
-        this.path = path;
+        this.screenshotPath = path;
         
         if (description != null)
         {
@@ -939,9 +940,11 @@ class ActionScreenshot extends Action implements InputScreenshot {
     {
         Dimension screen = context.getCurrentScreenSize();
         Rectangle fullScreenArea = new Rectangle(0, 0, screen.width, screen.height);
-        String filePath = evaluatePath(path, context);
+        String filePath = evaluatePath(screenshotPath, context);
+        String pathWithoutFileName = FileSystem.createFilePathWithoutTheFileName(filePath);
         
         try {
+            createFolderForScreenshot(pathWithoutFileName);
             BufferedImage result = context.getRobot().createScreenCapture(fullScreenArea);
             File outputFile = new File(filePath);
             ImageIO.write(result, "jpg", outputFile);
@@ -962,7 +965,7 @@ class ActionScreenshot extends Action implements InputScreenshot {
     
     @Override
     public String getPath() {
-        return path;
+        return screenshotPath;
     }
 
     @Override
@@ -977,17 +980,13 @@ class ActionScreenshot extends Action implements InputScreenshot {
     
     private String evaluatePath(String path, BaseActionContext context) {
         // Make sure that the path is OK
-        if (!path.endsWith(".jpg"))
-        {
-            path = path + ".jpg";
-        }
+        path = FileSystem.createFilePathEndingWithExtension(path, ".jpg");
         
         Date now = new Date();
         Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
         calendar.setTime(now);
         
         // Evaluate aguments
-        
         if (path.contains(yearPlaceholder))
         {
             path = path.replaceAll(yearPlaceholder, String.valueOf(calendar.get(Calendar.YEAR)));
@@ -1041,5 +1040,12 @@ class ActionScreenshot extends Action implements InputScreenshot {
         }
         
         return path;
+    }
+    
+    private void createFolderForScreenshot(String folderPath) throws Exception
+    {
+        File directory = new File(folderPath);
+        
+        directory.mkdirs();
     }
 }

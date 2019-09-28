@@ -153,7 +153,7 @@ public class StandartMutableActionTemplates {
     {
         BaseAction action;
         
-        String defaultPath = FileSystem.filePathRelativeToLocalPath("screenshot.jpg");
+        String defaultPath = FileSystem.createFilePathRelativeToLocalPath("screenshot.jpg");
         
         try {
             Description description = InputDescriptions.getScreenshot(timestamp, defaultPath);
