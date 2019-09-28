@@ -389,6 +389,11 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         {
             setupSystemCommandPanel();
         }
+        
+        if (_mutableAction.getType() == MutableActionType.Screenshot)
+        {
+            setupScreenshot();
+        }
     }
     
     private void setupDoNothingPanel()
@@ -591,7 +596,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
             }
         };
         
-         view.onReportErrorChanged = new Callback<Boolean>() {
+        view.onReportErrorChanged = new Callback<Boolean>() {
             @Override
             public void perform(Boolean argument) {
                 String newValue = String.valueOf(argument);
@@ -608,6 +613,35 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         view.commandArea.setText(first.getValue());
         view.reportErrorCheck.setText(second.getName());
         view.reportErrorCheck.setSelected(Boolean.parseBoolean(second.getValue()));
+    }
+    
+    private void setupScreenshot()
+    {
+        if (_mutableAction == null)
+        {
+            return;
+        }
+        
+        // Properties
+        BaseMutableActionProperty first = _mutableAction.getFirstProperty();
+        
+        // Setup view
+        EditMacroActionScreenshot view = new EditMacroActionScreenshot();
+        view.onPathChanged = new Callback<String>() {
+            @Override
+            public void perform(String argument) {
+                String newValue = argument;
+                setActionFirstValue(newValue);
+            }
+        };
+        
+        panel.add(view);
+        panel.setLayout(new BorderLayout());
+        panel.add(view, BorderLayout.NORTH);
+        
+        // Setup values and their labels
+        view.pathLabel.setText(first.getName());
+        view.pathField.setText(first.getValue());
     }
     
     // # Private - validators

@@ -14,6 +14,7 @@ import automater.input.InputKeyValue;
 import automater.input.InputMouse;
 import automater.input.InputMouseMotion;
 import automater.input.InputMouseMove;
+import automater.input.InputScreenshot;
 import automater.input.InputSystemCommand;
 import automater.utilities.Description;
 import automater.utilities.Errors;
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Standart implementation for BaseMutableAction.
+ * Standard implementation for BaseMutableAction.
  * 
  * Use buildAction() to retrieve a BaseAction object.
  *
@@ -115,6 +116,15 @@ public class StandartMutableAction implements BaseMutableAction {
             InputSystemCommand inputCommand = (InputSystemCommand)action;
             
             a = new StandartMutableActionSystemCommand(type, timestamp, inputCommand.getValue(), inputCommand.reportsErrors());
+            return a;
+        }
+        
+        // Screenshot
+        if (action instanceof InputScreenshot)
+        {
+            InputScreenshot inputScreenshot = (InputScreenshot)action;
+            
+            a = new StandartMutableActionScreenshot(type, timestamp, inputScreenshot.getPath());
             return a;
         }
         
@@ -597,5 +607,37 @@ class StandartMutableActionSystemCommand extends StandartMutableAction {
         Description d = InputDescriptions.getSystemCommand(timestamp, commandValue);
         
         return Action.createSystemCommand(timestamp, commandValue, reportsErrors, d);
+    }
+}
+
+class StandartMutableActionScreenshot extends StandartMutableAction {
+    public StandartMutableActionScreenshot(MutableActionType type, long timestamp, String path)
+    {
+        super(type, timestamp);
+        
+        String firstName = TextValue.getText(TextValue.EditAction_Path);
+        
+        properties.add(StandartMutableActionProperties.createString(firstName, path, 255));
+    }
+    
+    @Override
+    public Description getDescription() {
+        Description d = InputDescriptions.getScreenshot(timestamp, getFirstProperty().getValue());
+        
+        return d;
+    }
+    
+    @Override
+    public String getStateDescription() {
+        return TextValue.getText(TextValue.EditAction_DescriptionScreenshot);
+    }
+    
+    @Override
+    public BaseAction buildAction() throws Exception {
+        String path = getFirstProperty().getValue();
+        
+        Description d = InputDescriptions.getScreenshot(timestamp, path);
+        
+        return Action.createScreenshot(timestamp, path, d);
     }
 }

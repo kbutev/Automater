@@ -6,7 +6,6 @@
 package automater;
 
 import automater.utilities.Logger;
-import com.sun.xml.internal.ws.util.StringUtils;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.regex.Matcher;
@@ -27,7 +26,7 @@ public enum TextValue {
     Input_KeyboardPress, Input_KeyboardRelease,
     Input_MousePress, Input_MouseRelease,
     Input_MouseMove, Input_MouseMotion, Input_MouseWheel,
-    Input_SystemCommand,
+    Input_SystemCommand, Input_Screenshot,
     
     // Record form
     Record_FormTitle, Record_HeaderText,
@@ -76,19 +75,21 @@ public enum TextValue {
     EditAction_Wait,
     EditAction_Key, EditAction_Press,
     EditAction_X, EditAction_Y, EditAction_FinalX, EditAction_FinalY,
-    EditAction_Command, EditAction_ReportsErrors,
+    EditAction_Command,
+    EditAction_Path,
+    EditAction_ReportsErrors,
     
     // Edit Action types
     EditAction_TypeDoNothing, EditAction_TypeWait,
     EditAction_TypeKeyboardClick, EditAction_TypeMouseClick, EditAction_TypeMouseMove,
-    EditAction_TypeSystemCommand,
+    EditAction_TypeSystemCommand, EditAction_TypeScreenshot,
     
     // Edit Action descriptions
     EditAction_DescriptionDoNothing,
     EditAction_DescriptionWait,
     EditAction_DescriptionKeyboardClick, EditAction_DescriptionMouseClick, EditAction_DescriptionMouseMove,
     EditAction_DescriptionMouseMotion,
-    EditAction_DescriptionSystemCommand,
+    EditAction_DescriptionSystemCommand, EditAction_DescriptionScreenshot,
     
     // Macro parameters
     MacroParameters_Default,
@@ -218,6 +219,7 @@ public enum TextValue {
         put(Input_MouseMotion, "MouseMotion %@x moves, ends at %@,%@");
         put(Input_MouseWheel, "MouseWheel %@");
         put(Input_SystemCommand, "SystemCommand %@");
+        put(Input_Screenshot, "Screenshot '%@'");
         
         // Record form
         put(Record_FormTitle, "Automater - Record");   
@@ -325,6 +327,7 @@ public enum TextValue {
         put(EditAction_TypeMouseClick, "Mouse click");
         put(EditAction_TypeMouseMove, "Mouse move");
         put(EditAction_TypeSystemCommand, "System command");
+        put(EditAction_TypeScreenshot, "Screenshot");
         
         // Edit Action descriptions
         put(EditAction_DescriptionDoNothing, "Do nothing");
@@ -334,6 +337,7 @@ public enum TextValue {
         put(EditAction_DescriptionMouseMove, "Simulates one mouse movement, choose x and y");
         put(EditAction_DescriptionMouseMotion, "Simulates %@x mouse movements, choose the final x and y");
         put(EditAction_DescriptionSystemCommand, "Execute system command line");
+        put(EditAction_DescriptionScreenshot, "Take a screenshot of the device screen");
         
         // Macro parameters
         put(MacroParameters_Default, "Play once");

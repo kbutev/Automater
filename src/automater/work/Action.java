@@ -27,8 +27,14 @@ import automater.input.InputKey;
 import automater.input.InputKeyValue;
 import automater.input.InputMouse;
 import automater.input.InputMouseWheel;
+import automater.input.InputScreenshot;
 import automater.input.InputSystemCommand;
 import automater.utilities.DeviceNotifications;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import javax.imageio.ImageIO;
 
 /**
  * Simulates user actions such as keyboard and mouse clicks.
@@ -96,6 +102,11 @@ public class Action extends BaseAction {
     public static Action createSystemCommand(long timestamp, String value, boolean reportsErrors, Description description) throws Exception
     {
         return new ActionSystemCommand(timestamp, value, reportsErrors, description);
+    }
+    
+    public static Action createScreenshot(long timestamp, String path, Description description) throws Exception
+    {
+        return new ActionScreenshot(timestamp, path, description);
     }
     
     @Override
@@ -875,5 +886,88 @@ class ActionSystemCommand extends Action implements InputSystemCommand {
     @Override
     public boolean reportsErrors() {
         return reportsErrors;
+    }
+}
+
+class ActionScreenshot extends Action implements InputScreenshot {
+    final long time;
+    
+    final String path;
+    
+    String standartDescription;
+    String verboseDescription;
+    
+    ActionScreenshot(long time, String path, Description description)
+    {
+        this.time = time;
+        this.path = evaluatePath(path);
+        
+        if (description != null)
+        {
+            this.standartDescription = description.getStandart();
+            this.verboseDescription = description.getVerbose();
+        }
+    }
+    
+    @Override
+    public boolean isComplex()
+    {
+        return false;
+    }
+    
+    @Override
+    public long getPerformTime()
+    {
+        return time;
+    }
+    
+    @Override
+    public void perform(BaseActionContext context)
+    {
+        Dimension screen = context.getCurrentScreenSize();
+        Rectangle fullScreenArea = new Rectangle(0, 0, screen.width, screen.height);
+        
+        try {
+            BufferedImage result = context.getRobot().createScreenCapture(fullScreenArea);
+            File outputFile = new File(path);
+            ImageIO.write(result, "jpg", outputFile);
+        } catch (Exception e) {
+            Logger.warning(this, "Failed to capture screenshot: " + e.toString());
+        }
+    }
+    
+    @Override
+    public String getStandart() {
+        return standartDescription;
+    }
+    
+    @Override
+    public String getVerbose() {
+        return verboseDescription;
+    }
+    
+    @Override
+    public String getPath() {
+        return path;
+    }
+
+    @Override
+    public boolean isFullScreen() {
+        return true;
+    }
+
+    @Override
+    public Rectangle getArea() {
+        return new Rectangle();
+    }
+    
+    private String evaluatePath(String path) {
+        // Make sure that the path is OK
+        if (!path.endsWith(".jpg"))
+        {
+            path = path + ".jpg";
+        }
+            
+        return path;
     }
 }

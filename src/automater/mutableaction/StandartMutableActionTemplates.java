@@ -10,6 +10,7 @@ import automater.input.InputKey;
 import automater.input.InputKeyClick;
 import automater.input.InputKeyValue;
 import automater.utilities.Description;
+import automater.utilities.FileSystem;
 import automater.work.Action;
 import automater.work.BaseAction;
 
@@ -35,6 +36,8 @@ public class StandartMutableActionTemplates {
                 return buildTemplateMouseMove(timestamp);
             case 5:
                 return buildTemplateSystemCommand(timestamp);
+            case 6:
+                return buildTemplateScreenshot(timestamp);
             default:
                 break;
         }
@@ -139,6 +142,22 @@ public class StandartMutableActionTemplates {
         try {
             Description description = InputDescriptions.getSystemCommand(timestamp, "");
             action = Action.createSystemCommand(timestamp, "", true, description);
+        } catch (Exception e) {
+            return null;
+        }
+        
+        return StandartMutableAction.createFromAction(action);
+    }
+    
+    public static StandartMutableAction buildTemplateScreenshot(long timestamp)
+    {
+        BaseAction action;
+        
+        String defaultPath = FileSystem.filePathRelativeToLocalPath("screenshot.jpg");
+        
+        try {
+            Description description = InputDescriptions.getScreenshot(timestamp, defaultPath);
+            action = Action.createScreenshot(timestamp, defaultPath, description);
         } catch (Exception e) {
             return null;
         }

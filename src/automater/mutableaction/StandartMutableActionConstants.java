@@ -13,6 +13,7 @@ import automater.input.InputKeyValue;
 import automater.input.InputMouse;
 import automater.input.InputMouseMotion;
 import automater.input.InputMouseMove;
+import automater.input.InputScreenshot;
 import automater.input.InputSystemCommand;
 import automater.utilities.Description;
 import automater.work.BaseAction;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * List of mandatory and commonly used values for the standart BaseMutableAction implementation.
+ * List of mandatory and commonly used values for the standard BaseMutableAction implementation.
  *
  * @author Bytevi
  */
@@ -36,6 +37,7 @@ public class StandartMutableActionConstants {
         types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeMouseClick)));
         types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeMouseMove)));
         types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeSystemCommand)));
+        types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeScreenshot)));
         return types;
     }
     
@@ -69,6 +71,11 @@ public class StandartMutableActionConstants {
         if (action instanceof InputSystemCommand)
         {
             return 5;
+        }
+        
+        if (action instanceof InputScreenshot)
+        {
+            return 6;
         }
         
         return 0;
@@ -111,6 +118,11 @@ public class StandartMutableActionConstants {
         if (action instanceof InputSystemCommand)
         {
             type = MutableActionType.SystemCommand;
+        }
+        
+        if (action instanceof InputScreenshot)
+        {
+            type = MutableActionType.Screenshot;
         }
         
         return type;

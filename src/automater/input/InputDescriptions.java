@@ -124,7 +124,30 @@ public class InputDescriptions {
         String verbose = time + " " + description;
         String tooltip = description;
         
-        System.out.println("description: " + description + " value: " + value);
+        return new InputDescription(name, description, verbose, tooltip);
+    }
+    
+    public static Description getScreenshot(long timestamp, String path)
+    {
+        String fileName = "*invalid*";
+        int lastIndexOfSlash;
+        
+        if (path.contains("\\"))
+        {
+            lastIndexOfSlash = path.lastIndexOf("\\");
+        } else {
+            lastIndexOfSlash = path.lastIndexOf("/");
+        }
+        
+        if (lastIndexOfSlash != -1 && lastIndexOfSlash+1 < path.length()) {
+            fileName = path.substring(lastIndexOfSlash+1);
+        }
+        
+        String name = "Screenshot";
+        String time = String.valueOf(timestamp);
+        String description = TextValue.getText(TextValue.Input_Screenshot, fileName);
+        String verbose = time + " " + description;
+        String tooltip = description;
         
         return new InputDescription(name, description, verbose, tooltip);
     }
