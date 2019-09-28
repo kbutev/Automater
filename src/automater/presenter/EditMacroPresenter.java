@@ -91,6 +91,8 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         Logger.message(this, "Start.");
         
         _delegate.onLoadedMacroFromStorage(_originalMacro.name, _originalMacro.getDescription(), _macroActionDescriptions);
+        
+        _wasEdited = false;
     }
 
     @Override
