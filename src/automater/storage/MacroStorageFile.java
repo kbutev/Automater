@@ -154,18 +154,25 @@ public class MacroStorageFile {
     
     public void create() throws Exception
     {
-        String data = Archiver.serializeObject(_macro);
+        Macro macro;
+        
+        synchronized (_lock)
+        {
+            macro = _macro;
+        }
+        
+        String data = Archiver.serializeObject(macro);
         
         if (data == null)
         {
-            Errors.throwSerializationFailed("Failed to serialize macro '" + _macro.name + "'");
+            Errors.throwSerializationFailed("Failed to serialize macro '" + macro.name + "'");
         }
         
         File file = getFile();
         
         if (file.exists())
         {
-            Errors.throwSerializationFailed("Failed to create macro '" + _macro.name + "', already exists");
+            Errors.throwSerializationFailed("Failed to create macro '" + macro.name + "', already exists");
         }
         
         // Update file
@@ -177,11 +184,19 @@ public class MacroStorageFile {
     
     public void update(Macro macro) throws Exception
     {
-        String data = Archiver.serializeObject(_macro);
+        File file = getFile();
+        
+        if (!file.exists())
+        {
+            Errors.throwIllegalStateError("Failed to update macro '" + macro.name + "', macro file doesn't exists");
+        }
+        
+        // Override the contents of this macro
+        String data = Archiver.serializeObject(macro);
         
         if (data == null)
         {
-            Errors.throwSerializationFailed("Failed to serialize macro '" + _macro.name + "'");
+            Errors.throwSerializationFailed("Failed to serialize macro '" + macro.name + "'");
         }
         
         // Update local variable
