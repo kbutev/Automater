@@ -78,6 +78,7 @@ public enum TextValue {
     EditAction_Command,
     EditAction_Path,
     EditAction_ReportsErrors,
+    EditAction_ScreenshotTip,
     
     // Edit Action types
     EditAction_TypeDoNothing, EditAction_TypeWait,
@@ -318,7 +319,10 @@ public enum TextValue {
         put(EditAction_FinalX, "Final X");
         put(EditAction_FinalY, "Final Y");
         put(EditAction_Command, "Command");
+        put(EditAction_Path, "Path");
         put(EditAction_ReportsErrors, "Reports errors");
+        put(EditAction_ScreenshotTip, "<html>Placeholders:<br>%y year %mt month %d day<br>" +
+                "%h hour %min minute %s second %ms millisec<br>%t timestamp");
         
         // Edit Action types
         put(EditAction_TypeDoNothing, "Do Nothing");

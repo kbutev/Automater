@@ -34,6 +34,9 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 import javax.imageio.ImageIO;
 
 /**
@@ -890,6 +893,16 @@ class ActionSystemCommand extends Action implements InputSystemCommand {
 }
 
 class ActionScreenshot extends Action implements InputScreenshot {
+    static final String yearPlaceholder = "%y";
+    static final String monthPlaceholder = "%mt";
+    static final String dayPlaceholder = "%d";
+    static final String hourPlaceholder = "%h";
+    static final String minPlaceholder = "%min";
+    static final String secPlaceholder = "%s";
+    static final String msPlaceholder = "%ms";
+    
+    static final String timestampPlaceholder = "%t";
+    
     final long time;
     
     final String path;
@@ -900,7 +913,7 @@ class ActionScreenshot extends Action implements InputScreenshot {
     ActionScreenshot(long time, String path, Description description)
     {
         this.time = time;
-        this.path = evaluatePath(path);
+        this.path = path;
         
         if (description != null)
         {
@@ -926,10 +939,11 @@ class ActionScreenshot extends Action implements InputScreenshot {
     {
         Dimension screen = context.getCurrentScreenSize();
         Rectangle fullScreenArea = new Rectangle(0, 0, screen.width, screen.height);
+        String filePath = evaluatePath(path, context);
         
         try {
             BufferedImage result = context.getRobot().createScreenCapture(fullScreenArea);
-            File outputFile = new File(path);
+            File outputFile = new File(filePath);
             ImageIO.write(result, "jpg", outputFile);
         } catch (Exception e) {
             Logger.warning(this, "Failed to capture screenshot: " + e.toString());
@@ -961,13 +975,71 @@ class ActionScreenshot extends Action implements InputScreenshot {
         return new Rectangle();
     }
     
-    private String evaluatePath(String path) {
+    private String evaluatePath(String path, BaseActionContext context) {
         // Make sure that the path is OK
         if (!path.endsWith(".jpg"))
         {
             path = path + ".jpg";
         }
+        
+        Date now = new Date();
+        Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
+        calendar.setTime(now);
+        
+        // Evaluate aguments
+        
+        if (path.contains(yearPlaceholder))
+        {
+            path = path.replaceAll(yearPlaceholder, String.valueOf(calendar.get(Calendar.YEAR)));
+        }
+        
+        if (path.contains(monthPlaceholder))
+        {
+            path = path.replaceAll(monthPlaceholder, String.valueOf(calendar.get(Calendar.MONTH) + 1));
+        }
+        
+        if (path.contains(dayPlaceholder))
+        {
+            path = path.replaceAll(dayPlaceholder, String.valueOf(calendar.get(Calendar.DAY_OF_MONTH)));
+        }
+        
+        if (path.contains(hourPlaceholder))
+        {
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            path = path.replaceAll(hourPlaceholder, String.format("%02d", hour));
+        }
+        
+        if (path.contains(minPlaceholder))
+        {
+            int min = calendar.get(Calendar.MINUTE);
+            path = path.replaceAll(minPlaceholder, String.format("%02d", min));
+        }
+        
+        if (path.contains(secPlaceholder))
+        {
+            int sec = calendar.get(Calendar.SECOND);
+            path = path.replaceAll(secPlaceholder, String.format("%02d", sec));
+        }
+        
+        if (path.contains(msPlaceholder))
+        {
+            int sec = calendar.get(Calendar.MILLISECOND);
+            path = path.replaceAll(msPlaceholder, String.format("%03d", sec));
+        }
+        
+        if (path.contains(timestampPlaceholder))
+        {
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            int min = calendar.get(Calendar.MINUTE);
+            int sec = calendar.get(Calendar.SECOND);
             
+            String timestamp = String.format("%02d", hour);
+            timestamp += "-" + String.format("%02d", min);
+            timestamp += "-" + String.format("%02d", sec);
+            
+            path = path.replaceAll(timestampPlaceholder, timestamp);
+        }
+        
         return path;
     }
 }

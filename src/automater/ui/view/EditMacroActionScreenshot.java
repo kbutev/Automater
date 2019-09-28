@@ -5,6 +5,8 @@
  */
 package automater.ui.view;
 
+import automater.TextValue;
+import static automater.TextValue.EditAction_ScreenshotTip;
 import automater.utilities.Callback;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -35,8 +37,11 @@ public class EditMacroActionScreenshot extends javax.swing.JPanel {
 
         pathField = new javax.swing.JTextField();
         pathLabel = new javax.swing.JLabel();
+        tipLabel = new javax.swing.JLabel();
 
         pathLabel.setText("Path");
+
+        tipLabel.setText("Tip");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -48,7 +53,8 @@ public class EditMacroActionScreenshot extends javax.swing.JPanel {
                     .addComponent(pathField, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(pathLabel)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(tipLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -58,7 +64,8 @@ public class EditMacroActionScreenshot extends javax.swing.JPanel {
                 .addComponent(pathLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pathField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(tipLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 54, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -85,10 +92,13 @@ public class EditMacroActionScreenshot extends javax.swing.JPanel {
         };
         
         pathField.getDocument().addDocumentListener(listener);
+        
+        tipLabel.setText(TextValue.getText(EditAction_ScreenshotTip));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JTextField pathField;
     public javax.swing.JLabel pathLabel;
+    public javax.swing.JLabel tipLabel;
     // End of variables declaration//GEN-END:variables
 }
