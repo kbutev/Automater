@@ -31,7 +31,7 @@ public class FileSystem {
         return absolutePath;
     }
     
-    public static String filePathRelativeToLocalPath(String path)
+    public static String createFilePathRelativeToLocalPath(String path)
     {
         return getLocalFilePath() + getDirectorySeparator() + path;
     }
@@ -39,6 +39,47 @@ public class FileSystem {
     public static String createFilePathWithBasePath(String base, String fileName)
     {
         return base + getDirectorySeparator() + fileName;
+    }
+    
+    public static String createFilePathWithoutTheFileName(String path)
+    {
+        String separator = getDirectorySeparator();
+        int lastIndexOfSlash = path.lastIndexOf(separator);
+        
+        if (lastIndexOfSlash != -1 && lastIndexOfSlash+1 < path.length()) {
+            path = path.substring(0, lastIndexOfSlash+1);
+        }
+        
+        return path;
+    }
+    
+    public static String createFileNameFromFilePath(String path)
+    {
+        String separator = getDirectorySeparator();
+        int lastIndexOfSlash = path.lastIndexOf(separator);
+        
+        if (lastIndexOfSlash == -1)
+        {
+            return path;
+        }
+        
+        if (lastIndexOfSlash+1 < path.length())
+        {
+            path = path.substring(lastIndexOfSlash+1);
+            return path;
+        }
+        
+        return "";
+    }
+    
+    public static String createFilePathEndingWithExtension(String path, String extension)
+    {
+        if (!path.endsWith(extension))
+        {
+            path = path + extension;
+        }
+        
+        return path;
     }
     
     public static List<File> getAllInDirectory(String path)
