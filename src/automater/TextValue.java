@@ -6,8 +6,10 @@
 package automater;
 
 import automater.utilities.Logger;
+import com.sun.xml.internal.ws.util.StringUtils;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.regex.Matcher;
 
 /**
  *
@@ -136,9 +138,9 @@ public enum TextValue {
         return evaluateTextValue(value, string, arg1, arg2, arg3);
     }
     
-    public static String evaluateTextValue(TextValue value, String string, String arg1, String arg2, String arg3)
+    public static String evaluateTextValue(TextValue value, String textValueString, String arg1, String arg2, String arg3)
     {
-        if (string == null)
+        if (textValueString == null)
         {
             recordMissingValue(value);
             return "";
@@ -146,20 +148,30 @@ public enum TextValue {
         
         if (arg1 != null)
         {
-            string = string.replaceFirst(placeholderSymbol, arg1);
+            arg1 = preprocessTextArgument(arg1);
+            textValueString = textValueString.replaceFirst(placeholderSymbol, arg1);
             
             if (arg2 != null)
             {
-                string = string.replaceFirst(placeholderSymbol, arg2);
+                arg2 = preprocessTextArgument(arg2);
+                textValueString = textValueString.replaceFirst(placeholderSymbol, arg2);
                 
                 if (arg3 != null)
                 {
-                    string = string.replaceFirst(placeholderSymbol, arg3);
+                    arg3 = preprocessTextArgument(arg3);
+                    textValueString = textValueString.replaceFirst(placeholderSymbol, arg3);
                 }
             }
         }
         
-        return string;
+        return textValueString;
+    }
+    
+    private static String preprocessTextArgument(String arg)
+    {
+        // Backslashes and dollar signs will not work when replacing a target string with the String.replaceX methods.
+        // Use Matcher to get a proper string literal
+        return Matcher.quoteReplacement(arg);
     }
     
     private static void recordMissingValue(TextValue value)
@@ -183,9 +195,9 @@ public enum TextValue {
     
     // Any invalid request values will be added to this set.
     // This is done to prevent warning log spam.
-    private static HashSet<String> missingValues = new HashSet<>();
+    private static final HashSet<String> missingValues = new HashSet<>();
     
-    private static HashMap<TextValue, String> englishValues = new HashMap<TextValue, String>() {{
+    private static final HashMap<TextValue, String> englishValues = new HashMap<TextValue, String>() {{
         // Errors
         put(Error_Generic, "Error");
         put(Error_NameIsEmpty, "Name cannot be empty");

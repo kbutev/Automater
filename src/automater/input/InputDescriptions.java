@@ -118,13 +118,13 @@ public class InputDescriptions {
     
     public static Description getSystemCommand(long timestamp, String value)
     {
-        String commandValue = value;
-        
         String name = "SystemCommand";
         String time = String.valueOf(timestamp);
-        String description = TextValue.getText(TextValue.Input_SystemCommand, commandValue);
+        String description = TextValue.getText(TextValue.Input_SystemCommand, value);
         String verbose = time + " " + description;
         String tooltip = description;
+        
+        System.out.println("description: " + description + " value: " + value);
         
         return new InputDescription(name, description, verbose, tooltip);
     }

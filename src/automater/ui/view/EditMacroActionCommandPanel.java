@@ -90,19 +90,19 @@ public class EditMacroActionCommandPanel extends javax.swing.JPanel {
         DocumentListener listener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                String result = parseTextAreaText(commandArea.getText());
+                String result = commandArea.getText();
                 onCommandValueChanged.perform(result);
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                String result = parseTextAreaText(commandArea.getText());
+                String result = commandArea.getText();
                 onCommandValueChanged.perform(result);
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                String result = parseTextAreaText(commandArea.getText());
+                String result = commandArea.getText();
                 onCommandValueChanged.perform(result);
             }
         };
@@ -110,23 +110,8 @@ public class EditMacroActionCommandPanel extends javax.swing.JPanel {
         commandArea.getDocument().addDocumentListener(listener);
     }
     
-    public void setCommandText(String text)
-    {
-        // Fix escape characters
-        String textAreaText = text.replaceAll("\\\\\\\\", "\\\\");
-        commandArea.setText(textAreaText);
-    }
-    
-    private String parseTextAreaText(String textAreaText)
-    {
-        // Fix escape characters
-        textAreaText = textAreaText.replaceAll("\\\\", "\\\\\\\\");
-        
-        return textAreaText;
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextArea commandArea;
+    public javax.swing.JTextArea commandArea;
     public javax.swing.JLabel commandLabel;
     private javax.swing.JScrollPane jScrollPane1;
     public javax.swing.JCheckBox reportErrorCheck;

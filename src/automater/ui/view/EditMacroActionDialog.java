@@ -605,7 +605,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         
         // Setup values and their labels
         view.commandLabel.setText(first.getName());
-        view.setCommandText(first.getValue());
+        view.commandArea.setText(first.getValue());
         view.reportErrorCheck.setText(second.getName());
         view.reportErrorCheck.setSelected(Boolean.parseBoolean(second.getValue()));
     }
