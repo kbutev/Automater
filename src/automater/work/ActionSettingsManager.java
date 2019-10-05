@@ -6,9 +6,9 @@
 package automater.work;
 
 /**
- * Holds settings and values for actions.
+ * Holds global values for actions, that can be used to customize their behavior.
  * 
- * These values can be customized at any time during runtime.
+ * These values can be changed at any time during runtime.
  * 
  * @author Bytevi
  */

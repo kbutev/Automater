@@ -8,7 +8,9 @@ package automater.recorder;
 import automater.settings.Hotkey;
 
 /**
- * Receives requests about a pressed hotkey.
+ * Receives requests about a pressed keyboard key.
+ * 
+ * The listener may listen for a specific key or any key.
  *
  * @author Bytevi
  */

@@ -11,7 +11,7 @@ import automater.presenter.PlayMacroPresenter;
 import automater.storage.PreferencesStorageValues;
 import automater.ui.view.PlayMacroForm;
 import automater.ui.view.PlayMacroOptionsDialog;
-import automater.ui.view.StandartDescriptionsDataSource;
+import automater.ui.view.StandardDescriptionsDataSource;
 import automater.utilities.AlertWindows;
 import automater.utilities.Description;
 import automater.utilities.Logger;
@@ -22,16 +22,17 @@ import java.awt.event.WindowEvent;
 import java.util.List;
 
 /**
+ * Play macro screen.
  *
  * @author Bytevi
  */
 public class PlayMacroViewController implements BaseViewController, BasePresenterDelegate {
     private final PlayMacroPresenter _presenter;
     
-    private PlayMacroForm _form;
+    private final PlayMacroForm _form;
     private PlayMacroOptionsDialog _optionsDialog;
     
-    private StandartDescriptionsDataSource _dataSource;
+    private StandardDescriptionsDataSource _dataSource;
     
     private PreferencesStorageValues _currentPreferences = PreferencesStorageValues.defaultValues();
     
@@ -141,7 +142,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     @Override
     public void onLoadedMacroFromStorage(String macroName, String macroDescription, List<Description> macroActions)
     {
-        _dataSource = StandartDescriptionsDataSource.createDataSourceForStandartText(macroActions);
+        _dataSource = StandardDescriptionsDataSource.createDataSourceForStandartText(macroActions);
         _form.setMacroInfo(macroName, macroDescription, _dataSource);
     }
 

@@ -30,9 +30,6 @@ import org.jnativehook.mouse.NativeMouseWheelEvent;
 /**
  * A service that listens to system user input and records it as RecorderResult.
  * 
- * Must be started in order to function, stopped when no longer needed and in
- * order to retrieve the recorded input.
- * 
  * @author Bytevi
  */
 public class Recorder implements RecorderJHookListenerDelegate {
@@ -48,8 +45,6 @@ public class Recorder implements RecorderJHookListenerDelegate {
     private BaseRecorderListener _listener;
     private BaseRecorderNativeParser _inputParser;
     private BaseRecorderModel _recorderModel;
-    private Hotkey _stopHotkey;
-    private Dimension _recordingSize;
     
     private Recorder()
     {
@@ -93,8 +88,6 @@ public class Recorder implements RecorderJHookListenerDelegate {
             _inputParser = parser;
             _recorderModel = model;
             _listener = listener;
-            _stopHotkey = stopHotkey;
-            _recordingSize = size;
             
             _masterParser.setSubparser(_inputParser);
         }
@@ -223,7 +216,6 @@ public class Recorder implements RecorderJHookListenerDelegate {
             
             _inputParser = null;
             _listener = null;
-            _stopHotkey = null;
             
             RecorderResult result = _recorderModel.retrieveRecordedData();
             
@@ -296,7 +288,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     private BaseRecorderNativeParser _subParser;
     
     private final RecorderSystemKeyboardTranslator _keyboardTranslator = new RecorderSystemKeyboardTranslator();
-    private HashSet<RecorderHotkeyListener> _hotkeyListeners = new HashSet<>();
+    private final HashSet<RecorderHotkeyListener> _hotkeyListeners = new HashSet<>();
     private RecorderHotkeyListener _playStopHotkeyListener;
     
     public RecorderMasterNativeParser()

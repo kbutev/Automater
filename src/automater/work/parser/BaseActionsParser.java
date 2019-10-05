@@ -10,6 +10,8 @@ import automater.work.BaseAction;
 import java.util.List;
 
 /**
+ * Represents a parser that takes RecorderUserInputs and converts them to
+ * BaseActions.
  *
  * @author Bytevi
  */

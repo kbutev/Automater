@@ -8,6 +8,7 @@ package automater.mutableaction;
 import java.util.List;
 
 /**
+ * List of strings mutable action property.
  *
  * @author Byti
  */

@@ -54,7 +54,7 @@ public class Executor {
     
     public BaseExecutorProcess performMacro(Macro macro, MacroParameters parameters, ExecutorListener listener) throws Exception
     {
-        return performMacro(macro, parameters, listener, new StandartExecutorTimer());
+        return performMacro(macro, parameters, listener, new StandardExecutorTimer());
     }
     
     public BaseExecutorProcess performMacro(Macro macro, MacroParameters parameters, ExecutorListener listener, BaseExecutorTimer timer) throws Exception

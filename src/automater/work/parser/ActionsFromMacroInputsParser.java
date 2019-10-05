@@ -19,23 +19,16 @@ import automater.input.InputMouseMove;
 import automater.input.InputMouseWheel;
 
 /**
- * Converts macro user input objects to actions.
+ * Converts RecorderUserInputs to BaseActions.
  *
  * @author Bytevi
  */
 public class ActionsFromMacroInputsParser implements BaseActionsParser {
-    public final ActionsParserFlags flags;
-    
     private ArrayList<BaseAction> _actions = null;
     
     public ActionsFromMacroInputsParser()
     {
-        this(ActionsParserFlags.defaults());
-    }
-    
-    public ActionsFromMacroInputsParser(ActionsParserFlags flags)
-    {
-        this.flags = flags;
+        
     }
     
     @Override

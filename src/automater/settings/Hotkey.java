@@ -10,6 +10,7 @@ import automater.input.InputKeyModifiers;
 import automater.input.InputKeyValue;
 
 /**
+ * A keystroke.
  *
  * @author Bytevi
  */

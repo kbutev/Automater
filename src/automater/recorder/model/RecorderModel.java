@@ -10,7 +10,7 @@ import automater.utilities.Logger;
 import java.util.ArrayList;
 
 /**
- * Holds recording data; stores data received from the parser.
+ * Stores raw recording data.
  * 
  * @author Bytevi
  */

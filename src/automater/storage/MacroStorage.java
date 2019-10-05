@@ -15,14 +15,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents the storage for macros.
+ * Holds the macros storage.
+ * 
+ * Macro files can be created, updated and deleted from here.
  *
  * @author Bytevi
  */
 public class MacroStorage {
     private final Object _lock = new Object();
     
-    private ArrayList<MacroStorageFile> _macros = new ArrayList<>();
+    private final ArrayList<MacroStorageFile> _macros = new ArrayList<>();
     
     public MacroStorage()
     {

@@ -18,7 +18,6 @@ import automater.input.InputKeyClick;
 import automater.input.InputMouse;
 import automater.input.InputMouseMove;
 import automater.input.InputMouseWheel;
-import automater.input.InputSpecialAction;
 
 /**
  * Encapsulates user input information.
@@ -95,11 +94,6 @@ public class RecorderUserInput implements Input, Serializable, Description {
     public static RecorderUserInput createMouseWheel(long timestamp, int scrollValue)
     {
         return new RecorderUserInputMouseWheel(timestamp, scrollValue);
-    }
-    
-    public static RecorderUserInput createWindow(long timestamp)
-    {
-        return new RecorderUserInputWindow(timestamp);
     }
     
     private RecorderUserInput()
@@ -437,29 +431,3 @@ class RecorderUserInputMouseWheel extends RecorderUserInput implements InputMous
         return scrollValue;
     }
 }
-
-class RecorderUserInputWindow extends RecorderUserInput implements InputSpecialAction
-{
-    RecorderUserInputWindow(long timestamp)
-    {
-        super(timestamp);
-    }
-    
-    // # Description
-    
-    @Override
-    public String getStandart() {
-        return "InputWindow";
-    }
-    
-    @Override
-    public String getVerbose() {
-        return "InputWindow";
-    }
-    
-    @Override
-    public boolean isCloseWindow() {
-        return false;
-    }
-}
-

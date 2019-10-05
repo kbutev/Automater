@@ -12,7 +12,8 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- *
+ * An action's key modifier.
+ * 
  * @author Bytevi
  */
 public class ActionSystemKeyModifiers implements Serializable {

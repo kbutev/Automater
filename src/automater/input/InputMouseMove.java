@@ -6,7 +6,7 @@
 package automater.input;
 
 /**
- * Represents mouse movement input.
+ * Represents a single mouse movement.
  *
  * @author Bytevi
  */

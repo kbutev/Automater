@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author Bytevi
  */
-public class StandartMutableAction implements BaseMutableAction {
+public class StandardMutableAction implements BaseMutableAction {
     public static final int MAX_WAIT_VALUE = 999999;
     public static final int MAX_MOVE_X_VALUE = 9999;
     public static final int MAX_MOVE_Y_VALUE = 9999;
@@ -40,17 +40,17 @@ public class StandartMutableAction implements BaseMutableAction {
     protected long timestamp;
     protected ArrayList<BaseMutableActionProperty> properties = new ArrayList<>();
     
-    public static StandartMutableAction createDoNothing(long timestamp)
+    public static StandardMutableAction createDoNothing(long timestamp)
     {
         return new StandartMutableActionDoNothing(timestamp);
     }
     
-    public static StandartMutableAction createFromAction(BaseAction action)
+    public static StandardMutableAction createFromAction(BaseAction action)
     {
-        MutableActionType type = StandartMutableActionConstants.getTypeFromAction(action);
+        MutableActionType type = StandardMutableActionConstants.getTypeFromAction(action);
         long timestamp = action.getPerformTime();
         
-        StandartMutableAction a = null;
+        StandardMutableAction a = null;
         BaseMutableActionProperty property = null;
         
         boolean isInputKeyClick = action instanceof InputKeyClick;
@@ -131,7 +131,7 @@ public class StandartMutableAction implements BaseMutableAction {
         return null;
     }
     
-    public StandartMutableAction(MutableActionType type, long timestamp)
+    public StandardMutableAction(MutableActionType type, long timestamp)
     {
         this.type = type;
         this.timestamp = timestamp;
@@ -182,7 +182,7 @@ public class StandartMutableAction implements BaseMutableAction {
     }
 }
 
-class StandartMutableActionDoNothing extends StandartMutableAction implements InputDoNothing {
+class StandartMutableActionDoNothing extends StandardMutableAction implements InputDoNothing {
     public StandartMutableActionDoNothing(long timestamp)
     {
         super(MutableActionType.DoNothing, timestamp);
@@ -211,14 +211,14 @@ class StandartMutableActionDoNothing extends StandartMutableAction implements In
     }
 }
 
-class StandartMutableActionWait extends StandartMutableAction implements InputDoNothing {
+class StandartMutableActionWait extends StandardMutableAction implements InputDoNothing {
     public StandartMutableActionWait(long timestamp, int wait)
     {
         super(MutableActionType.Wait, timestamp);
         
         String name = TextValue.getText(TextValue.EditAction_Wait);
         
-        properties.add(StandartMutableActionProperties.createNonNegativeInt(name, wait, MAX_WAIT_VALUE));
+        properties.add(StandardMutableActionProperties.createNonNegativeInt(name, wait, MAX_WAIT_VALUE));
     }
     
     @Override
@@ -259,7 +259,7 @@ class StandartMutableActionWait extends StandartMutableAction implements InputDo
     }
 }
 
-class StandartMutableActionKeyboardClick extends StandartMutableAction {
+class StandartMutableActionKeyboardClick extends StandardMutableAction {
     public StandartMutableActionKeyboardClick(MutableActionType type, long timestamp, InputKeyClick keyboardClick)
     {
         super(type, timestamp);
@@ -269,8 +269,8 @@ class StandartMutableActionKeyboardClick extends StandartMutableAction {
         String isPressName = TextValue.getText(TextValue.EditAction_Press);
         boolean isPress = keyboardClick.isPress();
         
-        properties.add(StandartMutableActionProperties.createHotkey(hotkeyName, hotkeyValue, isPress));
-        properties.add(StandartMutableActionProperties.createBoolean(isPressName, isPress));
+        properties.add(StandardMutableActionProperties.createHotkey(hotkeyName, hotkeyValue, isPress));
+        properties.add(StandardMutableActionProperties.createBoolean(isPressName, isPress));
     }
     
     @Override
@@ -314,7 +314,7 @@ class StandartMutableActionKeyboardClick extends StandartMutableAction {
     }
 }
 
-class StandartMutableActionMouseClick extends StandartMutableAction {
+class StandartMutableActionMouseClick extends StandardMutableAction {
     public StandartMutableActionMouseClick(MutableActionType type, long timestamp, InputKeyClick mouseClick)
     {
         super(type, timestamp);
@@ -322,13 +322,13 @@ class StandartMutableActionMouseClick extends StandartMutableAction {
         InputKeyValue keyValue = mouseClick.getKeyValue().value;
         
         String keyName = TextValue.getText(TextValue.EditAction_Key);
-        String keyDefaultValue = StandartMutableActionConstants.getMouseClickSpecificValueForKeyValue(keyValue);
-        List<String> keyValues = StandartMutableActionConstants.getMouseClickSpecificValues();
+        String keyDefaultValue = StandardMutableActionConstants.getMouseClickSpecificValueForKeyValue(keyValue);
+        List<String> keyValues = StandardMutableActionConstants.getMouseClickSpecificValues();
         String isPressName = TextValue.getText(TextValue.EditAction_Press);
         boolean isPress = mouseClick.isPress();
         
-        properties.add(StandartMutableActionProperties.createList(keyName, keyValues, keyDefaultValue));
-        properties.add(StandartMutableActionProperties.createBoolean(isPressName, isPress));
+        properties.add(StandardMutableActionProperties.createList(keyName, keyValues, keyDefaultValue));
+        properties.add(StandardMutableActionProperties.createBoolean(isPressName, isPress));
     }
     
     @Override
@@ -355,7 +355,7 @@ class StandartMutableActionMouseClick extends StandartMutableAction {
     public InputKey getMouseKey()
     {
         String selectedValue = getFirstProperty().getValue();
-        return StandartMutableActionConstants.getMouseKeyForTextValue(selectedValue);
+        return StandardMutableActionConstants.getMouseKeyForTextValue(selectedValue);
     }
     
     @Override
@@ -390,7 +390,7 @@ class StandartMutableActionMouseClick extends StandartMutableAction {
     }
 }
 
-class StandartMutableActionMouseMove extends StandartMutableAction {
+class StandartMutableActionMouseMove extends StandardMutableAction {
     public StandartMutableActionMouseMove(MutableActionType type, long timestamp, InputMouseMove move)
     {
         super(type, timestamp);
@@ -400,8 +400,8 @@ class StandartMutableActionMouseMove extends StandartMutableAction {
         String yName = TextValue.getText(TextValue.EditAction_Y);
         int yValue = move.getY();
         
-        properties.add(StandartMutableActionProperties.createNonNegativeInt(xName, xValue, MAX_MOVE_X_VALUE));
-        properties.add(StandartMutableActionProperties.createNonNegativeInt(yName, yValue, MAX_MOVE_Y_VALUE));
+        properties.add(StandardMutableActionProperties.createNonNegativeInt(xName, xValue, MAX_MOVE_X_VALUE));
+        properties.add(StandardMutableActionProperties.createNonNegativeInt(yName, yValue, MAX_MOVE_Y_VALUE));
     }
     
     @Override
@@ -444,7 +444,7 @@ class StandartMutableActionMouseMove extends StandartMutableAction {
     }
 }
 
-class StandartMutableActionMouseMotion extends StandartMutableAction {
+class StandartMutableActionMouseMotion extends StandardMutableAction {
     long originalTimestamp;
     long originalTimestampForLastMove;
     List<InputMouseMove> moves;
@@ -462,8 +462,8 @@ class StandartMutableActionMouseMotion extends StandartMutableAction {
         String yName = TextValue.getText(TextValue.EditAction_FinalY);
         int yValue = lastMove.getY();
         
-        properties.add(StandartMutableActionProperties.createNonNegativeInt(xName, xValue, MAX_MOVE_X_VALUE));
-        properties.add(StandartMutableActionProperties.createNonNegativeInt(yName, yValue, MAX_MOVE_Y_VALUE));
+        properties.add(StandardMutableActionProperties.createNonNegativeInt(xName, xValue, MAX_MOVE_X_VALUE));
+        properties.add(StandardMutableActionProperties.createNonNegativeInt(yName, yValue, MAX_MOVE_Y_VALUE));
     }
     
     @Override
@@ -575,7 +575,7 @@ class StandartMutableActionMouseMotion extends StandartMutableAction {
     }
 }
 
-class StandartMutableActionSystemCommand extends StandartMutableAction {
+class StandartMutableActionSystemCommand extends StandardMutableAction {
     public StandartMutableActionSystemCommand(MutableActionType type, long timestamp, String value, boolean reportsErrors)
     {
         super(type, timestamp);
@@ -583,8 +583,8 @@ class StandartMutableActionSystemCommand extends StandartMutableAction {
         String firstName = TextValue.getText(TextValue.EditAction_Command);
         String secondName = TextValue.getText(TextValue.EditAction_ReportsErrors);
         
-        properties.add(StandartMutableActionProperties.createString(firstName, value, 255));
-        properties.add(StandartMutableActionProperties.createBoolean(secondName, reportsErrors));
+        properties.add(StandardMutableActionProperties.createString(firstName, value, 255));
+        properties.add(StandardMutableActionProperties.createBoolean(secondName, reportsErrors));
     }
     
     @Override
@@ -610,14 +610,14 @@ class StandartMutableActionSystemCommand extends StandartMutableAction {
     }
 }
 
-class StandartMutableActionScreenshot extends StandartMutableAction {
+class StandartMutableActionScreenshot extends StandardMutableAction {
     public StandartMutableActionScreenshot(MutableActionType type, long timestamp, String path)
     {
         super(type, timestamp);
         
         String firstName = TextValue.getText(TextValue.EditAction_Path);
         
-        properties.add(StandartMutableActionProperties.createString(firstName, path, 255));
+        properties.add(StandardMutableActionProperties.createString(firstName, path, 255));
     }
     
     @Override

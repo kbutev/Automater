@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author Bytevi
  */
-public class StandartMutableActionConstants {
+public class StandardMutableActionConstants {
     public static String MOUSE_KEY_REPLACEMENT_STRING = "MOUSE_";
     
     public static List<Description> getActionTypes()

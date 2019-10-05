@@ -8,7 +8,10 @@ package automater.input;
 import java.util.List;
 
 /**
- *
+ * Represents a collection of mouse movements.
+ * 
+ * All movements are sorted by their timestamp value (ascending order).
+ * 
  * @author Bytevi
  */
 public interface InputMouseMotion extends InputMouse {

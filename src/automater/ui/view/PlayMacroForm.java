@@ -214,7 +214,7 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
     @Override
     public void onViewStart()
     {
-        macroActionsList.setModel(StandartDescriptionsDataSource.createGeneric());
+        macroActionsList.setModel(StandardDescriptionsDataSource.createGeneric());
     }
     
     @Override
@@ -277,7 +277,7 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         cancelRecording();
     }
     
-    public void setMacroInfo(String macroName, String macroDescription, StandartDescriptionsDataSource macroActionsDataSource)
+    public void setMacroInfo(String macroName, String macroDescription, StandardDescriptionsDataSource macroActionsDataSource)
     {
         macroNameLabel.setText(macroName);
         macroDescriptionLabel.setText(macroDescription);

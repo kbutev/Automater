@@ -10,10 +10,11 @@ import automater.utilities.StringFormatting;
 import java.util.List;
 
 /**
- *
+ * Standard implementation for mutable action properties.
+ * 
  * @author Byti
  */
-public class StandartMutableActionProperties {
+public class StandardMutableActionProperties {
     public static BaseMutableActionProperty createBoolean(String name, boolean value)
     {
         return new StandartMutableActionPropertyBoolean(name, value);

@@ -6,7 +6,7 @@
 package automater.input;
 
 /**
- * Represents some mouse input.
+ * Represents some mouse.
  * 
  * @author Bytevi
  */

@@ -6,7 +6,8 @@
 package automater.input;
 
 /**
- *
+ * Represents a system command, like a cmd in Windows OS.
+ * 
  * @author Byti
  */
 public interface InputSystemCommand {

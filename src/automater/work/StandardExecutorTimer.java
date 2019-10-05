@@ -5,15 +5,19 @@
  */
 package automater.work;
 
-import automater.utilities.Logger;
 import automater.work.model.MacroParameters;
 import java.util.List;
 
 /**
- *
+ * Standard implementation of the executor timer.
+ * 
+ * It implements all the basic functionality.
+ * 
+ * This timer is thread safe.
+ * 
  * @author Byti
  */
-public class StandartExecutorTimer implements BaseExecutorTimer {
+public class StandardExecutorTimer implements BaseExecutorTimer {
     private final Object _timerLock = new Object();
     
     private List<BaseAction> _actions;
@@ -28,7 +32,7 @@ public class StandartExecutorTimer implements BaseExecutorTimer {
     
     private long _totalActionsWaitTime = 0;
     
-    public StandartExecutorTimer()
+    public StandardExecutorTimer()
     {
         
     }

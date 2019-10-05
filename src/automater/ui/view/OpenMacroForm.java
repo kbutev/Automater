@@ -252,7 +252,7 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
     @Override
     public void onViewStart()
     {
-        macrosList.setModel(StandartDescriptionsDataSource.createGeneric());
+        macrosList.setModel(StandardDescriptionsDataSource.createGeneric());
     }
     
     @Override
@@ -281,7 +281,7 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
     
     // # Public
     
-    public void setListDataSource(StandartDescriptionsDataSource dataSource)
+    public void setListDataSource(StandardDescriptionsDataSource dataSource)
     {
         _dataSource = dataSource;
         
@@ -364,7 +364,7 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
     
     // Private
     private int _selectedIndex = -1;
-    private StandartDescriptionsDataSource _dataSource;
+    private StandardDescriptionsDataSource _dataSource;
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton deleteMacroButton;

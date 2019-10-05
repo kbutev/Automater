@@ -19,8 +19,8 @@ import automater.work.BaseAction;
  *
  * @author Byti
  */
-public class StandartMutableActionTemplates {
-    public static StandartMutableAction buildTemplateFromTypeIndex(int typeIndex, long timestamp)
+public class StandardMutableActionTemplates {
+    public static StandardMutableAction buildTemplateFromTypeIndex(int typeIndex, long timestamp)
     {
         switch (typeIndex)
         {
@@ -45,17 +45,17 @@ public class StandartMutableActionTemplates {
         return null;
     }
     
-    public static StandartMutableAction buildTemplateDoNothing(long timestamp)
+    public static StandardMutableAction buildTemplateDoNothing(long timestamp)
     {
         return new StandartMutableActionDoNothing(timestamp);
     }
     
-    public static StandartMutableAction buildTemplateWait(long timestamp)
+    public static StandardMutableAction buildTemplateWait(long timestamp)
     {
         return new StandartMutableActionWait(timestamp, 0);
     }
     
-    public static StandartMutableAction buildTemplateKeyboardClick(long timestamp)
+    public static StandardMutableAction buildTemplateKeyboardClick(long timestamp)
     {
         final InputKey key = new InputKey(InputKeyValue._A);
         
@@ -85,10 +85,10 @@ public class StandartMutableActionTemplates {
             return null;
         }
         
-        return StandartMutableAction.createFromAction(action);
+        return StandardMutableAction.createFromAction(action);
     }
     
-    public static StandartMutableAction buildTemplateMouseClick(long timestamp)
+    public static StandardMutableAction buildTemplateMouseClick(long timestamp)
     {
         final InputKey key = new InputKey(InputKeyValue._MOUSE_LEFT_CLICK);
         
@@ -118,10 +118,10 @@ public class StandartMutableActionTemplates {
             return null;
         }
         
-        return StandartMutableAction.createFromAction(action);
+        return StandardMutableAction.createFromAction(action);
     }
     
-    public static StandartMutableAction buildTemplateMouseMove(long timestamp)
+    public static StandardMutableAction buildTemplateMouseMove(long timestamp)
     {
         BaseAction action;
         
@@ -132,10 +132,10 @@ public class StandartMutableActionTemplates {
             return null;
         }
         
-        return StandartMutableAction.createFromAction(action);
+        return StandardMutableAction.createFromAction(action);
     }
     
-    public static StandartMutableAction buildTemplateSystemCommand(long timestamp)
+    public static StandardMutableAction buildTemplateSystemCommand(long timestamp)
     {
         BaseAction action;
         
@@ -146,10 +146,10 @@ public class StandartMutableActionTemplates {
             return null;
         }
         
-        return StandartMutableAction.createFromAction(action);
+        return StandardMutableAction.createFromAction(action);
     }
     
-    public static StandartMutableAction buildTemplateScreenshot(long timestamp)
+    public static StandardMutableAction buildTemplateScreenshot(long timestamp)
     {
         BaseAction action;
         
@@ -162,6 +162,6 @@ public class StandartMutableActionTemplates {
             return null;
         }
         
-        return StandartMutableAction.createFromAction(action);
+        return StandardMutableAction.createFromAction(action);
     }
 }

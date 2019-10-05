@@ -11,7 +11,10 @@ import java.util.HashSet;
 import java.awt.Dimension;
 
 /**
- *
+ * Holds values for a specific action execution context.
+ * 
+ * Not thread safe.
+ * 
  * @author Bytevi
  */
 public class ActionContext implements BaseActionContext {

@@ -6,7 +6,8 @@
 package automater.input;
 
 /**
- *
+ * Dummy input for doing no action.
+ * 
  * @author Byti
  */
 public interface InputDoNothing extends Input {

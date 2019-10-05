@@ -9,7 +9,8 @@ import automater.utilities.Description;
 import java.io.Serializable;
 
 /**
- *
+ * An action's keyboard or mouse key.
+ * 
  * @author Bytevi
  */
 public class ActionSystemKey implements Serializable, Description {

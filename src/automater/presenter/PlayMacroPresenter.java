@@ -27,6 +27,7 @@ import automater.work.model.ExecutorProgress;
 import java.util.Date;
 
 /**
+ * Presenter for the play macro screen.
  *
  * @author Bytevi
  */

@@ -10,7 +10,7 @@ import automater.presenter.BasePresenterDelegate;
 import automater.presenter.OpenMacroPresenter;
 import automater.storage.PreferencesStorageValues;
 import automater.ui.view.OpenMacroForm;
-import automater.ui.view.StandartDescriptionsDataSource;
+import automater.ui.view.StandardDescriptionsDataSource;
 import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import automater.utilities.Logger;
@@ -20,6 +20,7 @@ import java.util.List;
 import automater.utilities.Description;
 
 /**
+ * Open macro screen.
  *
  * @author Bytevi
  */
@@ -28,7 +29,7 @@ public class OpenMacroViewController implements BaseViewController, BasePresente
     
     private OpenMacroForm _form;
     
-    private StandartDescriptionsDataSource _dataSource;
+    private StandardDescriptionsDataSource _dataSource;
     
     public OpenMacroViewController(OpenMacroPresenter presenter)
     {
@@ -144,7 +145,7 @@ public class OpenMacroViewController implements BaseViewController, BasePresente
     @Override
     public void onLoadedMacrosFromStorage(List<Description> macros)
     {
-        _dataSource = StandartDescriptionsDataSource.createDataSourceForStandartText(macros);
+        _dataSource = StandardDescriptionsDataSource.createDataSourceForStandartText(macros);
         _form.setListDataSource(_dataSource);
     }
     

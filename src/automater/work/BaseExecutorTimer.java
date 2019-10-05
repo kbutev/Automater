@@ -11,7 +11,8 @@ import java.util.List;
 /**
  * Keeps track of how much time has passed.
  * 
- * Use canPerformNextAction() is used to check if the next action can be performed.
+ * canPerformNextAction() is used to check if the next action can be performed.
+ * 
  * willPerformNextAction() MUST be used when an action is about to be performed,
  * in order to notify the timer so it can keep track of execution state.
  * 

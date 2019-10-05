@@ -28,14 +28,16 @@ import automater.utilities.DeviceNotifications;
 import automater.work.BaseAction;
 import automater.work.model.Macro;
 import automater.work.parser.ActionsFromMacroInputsParser;
-import automater.work.parser.ActionsParserUtilities;
 import automater.work.parser.BaseActionsParser;
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
+ * Presenter for the record macro screen.
  *
  * @author Bytevi
  */
@@ -57,6 +59,8 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     private final ArrayList<Description> _macroActionDescriptionsList = new ArrayList<>();
     
     private Hotkey _recordOrStopHotkey;
+    
+    private final ActionsParsing _actionsParsing = new ActionsParsing();
     
     public RecordMacroPresenter(RootViewController rootViewController)
     {
@@ -245,7 +249,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         List<BaseAction> actions;
         
         try {
-            actions = ActionsParserUtilities.parseUserInputs(result.userInputs, _parser);
+            actions = _actionsParsing.parseUserInputs(result.userInputs, _parser);
         } catch (Exception e) {
             _delegate.onErrorEncountered(new Exception("Failed to save the recorded events: " + e.toString()));
             return;
@@ -357,5 +361,21 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         String tooltip = TextValue.getText(TextValue.Record_NotificationStopTooltip);
         
         DeviceNotifications.getShared().displayOSNotification(title, message, tooltip);
+    }
+    
+    // Parsing
+    class ActionsParsing {
+        public List<BaseAction> parseUserInputs(Collection<RecorderUserInput> userInputs, BaseActionsParser actionParser) throws Exception
+        {
+            actionParser.onBeginParsing();
+            
+            Iterator<RecorderUserInput> it = userInputs.iterator();
+            
+            while (it.hasNext())
+            {
+                actionParser.onParseInput(it.next());
+            }
+            return actionParser.onFinishParsingMacro();
+        }
     }
 }

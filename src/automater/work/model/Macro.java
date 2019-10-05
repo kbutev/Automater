@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * A collection of user input operations.
+ * A collection of system actions such as user input and system operations.
  * 
  * @author Bytevi
  */

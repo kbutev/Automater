@@ -11,6 +11,7 @@ import automater.utilities.FileSystem;
 import java.io.Serializable;
 
 /**
+ * Helper class that holds a collection of input descriptions.
  *
  * @author Bytevi
  */

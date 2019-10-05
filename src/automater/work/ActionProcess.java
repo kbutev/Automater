@@ -11,9 +11,11 @@ import automater.utilities.SimpleCallback;
 import automater.work.model.ActionContext;
 
 /**
- * Wraps actions, and performs them when requested.
+ * An action process, that wraps a single action, and is performed when requested.
  * 
- * Performs complex actions in a background thread.
+ * This class has a state.
+ * Simple actions are performed synchronously, and immediately.
+ * Complex actions are performed in background threads, asynchronously.
  * 
  * @author Bytevi
  */

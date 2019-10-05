@@ -6,6 +6,7 @@
 package automater.mutableaction;
 
 /**
+ * Number mutable action property.
  *
  * @author Byti
  */

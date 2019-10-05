@@ -10,7 +10,7 @@ import automater.presenter.BasePresenterDelegate;
 import automater.presenter.RecordMacroPresenter;
 import automater.storage.PreferencesStorageValues;
 import automater.ui.view.RecordMacroForm;
-import automater.ui.view.StandartDescriptionsDataSource;
+import automater.ui.view.StandardDescriptionsDataSource;
 import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import automater.utilities.Logger;
@@ -21,15 +21,16 @@ import automater.utilities.Description;
 import java.util.ArrayList;
 
 /**
- *
+ * Record macro screen.
+ * 
  * @author Bytevi
  */
 public class RecordMacroViewController implements BaseViewController, BasePresenterDelegate {
     private final RecordMacroPresenter _presenter;
     
-    private RecordMacroForm _form;
+    private final RecordMacroForm _form;
     
-    private StandartDescriptionsDataSource _dataSource;
+    private StandardDescriptionsDataSource _dataSource;
     
     public RecordMacroViewController(RecordMacroPresenter presenter)
     {
@@ -117,7 +118,7 @@ public class RecordMacroViewController implements BaseViewController, BasePresen
     @Override
     public void onActionsRecordedChange(List<Description> actions)
     {
-        _dataSource = StandartDescriptionsDataSource.createDataSourceForStandartText(actions);
+        _dataSource = StandardDescriptionsDataSource.createDataSourceForStandartText(actions);
         _form.setListDataSource(_dataSource);
     }
     

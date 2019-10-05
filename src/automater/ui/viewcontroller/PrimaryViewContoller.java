@@ -16,6 +16,8 @@ import automater.utilities.Logger;
 import automater.work.model.Macro;
 
 /**
+ * Root view controller responsible for picking which view controller will be
+ * the current screen for the application.
  *
  * @author Bytevi
  */

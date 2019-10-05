@@ -6,6 +6,7 @@
 package automater.mutableaction;
 
 /**
+ * Hotkey mutable action property.
  *
  * @author Byti
  */

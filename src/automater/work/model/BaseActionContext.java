@@ -12,12 +12,18 @@ import java.awt.Robot;
 /**
  * Contains information about the current state of action execution.
  * 
+ * The cleanup() method should be called only once, by the execution process
+ * to make sure that all keys are released at the end.
+ * 
  * Has one single, unique robot instance, used to simulate keystrokes.
+ * 
+ * 
+ * When an action is simulating a user keyboard or mouse key, the action should
+ * call one of these two methods: onPressKey() onReleaseKey()
  * 
  * Keeps track of which keys are pressed and which are not.
  * 
- * The cleanup() method should be called only once, by the execution process
- * to make sure that all keys are released at the end.
+ * Context objects are not guaranteed to be thread safe.
  * 
  * @author Bytevi
  */

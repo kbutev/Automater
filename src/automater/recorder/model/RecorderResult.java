@@ -14,7 +14,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- *
+ * Holds parsed recorded user input.
+ * 
  * @author Bytevi
  */
 public class RecorderResult implements Serializable {

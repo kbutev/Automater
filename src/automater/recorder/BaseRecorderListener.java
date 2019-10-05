@@ -13,11 +13,11 @@ import automater.recorder.model.RecorderUserInput;
  * 
  * onRecordedUserInput() indicates new input has been recorded.
  * 
- * onFailedRecordedUserInput() indicates failure.
- * 
  * onRecordedUserInputChanged() indicates that the recorder model has changed,
- * even tho no new input object have been added. This may happen due to optimizations,
+ * even when no new input object has been added. This may happen due to optimizations,
  * such as grouping multiple input objects into one.
+ * 
+ * onFailedRecordedUserInput() indicates failure.
  *
  * @author Bytevi
  */

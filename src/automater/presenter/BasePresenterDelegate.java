@@ -10,7 +10,7 @@ import automater.storage.PreferencesStorageValues;
 import automater.utilities.Description;
 
 /**
- * Presenters delegates.
+ * Presenter's delegate.
  * 
  * @author Bytevi
  */

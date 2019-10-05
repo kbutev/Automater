@@ -13,33 +13,34 @@ import javax.swing.ListModel;
 import javax.swing.event.ListDataListener;
 
 /**
- *
+ * Implements the ListModel with Description objects.
+ * 
  * @author Bytevi
  */
-public class StandartDescriptionsDataSource implements ListModel<String> {
+public class StandardDescriptionsDataSource implements ListModel<String> {
     public final List<Description> data;
     
-    public static StandartDescriptionsDataSource createGeneric()
+    public static StandardDescriptionsDataSource createGeneric()
     {
-        return new StandartDescriptionsDataSource();
+        return new StandardDescriptionsDataSource();
     }
     
-    public static StandartDescriptionsDataSource createDataSourceForStandartText(List<Description> actions)
+    public static StandardDescriptionsDataSource createDataSourceForStandartText(List<Description> actions)
     {
-        return new StandartDescriptionsDataSource(actions);
+        return new StandardDescriptionsDataSource(actions);
     }
     
-    public static StandartDescriptionsDataSource createDataSourceForVerboseText(List<Description> actions)
+    public static StandardDescriptionsDataSource createDataSourceForVerboseText(List<Description> actions)
     {
         return new StandartDescriptionsDataSourceVerbose(actions);
     }
     
-    protected StandartDescriptionsDataSource()
+    protected StandardDescriptionsDataSource()
     {
         this.data = new ArrayList();
     }
     
-    protected StandartDescriptionsDataSource(List<Description> actions)
+    protected StandardDescriptionsDataSource(List<Description> actions)
     {
         this.data = CollectionUtilities.copyAsImmutable(actions);
     }
@@ -77,7 +78,7 @@ public class StandartDescriptionsDataSource implements ListModel<String> {
     }
 }
 
-class StandartDescriptionsDataSourceVerbose extends StandartDescriptionsDataSource {
+class StandartDescriptionsDataSourceVerbose extends StandardDescriptionsDataSource {
     StandartDescriptionsDataSourceVerbose(List<Description> actions)
     {
         super(actions);

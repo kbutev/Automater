@@ -239,7 +239,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
     @Override
     public void onViewStart()
     {
-        macroActionsList.setModel(StandartDescriptionsDataSource.createGeneric());
+        macroActionsList.setModel(StandardDescriptionsDataSource.createGeneric());
     }
     
     @Override
@@ -251,7 +251,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
     @Override
     public void onViewResume()
     {
-        macroActionsList.setModel(StandartDescriptionsDataSource.createGeneric());
+        macroActionsList.setModel(StandardDescriptionsDataSource.createGeneric());
         
         switchToOpenMacrosButton.setSelected(false);
         saveMacroButton.setEnabled(false);
@@ -289,7 +289,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
         return macroDescriptionField.getText();
     }
     
-    public void setListDataSource(StandartDescriptionsDataSource dataSource)
+    public void setListDataSource(StandardDescriptionsDataSource dataSource)
     {
         macroActionsList.setModel(dataSource);
     }

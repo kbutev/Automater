@@ -9,6 +9,7 @@ import automater.work.model.MacroParameters;
 import java.io.Serializable;
 
 /**
+ * Holds raw storage values.
  *
  * @author Bytevi
  */

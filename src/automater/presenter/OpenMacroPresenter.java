@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Presenter for the open macro screen.
  *
  * @author Bytevi
  */

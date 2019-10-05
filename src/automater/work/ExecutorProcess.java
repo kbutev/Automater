@@ -23,7 +23,15 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Performs actions, when the time is right.
+ * Performs a given number of actions, one by one, when the time is right.
+ * 
+ * Has a state. When created, the process is idle.
+ * Once started, the process can never be restarted , it is a one time execution.
+ * 
+ * The state can be read by using these methods:
+ * isIdle() - waiting to start
+ * isWaiting() - is waiting for specific time to perform next actions
+ * isFinished() - performed all actions or was stopped manually
  * 
  * @author Bytevi
  */
@@ -549,7 +557,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
             }
         }
         
-        // Finished? Just log message event
+        // Finished?
         if (isFinished())
         {
             // Repeat
@@ -609,8 +617,8 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
     
     private void cleanup()
     {
-        _context.cleanup();
        _previousActionProcess = new ActionProcess(getLastAction());
+        _context = null;
        _currentActionProcess = null;
         Looper.getShared().unsubscribe(this);
     }

@@ -8,6 +8,7 @@ package automater.work.model;
 import java.awt.event.KeyEvent;
 
 /**
+ * An action's key modifier value.
  *
  * @author Bytevi
  */

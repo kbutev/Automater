@@ -6,6 +6,9 @@
 package automater.work.model;
 
 /**
+ * Holds information for how far an execution has made it.
+ * 
+ * This is for the UI mostly.
  *
  * @author Bytevi
  */

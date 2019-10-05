@@ -365,7 +365,7 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
         return macroDescriptionTextArea.getText();
     }
     
-    public void setListDataSource(StandartDescriptionsDataSource dataSource)
+    public void setListDataSource(StandardDescriptionsDataSource dataSource)
     {
         _dataSource = dataSource;
         
@@ -386,7 +386,7 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
         macroDescriptionTextArea.setText(macroDescription);
     }
     
-    public void setMacroDataSource(StandartDescriptionsDataSource macroActionsDataSource)
+    public void setMacroDataSource(StandardDescriptionsDataSource macroActionsDataSource)
     {
         macroActionsList.setModel(macroActionsDataSource);
     }
@@ -432,7 +432,7 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
     }
     
     private int _selectedIndex = -1;
-    private StandartDescriptionsDataSource _dataSource;
+    private StandardDescriptionsDataSource _dataSource;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel actionsLabel;

@@ -13,8 +13,6 @@ package automater.storage;
 public class GeneralStorage {
     private static GeneralStorage singleton;
     
-    private final Object _lock = new Object();
-    
     private final MacroStorage _macrosStorage = new MacroStorage();
     private final PreferencesStorage _preferencesStorage = new PreferencesStorage();
     

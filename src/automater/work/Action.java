@@ -42,6 +42,9 @@ import javax.imageio.ImageIO;
 
 /**
  * Simulates user actions such as keyboard and mouse clicks.
+ * 
+ * Can also perform more complex system actions, like execute system commands
+ * and take screen screenshots.
  *
  * @author Bytevi
  */

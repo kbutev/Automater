@@ -9,7 +9,8 @@ import automater.TextValue;
 import java.io.Serializable;
 
 /**
- *
+ * Holds macro preference values that can modify the execution of a macro.
+ * 
  * @author Bytevi
  */
 public class MacroParameters implements Serializable {

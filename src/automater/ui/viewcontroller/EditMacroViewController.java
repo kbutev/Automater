@@ -12,7 +12,7 @@ import automater.settings.Hotkey;
 import automater.storage.PreferencesStorageValues;
 import automater.ui.view.EditMacroActionDialog;
 import automater.ui.view.EditMacroForm;
-import automater.ui.view.StandartDescriptionsDataSource;
+import automater.ui.view.StandardDescriptionsDataSource;
 import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import automater.utilities.Description;
@@ -23,6 +23,7 @@ import java.util.List;
 import automater.mutableaction.BaseMutableAction;
 
 /**
+ * Edit macro screen: modify name, description or actions.
  *
  * @author Bytevi
  */
@@ -32,7 +33,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     private final EditMacroForm _form;
     private EditMacroActionDialog _editActionDialog;
     
-    private StandartDescriptionsDataSource _dataSource;
+    private StandardDescriptionsDataSource _dataSource;
     
     private boolean _isHotkeyRecording;
     
@@ -178,7 +179,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     @Override
     public void onLoadedMacroFromStorage(String macroName, String macroDescription, List<Description> macroActions)
     {
-        _dataSource = StandartDescriptionsDataSource.createDataSourceForVerboseText(macroActions);
+        _dataSource = StandardDescriptionsDataSource.createDataSourceForVerboseText(macroActions);
         _form.setMacroInfo(macroName, macroDescription);
         _form.setMacroDataSource(_dataSource);
     }
@@ -234,7 +235,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     @Override
     public void onEditedMacroActions(List<Description> newMacroActions)
     {
-        _dataSource = StandartDescriptionsDataSource.createDataSourceForVerboseText(newMacroActions);
+        _dataSource = StandardDescriptionsDataSource.createDataSourceForVerboseText(newMacroActions);
         _form.setMacroDataSource(_dataSource);
     }
 
@@ -349,8 +350,8 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     private void setupEditingMacroActionDialog(automater.mutableaction.BaseMutableAction action)
     {
         // Selectable types
-        StandartDescriptionsDataSource actionTypes;
-        actionTypes = StandartDescriptionsDataSource.createDataSourceForVerboseText(_presenter.getActionTypes());
+        StandardDescriptionsDataSource actionTypes;
+        actionTypes = StandardDescriptionsDataSource.createDataSourceForVerboseText(_presenter.getActionTypes());
         
         _editActionDialog.setTypesDropdownModel(actionTypes);
         

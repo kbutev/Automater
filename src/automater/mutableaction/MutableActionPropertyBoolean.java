@@ -6,7 +6,8 @@
 package automater.mutableaction;
 
 /**
- *
+ * Boolean mutable action property.
+ * 
  * @author Byti
  */
 public interface MutableActionPropertyBoolean {

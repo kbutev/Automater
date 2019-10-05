@@ -18,9 +18,9 @@ import automater.utilities.Logger;
 import automater.work.BaseAction;
 import automater.work.model.Macro;
 import java.util.List;
-import automater.mutableaction.StandartMutableAction;
-import automater.mutableaction.StandartMutableActionTemplates;
-import automater.mutableaction.StandartMutableActionConstants;
+import automater.mutableaction.StandardMutableAction;
+import automater.mutableaction.StandardMutableActionTemplates;
+import automater.mutableaction.StandardMutableActionConstants;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -28,6 +28,7 @@ import automater.mutableaction.BaseMutableAction;
 import automater.work.Action;
 
 /**
+ * Presenter for the edit macro screen.
  *
  * @author Bytevi
  */
@@ -52,7 +53,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     
     private int _actionBeingEditedIndex;
     private int _actionTypeSelectedIndex = 0;
-    private StandartMutableAction _actionBeingEdited;
+    private StandardMutableAction _actionBeingEdited;
     
     // Hotkey recording
     private boolean _recording = false;
@@ -145,7 +146,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     
     public List<Description> getActionTypes()
     {
-        return StandartMutableActionConstants.getActionTypes();
+        return StandardMutableActionConstants.getActionTypes();
     }
     
     public int getActionTypeSelectedIndex()
@@ -278,7 +279,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _actionBeingEditedIndex = index;
         _actionTypeSelectedIndex = CREATE_ACTION_DEFAULT_TYPE;
         
-        _actionBeingEdited = StandartMutableActionTemplates.buildTemplateFromTypeIndex(_actionTypeSelectedIndex, timestamp);
+        _actionBeingEdited = StandardMutableActionTemplates.buildTemplateFromTypeIndex(_actionTypeSelectedIndex, timestamp);
         
         Logger.messageEvent(this, "Start creating new macro action at index " + String.valueOf(index) + "");
         
@@ -315,9 +316,9 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         
         BaseAction action = _macroActions.get(index);
         _actionBeingEditedIndex = index;
-        _actionTypeSelectedIndex = StandartMutableActionConstants.getActionTypeSelectedIndex(action);
+        _actionTypeSelectedIndex = StandardMutableActionConstants.getActionTypeSelectedIndex(action);
         
-        _actionBeingEdited = StandartMutableAction.createFromAction(action);
+        _actionBeingEdited = StandardMutableAction.createFromAction(action);
         
         Logger.messageEvent(this, "Start editing macro action '" + action.toString() + "' at index " + String.valueOf(index) + "");
         
@@ -362,7 +363,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _isEditingOrCreatingAction = false;
         _isCreatingAction = false;
         
-        StandartMutableAction a = _actionBeingEdited;
+        StandardMutableAction a = _actionBeingEdited;
         int actionBeingEditedIndex = _actionBeingEditedIndex;
         
         _actionBeingEditedIndex = 0;
@@ -441,8 +442,8 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         
         long timestamp = _actionBeingEdited.getTimestamp();
         
-        StandartMutableAction a;
-        a = StandartMutableActionTemplates.buildTemplateFromTypeIndex(index, timestamp);
+        StandardMutableAction a;
+        a = StandardMutableActionTemplates.buildTemplateFromTypeIndex(index, timestamp);
         
         if (a == null)
         {
@@ -523,7 +524,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         return _wasEdited;
     }
     
-    private void updateMacroWithNewCreatedAction(StandartMutableAction a)
+    private void updateMacroWithNewCreatedAction(StandardMutableAction a)
     {
         _wasEdited = true;
         
@@ -541,7 +542,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         }
     }
     
-    private void updateMacroWithEditedAction(StandartMutableAction a, int actionBeingEditedIndex)
+    private void updateMacroWithEditedAction(StandardMutableAction a, int actionBeingEditedIndex)
     {
         _wasEdited = true;
         

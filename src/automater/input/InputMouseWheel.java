@@ -6,7 +6,7 @@
 package automater.input;
 
 /**
- * Represents mouse wheel input.
+ * Represents mouse wheel.
  * 
  * @author Bytevi
  */

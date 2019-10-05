@@ -9,13 +9,13 @@ import automater.utilities.Archiver;
 import automater.utilities.Errors;
 import automater.utilities.FileSystem;
 import automater.utilities.Logger;
-import automater.work.model.MacroParameters;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
 
 /**
+ * Holds the application general preference settings, such as UI preferences.
  *
  * @author Bytevi
  */

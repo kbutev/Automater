@@ -8,7 +8,8 @@ package automater.input;
 import java.awt.Rectangle;
 
 /**
- *
+ * Represents an action, that takes a snapshot of the user screen.
+ * 
  * @author Byti
  */
 public interface InputScreenshot {
