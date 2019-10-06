@@ -16,6 +16,9 @@ import java.util.regex.Matcher;
  * @author Bytevi
  */
 public enum TextValue {
+    // Version
+    Version,
+    
     // Errors
     Error_Generic,
     Error_NameIsEmpty,
@@ -201,6 +204,8 @@ public enum TextValue {
     private static final HashSet<String> missingValues = new HashSet<>();
     
     private static final HashMap<TextValue, String> englishValues = new HashMap<TextValue, String>() {{
+        put(Version, "0.1");
+        
         // Errors
         put(Error_Generic, "Error");
         put(Error_NameIsEmpty, "Name cannot be empty");
