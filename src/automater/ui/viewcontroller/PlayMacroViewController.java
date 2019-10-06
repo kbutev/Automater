@@ -14,6 +14,7 @@ import automater.ui.view.PlayMacroOptionsDialog;
 import automater.ui.view.StandardDescriptionsDataSource;
 import automater.utilities.AlertWindows;
 import automater.utilities.Description;
+import automater.utilities.DeviceTaskBar;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
 import automater.work.model.MacroParameters;
@@ -150,6 +151,8 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     public void startPlaying() 
     {
         _form.playRecording();
+        
+        DeviceTaskBar.getShared().resetAppTaskBarProgress(_form);
     }
     
     @Override
@@ -158,18 +161,24 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         _form.setProgressBarValue(progress.getPercentageDone());
         _form.setStatus(progress.getCurrentStatus());
         _form.setSelectedIndex(progress.getCurrentActionIndex());
+        
+        DeviceTaskBar.getShared().setAppTaskBarProgress(_form, progress.getPercentageDone() * 100);
     }
 
     @Override
     public void cancelPlaying()
     {
         _form.cancelRecording();
+        
+        DeviceTaskBar.getShared().resetAppTaskBarProgress(_form);
     }
     
     @Override
     public void finishPlaying()
     {
         _form.finishRecording();
+        
+        DeviceTaskBar.getShared().resetAppTaskBarProgress(_form);
     }
     
     @Override

@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 
 /**
+ * The application text values are here, including the localization values.
  *
  * @author Bytevi
  */

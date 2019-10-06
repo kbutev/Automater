@@ -10,6 +10,12 @@
         <artifactId>jnativehook</artifactId>
         <version>2.1.0</version>
     </dependency>
+    
+    <dependency> 
+        <groupId>com.nativelibs4java</groupId> 
+        <artifactId>bridj</artifactId> 
+        <version>0.7.0</version> 
+    </dependency>
   </dependencies>
   
   <build>
