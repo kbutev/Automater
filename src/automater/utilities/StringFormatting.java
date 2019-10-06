@@ -6,6 +6,7 @@
 package automater.utilities;
 
 /**
+ * Defines commonly used string methods used to parse various values.
  *
  * @author Bytevi
  */

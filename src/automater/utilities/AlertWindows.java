@@ -9,7 +9,8 @@ import java.awt.Component;
 import javax.swing.JOptionPane;
 
 /**
- *
+ * Defines commonly used display alert dialog methods.
+ * 
  * @author Bytevi
  */
 public class AlertWindows {

@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Logs various messages to the standart output.
+ * Logs various messages to the standard output.
  * 
  * @author Bytevi
  */

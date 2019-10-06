@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- *
+ * Defines commonly used collection methods for copying, wrapping, etc.
+ * 
  * @author Bytevi
  */
 public class CollectionUtilities {

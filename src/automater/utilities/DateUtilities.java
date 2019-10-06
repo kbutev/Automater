@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Colletion of utility methods for converting dates to strings.
+ * Collection of utility methods for converting dates to strings.
  * 
  * @author Bytevi
  */

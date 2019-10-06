@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Defines commonly used file system methods.
  *
  * @author Bytevi
  */

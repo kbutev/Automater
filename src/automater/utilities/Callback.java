@@ -6,7 +6,7 @@
 package automater.utilities;
 
 /**
- * A function callback that takes 1 paramter and returns no value.
+ * A function callback that takes 1 parameter and returns no value.
  * 
  * @author Bytevi
  */

@@ -6,7 +6,10 @@
 package automater.utilities;
 
 /**
- *
+ * Defines commonly used errors.
+ * 
+ * Calling the methods will always cause an exception to be thrown.
+ * 
  * @author Bytevi
  */
 public class Errors {

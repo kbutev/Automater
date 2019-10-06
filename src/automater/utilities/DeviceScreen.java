@@ -9,7 +9,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 
 /**
- *
+ * Defines some useful methods for retrieving the device screen.
+ * 
  * @author Byti
  */
 public class DeviceScreen {
