@@ -29,10 +29,13 @@ public class DeviceTaskBar {
     
     private DeviceTaskBar()
     {
-        try {
-            _item = COMRuntime.newInstance(ITaskbarList3.class);
-        } catch (Exception e) {
-            _item = null;
+        if (DeviceOS.isWindows())
+        {
+            try {
+                _item = COMRuntime.newInstance(ITaskbarList3.class);
+            } catch (Exception e) {
+                _item = null;
+            }
         }
         
         _active = (_item != null);
