@@ -259,7 +259,8 @@ public class MacroStorage {
         
         List<File> files = FileSystem.getAllFilesInDirectory(localPath, MacroStorageFile.FILE_NAME_EXTENSION);
         
-        Logger.message(this, "Loading macros from storage, found " + String.valueOf(files.size()) + " files");
+        Logger.messageEvent(this, "Loading macros from storage from '" + localPath + "'...");
+        Logger.messageEvent(this, "Found " + String.valueOf(files.size()) + " macro files");
         
         currentMacros.clear();
         
