@@ -89,8 +89,7 @@ public class PreferencesStorage {
         
         try {
             data = readFromFile(getFile());
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             // Silent return, if file does not exist, use default preferences
             return;
         }
@@ -101,7 +100,6 @@ public class PreferencesStorage {
             values = Archiver.deserializeObject(PreferencesStorageValues.class, data);
         } catch (Exception e) {
             Logger.error(this, "Failed to deserialize the storage values");
-            Errors.throwSerializationFailed("Failed to deserialize the storage values");
             return;
         }
         

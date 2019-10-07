@@ -55,46 +55,46 @@ public class Archiver
         return null;
     }
     
-    public static String deserializeString(String data)
+    public static String deserializeString(String data) throws Exception
     {
         return deserializeObject(String.class, data);
     }
     
-    public static ArrayList<String> deserializeStrings(String data)
+    public static ArrayList<String> deserializeStrings(String data) throws Exception
     {
         return deserializeObject(String.class, data);
     }
     
-    public static Integer deserializeInteger(String data)
+    public static Integer deserializeInteger(String data) throws Exception
     {
         return deserializeObject(Integer.class, data);
     }
     
-    public static ArrayList<Integer> deserializeIntegers(String data)
+    public static ArrayList<Integer> deserializeIntegers(String data) throws Exception
     {
         return deserializeObject(Integer.class, data);
     }
     
-    public static Double deserializeDouble(String data)
+    public static Double deserializeDouble(String data) throws Exception
     {
         return deserializeObject(Double.class, data);
     }
     
-    public static ArrayList<Double> deserializeDoubles(String data)
+    public static ArrayList<Double> deserializeDoubles(String data) throws Exception
     {
         return deserializeObject(Double.class, data);
     }
     
-    public static Date deserializeDate(String data)
+    public static Date deserializeDate(String data) throws Exception
     {
         return deserializeObject(Date.class, data);
     }
     
-    public static <T> T deserializeObject(Class type, String data)
+    public static <T> T deserializeObject(Class type, String data) throws Exception
     {
         if (data == null || data.isEmpty())
         {
-            return null;
+            throw new Exception("Cannot deserialize empty data");
         }
 
         try {
@@ -123,11 +123,11 @@ public class Archiver
         return null;
     }
     
-    public static <T> ArrayList<T> deserializeArray(Class elementType, String data)
+    public static <T> ArrayList<T> deserializeArray(Class elementType, String data) throws Exception
     {
         if (data == null || data.isEmpty())
         {
-            return null;
+            throw new Exception("Cannot deserialize empty data");
         }
 
         try {
