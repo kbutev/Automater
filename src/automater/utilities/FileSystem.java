@@ -19,7 +19,12 @@ public class FileSystem {
     
     public static String getDirectorySeparator()
     {
-        return "\\";
+        if (DeviceOS.isWindows())
+        {
+            return "\\";
+        }
+        
+        return "/";
     }
     
     public synchronized static String getLocalFilePath()
