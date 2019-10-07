@@ -107,7 +107,7 @@ public class MacroStorage {
         
         if (saveMacroError != null)
         {
-            Logger.error(this, "Failed to save macro '" + macro.name + "' to storage: " + saveMacroError.toString());
+            Logger.error(this, "Failed to save macro '" + macro.name + "' to storage: " + saveMacroError.getMessage());
             throw saveMacroError;
         }
         
@@ -115,7 +115,7 @@ public class MacroStorage {
         
         if (saveMacroNameError != null)
         {
-            Logger.error(this, "Failed to save macro '" + macro.name + "' to storage: " + saveMacroNameError.toString());
+            Logger.error(this, "Failed to save macro '" + macro.name + "' to storage: " + saveMacroNameError.getMessage());
             throw saveMacroNameError;
         }
         
@@ -134,7 +134,7 @@ public class MacroStorage {
                 
                 Logger.messageEvent(this, "Succesfully saved macro '" + macroFile.name() + "' to storage!");
             } catch (Exception e) {
-                String message = "Failed to save '" + macroFile.name() + "' macro to storage!";
+                String message = "Failed to save '" + macroFile.name() + "' macro to storage: " + e.getMessage();
                 Logger.error(this, message);
                 Errors.throwSerializationFailed(message);
             }

@@ -126,8 +126,6 @@ public class RecordMacroViewController implements BaseViewController, BasePresen
     public void onRecordingSaved(String name, boolean success)
     {
         if (!success) {
-            // Wipe out all current data
-            onActionsRecordedChange(new ArrayList<>());
             return;
         }
         

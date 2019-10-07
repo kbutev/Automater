@@ -238,24 +238,28 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     {
         if (_recordedResult == null)
         {
+            Logger.error(this, "Cannot save yet, nothing has been recorded!");
             _delegate.onErrorEncountered(new Exception("Cannot save, nothing has been recorded!"));
             return;
         }
         
+        // Store copy of data
         RecorderResult result = _recordedResult;
         
-        Logger.message(this, "Parsing " + String.valueOf(result.userInputs.size()) + " recorded events");
+        Logger.message(this, "Parsing " + String.valueOf(result.userInputs.size()) + " recorded inputs...");
         
         List<BaseAction> actions;
         
         try {
             actions = _actionsParsing.parseUserInputs(result.userInputs, _parser);
         } catch (Exception e) {
-            _delegate.onErrorEncountered(new Exception("Failed to save the recorded events: " + e.toString()));
+            Logger.error(this, "Failed to parse recorded inputs! Reason: " + e.getMessage());
+            _delegate.onErrorEncountered(new Exception("Failed to save the recorded inputs: " + e.getMessage()));
             return;
         }
         
-        Logger.message(this, "Successfully finished parsing the events!");
+        Logger.message(this, "Finished parsing the macro inputs!");
+        Logger.message(this, "Attempting to save macro to storage...");
         
         Dimension currentScreenSize = DeviceScreen.getPrimaryScreenSize();
         
@@ -268,24 +272,29 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         
         if (canSaveRec != null)
         {
+            Logger.error(this, "Failed to save macro to storage! Reason: " + canSaveRec.getMessage());
+            
             // When a simple error is encountered, do not wipe out here
             _delegate.onErrorEncountered(canSaveRec);
             return;
         }
         
-        // Wipe recorded result, regardless of save operation result
-        _recordedResult = null;
-        
-        // Save operation
+        // Save to storage
         try {
             _storage.saveMacroToStorage(macro);
         } catch (Exception e) {
+            Logger.error(this, "Failed to save macro to storage! Reason: " + e.getMessage());
             _delegate.onRecordingSaved(name, false);
             _delegate.onErrorEncountered(e);
             return;
         }
         
+        // Reset the model to its default values
+        clearData();
+        setupDefaultRecordedInputData();
+        
         // Alert delegate that operation was successful
+        Logger.message(this, "Successfully saved macro to storage!");
         _delegate.onRecordingSaved(name, true);
     }
     
