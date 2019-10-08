@@ -45,5 +45,8 @@ public class Automater {
                 Executor.getDefault().stopAll();
             }
         }));
+        
+        // Recorder preload
+        Recorder.getDefault().preload();
     }
 }
