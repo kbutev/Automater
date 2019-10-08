@@ -46,7 +46,13 @@ public class MacroStorageFile {
             return null;
         }
         
-        Macro macro = MacroStorageFile.parseMacroFromData(data);
+        Macro macro = null;
+        
+        try {
+            macro = MacroStorageFile.parseMacroFromData(data);
+        } catch (Exception e) {
+            
+        }
         
         if (macro == null)
         {
@@ -221,7 +227,7 @@ public class MacroStorageFile {
     
     // # Parsing
     
-    public static Macro parseMacroFromData(String data)
+    private static Macro parseMacroFromData(String data) throws Exception
     {
         return Archiver.deserializeObject(Macro.class, data);
     }
