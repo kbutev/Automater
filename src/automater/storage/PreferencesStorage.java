@@ -94,6 +94,12 @@ public class PreferencesStorage {
             return;
         }
         
+        // No file exists, return without logging anything
+        if (data.isEmpty())
+        {
+            return;
+        }
+        
         PreferencesStorageValues values;
         
         try {
