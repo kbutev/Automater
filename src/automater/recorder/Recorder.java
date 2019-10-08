@@ -39,7 +39,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
     public final Defaults defaults = new Defaults();
     
     private RecorderJHookListener _nativeListener;
-    private RecorderMasterNativeParser _masterParser;
+    private final RecorderMasterNativeParser _masterParser;
     
     private boolean _recording = false;
     private BaseRecorderListener _listener;
@@ -48,7 +48,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
     
     private Recorder()
     {
-        startIfNotStarted();
+        _masterParser = new RecorderMasterNativeParser();
     }
     
     // # Public
@@ -63,6 +63,13 @@ public class Recorder implements RecorderJHookListenerDelegate {
         return singleton;
     }
     
+    public void preload()
+    {
+        // Setup the Recorder, to make sure its up and running so when starting
+        // the recording, no delay will be experienced
+        startIfNotStarted();
+    }
+    
     public void start(BaseRecorderNativeParser parser, BaseRecorderModel model, BaseRecorderListener listener) throws Exception
     {
         start(parser, model, listener, null);
@@ -70,6 +77,8 @@ public class Recorder implements RecorderJHookListenerDelegate {
     
     public void start(BaseRecorderNativeParser parser, BaseRecorderModel model, BaseRecorderListener listener, Hotkey stopHotkey) throws Exception
     {
+        startIfNotStarted();
+        
         Dimension size = DeviceScreen.getPrimaryScreenSize();
         
         Logger.messageEvent(this, "Start recording on screen size " + size.width + "x" + size.height + "...");
@@ -97,20 +106,28 @@ public class Recorder implements RecorderJHookListenerDelegate {
     {
         Logger.messageEvent(this, "Stop!");
         
+        boolean isRecording;
+        
         synchronized (_lock)
         {
             if (!_recording)
             {
                 Errors.throwIllegalStateError("Cannot stop Recorder, must be recording first");
             }
-                
+            
+            isRecording = _recording;
         }
         
-        cancel(false, null);
+        if (isRecording)
+        {
+            cancel(false, null);
+        }
     }
     
     public void registerHotkeyListener(RecorderHotkeyListener listener)
     {
+        startIfNotStarted();
+        
         _masterParser.registerHotkeyListener(listener);
     }
     
@@ -121,6 +138,8 @@ public class Recorder implements RecorderJHookListenerDelegate {
     
     public void registerPlayStopHotkeyListener(RecorderHotkeyListener listener)
     {
+        startIfNotStarted();
+        
         Logger.messageEvent(this, "Registering a play/stop hotkey listener for client " + listener.toString());
         _masterParser.setPlayStopHotkeyListener(listener);
     }
@@ -184,12 +203,11 @@ public class Recorder implements RecorderJHookListenerDelegate {
     
     private void startIfNotStarted()
     {
-        if (_masterParser != null)
+        if (_nativeListener != null)
         {
             return;
         }
         
-        _masterParser = new RecorderMasterNativeParser();
         _nativeListener = new RecorderJHookListener(_masterParser, this);
         
         try {
