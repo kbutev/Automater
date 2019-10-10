@@ -14,7 +14,8 @@ import java.util.logging.Logger;
 import org.jnativehook.GlobalScreen;
 
 /**
- *
+ * Automater entry point.
+ * 
  * @author Bytevi
  */
 public class Automater {
@@ -24,6 +25,7 @@ public class Automater {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        // Start first screen
         primaryViewContoller.start();
         
         // Disable jnativehook logging
@@ -34,6 +36,8 @@ public class Automater {
         // Shutdown cleanup
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             public void run() {
+                automater.utilities.Logger.message("Automater", "Automater shutdown hook");
+                
                 // Make sure Recorder is no longer operating
                 try {
                     Recorder.getDefault().stop();
