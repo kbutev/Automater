@@ -58,6 +58,21 @@
             </archive>
         </configuration>
       </plugin>
+      
+      <!-- Required for building the jar properly, bundles all dependencies with the jar file, Maven is really really awful -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>1.6</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
