@@ -121,12 +121,12 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
                                 .addComponent(saveButton)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(cancelButton))
-                            .addComponent(typesDropdown, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(timeLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(timeField, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 248, Short.MAX_VALUE)))
+                                .addComponent(timeField, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(typesDropdown, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 219, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
