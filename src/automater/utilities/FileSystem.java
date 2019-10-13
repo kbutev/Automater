@@ -39,11 +39,23 @@ public class FileSystem {
     
     public static String createFilePathRelativeToLocalPath(String path)
     {
-        return getLocalFilePath() + getDirectorySeparator() + path;
+        String base = getLocalFilePath();
+        
+        if (base.isEmpty())
+        {
+            return path;
+        }
+        
+        return base + getDirectorySeparator() + path;
     }
     
     public static String createFilePathWithBasePath(String base, String fileName)
     {
+        if (base.isEmpty())
+        {
+            return fileName;
+        }
+        
         return base + getDirectorySeparator() + fileName;
     }
     
