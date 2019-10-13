@@ -32,8 +32,13 @@
         <directory>src</directory>
         <excludes>
           <exclude>**/*.java</exclude>
+          <exclude>**/*.mp3</exclude>
         </excludes>
       </resource>
+      <resource>
+      <directory>resources</directory>
+      <targetPath>../resources</targetPath>
+    </resource>
     </resources>
     <plugins>
       <plugin>
