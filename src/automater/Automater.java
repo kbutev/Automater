@@ -7,6 +7,7 @@ package automater;
 
 import automater.recorder.Recorder;
 import automater.ui.viewcontroller.PrimaryViewContoller;
+import automater.utilities.DeviceNotifications;
 import automater.work.Executor;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -52,5 +53,9 @@ public class Automater {
         
         // Recorder preload
         Recorder.getDefault().preload();
+        
+        // Show tray icon
+        DeviceNotifications.getShared().showTrayIcon();
+        DeviceNotifications.getShared().setTrayIconTooltip(TextValue.getText(TextValue.SystemTray_Tooltip));
     }
 }

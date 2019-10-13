@@ -292,9 +292,8 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         
         String title = TextValue.getText(TextValue.Play_NotificationStartTitle);
         String message = TextValue.getText(TextValue.Play_NotificationStartMessage, macroName, macroHotkey);
-        String tooltip = TextValue.getText(TextValue.Play_NotificationStartTooltip, macroName);
         
-        DeviceNotifications.getShared().displayOSNotification(title, message, tooltip);
+        DeviceNotifications.getShared().displayGlobalNotification(title, message);
     }
     
     private void displayPlayingFinishedNotification()
@@ -305,13 +304,11 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         }
         
         String macroName = _macro.name;
-        String macroHotkey = _playOrStopHotkey.key.toString();
         
         String title = TextValue.getText(TextValue.Play_NotificationFinishTitle);
         String message = TextValue.getText(TextValue.Play_NotificationFinishMessage, macroName);
-        String tooltip = TextValue.getText(TextValue.Play_NotificationFinishTooltip, macroName);
         
-        DeviceNotifications.getShared().displayOSNotification(title, message, tooltip);
+        DeviceNotifications.getShared().displayGlobalNotification(title, message);
     }
     
     private void displayPlayingRepeatNotification(int numberOfTimesPlayed, int numberOfTimesToPlay)
@@ -331,8 +328,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         
         String title = TextValue.getText(TextValue.Play_NotificationRepeatTitle);
         String message = TextValue.getText(TextValue.Play_NotificationRepeatMessage, macroName, timesPlayed);
-        String tooltip = TextValue.getText(TextValue.Play_NotificationRepeatTooltip, macroName, timesPlayed);
         
-        DeviceNotifications.getShared().displayOSNotification(title, message, tooltip);
+        DeviceNotifications.getShared().displayGlobalNotification(title, message);
     }
 }

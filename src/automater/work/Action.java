@@ -870,7 +870,7 @@ class ActionSystemCommand extends Action implements InputSystemCommand {
                 String title = TextValue.getText(TextValue.Commands_NotificationErrorTitle, value);
                 String message = TextValue.getText(TextValue.Commands_NotificationErrorMessage, e.getMessage());
                 
-                DeviceNotifications.getShared().displayOSNotification(title, message, message);
+                DeviceNotifications.getShared().displayGlobalNotification(title, message);
             }
         }
     }

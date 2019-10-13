@@ -54,9 +54,9 @@ public enum TextValue {
     Play_BackButtonTitle,
     Play_PlayButtonTitle, Play_StopButtonTitle,
     Play_DialogErrorTitle,
-    Play_NotificationStartTitle, Play_NotificationStartMessage, Play_NotificationStartTooltip,
-    Play_NotificationFinishTitle, Play_NotificationFinishMessage, Play_NotificationFinishTooltip,
-    Play_NotificationRepeatTitle, Play_NotificationRepeatMessage, Play_NotificationRepeatTooltip,
+    Play_NotificationStartTitle, Play_NotificationStartMessage,
+    Play_NotificationFinishTitle, Play_NotificationFinishMessage,
+    Play_NotificationRepeatTitle, Play_NotificationRepeatMessage,
     Play_NotificationRepeatForever,
     Play_StatusIdle, Play_StatusFinished, Play_StatusWaiting, Play_StatusPerformedWaiting,
     Play_StatusPerforming, Play_StatusPerformingRepeat,
@@ -110,6 +110,8 @@ public enum TextValue {
     Dialog_SaveRecordingFailedTitle, Dialog_SaveRecordingFailedMessage,
     Dialog_ConfirmDeleteMacroTitle, Dialog_ConfirmDeleteMacroMessage,
     
+    // System tray
+    SystemTray_Tooltip,
     
     End;
     
@@ -271,13 +273,10 @@ public enum TextValue {
         put(Play_DialogErrorTitle, "Failed to play Macro");
         put(Play_NotificationStartTitle, "Automater");
         put(Play_NotificationStartMessage, "Playing '%@' (Press %@ to stop)");
-        put(Play_NotificationStartTooltip, "Playing '%@' (Press %@ to stop)");
         put(Play_NotificationFinishTitle, "Automater");
         put(Play_NotificationFinishMessage, "Finished playing '%@'");
-        put(Play_NotificationFinishTooltip, "Finished playing '%@'");
         put(Play_NotificationRepeatTitle, "Automater");
         put(Play_NotificationRepeatMessage, "Repeat playing '%@' (%@)");
-        put(Play_NotificationRepeatTooltip, "Repeat playing '%@' (%@)");
         put(Play_NotificationRepeatForever, "Repeat forever");
         put(Play_StatusIdle, "Idle");
         put(Play_StatusFinished, "Finished");
@@ -368,5 +367,8 @@ public enum TextValue {
         put(Dialog_SaveRecordingFailedMessage, "Could not save recording: %@");
         put(Dialog_ConfirmDeleteMacroTitle, "Delete macro");
         put(Dialog_ConfirmDeleteMacroMessage, "Are you sure you want to delete '%@'?");
+        
+        // System tray
+        put(SystemTray_Tooltip, "Automater");
     }};
 }

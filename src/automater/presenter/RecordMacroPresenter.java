@@ -356,9 +356,8 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         
         String title = TextValue.getText(TextValue.Record_NotificationStartTitle);
         String message = TextValue.getText(TextValue.Record_NotificationStartMessage, macroHotkey);
-        String tooltip = TextValue.getText(TextValue.Record_NotificationStartTooltip);
         
-        DeviceNotifications.getShared().displayOSNotification(title, message, tooltip);
+        DeviceNotifications.getShared().displayGlobalNotification(title, message);
     }
     
     private void displayRecordingStoppedNotification()
@@ -367,9 +366,8 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         
         String title = TextValue.getText(TextValue.Record_NotificationStopTitle);
         String message = TextValue.getText(TextValue.Record_NotificationStopMessage, macroHotkey);
-        String tooltip = TextValue.getText(TextValue.Record_NotificationStopTooltip);
         
-        DeviceNotifications.getShared().displayOSNotification(title, message, tooltip);
+        DeviceNotifications.getShared().displayGlobalNotification(title, message);
     }
     
     // Parsing
