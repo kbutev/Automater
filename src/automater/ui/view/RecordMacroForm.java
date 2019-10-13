@@ -214,6 +214,8 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
     }
     
     private void setup() {
+        ViewUtilities.setAppIconForFrame(this);
+        
         this.setTitle(TextValue.getText(TextValue.Record_FormTitle));
         
         headerText.setText(TextValue.getText(TextValue.Record_HeaderText));

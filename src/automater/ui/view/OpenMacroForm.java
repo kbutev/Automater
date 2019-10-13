@@ -5,12 +5,16 @@
  */
 package automater.ui.view;
 
+import automater.Strings;
 import automater.TextValue;
 import static automater.TextValue.*;
 import automater.utilities.Callback;
 import automater.utilities.Description;
+import automater.utilities.Resources;
 import automater.utilities.SimpleCallback;
+import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.util.List;
 
 /**
@@ -239,6 +243,8 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
     }
 
     private void setup() {
+        ViewUtilities.setAppIconForFrame(this);
+        
         this.setTitle(TextValue.getText(TextValue.Open_FormTitle));
         
         headerText.setText(TextValue.getText(TextValue.Open_HeaderText));

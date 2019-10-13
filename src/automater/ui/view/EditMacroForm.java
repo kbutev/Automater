@@ -267,6 +267,8 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
     }
     
     private void setup() {
+        ViewUtilities.setAppIconForFrame(this);
+        
         this.setTitle(TextValue.getText(TextValue.Edit_FormTitle));
         
         backButton.setText(TextValue.getText(TextValue.Edit_BackButtonTitle));

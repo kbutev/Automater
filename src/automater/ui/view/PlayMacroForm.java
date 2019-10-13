@@ -200,6 +200,8 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
     }
     
     private void setup() {
+        ViewUtilities.setAppIconForFrame(this);
+        
         this.setTitle(TextValue.getText(TextValue.Play_FormTitle));
         
         backButton.setText(TextValue.getText(TextValue.Play_BackButtonTitle));
@@ -256,6 +258,8 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         backButton.setEnabled(false);
         optionsButton.setEnabled(false);
         setProgressBarValue(0);
+        
+        ViewUtilities.setAppRedIconForFrame(this);
     }
     
     public void cancelRecording()
@@ -270,6 +274,8 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, "F4"));
         backButton.setEnabled(true);
         optionsButton.setEnabled(true);
+        
+        ViewUtilities.setAppIconForFrame(this);
     }
     
     public void finishRecording()
