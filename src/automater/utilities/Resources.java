@@ -10,7 +10,7 @@ package automater.utilities;
  * @author Byti
  */
 public class Resources {
-    public final static String RESOURCES_DIRECTORY_PATH = "resources";
+    public final static String RESOURCES_DIRECTORY_PATH = "src/main/resources";
     
     public final static String DEFAULT_IMAGE_EXTENSION = "png";
     public final static String PNG_EXTENSION = "png";

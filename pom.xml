@@ -26,6 +26,7 @@
   
   <build>
     <sourceDirectory>src</sourceDirectory>
+    <outputDirectory>${project.build.directory}/src</outputDirectory>
     <resources>
       <resource>
         <directory>src</directory>
