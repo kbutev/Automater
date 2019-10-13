@@ -14,8 +14,8 @@ import java.io.Serializable;
  * @author Bytevi
  */
 public class PreferencesStorageValues implements Serializable {
-    public boolean displayStartNotification = true;
-    public boolean displayStopNotification = true;
+    public boolean displayStartNotification = false;
+    public boolean displayStopNotification = false;
     public boolean displayRepeatNotification = false;
     public MacroParameters macroParameters = MacroParameters.defaultValues();
     
