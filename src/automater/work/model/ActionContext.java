@@ -9,6 +9,8 @@ import automater.work.BaseExecutorTimer;
 import java.awt.Robot;
 import java.util.HashSet;
 import java.awt.Dimension;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Holds values for a specific action execution context.
@@ -61,6 +63,12 @@ public class ActionContext implements BaseActionContext {
     public ActionSystemKeyModifiers getPressedModifiers()
     {
         return _modifiers;
+    }
+    
+    @Override
+    public Set<ActionSystemKey> getPressedKeys()
+    {
+        return new HashSet(_keysPressed);
     }
     
     @Override

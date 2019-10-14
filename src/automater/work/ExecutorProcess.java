@@ -13,6 +13,9 @@ import automater.utilities.Logger;
 import automater.utilities.Looper;
 import automater.utilities.LooperClient;
 import automater.work.model.ActionContext;
+import automater.work.model.ActionSystemKey;
+import automater.work.model.ActionSystemKeyModifierValue;
+import automater.work.model.ActionSystemKeyModifiers;
 import automater.work.model.ExecutorProgress;
 import automater.work.model.Macro;
 import automater.work.model.MacroParameters;
@@ -217,6 +220,10 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
                 return;
             }
             
+            // Release all pressed keys, to avoid keys getting stuck
+            releaseAllPressedKeys();
+            
+            // Reset values to their defaults
             cleanup();
         }
         
@@ -590,9 +597,13 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
                 _listener.onFinish();
             }
             
-            // Cleanup
+            // Stop
             synchronized (_lock)
             {
+                // Release all pressed keys, to avoid keys getting stuck
+                releaseAllPressedKeys();
+                
+                // Reset values to their defaults
                 cleanup();
             }
             
@@ -612,6 +623,28 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
             {
                 _listener.onWait();
             }
+        }
+    }
+    
+    private void releaseAllPressedKeys()
+    {
+        if (_context == null)
+        {
+            return;
+        }
+        
+        Robot robot = _context.getRobot();
+        
+        ActionSystemKeyModifiers modifiers = _context.getPressedModifiers();
+        
+        for (ActionSystemKeyModifierValue value : modifiers.modifiers)
+        {
+            robot.keyRelease(value.getValue());
+        }
+        
+        for (ActionSystemKey key : _context.getPressedKeys())
+        {
+            robot.keyRelease(key.getValue());
         }
     }
     

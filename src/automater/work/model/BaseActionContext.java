@@ -8,6 +8,7 @@ package automater.work.model;
 import automater.work.BaseExecutorTimer;
 import java.awt.Dimension;
 import java.awt.Robot;
+import java.util.Set;
 
 /**
  * Contains information about the current state of action execution.
@@ -34,6 +35,7 @@ public interface BaseActionContext {
     public Dimension getCurrentScreenSize();
     
     public ActionSystemKeyModifiers getPressedModifiers();
+    public Set<ActionSystemKey> getPressedKeys();
     public boolean isModifierPressed(ActionSystemKeyModifierValue modifier);
     public boolean isCtrlModifierPressed();
     public boolean isAltModifierPressed();
