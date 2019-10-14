@@ -256,7 +256,6 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
         macroActionsList.setModel(StandardDescriptionsDataSource.createGeneric());
         
         switchToOpenMacrosButton.setSelected(false);
-        saveMacroButton.setEnabled(false);
         
         macroNameField.setText(TextValue.getText(TextValue.Record_MacroNameFieldDefaultText));
         macroDescriptionField.setText("");
