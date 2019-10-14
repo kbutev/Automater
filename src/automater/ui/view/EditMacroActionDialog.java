@@ -461,7 +461,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
             @Override
             public void perform(Boolean argument) {
                 String newValue = String.valueOf(view.pressCheck.isSelected());
-                setActionFirstValue(newValue);
+                setActionSecondValue(newValue);
                 onPressCheckCallback.perform();
             }
         };
@@ -659,11 +659,6 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         }
         
         return true;
-    }
-    
-    private String isPropertyValueValid(BaseMutableActionProperty p)
-    {
-        return null;
     }
      
     private String isEnteredPropertyValuesValid()
