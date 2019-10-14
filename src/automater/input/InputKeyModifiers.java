@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Combination of modifier values.
@@ -45,11 +46,16 @@ public class InputKeyModifiers implements Serializable {
     {
         String suffix = InputKeyModifierValue.getSeparatorSymbol();
         
-        String[] strings = suffix.split(string);
+        String[] strings = string.split(Pattern.quote(suffix));
         
         for (int e = 0; e < string.length(); e++)
         {
-            _values.add(InputKeyModifierValue.valueOf(strings[e]));
+            try {
+                InputKeyModifierValue modifier = InputKeyModifierValue.valueOf(strings[e]);
+                _values.add(modifier);
+            } catch (Exception exc) {
+                
+            }
         }
     }
     

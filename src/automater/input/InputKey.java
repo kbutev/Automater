@@ -90,7 +90,8 @@ public class InputKey implements Serializable {
             return "";
         }
         
-        return value.substring(lastIndexOfModifierSeparator+1);
+        String result = value.substring(lastIndexOfModifierSeparator+1);
+        return result;
     }
     
     public static String extractKeyModifiersFromKeyString(String value)
@@ -102,6 +103,7 @@ public class InputKey implements Serializable {
             return "";
         }
         
-        return value.substring(0, lastIndexOfModifierSeparator+1);
+        String result = value.substring(0, lastIndexOfModifierSeparator+1);
+        return result;
     }
 }
