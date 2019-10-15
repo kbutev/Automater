@@ -8,7 +8,6 @@ package automater.utilities;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -20,6 +19,7 @@ import java.util.Date;
 public class Logger {
     public static final boolean PRINT_TO_LOG_FILE = true;
     public static final String LOG_FILE_NAME = "logs.txt";
+    public static final String LOG_BACKUP_FILE_NAME = "logs-previous.txt";
     public static final boolean DISPLAY_TIMESTAMPS = true;
     
     private static final Object _lock = new Object();
@@ -111,6 +111,17 @@ public class Logger {
         return FileSystem.createFilePathWithBasePath(path, LOG_FILE_NAME);
     }
     
+    private static String getLogBackupFilePath()
+    {
+        if (LOG_BACKUP_FILE_NAME.isEmpty())
+        {
+            return "";
+        }
+        
+        String path = FileSystem.getLocalFilePath();
+        return FileSystem.createFilePathWithBasePath(path, LOG_BACKUP_FILE_NAME);
+    }
+    
     private static File getLogFile()
     {
         return setupLogFileIfNecessary();
@@ -143,12 +154,67 @@ public class Logger {
     {
         synchronized (_lock)
         {
-            if (_logFile == null)
+            boolean initialized = _logFile != null;
+            
+            if (!initialized)
             {
+                // Backup current log file if a backup name is defined
+                // Otherwise just delete the current log file
+                if (!getLogBackupFilePath().isEmpty())
+                {
+                    backupLogFile();
+                }
+                else
+                {
+                    deleteLogFile();
+                }
+                
                 _logFile = new File(getLogFilePath());
             }
             
             return _logFile;
+        }
+    }
+    
+    private static void backupLogFile()
+    {
+        if (getLogBackupFilePath().isEmpty())
+        {
+            return;
+        }
+        
+        // Delete backup file (if it exists)
+        // Backup current log file
+        // Delete log file (if it exists)
+        File backup = new File(getLogBackupFilePath());
+        File logFile = new File(getLogFilePath());
+        
+        try {
+            backup.delete();
+        } catch (Exception e) {
+            
+        }
+        
+        if (logFile.exists())
+        {
+            logFile.renameTo(backup);
+            
+            try {
+                logFile.delete();
+            } catch (Exception e) {
+            
+            }
+        }
+    }
+    
+    private static void deleteLogFile()
+    {
+        File logFile = new File(getLogFilePath());
+        
+        try {
+            logFile.delete();
+        } catch (Exception e) {
+            
         }
     }
     
