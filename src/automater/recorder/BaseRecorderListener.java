@@ -7,6 +7,7 @@ package automater.recorder;
 
 import automater.recorder.model.RecorderResult;
 import automater.recorder.model.RecorderUserInput;
+import com.sun.istack.internal.NotNull;
 
 /**
  * A listener for recorded user input actions.
@@ -22,9 +23,9 @@ import automater.recorder.model.RecorderUserInput;
  * @author Bytevi
  */
 public interface BaseRecorderListener {
-    public void onRecordedUserInput(RecorderUserInput input);
+    public void onRecordedUserInput(@NotNull RecorderUserInput input);
     public void onRecordedUserInputChanged();
-    public void onFailedRecordedUserInput(RecorderUserInput input);
+    public void onFailedRecordedUserInput(@NotNull RecorderUserInput input);
     
-    public void onFinishedRecording(RecorderResult result, boolean success, Exception exception);
+    public void onFinishedRecording(@NotNull RecorderResult result, boolean success, @NotNull Exception exception);
 }

@@ -26,6 +26,8 @@ import java.util.Comparator;
 import java.util.Date;
 import automater.mutableaction.BaseMutableAction;
 import automater.work.Action;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 /**
  * Presenter for the edit macro screen.
@@ -36,16 +38,16 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     public final static int CREATE_ACTION_DEFAULT_TYPE = 0;
     public final static int CREATE_NEW_ACTION_TIMESTAMP_OFFSET = 1;
     
-    private final RootViewController _rootViewController;
-    private BasePresenterDelegate _delegate;
+    @NotNull private final RootViewController _rootViewController;
+    @Nullable private BasePresenterDelegate _delegate;
     
-    private final Macro _originalMacro;
+    @NotNull private final Macro _originalMacro;
     
     // New values
-    private String _name;
-    private String _description;
-    private final ArrayList<BaseAction> _macroActions;
-    private final ArrayList<Description> _macroActionDescriptions;
+    @NotNull private String _name;
+    @NotNull private String _description;
+    @NotNull private final ArrayList<BaseAction> _macroActions;
+    @NotNull private final ArrayList<Description> _macroActionDescriptions;
     
     // Edit action
     private boolean _isEditingOrCreatingAction = false;
@@ -53,18 +55,18 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     
     private int _actionBeingEditedIndex;
     private int _actionTypeSelectedIndex = 0;
-    private StandardMutableAction _actionBeingEdited;
+    @Nullable private StandardMutableAction _actionBeingEdited;
     
     // Hotkey recording
     private boolean _recording = false;
-    private final Recorder _recorder = Recorder.getDefault();
-    private Callback _onKeystrokeEnteredCallback = Callback.createDoNothing();
-    private Hotkey _hotkeyRecorded;
+    @NotNull private final Recorder _recorder = Recorder.getDefault();
+    @NotNull private Callback _onKeystrokeEnteredCallback = Callback.createDoNothing();
+    @Nullable private Hotkey _hotkeyRecorded;
     
     // Edit detection
     private boolean _wasEdited = false;
     
-    public EditMacroPresenter(RootViewController rootViewController, Macro macro)
+    public EditMacroPresenter(@NotNull RootViewController rootViewController, @NotNull Macro macro)
     {
         _rootViewController = rootViewController;
         
@@ -97,7 +99,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     }
 
     @Override
-    public void setDelegate(BasePresenterDelegate delegate)
+    public void setDelegate(@NotNull BasePresenterDelegate delegate)
     {
         if (_delegate != null)
         {
@@ -122,13 +124,13 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     }
     
     @Override
-    public Hotkey getHotkey()
+    public @Nullable Hotkey getHotkey()
     {
         return null;
     }
     
     @Override
-    public void onHotkeyPressed(Hotkey hotkey)
+    public void onHotkeyPressed(@NotNull Hotkey hotkey)
     {
         if (!_recording)
         {
@@ -144,7 +146,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     
     // # Public values
     
-    public List<Description> getActionTypes()
+    public @NotNull List<Description> getActionTypes()
     {
         return StandardMutableActionConstants.getActionTypes();
     }
@@ -336,7 +338,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _delegate.onCreateMacroAction(_actionBeingEdited);
     }
     
-    public Exception canSuccessfullyEndEditMacroAction()
+    public @Nullable Exception canSuccessfullyEndEditMacroAction()
     {
         if (!_isEditingOrCreatingAction)
         {
@@ -432,7 +434,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _delegate.onEditedMacroActions(_macroActionDescriptions);
     }
     
-    public BaseMutableAction changeEditMacroActionTypeForTypeIndex(int index)
+    public @Nullable BaseMutableAction changeEditMacroActionTypeForTypeIndex(int index)
     {
         if (!_isEditingOrCreatingAction)
         {
@@ -469,7 +471,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         return a;
     }
     
-    public void startListeningForKeystrokes(Callback<Hotkey> onKeystrokeEnteredCallback)
+    public void startListeningForKeystrokes(@NotNull Callback<Hotkey> onKeystrokeEnteredCallback)
     {
         if (_recording)
         {
@@ -503,14 +505,14 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _recorder.unregisterHotkeyListener(this);
     }
     
-    public void onMacroNameChanged(String name)
+    public void onMacroNameChanged(@NotNull String name)
     {
         _wasEdited = true;
         
         _name = name;
     }
     
-    public void onMacroDescriptionChanged(String description)
+    public void onMacroDescriptionChanged(@NotNull String description)
     {
         _wasEdited = true;
         
@@ -524,7 +526,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         return _wasEdited;
     }
     
-    private void updateMacroWithNewCreatedAction(StandardMutableAction a)
+    private void updateMacroWithNewCreatedAction(@NotNull StandardMutableAction a)
     {
         _wasEdited = true;
         
@@ -542,7 +544,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         }
     }
     
-    private void updateMacroWithEditedAction(StandardMutableAction a, int actionBeingEditedIndex)
+    private void updateMacroWithEditedAction(@NotNull StandardMutableAction a, int actionBeingEditedIndex)
     {
         _wasEdited = true;
         

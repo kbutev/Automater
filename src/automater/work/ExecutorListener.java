@@ -5,6 +5,8 @@
  */
 package automater.work;
 
+import com.sun.istack.internal.NotNull;
+
 /**
  * Forwards requests when the executor does something.
  * 
@@ -13,9 +15,9 @@ package automater.work;
 public interface ExecutorListener {
     public void onStart(int repeatTimes);
     
-    public void onActionExecute(BaseAction action);
-    public void onActionUpdate(BaseAction action);
-    public void onActionFinish(BaseAction action);
+    public void onActionExecute(@NotNull BaseAction action);
+    public void onActionUpdate(@NotNull BaseAction action);
+    public void onActionFinish(@NotNull BaseAction action);
     
     public void onWait();
     public void onCancel();

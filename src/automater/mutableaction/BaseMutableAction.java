@@ -6,6 +6,7 @@
 package automater.mutableaction;
 
 import automater.utilities.Description;
+import com.sun.istack.internal.NotNull;
 import java.util.List;
 
 /**
@@ -16,15 +17,15 @@ import java.util.List;
  * @author Bytevi
  */
 public interface BaseMutableAction {
-    public MutableActionType getType();
+    public @NotNull MutableActionType getType();
     
-    public List<BaseMutableActionProperty> getProperties();
-    public BaseMutableActionProperty getFirstProperty();
-    public BaseMutableActionProperty getSecondProperty();
+    public @NotNull List<BaseMutableActionProperty> getProperties();
+    public @NotNull BaseMutableActionProperty getFirstProperty();
+    public @NotNull BaseMutableActionProperty getSecondProperty();
     
     public long getTimestamp();
     public void setTimestamp(long timestamp);
     
-    public Description getDescription();
-    public String getStateDescription();
+    public @NotNull Description getDescription();
+    public @NotNull String getStateDescription();
 }

@@ -5,6 +5,9 @@
  */
 package automater.mutableaction;
 
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
+
 /**
  * A mutable action property.
  *
@@ -12,11 +15,11 @@ package automater.mutableaction;
  */
 public interface BaseMutableActionProperty {
     public boolean isValid();
-    public String getInvalidError();
+    public @Nullable String getInvalidError();
     
-    public String getValue();
-    public void setValue(String value);
+    public @NotNull String getValue();
+    public void setValue(@NotNull String value);
     
-    public String getName();
-    public void setName(String name);
+    public @NotNull String getName();
+    public void setName(@NotNull String name);
 }

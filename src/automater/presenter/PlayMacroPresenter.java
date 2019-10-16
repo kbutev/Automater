@@ -24,6 +24,8 @@ import automater.work.model.Macro;
 import java.util.List;
 import automater.work.ExecutorListener;
 import automater.work.model.ExecutorProgress;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.util.Date;
 
 /**
@@ -32,24 +34,24 @@ import java.util.Date;
  * @author Bytevi
  */
 public class PlayMacroPresenter implements BasePresenter, ExecutorListener, RecorderHotkeyListener {
-    private final RootViewController _rootViewController;
-    private BasePresenterDelegate _delegate;
+    @NotNull private final RootViewController _rootViewController;
+    @Nullable private BasePresenterDelegate _delegate;
     
-    private final Executor _executor = Executor.getDefault();
-    private final MacroStorage _macrosStorage = GeneralStorage.getDefault().getMacrosStorage();
+    @NotNull private final Executor _executor = Executor.getDefault();
+    @NotNull private final MacroStorage _macrosStorage = GeneralStorage.getDefault().getMacrosStorage();
     
     private boolean _started = false;
     
-    private final Macro _macro;
-    private final List<Description> _macroActionDescriptions;
-    private BaseExecutorProcess _ongoingExecution;
+    @NotNull private final Macro _macro;
+    @NotNull private final List<Description> _macroActionDescriptions;
+    @Nullable private BaseExecutorProcess _ongoingExecution;
     
-    private final Recorder _recorder = Recorder.getDefault();
-    private Hotkey _playOrStopHotkey;
+    @NotNull private final Recorder _recorder = Recorder.getDefault();
+    @Nullable private Hotkey _playOrStopHotkey;
     
-    private PreferencesStorageValues _options = PreferencesStorageValues.defaultValues();
+    @NotNull private PreferencesStorageValues _options = PreferencesStorageValues.defaultValues();
     
-    public PlayMacroPresenter(RootViewController rootViewController, Macro macro)
+    public PlayMacroPresenter(@NotNull RootViewController rootViewController, @NotNull Macro macro)
     {
         _rootViewController = rootViewController;
         
@@ -86,7 +88,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     }
     
     @Override
-    public void setDelegate(BasePresenterDelegate delegate)
+    public void setDelegate(@NotNull BasePresenterDelegate delegate)
     {
         if (_delegate != null)
         {
@@ -111,19 +113,19 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     }
     
     @Override
-    public void onActionExecute(BaseAction action)
+    public void onActionExecute(@NotNull BaseAction action)
     {
         updatePlayStatus();
     }
     
     @Override
-    public void onActionUpdate(BaseAction action)
+    public void onActionUpdate(@NotNull BaseAction action)
     {
         updatePlayStatus();
     }
     
     @Override
-    public void onActionFinish(BaseAction action)
+    public void onActionFinish(@NotNull BaseAction action)
     {
         updatePlayStatus();
     }
@@ -165,13 +167,13 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     }
     
     @Override
-    public Hotkey getHotkey()
+    public @Nullable Hotkey getHotkey()
     {
         return _playOrStopHotkey;
     }
     
     @Override
-    public void onHotkeyPressed(Hotkey hotkey)
+    public void onHotkeyPressed(@NotNull Hotkey hotkey)
     {
         Logger.message(this, "Play hotkey tapped!");
         
@@ -239,7 +241,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         _delegate.stopRecording();
     }
     
-    public void setOptionValues(PreferencesStorageValues values)
+    public void setOptionValues(@NotNull PreferencesStorageValues values)
     {
         Logger.messageEvent(this, "Play parameters changed: " + values.macroParameters.toString());
         
@@ -258,7 +260,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         _rootViewController.navigateToOpenScreen();
     }
     
-    public void setPlayOrStopHotkey(Hotkey hotkey)
+    public void setPlayOrStopHotkey(@NotNull Hotkey hotkey)
     {
         synchronized (this)
         {

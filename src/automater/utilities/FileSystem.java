@@ -5,6 +5,7 @@
  */
 package automater.utilities;
 
+import com.sun.istack.internal.NotNull;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
 public class FileSystem {
     private static String absolutePath;
     
-    public static String getDirectorySeparator()
+    public static @NotNull String getDirectorySeparator()
     {
         if (DeviceOS.isWindows())
         {
@@ -27,7 +28,7 @@ public class FileSystem {
         return "/";
     }
     
-    public synchronized static String getLocalFilePath()
+    public synchronized static @NotNull String getLocalFilePath()
     {
         if (absolutePath == null)
         {
@@ -37,7 +38,7 @@ public class FileSystem {
         return absolutePath;
     }
     
-    public static String createFilePathRelativeToLocalPath(String path)
+    public static @NotNull String createFilePathRelativeToLocalPath(@NotNull String path)
     {
         String base = getLocalFilePath();
         
@@ -49,7 +50,7 @@ public class FileSystem {
         return base + getDirectorySeparator() + path;
     }
     
-    public static String createFilePathWithBasePath(String base, String fileName)
+    public static @NotNull String createFilePathWithBasePath(@NotNull String base, @NotNull String fileName)
     {
         if (base.isEmpty())
         {
@@ -59,7 +60,7 @@ public class FileSystem {
         return base + getDirectorySeparator() + fileName;
     }
     
-    public static String createFilePathWithoutTheFileName(String path)
+    public static @NotNull String createFilePathWithoutTheFileName(@NotNull String path)
     {
         String separator = getDirectorySeparator();
         int lastIndexOfSlash = path.lastIndexOf(separator);
@@ -71,7 +72,7 @@ public class FileSystem {
         return path;
     }
     
-    public static String createFileNameFromFilePath(String path)
+    public static @NotNull String createFileNameFromFilePath(@NotNull String path)
     {
         String separator = getDirectorySeparator();
         int lastIndexOfSlash = path.lastIndexOf(separator);
@@ -90,7 +91,7 @@ public class FileSystem {
         return "";
     }
     
-    public static String createFilePathEndingWithExtension(String path, String extension)
+    public static @NotNull String createFilePathEndingWithExtension(@NotNull String path, @NotNull String extension)
     {
         if (!path.endsWith(extension))
         {
@@ -100,7 +101,7 @@ public class FileSystem {
         return path;
     }
     
-    public static List<File> getAllInDirectory(String path)
+    public static @NotNull List<File> getAllInDirectory(@NotNull String path)
     {
         ArrayList<File> files = new ArrayList<>();
         
@@ -123,19 +124,19 @@ public class FileSystem {
         return files;
     }
     
-    public static List<File> getAllFilesInDirectory(String path)
+    public static @NotNull List<File> getAllFilesInDirectory(@NotNull String path)
     {
         return getAllFilesInDirectory(path, new ArrayList<>());
     }
     
-    public static List<File> getAllFilesInDirectory(String path, String extension)
+    public static @NotNull List<File> getAllFilesInDirectory(@NotNull String path, @NotNull String extension)
     {
         ArrayList<String> extensions = new ArrayList<>();
         extensions.add(extension);
         return getAllFilesInDirectory(path, extensions);
     }
     
-    public static List<File> getAllFilesInDirectory(String path, List<String> extensions)
+    public static @NotNull List<File> getAllFilesInDirectory(@NotNull String path, @NotNull List<String> extensions)
     {
         ArrayList<File> files = new ArrayList<>();
         

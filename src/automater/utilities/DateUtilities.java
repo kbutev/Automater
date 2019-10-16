@@ -5,6 +5,7 @@
  */
 package automater.utilities;
 
+import com.sun.istack.internal.NotNull;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -22,37 +23,37 @@ public class DateUtilities {
     public static final SimpleDateFormat HMSMMFormatter = new SimpleDateFormat("HH:mm:ss.SSS");
     public static final SimpleDateFormat HMFormatter = new SimpleDateFormat("HH:mm");
     
-    public static String asStandartDate(Date date)
+    public static @NotNull String asStandartDate(@NotNull Date date)
     {
         return StandartFormatter.format(date);
     }
     
-    public static String asTimestamp(Date date)
+    public static @NotNull String asTimestamp(@NotNull Date date)
     {
         return TimestampFormatter.format(date);
     }
     
-    public static String asYearMonthDay(Date date)
+    public static @NotNull String asYearMonthDay(@NotNull Date date)
     {
         return YYYMMDDFormatter.format(date);
     }
     
-    public static String asMonthDay(Date date)
+    public static @NotNull String asMonthDay(@NotNull Date date)
     {
         return MMDDFormatter.format(date);
     }
     
-    public static String asHourMinuteSecond(Date date)
+    public static @NotNull String asHourMinuteSecond(@NotNull Date date)
     {
         return HMSFormatter.format(date);
     }
     
-    public static String asHourMinuteSecondMilisecond(Date date)
+    public static @NotNull String asHourMinuteSecondMilisecond(@NotNull Date date)
     {
         return HMSMMFormatter.format(date);
     }
     
-    public static String asHourMinute(Date date)
+    public static @NotNull String asHourMinute(@NotNull Date date)
     {
         return HMFormatter.format(date);
     }

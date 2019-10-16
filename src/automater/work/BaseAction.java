@@ -7,6 +7,8 @@ package automater.work;
 
 import automater.utilities.Description;
 import automater.work.model.BaseActionContext;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.io.Serializable;
 
 /**
@@ -27,7 +29,7 @@ public abstract class BaseAction implements Serializable, Description {
     public abstract long getPerformDuration();
     public abstract long getPerformEndTime();
     
-    public abstract Description getDescription();
+    public abstract @Nullable Description getDescription();
     
-    public abstract void perform(BaseActionContext context);
+    public abstract void perform(@NotNull BaseActionContext context);
 }

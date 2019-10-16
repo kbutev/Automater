@@ -9,6 +9,7 @@ import automater.utilities.Archiver;
 import automater.utilities.Errors;
 import automater.utilities.FileSystem;
 import automater.utilities.Logger;
+import com.sun.istack.internal.NotNull;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -22,9 +23,9 @@ import java.io.PrintWriter;
 public class PreferencesStorage {
     public static final String PREFERENCES_FILE = "preferences";
     
-    private final Object _lock = new Object();
+    @NotNull private final Object _lock = new Object();
     
-    private PreferencesStorageValues _values = PreferencesStorageValues.defaultValues();
+    @NotNull private PreferencesStorageValues _values = PreferencesStorageValues.defaultValues();
     
     public PreferencesStorage()
     {
@@ -33,7 +34,7 @@ public class PreferencesStorage {
     
     // # Properties
     
-    public PreferencesStorageValues getValues()
+    public @NotNull PreferencesStorageValues getValues()
     {
         synchronized (_lock)
         {
@@ -41,7 +42,7 @@ public class PreferencesStorage {
         }
     }
     
-    public void saveValues(PreferencesStorageValues values)
+    public void saveValues(@NotNull PreferencesStorageValues values)
     {
         Logger.messageEvent(this, "Save new preference values");
         
@@ -69,13 +70,13 @@ public class PreferencesStorage {
     
     // # Private
     
-    private String filePath()
+    private @NotNull String filePath()
     {
         String path = FileSystem.getLocalFilePath();
         return FileSystem.createFilePathWithBasePath(path, PREFERENCES_FILE);
     }
     
-    private File getFile() throws Exception
+    private @NotNull File getFile() throws Exception
     {
         File file = new File(filePath());
         return file;
@@ -116,7 +117,7 @@ public class PreferencesStorage {
         }
     }
     
-    private void writeToFile(File file) throws Exception
+    private void writeToFile(@NotNull File file) throws Exception
     {
         PreferencesStorageValues values;
         
@@ -137,7 +138,7 @@ public class PreferencesStorage {
         PreferencesStorage.writeToFile(file, data);
     }
     
-    private static void writeToFile(File file, String data) throws Exception
+    private static void writeToFile(@NotNull File file, @NotNull String data) throws Exception
     {
         PrintWriter writer = null;
         
@@ -164,7 +165,7 @@ public class PreferencesStorage {
         }
     }
     
-    private static String readFromFile(File file)
+    private static @NotNull String readFromFile(@NotNull File file)
     {
         String data = "";
         

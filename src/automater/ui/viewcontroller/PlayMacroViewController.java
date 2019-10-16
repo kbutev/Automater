@@ -18,6 +18,8 @@ import automater.utilities.DeviceTaskBar;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
 import automater.work.model.MacroParameters;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.awt.Frame;
 import java.awt.event.WindowEvent;
 import java.util.List;
@@ -28,14 +30,14 @@ import java.util.List;
  * @author Bytevi
  */
 public class PlayMacroViewController implements BaseViewController, BasePresenterDelegate {
-    private final PlayMacroPresenter _presenter;
+    @NotNull private final PlayMacroPresenter _presenter;
     
-    private final PlayMacroForm _form;
-    private PlayMacroOptionsDialog _optionsDialog;
+    @NotNull private final PlayMacroForm _form;
+    @Nullable private PlayMacroOptionsDialog _optionsDialog;
     
-    private StandardDescriptionsDataSource _dataSource;
+    @Nullable private StandardDescriptionsDataSource _dataSource;
     
-    private PreferencesStorageValues _currentPreferences = PreferencesStorageValues.defaultValues();
+    @NotNull private PreferencesStorageValues _currentPreferences = PreferencesStorageValues.defaultValues();
     
     public PlayMacroViewController(PlayMacroPresenter presenter)
     {
@@ -123,25 +125,25 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     }
 
     @Override
-    public void onActionsRecordedChange(List<Description> actions) 
+    public void onActionsRecordedChange(@NotNull List<Description> actions) 
     {
         
     }
 
     @Override
-    public void onRecordingSaved(String name, boolean success) 
+    public void onRecordingSaved(@NotNull String name, boolean success) 
     {
         
     }
 
     @Override
-    public void onLoadedMacrosFromStorage(List<Description> macros)
+    public void onLoadedMacrosFromStorage(@NotNull List<Description> macros)
     {
         
     }
 
     @Override
-    public void onLoadedMacroFromStorage(String macroName, String macroDescription, List<Description> macroActions)
+    public void onLoadedMacroFromStorage(@NotNull String macroName, @NotNull String macroDescription, @NotNull List<Description> macroActions)
     {
         _dataSource = StandardDescriptionsDataSource.createDataSourceForStandartText(macroActions);
         _form.setMacroInfo(macroName, macroDescription, _dataSource);
@@ -156,7 +158,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     }
     
     @Override
-    public void updatePlayStatus(automater.work.model.ExecutorProgress progress)
+    public void updatePlayStatus(@NotNull automater.work.model.ExecutorProgress progress)
     {
         _form.setProgressBarValue(progress.getPercentageDone());
         _form.setStatus(progress.getCurrentStatus());
@@ -182,7 +184,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     }
     
     @Override
-    public void onLoadedPreferencesFromStorage(PreferencesStorageValues values)
+    public void onLoadedPreferencesFromStorage(@NotNull PreferencesStorageValues values)
     {
         _currentPreferences = values;
         
@@ -190,25 +192,25 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     }
     
     @Override
-    public void onCreateMacroAction(automater.mutableaction.BaseMutableAction action)
+    public void onCreateMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
     {
         
     }
     
     @Override
-    public void onEditMacroAction(automater.mutableaction.BaseMutableAction action)
+    public void onEditMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
     {
         
     }
     
     @Override
-    public void onSaveMacroAction(automater.mutableaction.BaseMutableAction action)
+    public void onSaveMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
     {
         
     }
     
     @Override
-    public void onEditedMacroActions(List<Description> newMacroActions)
+    public void onEditedMacroActions(@NotNull List<Description> newMacroActions)
     {
         
     }
@@ -220,7 +222,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     }
 
     @Override
-    public void onErrorEncountered(Exception e)
+    public void onErrorEncountered(@NotNull Exception e)
     {
         Logger.error(this, "Error encountered: " + e.toString());
         
@@ -236,7 +238,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     
     // # Private
     
-    private void setMacroParametersDescription(MacroParameters parameters)
+    private void setMacroParametersDescription(@NotNull MacroParameters parameters)
     {
         _form.setMacroParametersDescription(parameters.toString());
     }
@@ -280,7 +282,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         _optionsDialog.setVisible(true);
     }
     
-    private PreferencesStorageValues getPreferenceValuesFromOptionsDialog()
+    private @NotNull PreferencesStorageValues getPreferenceValuesFromOptionsDialog()
     {
         PreferencesStorageValues values = PreferencesStorageValues.defaultValues();
         
@@ -304,7 +306,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         return values;
     }
     
-    private void saveOptionValues(PreferencesStorageValues values)
+    private void saveOptionValues(@NotNull PreferencesStorageValues values)
     {
         if (_optionsDialog != null)
         {

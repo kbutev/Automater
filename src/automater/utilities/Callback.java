@@ -5,6 +5,8 @@
  */
 package automater.utilities;
 
+import com.sun.istack.internal.Nullable;
+
 /**
  * A function callback that takes 1 parameter and returns no value.
  * 
@@ -13,7 +15,7 @@ package automater.utilities;
 public abstract class Callback<T> {
     abstract public void perform(T argument);
     
-    public static <C> Callback createDoNothing()
+    public static <C> @Nullable Callback createDoNothing()
     {
         return new Callback<C>() {
             @Override

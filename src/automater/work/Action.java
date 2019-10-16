@@ -31,6 +31,8 @@ import automater.input.InputScreenshot;
 import automater.input.InputSystemCommand;
 import automater.utilities.DeviceNotifications;
 import automater.utilities.FileSystem;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -49,17 +51,17 @@ import javax.imageio.ImageIO;
  * @author Bytevi
  */
 public class Action extends BaseAction {
-    public static Action createDoNothing(long timestamp)
+    public static @NotNull Action createDoNothing(long timestamp)
     {
         return new ActionDoNothing(timestamp);
     }
     
-    public static Action createWait(long timestamp, long milliseconds)
+    public static @NotNull Action createWait(long timestamp, long milliseconds)
     {
         return new ActionWait(timestamp, milliseconds);
     }
     
-    public static Action createKeyClick(long timestamp, InputKeyClick keyClick, Description description) throws Exception
+    public static @NotNull Action createKeyClick(long timestamp, @NotNull InputKeyClick keyClick, @Nullable Description description) throws Exception
     {
         boolean isMouseClick = false;
         InputKeyValue key = keyClick.getKeyValue().value;
@@ -89,29 +91,29 @@ public class Action extends BaseAction {
         return new ActionKeyRelease(timestamp, keyClick, description);
     }
     
-    public static Action createMouseMovement(long timestamp, int x, int y, Description description) throws Exception
+    public static @NotNull Action createMouseMovement(long timestamp, int x, int y, @Nullable Description description) throws Exception
     {
         return new ActionMouseMove(timestamp, x, y, description);
     }
     
-    public static Action createMouseMovement(long timestamp, List<InputMouseMove> mouseMovements, Description description) throws Exception
+    public static @NotNull Action createMouseMovement(long timestamp, @NotNull List<InputMouseMove> mouseMovements, @Nullable Description description) throws Exception
     {
         int maxNumberOfSubmovements = ActionSettingsManager.getDefault().getMaxNumberOfSubmovements();
         
         return new ActionMouseMovement(timestamp, mouseMovements, maxNumberOfSubmovements, description);
     }
     
-    public static Action createMouseWheel(long timestamp, int scrollValue, Description description) throws Exception
+    public static @NotNull Action createMouseWheel(long timestamp, int scrollValue, @Nullable Description description) throws Exception
     {
         return new ActionMouseWheel(timestamp, scrollValue, description);
     }
     
-    public static Action createSystemCommand(long timestamp, String value, boolean reportsErrors, Description description) throws Exception
+    public static @NotNull Action createSystemCommand(long timestamp, @NotNull String value, boolean reportsErrors, @Nullable Description description) throws Exception
     {
         return new ActionSystemCommand(timestamp, value, reportsErrors, description);
     }
     
-    public static Action createScreenshot(long timestamp, String path, Description description) throws Exception
+    public static @NotNull Action createScreenshot(long timestamp, @NotNull String path, @Nullable Description description) throws Exception
     {
         return new ActionScreenshot(timestamp, path, description);
     }
@@ -148,13 +150,13 @@ public class Action extends BaseAction {
     }
     
     @Override
-    public Description getDescription()
+    public @Nullable Description getDescription()
     {
         return this;
     }
     
     @Override
-    public void perform(BaseActionContext context)
+    public void perform(@NotNull BaseActionContext context)
     {
         Errors.throwNotImplemented("Action perform method has not been implemented!");
     }
@@ -192,7 +194,7 @@ public class Action extends BaseAction {
 
 class ActionDoNothing extends Action implements InputDoNothing {
     long time;
-    Description description;
+    @NotNull Description description;
     
     ActionDoNothing(long time)
     {
@@ -236,7 +238,7 @@ class ActionDoNothing extends Action implements InputDoNothing {
 class ActionWait extends Action implements InputDoNothing {
     long time;
     long wait;
-    Description description;
+    @NotNull Description description;
     
     ActionWait(long time, long wait)
     {
@@ -258,7 +260,7 @@ class ActionWait extends Action implements InputDoNothing {
     }
     
     @Override
-    public void perform(BaseActionContext context)
+    public void perform(@NotNull BaseActionContext context)
     {
         double waitTime = wait;
         waitTime /= context.getTimer().getTimeScale();
@@ -295,14 +297,14 @@ class ActionWait extends Action implements InputDoNothing {
 
 class ActionKeyPress extends Action implements InputKeyClick {
     long time;
-    InputKey inputKey;
-    ActionSystemKey key;
-    ActionSystemKeyModifiers modifiers;
+    @NotNull InputKey inputKey;
+    @NotNull ActionSystemKey key;
+    @NotNull ActionSystemKeyModifiers modifiers;
     
-    String standartDescription;
-    String verboseDescription;
+    @Nullable String standartDescription;
+    @Nullable String verboseDescription;
     
-    ActionKeyPress(long time, InputKeyClick keyClick, Description description) throws Exception
+    ActionKeyPress(long time, @NotNull InputKeyClick keyClick, @Nullable Description description) throws Exception
     {
         this.time = time;
         this.inputKey = keyClick.getKeyValue();
@@ -323,7 +325,7 @@ class ActionKeyPress extends Action implements InputKeyClick {
     }
     
     @Override
-    public void perform(BaseActionContext context)
+    public void perform(@NotNull BaseActionContext context)
     {
         Robot robot = context.getRobot();
         
@@ -382,14 +384,14 @@ class ActionKeyPress extends Action implements InputKeyClick {
 
 class ActionKeyRelease extends Action implements InputKeyClick {
     long time;
-    InputKey inputKey;
-    ActionSystemKey key;
-    ActionSystemKeyModifiers modifiers;
+    @NotNull InputKey inputKey;
+    @NotNull ActionSystemKey key;
+    @NotNull ActionSystemKeyModifiers modifiers;
     
-    String standartDescription;
-    String verboseDescription;
+    @Nullable String standartDescription;
+    @Nullable String verboseDescription;
     
-    ActionKeyRelease(long time, InputKeyClick keyClick, Description description) throws Exception
+    ActionKeyRelease(long time, @NotNull InputKeyClick keyClick, @Nullable Description description) throws Exception
     {
         this.time = time;
         this.inputKey = keyClick.getKeyValue();
@@ -410,7 +412,7 @@ class ActionKeyRelease extends Action implements InputKeyClick {
     }
     
     @Override
-    public void perform(BaseActionContext context)
+    public void perform(@NotNull BaseActionContext context)
     {
         Robot robot = context.getRobot();
         
@@ -468,14 +470,14 @@ class ActionKeyRelease extends Action implements InputKeyClick {
 }
 
 class ActionMouseKeyPress extends ActionKeyPress implements InputMouse {
-    ActionMouseKeyPress(long time, InputKeyClick keyClick, Description description) throws Exception
+    ActionMouseKeyPress(long time, @NotNull InputKeyClick keyClick, @Nullable Description description) throws Exception
     {
         super(time, keyClick, description);
     }
 }
 
 class ActionMouseKeyRelease extends ActionKeyRelease implements InputMouse {
-    ActionMouseKeyRelease(long time, InputKeyClick keyClick, Description description) throws Exception
+    ActionMouseKeyRelease(long time, @NotNull InputKeyClick keyClick, @Nullable Description description) throws Exception
     {
         super(time, keyClick, description);
     }
@@ -486,10 +488,10 @@ class ActionMouseMove extends Action implements InputMouseMove {
     final int x;
     final int y;
     
-    String standartDescription;
-    String verboseDescription;
+    @Nullable String standartDescription;
+    @Nullable String verboseDescription;
     
-    ActionMouseMove(long time, int x, int y, Description description)
+    ActionMouseMove(long time, int x, int y, @Nullable Description description)
     {
         this.time = time;
         this.x = x > 0 ? x : 0;
@@ -515,7 +517,7 @@ class ActionMouseMove extends Action implements InputMouseMove {
     }
     
     @Override
-    public void perform(BaseActionContext context)
+    public void perform(@NotNull BaseActionContext context)
     {
         float screenScaleX = context.getCurrentScreenSize().width;
         screenScaleX /= context.getRecordedScreenSize().width;
@@ -557,14 +559,14 @@ class ActionMouseMove extends Action implements InputMouseMove {
 class ActionMouseMovement extends Action implements InputMouseMotion {
     final long time;
     final long duration;
-    final List<InputMouseMove> movements;
-    final List<BaseAction> actions;
+    @NotNull final List<InputMouseMove> movements;
+    @NotNull final List<BaseAction> actions;
     final int maxNumberOfSubmovements;
     
-    String standartDescription;
-    String verboseDescription;
+    @Nullable String standartDescription;
+    @Nullable String verboseDescription;
     
-    ActionMouseMovement(long time, List<InputMouseMove> movements, int maxNumberOfSubmovements, Description description)
+    ActionMouseMovement(long time, @NotNull List<InputMouseMove> movements, int maxNumberOfSubmovements, @Nullable Description description)
     {
         this.time = time;
         this.movements = movements;
@@ -605,7 +607,7 @@ class ActionMouseMovement extends Action implements InputMouseMotion {
     }
     
     @Override
-    public void perform(BaseActionContext context)
+    public void perform(@NotNull BaseActionContext context)
     {
         Logger.messageEvent(this, "Performing mouse motion action with " + String.valueOf(actions.size()) + " movements...");
         
@@ -649,22 +651,22 @@ class ActionMouseMovement extends Action implements InputMouseMotion {
     }
     
     @Override
-    public List<InputMouseMove> getMoves() {
+    public @NotNull List<InputMouseMove> getMoves() {
         return CollectionUtilities.copyAsImmutable(movements);
     }
 
     @Override
-    public InputMouseMove getFirstMove() {
+    public @NotNull InputMouseMove getFirstMove() {
         return movements.get(0);
     }
 
     @Override
-    public InputMouseMove getLastMove() {
+    public @NotNull InputMouseMove getLastMove() {
         return movements.get(movements.size()-1);
     }
 
     @Override
-    public InputMouseMove getMoveAt(int index) {
+    public @NotNull InputMouseMove getMoveAt(int index) {
         return movements.get(index);
     }
 
@@ -673,7 +675,7 @@ class ActionMouseMovement extends Action implements InputMouseMotion {
         return time;
     }
     
-    private ArrayList<BaseAction> parseMouseMoveActions(List<InputMouseMove> movements)
+    private @NotNull ArrayList<BaseAction> parseMouseMoveActions(@NotNull List<InputMouseMove> movements)
     {
         final int size = movements.size();
         
@@ -697,7 +699,7 @@ class ActionMouseMovement extends Action implements InputMouseMotion {
         return result;
     }
     
-    private ArrayList<BaseAction> parseMouseMoveAction(InputMouseMove current, InputMouseMove next)
+    private @NotNull ArrayList<BaseAction> parseMouseMoveAction(@NotNull InputMouseMove current, @Nullable InputMouseMove next)
     {
         ArrayList<BaseAction> result = new ArrayList<>();
         
@@ -763,10 +765,10 @@ class ActionMouseWheel extends Action implements InputMouseWheel {
     final long time;
     final int scrollValue;
     
-    String standartDescription;
-    String verboseDescription;
+    @Nullable String standartDescription;
+    @Nullable String verboseDescription;
     
-    ActionMouseWheel(long time, int scrollValue, Description description)
+    ActionMouseWheel(long time, int scrollValue, @Nullable Description description)
     {
         this.time = time;
         this.scrollValue = scrollValue;
@@ -791,7 +793,7 @@ class ActionMouseWheel extends Action implements InputMouseWheel {
     }
     
     @Override
-    public void perform(BaseActionContext context)
+    public void perform(@NotNull BaseActionContext context)
     {
         int amount = convertScrollWheelValueToRobotWheelValue(scrollValue);
         context.getRobot().mouseWheel(amount);
@@ -826,13 +828,13 @@ class ActionMouseWheel extends Action implements InputMouseWheel {
 class ActionSystemCommand extends Action implements InputSystemCommand {
     final long time;
     
-    final String value;
+    @NotNull final String value;
     final boolean reportsErrors;
     
-    String standartDescription;
-    String verboseDescription;
+    @Nullable String standartDescription;
+    @Nullable String verboseDescription;
     
-    ActionSystemCommand(long time, String value, boolean reportsErrors, Description description)
+    ActionSystemCommand(long time, @NotNull String value, boolean reportsErrors, @Nullable Description description)
     {
         this.time = time;
         this.value = value;
@@ -858,7 +860,7 @@ class ActionSystemCommand extends Action implements InputSystemCommand {
     }
     
     @Override
-    public void perform(BaseActionContext context)
+    public void perform(@NotNull BaseActionContext context)
     {
         try {
             Runtime.getRuntime().exec(value);
@@ -905,16 +907,16 @@ class ActionScreenshot extends Action implements InputScreenshot {
     static final String secPlaceholder = "%s";
     static final String msPlaceholder = "%ms";
     
-    static final String timestampPlaceholder = "%t";
+    @NotNull static final String timestampPlaceholder = "%t";
     
     final long time;
     
-    final String screenshotPath;
+    @NotNull final String screenshotPath;
     
-    String standartDescription;
-    String verboseDescription;
+    @Nullable String standartDescription;
+    @Nullable String verboseDescription;
     
-    ActionScreenshot(long time, String path, Description description)
+    ActionScreenshot(long time, @NotNull String path, @Nullable Description description)
     {
         this.time = time;
         this.screenshotPath = path;
@@ -939,7 +941,7 @@ class ActionScreenshot extends Action implements InputScreenshot {
     }
     
     @Override
-    public void perform(BaseActionContext context)
+    public void perform(@NotNull BaseActionContext context)
     {
         Dimension screen = context.getCurrentScreenSize();
         Rectangle fullScreenArea = new Rectangle(0, 0, screen.width, screen.height);
@@ -977,11 +979,11 @@ class ActionScreenshot extends Action implements InputScreenshot {
     }
 
     @Override
-    public Rectangle getArea() {
+    public @NotNull Rectangle getArea() {
         return new Rectangle();
     }
     
-    private String evaluatePath(String path, BaseActionContext context) {
+    private String evaluatePath(@NotNull String path, @NotNull BaseActionContext context) {
         // Make sure that the path is OK
         path = FileSystem.createFilePathEndingWithExtension(path, ".jpg");
         
@@ -1045,7 +1047,7 @@ class ActionScreenshot extends Action implements InputScreenshot {
         return path;
     }
     
-    private void createFolderForScreenshot(String folderPath) throws Exception
+    private void createFolderForScreenshot(@NotNull String folderPath) throws Exception
     {
         File directory = new File(folderPath);
         

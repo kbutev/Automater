@@ -5,6 +5,8 @@
  */
 package automater.utilities;
 
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import javax.swing.SwingUtilities;
 
 /**
@@ -22,7 +24,7 @@ public class LooperSwing {
         
     }
 
-    synchronized public static LooperSwing getShared()
+    synchronized public static @NotNull LooperSwing getShared()
     {
         if (singleton == null)
         {
@@ -32,7 +34,7 @@ public class LooperSwing {
         return singleton;
     }
     
-    public void performCallback(final SimpleCallback callback)
+    public void performCallback(@NotNull final SimpleCallback callback)
     {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -42,7 +44,7 @@ public class LooperSwing {
         });
     }
     
-    public <T> void performCallback(final Callback<T> callback, final T parameter)
+    public <T> void performCallback(@NotNull final Callback<T> callback, @Nullable final T parameter)
     {
         SwingUtilities.invokeLater(new Runnable() {
             @Override

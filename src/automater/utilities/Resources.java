@@ -5,6 +5,8 @@
  */
 package automater.utilities;
 
+import com.sun.istack.internal.NotNull;
+
 /**
  * Collection of resource utility methods and some resource constant values.
  * 
@@ -18,14 +20,14 @@ public class Resources {
     public final static String JPG_EXTENSION = "jpg";
     public final static String JPEG_EXTENSION = "jpeg";
     
-    public static String getImagePath(String key)
+    public static @NotNull String getImagePath(@NotNull String key)
     {
         String file = addImageExtensionIfNecessary(key);
         
         return FileSystem.createFilePathWithBasePath(RESOURCES_DIRECTORY_PATH, file);
     }
     
-    private static String addImageExtensionIfNecessary(String key)
+    private static @NotNull String addImageExtensionIfNecessary(@NotNull String key)
     {
         if (containsImageExtension(key))
         {
@@ -35,7 +37,7 @@ public class Resources {
         return key + "." + DEFAULT_IMAGE_EXTENSION;
     }
     
-    private static boolean containsImageExtension(String key)
+    private static boolean containsImageExtension(@NotNull String key)
     {
         return key.contains("." + DEFAULT_IMAGE_EXTENSION) || 
                 key.contains("." + PNG_EXTENSION) ||

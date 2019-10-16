@@ -18,7 +18,8 @@ import automater.utilities.SimpleCallback;
 import java.awt.event.WindowEvent;
 import java.util.List;
 import automater.utilities.Description;
-import java.util.ArrayList;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 /**
  * Record macro screen.
@@ -26,11 +27,11 @@ import java.util.ArrayList;
  * @author Bytevi
  */
 public class RecordMacroViewController implements BaseViewController, BasePresenterDelegate {
-    private final RecordMacroPresenter _presenter;
+    @NotNull private final RecordMacroPresenter _presenter;
     
-    private final RecordMacroForm _form;
+    @NotNull private final RecordMacroForm _form;
     
-    private StandardDescriptionsDataSource _dataSource;
+    @Nullable private StandardDescriptionsDataSource _dataSource;
     
     public RecordMacroViewController(RecordMacroPresenter presenter)
     {
@@ -116,14 +117,14 @@ public class RecordMacroViewController implements BaseViewController, BasePresen
     }
     
     @Override
-    public void onActionsRecordedChange(List<Description> actions)
+    public void onActionsRecordedChange(@NotNull List<Description> actions)
     {
         _dataSource = StandardDescriptionsDataSource.createDataSourceForStandartText(actions);
         _form.setListDataSource(_dataSource);
     }
     
     @Override
-    public void onRecordingSaved(String name, boolean success)
+    public void onRecordingSaved(@NotNull String name, boolean success)
     {
         if (!success) {
             return;
@@ -143,13 +144,13 @@ public class RecordMacroViewController implements BaseViewController, BasePresen
     }
     
     @Override
-    public void onLoadedMacrosFromStorage(List<Description> macros)
+    public void onLoadedMacrosFromStorage(@NotNull List<Description> macros)
     {
         
     }
     
     @Override
-    public void onLoadedMacroFromStorage(String macroName, String macroDescription, List<Description> macroActions)
+    public void onLoadedMacroFromStorage(@NotNull String macroName, @NotNull String macroDescription, @NotNull List<Description> macroActions)
     {
         
     }
@@ -161,7 +162,7 @@ public class RecordMacroViewController implements BaseViewController, BasePresen
     }
     
     @Override
-    public void updatePlayStatus(automater.work.model.ExecutorProgress progress)
+    public void updatePlayStatus(@NotNull automater.work.model.ExecutorProgress progress)
     {
         
     }
@@ -179,31 +180,31 @@ public class RecordMacroViewController implements BaseViewController, BasePresen
     }
     
     @Override
-    public void onLoadedPreferencesFromStorage(PreferencesStorageValues values)
+    public void onLoadedPreferencesFromStorage(@NotNull PreferencesStorageValues values)
     {
         
     }
     
     @Override
-    public void onCreateMacroAction(automater.mutableaction.BaseMutableAction action)
+    public void onCreateMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
     {
         
     }
     
     @Override
-    public void onEditMacroAction(automater.mutableaction.BaseMutableAction action)
+    public void onEditMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
     {
         
     }
     
     @Override
-    public void onSaveMacroAction(automater.mutableaction.BaseMutableAction action)
+    public void onSaveMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
     {
         
     }
     
     @Override
-    public void onEditedMacroActions(List<Description> newMacroActions)
+    public void onEditedMacroActions(@NotNull List<Description> newMacroActions)
     {
         
     }
@@ -215,7 +216,7 @@ public class RecordMacroViewController implements BaseViewController, BasePresen
     }
     
     @Override
-    public void onErrorEncountered(Exception e)
+    public void onErrorEncountered(@NotNull Exception e)
     {
         Logger.error(this, "Error encountered: " + e.toString());
         

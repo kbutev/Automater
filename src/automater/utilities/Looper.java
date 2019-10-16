@@ -5,6 +5,8 @@
  */
 package automater.utilities;
 
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -26,10 +28,10 @@ public class Looper {
 
     private static Looper singleton;
     
-    private final ClientsManager _clientsManager = new ClientsManager();
-    private final CallbacksManager _callbacksManager = new CallbacksManager();
+    @NotNull private final ClientsManager _clientsManager = new ClientsManager();
+    @NotNull private final CallbacksManager _callbacksManager = new CallbacksManager();
     
-    private final Runnable _looperRunnable = new Runnable() {
+    @NotNull private final Runnable _looperRunnable = new Runnable() {
         public void run()
         {
             loop();
@@ -37,10 +39,10 @@ public class Looper {
         }
     };
     
-    private final ScheduledThreadPoolExecutor _looperExecutor = new ScheduledThreadPoolExecutor(1);
+    @NotNull private final ScheduledThreadPoolExecutor _looperExecutor = new ScheduledThreadPoolExecutor(1);
     
-    private final Object _syncWaitLock = new Object();
-    private final ArrayList<Thread> _syncWaitingThreads = new ArrayList<>();
+    @NotNull private final Object _syncWaitLock = new Object();
+    @NotNull private final ArrayList<Thread> _syncWaitingThreads = new ArrayList<>();
     
     private Looper()
     {
@@ -49,7 +51,7 @@ public class Looper {
     
     // # Public
 
-    synchronized public static Looper getShared()
+    synchronized public static @NotNull Looper getShared()
     {
         if (singleton == null)
         {
@@ -59,34 +61,34 @@ public class Looper {
         return singleton;
     }
     
-    public void subscribe(final LooperClient client, int delay)
+    public void subscribe(@NotNull final LooperClient client, int delay)
     {
         _clientsManager.subscribe(client, delay);
     }
 
-    public void subscribe(final LooperClient client)
+    public void subscribe(@NotNull final LooperClient client)
     {
         subscribe(client, 0);
     }
 
-    public void unsubscribe(final LooperClient client)
+    public void unsubscribe(@NotNull final LooperClient client)
     {
         _clientsManager.unsubscribe(client);
     }
     
-    public void performSyncCallbackInBackground(final SimpleCallback callback)
+    public void performSyncCallbackInBackground(@NotNull final SimpleCallback callback)
     {
         _callbacksManager.queueCallback(callback);
         enterSyncWaitLock();
     }
     
-    public <T> void performSyncCallbackInBackground(final Callback<T> callback, final T parameter)
+    public <T> void performSyncCallbackInBackground(@NotNull final Callback<T> callback, @Nullable final T parameter)
     {
         _callbacksManager.queueCallback(callback, parameter);
         enterSyncWaitLock();
     }
     
-    public void performSyncCallbackOnAWTQueue(final SimpleCallback callback)
+    public void performSyncCallbackOnAWTQueue(@NotNull final SimpleCallback callback)
     {
         if (java.awt.EventQueue.isDispatchThread())
         {
@@ -106,7 +108,7 @@ public class Looper {
         }
     }
     
-    public <T> void performSyncCallbackOnAWTQueue(final Callback<T> callback, final T parameter)
+    public <T> void performSyncCallbackOnAWTQueue(@NotNull final Callback<T> callback, @Nullable final T parameter)
     {
         if (java.awt.EventQueue.isDispatchThread())
         {
@@ -126,17 +128,17 @@ public class Looper {
         }
     }
     
-    public void performAsyncCallbackInBackground(final SimpleCallback callback)
+    public void performAsyncCallbackInBackground(@NotNull final SimpleCallback callback)
     {
         _callbacksManager.queueCallback(callback);
     }
     
-    public <T> void performAsyncCallbackInBackground(final Callback<T> callback, final T parameter)
+    public <T> void performAsyncCallbackInBackground(@NotNull final Callback<T> callback, @Nullable final T parameter)
     {
         _callbacksManager.queueCallback(callback, parameter);
     }
     
-    public void performAsyncCallbackOnAWTQueue(final SimpleCallback callback)
+    public void performAsyncCallbackOnAWTQueue(@NotNull final SimpleCallback callback)
     {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -145,7 +147,7 @@ public class Looper {
         });
     }
     
-    public <T> void performAsyncCallbackOnAWTQueue(final Callback<T> callback, final T parameter)
+    public <T> void performAsyncCallbackOnAWTQueue(@NotNull final Callback<T> callback, @Nullable final T parameter)
     {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -200,11 +202,11 @@ public class Looper {
     
     class ClientsManager 
     {
-        private HashSet<LooperClientSubscription> _subscriptions = new HashSet<>();
+        @NotNull private HashSet<LooperClientSubscription> _subscriptions = new HashSet<>();
         
-        private final Object _mainLock = new Object();
+        @NotNull private final Object _mainLock = new Object();
         
-        private void subscribe(final LooperClient client, int delay)
+        private void subscribe(@NotNull final LooperClient client, int delay)
         {
             synchronized (_mainLock)
             {
@@ -212,7 +214,7 @@ public class Looper {
             }
         }
 
-        private void unsubscribe(final LooperClient client)
+        private void unsubscribe(@NotNull final LooperClient client)
         {
             synchronized (_mainLock)
             {
@@ -253,11 +255,11 @@ public class Looper {
     }
     
     class CallbacksManager {
-        private ArrayList<LooperCallback> _callbacks = new ArrayList();
+        @NotNull private final Object _mainLock = new Object();
         
-        private final Object _mainLock = new Object();
+        @NotNull private ArrayList<LooperCallback> _callbacks = new ArrayList();
         
-        private void queueCallback(SimpleCallback callback)
+        private void queueCallback(@NotNull SimpleCallback callback)
         {
             synchronized (_mainLock)
             {
@@ -265,7 +267,7 @@ public class Looper {
             }
         }
         
-        private <T> void queueCallback(Callback<T> callback, T parameter)
+        private <T> void queueCallback(@NotNull Callback<T> callback, @NotNull T parameter)
         {
             synchronized (_mainLock)
             {
@@ -313,12 +315,12 @@ public class Looper {
 }
 
 class LooperClientSubscription {
-    public final LooperClient client;
+    @NotNull public final LooperClient client;
     
-    private final int _timer;
+    @NotNull private final int _timer;
     private int _currentTimer;
     
-    LooperClientSubscription(LooperClient client, int timer)
+    LooperClientSubscription(@NotNull LooperClient client, int timer)
     {
         this.client = client;
         this._timer = timer;
@@ -348,18 +350,18 @@ class LooperClientSubscription {
 }
 
 class LooperCallback <T> {
-    public final SimpleCallback callback;
-    public final Callback<T> callbackWithParameter;
-    public final T parameter;
+    @NotNull public final SimpleCallback callback;
+    @NotNull public final Callback<T> callbackWithParameter;
+    @Nullable public final T parameter;
         
-    LooperCallback(SimpleCallback callback)
+    LooperCallback(@NotNull SimpleCallback callback)
     {
         this.callback = callback;
         this.callbackWithParameter = null;
         this.parameter = null;
     }
     
-    LooperCallback(Callback<T> callback, T parameter)
+    LooperCallback(@NotNull Callback<T> callback, @Nullable T parameter)
     {
         this.callback = null;
         this.callbackWithParameter = callback;

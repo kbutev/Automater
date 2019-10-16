@@ -7,6 +7,7 @@ package automater.recorder.parser;
 
 import automater.input.InputKey;
 import automater.input.InputKeyValue;
+import com.sun.istack.internal.NotNull;
 import org.jnativehook.mouse.NativeMouseEvent;
 
 /**
@@ -15,14 +16,14 @@ import org.jnativehook.mouse.NativeMouseEvent;
  * @author Bytevi
  */
 public class RecorderSystemMouseTranslator {
-    private final RecorderSystemKeyboardTranslator keyboardTranslator;
+    @NotNull private final RecorderSystemKeyboardTranslator keyboardTranslator;
     
-    public RecorderSystemMouseTranslator(RecorderSystemKeyboardTranslator keyboardTranslator)
+    public RecorderSystemMouseTranslator(@NotNull RecorderSystemKeyboardTranslator keyboardTranslator)
     {
         this.keyboardTranslator = keyboardTranslator;
     }
     
-    public InputKey translate(NativeMouseEvent keyEvent)
+    public @NotNull InputKey translate(@NotNull NativeMouseEvent keyEvent)
     {
         int mouseKeyValue = keyEvent.getButton();
         

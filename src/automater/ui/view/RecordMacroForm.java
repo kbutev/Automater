@@ -10,6 +10,7 @@ import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
+import com.sun.istack.internal.NotNull;
 
 /**
  *
@@ -290,7 +291,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
         return macroDescriptionField.getText();
     }
     
-    public void setListDataSource(StandardDescriptionsDataSource dataSource)
+    public void setListDataSource(@NotNull StandardDescriptionsDataSource dataSource)
     {
         macroActionsList.setModel(dataSource);
     }
@@ -330,7 +331,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
         
     }
     
-    public void displayError(String title, String message)
+    public void displayError(@NotNull String title, @NotNull String message)
     {
         AlertWindows.showErrorMessage(getParent(), title, message, "Ok");
     }

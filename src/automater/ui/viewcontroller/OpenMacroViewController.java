@@ -18,6 +18,8 @@ import automater.utilities.SimpleCallback;
 import java.awt.event.WindowEvent;
 import java.util.List;
 import automater.utilities.Description;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 /**
  * Open macro screen.
@@ -25,11 +27,11 @@ import automater.utilities.Description;
  * @author Bytevi
  */
 public class OpenMacroViewController implements BaseViewController, BasePresenterDelegate {
-    private final OpenMacroPresenter _presenter;
+    @NotNull private final OpenMacroPresenter _presenter;
     
-    private OpenMacroForm _form;
+    @NotNull private OpenMacroForm _form;
     
-    private StandardDescriptionsDataSource _dataSource;
+    @Nullable private StandardDescriptionsDataSource _dataSource;
     
     public OpenMacroViewController(OpenMacroPresenter presenter)
     {
@@ -131,26 +133,26 @@ public class OpenMacroViewController implements BaseViewController, BasePresente
     }
     
     @Override
-    public void onActionsRecordedChange(List<Description> actions)
+    public void onActionsRecordedChange(@NotNull List<Description> actions)
     {
     
     }
     
     @Override
-    public void onRecordingSaved(String name, boolean success)
+    public void onRecordingSaved(@NotNull String name, boolean success)
     {
         
     }
     
     @Override
-    public void onLoadedMacrosFromStorage(List<Description> macros)
+    public void onLoadedMacrosFromStorage(@NotNull List<Description> macros)
     {
         _dataSource = StandardDescriptionsDataSource.createDataSourceForStandartText(macros);
         _form.setListDataSource(_dataSource);
     }
     
     @Override
-    public void onLoadedMacroFromStorage(String macroName, String macroDescription, List<Description> macroActions)
+    public void onLoadedMacroFromStorage(@NotNull String macroName, @NotNull String macroDescription, @NotNull List<Description> macroActions)
     {
         
     }
@@ -162,7 +164,7 @@ public class OpenMacroViewController implements BaseViewController, BasePresente
     }
     
     @Override
-    public void updatePlayStatus(automater.work.model.ExecutorProgress progress)
+    public void updatePlayStatus(@NotNull automater.work.model.ExecutorProgress progress)
     {
         
     }
@@ -180,31 +182,31 @@ public class OpenMacroViewController implements BaseViewController, BasePresente
     }
     
     @Override
-    public void onLoadedPreferencesFromStorage(PreferencesStorageValues values)
+    public void onLoadedPreferencesFromStorage(@NotNull PreferencesStorageValues values)
     {
         
     }
     
     @Override
-    public void onCreateMacroAction(automater.mutableaction.BaseMutableAction action)
+    public void onCreateMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
     {
         
     }
     
     @Override
-    public void onEditMacroAction(automater.mutableaction.BaseMutableAction action)
+    public void onEditMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
     {
         
     }
     
     @Override
-    public void onSaveMacroAction(automater.mutableaction.BaseMutableAction action)
+    public void onSaveMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
     {
         
     }
     
     @Override
-    public void onEditedMacroActions(List<Description> newMacroActions)
+    public void onEditedMacroActions(@NotNull List<Description> newMacroActions)
     {
         
     }
@@ -216,7 +218,7 @@ public class OpenMacroViewController implements BaseViewController, BasePresente
     }
     
     @Override
-    public void onErrorEncountered(Exception e)
+    public void onErrorEncountered(@NotNull Exception e)
     {
         Logger.error(this, "Error encountered: " + e.toString());
     }

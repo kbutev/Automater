@@ -5,6 +5,8 @@
  */
 package automater.utilities;
 
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import javax.swing.JFrame;
 import org.bridj.Pointer;
 import org.bridj.cpp.com.COMRuntime;
@@ -21,11 +23,11 @@ public class DeviceTaskBar {
     
     private static DeviceTaskBar singleton;
     
-    private final Object _lock = new Object();
+    @NotNull private final Object _lock = new Object();
     
     private final boolean _active;
-    private ITaskbarList3 _item;
-    private Pointer<?> _progressPointer;
+    @Nullable private ITaskbarList3 _item;
+    @Nullable private Pointer<?> _progressPointer;
     
     private DeviceTaskBar()
     {
@@ -41,7 +43,7 @@ public class DeviceTaskBar {
         _active = (_item != null);
     }
 
-    synchronized public static DeviceTaskBar getShared()
+    synchronized public static @Nullable DeviceTaskBar getShared()
     {
         if (singleton == null)
         {
@@ -51,7 +53,7 @@ public class DeviceTaskBar {
         return singleton;
     }
     
-    public void setAppTaskBarProgress(JFrame frame, double progress)
+    public void setAppTaskBarProgress(@NotNull JFrame frame, double progress)
     {
         if (!_active)
         {
@@ -78,7 +80,7 @@ public class DeviceTaskBar {
         }
     }
     
-    public void resetAppTaskBarProgress(JFrame frame)
+    public void resetAppTaskBarProgress(@NotNull JFrame frame)
     {
         if (!_active)
         {

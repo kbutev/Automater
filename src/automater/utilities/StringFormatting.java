@@ -5,29 +5,51 @@
  */
 package automater.utilities;
 
+import com.sun.istack.internal.Nullable;
+
 /**
  * Defines commonly used string methods used to parse various values.
  *
  * @author Bytevi
  */
 public class StringFormatting {
-    public static boolean isStringAlphabetic(String string)
+    public static boolean isStringAlphabetic(@Nullable String string)
     {
+        if (string == null)
+        {
+            return false;
+        }
+        
         return string.matches("[A-Za-z]+");
     }
     
-    public static boolean isStringNumeric(String string)
+    public static boolean isStringNumeric(@Nullable String string)
     {
+        if (string == null)
+        {
+            return false;
+        }
+        
         return string.matches("[0-9]+");
     }
     
-    public static boolean isStringAlphanumeric(String string)
+    public static boolean isStringAlphanumeric(@Nullable String string)
     {
+        if (string == null)
+        {
+            return false;
+        }
+        
         return string.matches("[A-Za-z0-9]+");
     }
     
-    public static boolean isStringANumber(String string)
+    public static boolean isStringANumber(@Nullable String string)
     {
+        if (string == null)
+        {
+            return false;
+        }
+        
         try {  
             Double.parseDouble(string); 
             return true;
@@ -36,8 +58,13 @@ public class StringFormatting {
         }  
     }
     
-    public static boolean isStringAnInt(String string)
+    public static boolean isStringAnInt(@Nullable String string)
     {
+        if (string == null)
+        {
+            return false;
+        }
+        
         try {  
             Integer.parseInt(string); 
             return true;
@@ -46,8 +73,13 @@ public class StringFormatting {
         }  
     }
     
-    public static boolean isStringAPositiveInt(String string)
+    public static boolean isStringAPositiveInt(@Nullable String string)
     {
+        if (string == null)
+        {
+            return false;
+        }
+        
         try {  
             return Integer.parseInt(string) > 0;
         } catch (NumberFormatException e){  
@@ -55,8 +87,13 @@ public class StringFormatting {
         }  
     }
     
-    public static boolean isStringANonNegativeInt(String string)
+    public static boolean isStringANonNegativeInt(@Nullable String string)
     {
+        if (string == null)
+        {
+            return false;
+        }
+        
         try {  
             return Integer.parseInt(string) >= 0; 
         } catch (NumberFormatException e){  
@@ -64,8 +101,13 @@ public class StringFormatting {
         }  
     }
     
-    public static boolean isStringADouble(String string)
+    public static boolean isStringADouble(@Nullable String string)
     {
+        if (string == null)
+        {
+            return false;
+        }
+        
         try {  
             Double.parseDouble(string);
             return true;
@@ -74,8 +116,13 @@ public class StringFormatting {
         }  
     }
     
-    public static boolean isStringAPositiveDouble(String string)
+    public static boolean isStringAPositiveDouble(@Nullable String string)
     {
+        if (string == null)
+        {
+            return false;
+        }
+        
         try {  
             return Double.parseDouble(string) > 0; 
         } catch (NumberFormatException e){  
@@ -83,8 +130,13 @@ public class StringFormatting {
         }  
     }
     
-    public static boolean isStringANonNegativeDouble(String string)
+    public static boolean isStringANonNegativeDouble(@Nullable String string)
     {
+        if (string == null)
+        {
+            return false;
+        }
+        
         try {  
             return Double.parseDouble(string) >= 0; 
         } catch (NumberFormatException e){  

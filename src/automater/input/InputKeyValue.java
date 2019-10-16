@@ -5,6 +5,8 @@
  */
 package automater.input;
 
+import com.sun.istack.internal.NotNull;
+
 /**
  * Represents a system key value.
  * 
@@ -196,7 +198,7 @@ public enum InputKeyValue {
        return value;
    }
    
-   public static InputKeyValue fromString(String value)
+   public static InputKeyValue fromString(@NotNull String value)
    {
        value = "_" + value;
        

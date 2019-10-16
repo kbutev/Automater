@@ -10,6 +10,7 @@ import automater.utilities.Logger;
 import automater.utilities.Looper;
 import automater.utilities.LooperClient;
 import automater.work.BaseExecutorProcess;
+import com.sun.istack.internal.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,9 +20,9 @@ import java.util.List;
  * @author Bytevi
  */
 public class ExecutorState implements LooperClient {
-    private final Object _lock = new Object();
+    @NotNull private final Object _lock = new Object();
     
-    private ArrayList<BaseExecutorProcess> _processes = new ArrayList<>();
+    @NotNull private ArrayList<BaseExecutorProcess> _processes = new ArrayList<>();
     
     public boolean isIdle()
     {
@@ -31,7 +32,7 @@ public class ExecutorState implements LooperClient {
         }
     }
     
-    public void startProcess(BaseExecutorProcess process, Macro macro, MacroParameters parameters) throws Exception
+    public void startProcess(@NotNull BaseExecutorProcess process, @NotNull Macro macro, @NotNull MacroParameters parameters) throws Exception
     {
         boolean isIdle = isIdle();
         
@@ -86,7 +87,7 @@ public class ExecutorState implements LooperClient {
     
     // # Private
     
-    private boolean isProcessEligibleForRemoval(BaseExecutorProcess process)
+    private boolean isProcessEligibleForRemoval(@NotNull BaseExecutorProcess process)
     {
         return process.isFinished();
     }

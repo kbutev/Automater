@@ -17,6 +17,8 @@ import automater.input.InputScreenshot;
 import automater.input.InputSystemCommand;
 import automater.utilities.Description;
 import automater.work.BaseAction;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +30,7 @@ import java.util.List;
 public class StandardMutableActionConstants {
     public static String MOUSE_KEY_REPLACEMENT_STRING = "MOUSE_";
     
-    public static List<Description> getActionTypes()
+    public static @NotNull List<Description> getActionTypes()
     {
         ArrayList<Description> types = new ArrayList<>();
         types.add(Description.createFromString(TextValue.getText(TextValue.EditAction_TypeDoNothing)));
@@ -41,7 +43,7 @@ public class StandardMutableActionConstants {
         return types;
     }
     
-    public static int getActionTypeSelectedIndex(BaseAction action)
+    public static int getActionTypeSelectedIndex(@NotNull BaseAction action)
     {
         if (action instanceof InputKeyClick)
         {
@@ -81,7 +83,7 @@ public class StandardMutableActionConstants {
         return 0;
     }
     
-    public static MutableActionType getTypeFromAction(BaseAction action)
+    public static MutableActionType getTypeFromAction(@NotNull BaseAction action)
     {
         MutableActionType type = MutableActionType.DoNothing;
         
@@ -128,7 +130,7 @@ public class StandardMutableActionConstants {
         return type;
     }
     
-    public static List<String> getMouseClickSpecificValues()
+    public static @NotNull List<String> getMouseClickSpecificValues()
     {
         ArrayList<String> values = new ArrayList<>();
         
@@ -139,7 +141,7 @@ public class StandardMutableActionConstants {
         return values;
     }
     
-    public static String getMouseClickSpecificValueForKeyValue(InputKeyValue value)
+    public static @NotNull String getMouseClickSpecificValueForKeyValue(@NotNull InputKeyValue value)
     {
         String str;
         String prefix = MOUSE_KEY_REPLACEMENT_STRING;
@@ -149,7 +151,7 @@ public class StandardMutableActionConstants {
         return str;
     }
     
-    public static InputKey getMouseKeyForTextValue(String string)
+    public static @Nullable InputKey getMouseKeyForTextValue(@NotNull String string)
     {
         string = MOUSE_KEY_REPLACEMENT_STRING + string;
         

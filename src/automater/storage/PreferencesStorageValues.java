@@ -6,6 +6,7 @@
 package automater.storage;
 
 import automater.work.model.MacroParameters;
+import com.sun.istack.internal.NotNull;
 import java.io.Serializable;
 
 /**
@@ -19,7 +20,7 @@ public class PreferencesStorageValues implements Serializable {
     public boolean displayRepeatNotification = false;
     public MacroParameters macroParameters = MacroParameters.defaultValues();
     
-    public static PreferencesStorageValues defaultValues()
+    public static @NotNull PreferencesStorageValues defaultValues()
     {
         return new PreferencesStorageValues();
     }
@@ -29,7 +30,7 @@ public class PreferencesStorageValues implements Serializable {
         
     }
     
-    public PreferencesStorageValues copy()
+    public @NotNull PreferencesStorageValues copy()
     {
         PreferencesStorageValues copied = new PreferencesStorageValues();
         copied.displayStartNotification = displayStartNotification;

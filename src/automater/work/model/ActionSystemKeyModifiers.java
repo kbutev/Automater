@@ -6,6 +6,7 @@
 package automater.work.model;
 
 import automater.utilities.CollectionUtilities;
+import com.sun.istack.internal.NotNull;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
@@ -17,24 +18,24 @@ import java.util.Set;
  * @author Bytevi
  */
 public class ActionSystemKeyModifiers implements Serializable {
-    public final Set<ActionSystemKeyModifierValue> modifiers;
+    @NotNull public final Set<ActionSystemKeyModifierValue> modifiers;
     
     public ActionSystemKeyModifiers()
     {
         this.modifiers = new HashSet<>();
     }
     
-    public ActionSystemKeyModifiers(Set<ActionSystemKeyModifierValue> modifiers)
+    public ActionSystemKeyModifiers(@NotNull Set<ActionSystemKeyModifierValue> modifiers)
     {
         this.modifiers = CollectionUtilities.copyAsImmutable(modifiers);
     }
     
-    public static ActionSystemKeyModifiers none()
+    public static @NotNull ActionSystemKeyModifiers none()
     {
         return new ActionSystemKeyModifiers();
     }
     
-    public static ActionSystemKeyModifiers createModifierValues(Set<ActionSystemKeyModifierValue> modifiers)
+    public static @NotNull ActionSystemKeyModifiers createModifierValues(@NotNull Set<ActionSystemKeyModifierValue> modifiers)
     {
         return new ActionSystemKeyModifiers(modifiers);
     }
@@ -59,7 +60,7 @@ public class ActionSystemKeyModifiers implements Serializable {
         return hash;
     }
     
-    public ActionSystemKeyModifiers combine(ActionSystemKeyModifiers modifiers)
+    public @NotNull ActionSystemKeyModifiers combine(@NotNull ActionSystemKeyModifiers modifiers)
     {
         if (modifiers.isNone())
         {
@@ -76,7 +77,7 @@ public class ActionSystemKeyModifiers implements Serializable {
         return ActionSystemKeyModifiers.createModifierValues(values);
     }
     
-    public ActionSystemKeyModifiers removeModifier(ActionSystemKeyModifierValue value)
+    public @NotNull ActionSystemKeyModifiers removeModifier(@NotNull ActionSystemKeyModifierValue value)
     {
         HashSet<ActionSystemKeyModifierValue> values = new HashSet<>(this.modifiers);
         

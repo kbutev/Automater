@@ -21,6 +21,8 @@ import automater.utilities.SimpleCallback;
 import java.awt.event.WindowEvent;
 import java.util.List;
 import automater.mutableaction.BaseMutableAction;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 /**
  * Edit macro screen: modify name, description or actions.
@@ -28,16 +30,16 @@ import automater.mutableaction.BaseMutableAction;
  * @author Bytevi
  */
 public class EditMacroViewController implements BaseViewController, BasePresenterDelegate {
-    private final EditMacroPresenter _presenter;
+    @NotNull private final EditMacroPresenter _presenter;
     
-    private final EditMacroForm _form;
-    private EditMacroActionDialog _editActionDialog;
+    @NotNull private final EditMacroForm _form;
+    @Nullable private EditMacroActionDialog _editActionDialog;
     
-    private StandardDescriptionsDataSource _dataSource;
+    @Nullable private StandardDescriptionsDataSource _dataSource;
     
     private boolean _isHotkeyRecording;
     
-    public EditMacroViewController(EditMacroPresenter presenter)
+    public EditMacroViewController(@NotNull EditMacroPresenter presenter)
     {
         _presenter = presenter;
         _form = new EditMacroForm();
@@ -159,25 +161,25 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     }
 
     @Override
-    public void onActionsRecordedChange(List<Description> actions) 
+    public void onActionsRecordedChange(@NotNull List<Description> actions) 
     {
         
     }
 
     @Override
-    public void onRecordingSaved(String name, boolean success)
+    public void onRecordingSaved(@NotNull String name, boolean success)
     {
         
     }
 
     @Override
-    public void onLoadedMacrosFromStorage(List<Description> macros)
+    public void onLoadedMacrosFromStorage(@NotNull List<Description> macros)
     {
         
     }
 
     @Override
-    public void onLoadedMacroFromStorage(String macroName, String macroDescription, List<Description> macroActions)
+    public void onLoadedMacroFromStorage(@NotNull String macroName, @NotNull String macroDescription, @NotNull List<Description> macroActions)
     {
         _dataSource = StandardDescriptionsDataSource.createDataSourceForVerboseText(macroActions);
         _form.setMacroInfo(macroName, macroDescription);
@@ -191,7 +193,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     }
 
     @Override
-    public void updatePlayStatus(automater.work.model.ExecutorProgress progress)
+    public void updatePlayStatus(@NotNull automater.work.model.ExecutorProgress progress)
     {
         
     }
@@ -209,31 +211,31 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     }
 
     @Override
-    public void onLoadedPreferencesFromStorage(PreferencesStorageValues values)
+    public void onLoadedPreferencesFromStorage(@NotNull PreferencesStorageValues values)
     {
         
     }
     
     @Override
-    public void onCreateMacroAction(automater.mutableaction.BaseMutableAction action)
+    public void onCreateMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
     {
         startCreatingMacroAction(action);
     }
     
     @Override
-    public void onEditMacroAction(automater.mutableaction.BaseMutableAction action)
+    public void onEditMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
     {
         startEditingMacroAction(action);
     }
     
     @Override
-    public void onSaveMacroAction(automater.mutableaction.BaseMutableAction action)
+    public void onSaveMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
     {
         
     }
     
     @Override
-    public void onEditedMacroActions(List<Description> newMacroActions)
+    public void onEditedMacroActions(@NotNull List<Description> newMacroActions)
     {
         _dataSource = StandardDescriptionsDataSource.createDataSourceForVerboseText(newMacroActions);
         _form.setMacroDataSource(_dataSource);
@@ -255,7 +257,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
     }
     
     @Override
-    public void onErrorEncountered(Exception e)
+    public void onErrorEncountered(@NotNull Exception e)
     {
         Logger.error(this, "Error encountered: " + e.toString());
         
@@ -325,7 +327,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         };
     }
     
-    private void startCreatingMacroAction(automater.mutableaction.BaseMutableAction action)
+    private void startCreatingMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
     {
         initEditMacroActionDialog();
         
@@ -336,7 +338,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         _editActionDialog.setVisible(true);
     }
     
-    private void startEditingMacroAction(automater.mutableaction.BaseMutableAction action)
+    private void startEditingMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
     {
         initEditMacroActionDialog();
         
@@ -347,7 +349,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         _editActionDialog.setVisible(true);
     }
     
-    private void setupEditingMacroActionDialog(automater.mutableaction.BaseMutableAction action)
+    private void setupEditingMacroActionDialog(@NotNull automater.mutableaction.BaseMutableAction action)
     {
         // Selectable types
         StandardDescriptionsDataSource actionTypes;
@@ -458,7 +460,7 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         _presenter.endListeningForKeystrokes();
     }
     
-    private void endHotkeyListening(Hotkey hotkeyEntered)
+    private void endHotkeyListening(@NotNull Hotkey hotkeyEntered)
     {
         if (!_isHotkeyRecording)
         {

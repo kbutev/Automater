@@ -9,6 +9,7 @@ import automater.TextValue;
 import automater.storage.PreferencesStorageValues;
 import automater.utilities.SimpleCallback;
 import automater.utilities.StringFormatting;
+import com.sun.istack.internal.NotNull;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -237,7 +238,7 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
     
     // # Public
     
-    public void setupWithStorageValues(PreferencesStorageValues values)
+    public void setupWithStorageValues(@NotNull PreferencesStorageValues values)
     {
         startNotificationCheck.setSelected(values.displayStartNotification);
         stopNotificationCheck.setSelected(values.displayStopNotification);

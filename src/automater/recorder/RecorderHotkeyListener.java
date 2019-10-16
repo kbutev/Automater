@@ -6,6 +6,8 @@
 package automater.recorder;
 
 import automater.settings.Hotkey;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 /**
  * Receives requests about a pressed keyboard key.
@@ -17,7 +19,7 @@ import automater.settings.Hotkey;
 public interface RecorderHotkeyListener {
     public boolean isListeningForAnyHotkey();
     
-    public Hotkey getHotkey();
+    public @Nullable Hotkey getHotkey();
     
-    public void onHotkeyPressed(Hotkey hotkey);
+    public void onHotkeyPressed(@NotNull Hotkey hotkey);
 }

@@ -8,6 +8,7 @@ package automater.settings;
 import automater.input.InputKey;
 import automater.input.InputKeyModifiers;
 import automater.input.InputKeyValue;
+import com.sun.istack.internal.NotNull;
 
 /**
  * A keystroke.
@@ -15,25 +16,20 @@ import automater.input.InputKeyValue;
  * @author Bytevi
  */
 public class Hotkey {
-    public final InputKey key;
+    @NotNull public final InputKey key;
     
-    public Hotkey(InputKey key)
+    public Hotkey(@NotNull InputKey key)
     {
         this.key = key;
     }
     
-    public Hotkey(InputKeyValue keyValue)
+    public Hotkey(@NotNull InputKeyValue keyValue)
     {
         this.key = new InputKey(keyValue);
     }
     
-    public boolean isEqualTo(InputKey key)
+    public boolean isEqualTo(@NotNull InputKey key)
     {
-        if (key == null)
-        {
-            return false;
-        }
-        
         if (!key.modifiers.equals(InputKeyModifiers.none()))
         {
             return false;

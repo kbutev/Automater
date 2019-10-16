@@ -5,6 +5,7 @@
  */
 package automater.input;
 
+import com.sun.istack.internal.NotNull;
 import java.awt.Rectangle;
 
 /**
@@ -13,9 +14,9 @@ import java.awt.Rectangle;
  * @author Byti
  */
 public interface InputScreenshot {
-    public String getPath();
+    public @NotNull String getPath();
     
     public boolean isFullScreen();
     
-    public Rectangle getArea();
+    public @NotNull Rectangle getArea();
 }

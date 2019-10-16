@@ -5,6 +5,8 @@
  */
 package automater.storage;
 
+import com.sun.istack.internal.NotNull;
+
 /**
  * Holds and maintains the storage of the application.
  * 
@@ -13,10 +15,10 @@ package automater.storage;
 public class GeneralStorage {
     private static GeneralStorage singleton;
     
-    private final MacroStorage _macrosStorage = new MacroStorage();
-    private final PreferencesStorage _preferencesStorage = new PreferencesStorage();
+    @NotNull private final MacroStorage _macrosStorage = new MacroStorage();
+    @NotNull private final PreferencesStorage _preferencesStorage = new PreferencesStorage();
     
-    synchronized public static GeneralStorage getDefault()
+    synchronized public static @NotNull GeneralStorage getDefault()
     {
         if (singleton == null)
         {
@@ -26,12 +28,12 @@ public class GeneralStorage {
         return singleton;
     }
     
-    public MacroStorage getMacrosStorage()
+    public @NotNull MacroStorage getMacrosStorage()
     {
         return _macrosStorage;
     }
     
-    public PreferencesStorage getPreferencesStorage()
+    public @NotNull PreferencesStorage getPreferencesStorage()
     {
         return _preferencesStorage;
     }

@@ -5,6 +5,7 @@
  */
 package automater.utilities;
 
+import com.sun.istack.internal.Nullable;
 import java.awt.*;
 import java.awt.TrayIcon.MessageType;
 
@@ -26,8 +27,8 @@ public class DeviceNotifications {
     private static DeviceNotifications _singleton;
     
     private final boolean _active;
-    private final SystemTray _tray;
-    private TrayIcon _icon;
+    @Nullable private final SystemTray _tray;
+    @Nullable private TrayIcon _icon;
     
     private DeviceNotifications()
     {
@@ -44,7 +45,7 @@ public class DeviceNotifications {
         }
     }
 
-    synchronized public static DeviceNotifications getShared()
+    synchronized public static @Nullable DeviceNotifications getShared()
     {
         if (_singleton == null)
         {

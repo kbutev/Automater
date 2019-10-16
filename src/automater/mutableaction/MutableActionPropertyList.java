@@ -5,6 +5,7 @@
  */
 package automater.mutableaction;
 
+import com.sun.istack.internal.NotNull;
 import java.util.List;
 
 /**
@@ -13,5 +14,5 @@ import java.util.List;
  * @author Byti
  */
 public interface MutableActionPropertyList extends BaseMutableActionProperty {
-    public List<String> getValues();
+    public @NotNull List<String> getValues();
 }

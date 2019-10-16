@@ -5,13 +5,15 @@
  */
 package automater.input;
 
+import com.sun.istack.internal.NotNull;
+
 /**
  * Represents a system command, like a cmd in Windows OS.
  * 
  * @author Byti
  */
 public interface InputSystemCommand {
-    public String getValue();
+    public @NotNull String getValue();
     
     public boolean reportsErrors();
 }

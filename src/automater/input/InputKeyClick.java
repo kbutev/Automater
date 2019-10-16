@@ -5,12 +5,14 @@
  */
 package automater.input;
 
+import com.sun.istack.internal.NotNull;
+
 /**
  * Represents a keyboard or mouse click input.
  *
  * @author Bytevi
  */
 public interface InputKeyClick extends Input {
-    public InputKey getKeyValue();
+    public @NotNull InputKey getKeyValue();
     public boolean isPress();
 }

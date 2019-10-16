@@ -18,6 +18,8 @@ import automater.input.InputKeyClick;
 import automater.input.InputMouse;
 import automater.input.InputMouseMove;
 import automater.input.InputMouseWheel;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 /**
  * Encapsulates user input information.
@@ -25,26 +27,26 @@ import automater.input.InputMouseWheel;
  * @author Bytevi
  */
 public class RecorderUserInput implements Input, Serializable, Description {
-    private static final RecorderUserInput _logInstance = new RecorderUserInput();
+    @NotNull private static final RecorderUserInput _logInstance = new RecorderUserInput();
     
     private final long _timestamp;
     
-    public static RecorderUserInput createDoNothing(long timestamp)
+    public static @Nullable RecorderUserInput createDoNothing(long timestamp)
     {
         return new RecorderUserInputDoNothing(timestamp);
     }
     
-    public static RecorderUserInput createKeyboardPress(long timestamp, InputKey key)
+    public static @Nullable RecorderUserInput createKeyboardPress(long timestamp, @NotNull InputKey key)
     {
         return new RecorderUserInputKeyboardPress(timestamp, key);
     }
     
-    public static RecorderUserInput createKeyboardRelease(long timestamp, InputKey key)
+    public static @Nullable RecorderUserInput createKeyboardRelease(long timestamp, @NotNull InputKey key)
     {
         return new RecorderUserInputKeyboardRelease(timestamp, key);
     }
     
-    public static RecorderUserInput createMousePress(long timestamp, InputKey mouseKey)
+    public static @Nullable RecorderUserInput createMousePress(long timestamp, @NotNull InputKey mouseKey)
     {
         switch (mouseKey.value)
         {
@@ -65,7 +67,7 @@ public class RecorderUserInput implements Input, Serializable, Description {
         return null;
     }
     
-    public static RecorderUserInput createMouseRelease(long timestamp, InputKey mouseKey)
+    public static @Nullable RecorderUserInput createMouseRelease(long timestamp, @NotNull InputKey mouseKey)
     {
         switch (mouseKey.value)
         {
@@ -86,12 +88,12 @@ public class RecorderUserInput implements Input, Serializable, Description {
         return null;
     }
      
-    public static RecorderUserInput createMouseMove(long timestamp, int x, int y)
+    public static @Nullable RecorderUserInput createMouseMove(long timestamp, int x, int y)
     {
         return new RecorderUserInputMouseMove(timestamp, x, y);
     }
     
-    public static RecorderUserInput createMouseWheel(long timestamp, int scrollValue)
+    public static @Nullable RecorderUserInput createMouseWheel(long timestamp, int scrollValue)
     {
         return new RecorderUserInputMouseWheel(timestamp, scrollValue);
     }
@@ -165,9 +167,9 @@ class RecorderUserInputDoNothing extends RecorderUserInput implements InputDoNot
 
 class RecorderUserInputKeyboardPress extends RecorderUserInput implements InputKeyClick
 {
-    public final InputKey key;
+    @NotNull public final InputKey key;
     
-    RecorderUserInputKeyboardPress(long timestamp, InputKey key)
+    RecorderUserInputKeyboardPress(long timestamp, @NotNull InputKey key)
     {
         super(timestamp);
         this.key = key;
@@ -188,7 +190,7 @@ class RecorderUserInputKeyboardPress extends RecorderUserInput implements InputK
     // # UserInputKeyClick
 
     @Override
-    public InputKey getKeyValue() {
+    public @NotNull InputKey getKeyValue() {
         return this.key;
     }
 
@@ -200,9 +202,9 @@ class RecorderUserInputKeyboardPress extends RecorderUserInput implements InputK
 
 class RecorderUserInputKeyboardRelease extends RecorderUserInput implements InputKeyClick
 {
-    public final InputKey key;
+    @NotNull public final InputKey key;
     
-    RecorderUserInputKeyboardRelease(long timestamp, InputKey key)
+    RecorderUserInputKeyboardRelease(long timestamp, @NotNull InputKey key)
     {
         super(timestamp);
         this.key = key;
@@ -223,7 +225,7 @@ class RecorderUserInputKeyboardRelease extends RecorderUserInput implements Inpu
     // # UserInputKeyClick
     
     @Override
-    public InputKey getKeyValue() {
+    public @NotNull InputKey getKeyValue() {
         return this.key;
     }
 
@@ -235,39 +237,39 @@ class RecorderUserInputKeyboardRelease extends RecorderUserInput implements Inpu
 
 class RecorderUserInputMousePress extends RecorderUserInput implements InputKeyClick, InputMouse
 {
-    public final InputKey key;
+    @NotNull public final InputKey key;
     
-    static RecorderUserInput createLeftMouse(long timestamp, InputKeyModifiers mask)
+    static @NotNull RecorderUserInput createLeftMouse(long timestamp, @NotNull InputKeyModifiers mask)
     {
         InputKey key = new InputKey(_MOUSE_LEFT_CLICK, mask);
         return new RecorderUserInputMousePress(timestamp, key);
     }
     
-    static RecorderUserInput createRightMouse(long timestamp, InputKeyModifiers mask)
+    static @NotNull RecorderUserInput createRightMouse(long timestamp, @NotNull InputKeyModifiers mask)
     {
         InputKey key = new InputKey(_MOUSE_RIGHT_CLICK, mask);
         return new RecorderUserInputMousePress(timestamp, key);
     }
     
-    static RecorderUserInput createMiddleMouse(long timestamp, InputKeyModifiers mask)
+    static @NotNull RecorderUserInput createMiddleMouse(long timestamp, @NotNull InputKeyModifiers mask)
     {
         InputKey key = new InputKey(_MOUSE_MIDDLE_CLICK, mask);
         return new RecorderUserInputMousePress(timestamp, key);
     }
     
-    static RecorderUserInput create4Mouse(long timestamp, InputKeyModifiers mask)
+    static @NotNull RecorderUserInput create4Mouse(long timestamp, @NotNull InputKeyModifiers mask)
     {
         InputKey key = new InputKey(_MOUSE_4_CLICK, mask);
         return new RecorderUserInputMousePress(timestamp, key);
     }
     
-    static RecorderUserInput create5Mouse(long timestamp, InputKeyModifiers mask)
+    static @NotNull RecorderUserInput create5Mouse(long timestamp, @NotNull InputKeyModifiers mask)
     {
         InputKey key = new InputKey(_MOUSE_5_CLICK, mask);
         return new RecorderUserInputMousePress(timestamp, key);
     }
     
-    RecorderUserInputMousePress(long timestamp, InputKey key)
+    RecorderUserInputMousePress(long timestamp, @NotNull InputKey key)
     {
         super(timestamp);
         this.key = key;
@@ -288,7 +290,7 @@ class RecorderUserInputMousePress extends RecorderUserInput implements InputKeyC
     // # UserInputKeyClick
 
     @Override
-    public InputKey getKeyValue() {
+    public @NotNull InputKey getKeyValue() {
         return this.key;
     }
 
@@ -300,39 +302,39 @@ class RecorderUserInputMousePress extends RecorderUserInput implements InputKeyC
 
 class RecorderUserInputMouseRelease extends RecorderUserInput implements InputKeyClick, InputMouse
 {
-    public final InputKey key;
+    @NotNull public final InputKey key;
     
-    static RecorderUserInput createLeftMouse(long timestamp, InputKeyModifiers mask)
+    static @NotNull RecorderUserInput createLeftMouse(long timestamp, @NotNull InputKeyModifiers mask)
     {
         InputKey key = new InputKey(_MOUSE_LEFT_CLICK, mask);
         return new RecorderUserInputMouseRelease(timestamp, key);
     }
     
-    static RecorderUserInput createRightMouse(long timestamp, InputKeyModifiers mask)
+    static @NotNull RecorderUserInput createRightMouse(long timestamp, @NotNull InputKeyModifiers mask)
     {
         InputKey key = new InputKey(_MOUSE_RIGHT_CLICK, mask);
         return new RecorderUserInputMouseRelease(timestamp, key);
     }
     
-    static RecorderUserInput createMiddleMouse(long timestamp, InputKeyModifiers mask)
+    static @NotNull RecorderUserInput createMiddleMouse(long timestamp, @NotNull InputKeyModifiers mask)
     {
         InputKey key = new InputKey(_MOUSE_MIDDLE_CLICK, mask);
         return new RecorderUserInputMouseRelease(timestamp, key);
     }
     
-    static RecorderUserInput create4Mouse(long timestamp, InputKeyModifiers mask)
+    static @NotNull RecorderUserInput create4Mouse(long timestamp, @NotNull InputKeyModifiers mask)
     {
         InputKey key = new InputKey(_MOUSE_4_CLICK, mask);
         return new RecorderUserInputMouseRelease(timestamp, key);
     }
     
-    static RecorderUserInput create5Mouse(long timestamp, InputKeyModifiers mask)
+    static @NotNull RecorderUserInput create5Mouse(long timestamp, @NotNull InputKeyModifiers mask)
     {
         InputKey key = new InputKey(_MOUSE_5_CLICK, mask);
         return new RecorderUserInputMouseRelease(timestamp, key);
     }
     
-    RecorderUserInputMouseRelease(long timestamp, InputKey key)
+    RecorderUserInputMouseRelease(long timestamp, @NotNull InputKey key)
     {
         super(timestamp);
         this.key = key;
@@ -353,7 +355,7 @@ class RecorderUserInputMouseRelease extends RecorderUserInput implements InputKe
     // # UserInputKeyClick
 
     @Override
-    public InputKey getKeyValue() {
+    public @NotNull InputKey getKeyValue() {
         return this.key;
     }
 

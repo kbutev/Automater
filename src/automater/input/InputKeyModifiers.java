@@ -5,6 +5,7 @@
  */
 package automater.input;
 
+import com.sun.istack.internal.NotNull;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
@@ -29,12 +30,12 @@ public class InputKeyModifiers implements Serializable {
         
     }
     
-    public InputKeyModifiers(InputKeyModifierValue value)
+    public InputKeyModifiers(@NotNull InputKeyModifierValue value)
     {
         _values.add(value);
     }
     
-    public InputKeyModifiers(HashSet<InputKeyModifierValue> values)
+    public InputKeyModifiers(@NotNull HashSet<InputKeyModifierValue> values)
     {
         for (InputKeyModifierValue value : values)
         {
@@ -42,7 +43,7 @@ public class InputKeyModifiers implements Serializable {
         }
     }
     
-    public InputKeyModifiers(String string)
+    public InputKeyModifiers(@NotNull String string)
     {
         String suffix = InputKeyModifierValue.getSeparatorSymbol();
         
@@ -101,7 +102,7 @@ public class InputKeyModifiers implements Serializable {
         return new InputKeyModifiers(this._values);
     }
     
-    public InputKeyModifiers createWithNewAddedModifier(InputKeyModifierValue value)
+    public InputKeyModifiers createWithNewAddedModifier(@NotNull InputKeyModifierValue value)
     {
         InputKeyModifiers modifiers = copy();
         
@@ -115,7 +116,7 @@ public class InputKeyModifiers implements Serializable {
         return modifiers;
     }
     
-    public InputKeyModifiers createWithRemovedModifier(InputKeyModifierValue value)
+    public InputKeyModifiers createWithRemovedModifier(@NotNull InputKeyModifierValue value)
     {
         InputKeyModifiers modifiers = copy();
         

@@ -6,6 +6,7 @@
 package automater.work;
 
 import automater.work.model.MacroParameters;
+import com.sun.istack.internal.NotNull;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ import java.util.List;
  * @author Bytevi
  */
 public interface BaseExecutorTimer {
-    public void setup(List<BaseAction> actions, MacroParameters parameters) throws Exception;
+    public void setup(@NotNull List<BaseAction> actions, @NotNull MacroParameters parameters) throws Exception;
     
     public void reset();
     
@@ -31,8 +32,8 @@ public interface BaseExecutorTimer {
     public double getTimeScale();
     public void setTimeScale(double scale);
     
-    public boolean canPerformNextAction(BaseAction action);
-    public void willPerformNextAction(BaseAction action);
+    public boolean canPerformNextAction(@NotNull BaseAction action);
+    public void willPerformNextAction(@NotNull BaseAction action);
     
     public long updateCurrentTime(long dt);
 }

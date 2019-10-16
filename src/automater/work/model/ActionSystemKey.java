@@ -6,6 +6,7 @@
 package automater.work.model;
 
 import automater.utilities.Description;
+import com.sun.istack.internal.NotNull;
 import java.io.Serializable;
 
 /**
@@ -14,12 +15,12 @@ import java.io.Serializable;
  * @author Bytevi
  */
 public class ActionSystemKey implements Serializable, Description {
-    public static ActionSystemKey createKeyboardKey(int value)
+    public static @NotNull ActionSystemKey createKeyboardKey(int value)
     {
         return new ActionSystemKeyKeyboard(value);
     }
     
-    public static ActionSystemKey createMouseKey(int value)
+    public static @NotNull ActionSystemKey createMouseKey(int value)
     {
         return new ActionSystemKeyMouse(value);
     }

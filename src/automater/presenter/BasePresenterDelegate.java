@@ -8,6 +8,7 @@ package automater.presenter;
 import java.util.List;
 import automater.storage.PreferencesStorageValues;
 import automater.utilities.Description;
+import com.sun.istack.internal.NotNull;
 
 /**
  * Presenter's delegate.
@@ -17,25 +18,25 @@ import automater.utilities.Description;
 public interface BasePresenterDelegate {
     public void startRecording();
     public void stopRecording();
-    public void onActionsRecordedChange(List<Description> actions);
-    public void onRecordingSaved(String name, boolean success);
+    public void onActionsRecordedChange(@NotNull List<Description> actions);
+    public void onRecordingSaved(@NotNull String name, boolean success);
     
-    public void onLoadedMacrosFromStorage(List<Description> macros);
+    public void onLoadedMacrosFromStorage(@NotNull List<Description> macros);
     
-    public void onLoadedMacroFromStorage(String macroName, String macroDescription, List<Description> macroActions);
+    public void onLoadedMacroFromStorage(@NotNull String macroName, @NotNull String macroDescription, @NotNull List<Description> macroActions);
     
     public void startPlaying();
-    public void updatePlayStatus(automater.work.model.ExecutorProgress progress);
+    public void updatePlayStatus(@NotNull automater.work.model.ExecutorProgress progress);
     public void cancelPlaying();
     public void finishPlaying();
     
-    public void onLoadedPreferencesFromStorage(PreferencesStorageValues values);
+    public void onLoadedPreferencesFromStorage(@NotNull PreferencesStorageValues values);
     
-    public void onCreateMacroAction(automater.mutableaction.BaseMutableAction action);
-    public void onEditMacroAction(automater.mutableaction.BaseMutableAction action);
-    public void onSaveMacroAction(automater.mutableaction.BaseMutableAction action);
-    public void onEditedMacroActions(List<Description> newMacroActions);
+    public void onCreateMacroAction(@NotNull automater.mutableaction.BaseMutableAction action);
+    public void onEditMacroAction(@NotNull automater.mutableaction.BaseMutableAction action);
+    public void onSaveMacroAction(@NotNull automater.mutableaction.BaseMutableAction action);
+    public void onEditedMacroActions(@NotNull List<Description> newMacroActions);
     public void onClosingMacroWithoutSavingChanges();
     
-    public void onErrorEncountered(Exception e);
+    public void onErrorEncountered(@NotNull Exception e);
 }

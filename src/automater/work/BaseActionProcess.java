@@ -6,6 +6,7 @@
 package automater.work;
 
 import automater.work.model.ActionContext;
+import com.sun.istack.internal.NotNull;
 
 /**
  * Represents the process of performing an action.
@@ -21,7 +22,7 @@ import automater.work.model.ActionContext;
  */
 public interface BaseActionProcess {
     public boolean isActive();
-    public BaseAction getAction();
+    public @NotNull BaseAction getAction();
     
-    public void perform(ActionContext context) throws Exception;
+    public void perform(@NotNull ActionContext context) throws Exception;
 }

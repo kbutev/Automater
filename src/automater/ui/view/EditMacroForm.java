@@ -8,6 +8,7 @@ package automater.ui.view;
 import automater.TextValue;
 import automater.utilities.Callback;
 import automater.utilities.SimpleCallback;
+import com.sun.istack.internal.NotNull;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -357,17 +358,17 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
     
     // # Public
     
-    public String getMacroName()
+    public @NotNull String getMacroName()
     {
         return macroNameField.getText();
     }
     
-    public String getMacroDescription()
+    public @NotNull String getMacroDescription()
     {
         return macroDescriptionTextArea.getText();
     }
     
-    public void setListDataSource(StandardDescriptionsDataSource dataSource)
+    public void setListDataSource(@NotNull StandardDescriptionsDataSource dataSource)
     {
         _dataSource = dataSource;
         
@@ -381,14 +382,14 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
         return _selectedIndex;
     }
     
-    public void setMacroInfo(String macroName, String macroDescription)
+    public void setMacroInfo(@NotNull String macroName, @NotNull String macroDescription)
     {
         macroNameLabel.setText(TextValue.getText(TextValue.Edit_Name));
         macroNameField.setText(macroName);
         macroDescriptionTextArea.setText(macroDescription);
     }
     
-    public void setMacroDataSource(StandardDescriptionsDataSource macroActionsDataSource)
+    public void setMacroDataSource(@NotNull StandardDescriptionsDataSource macroActionsDataSource)
     {
         macroActionsList.setModel(macroActionsDataSource);
     }

@@ -5,6 +5,8 @@
  */
 package automater.utilities;
 
+import com.sun.istack.internal.NotNull;
+
 /**
  * Describes an object.
  * 
@@ -18,16 +20,16 @@ public interface Description {
     public String getName();
     public String getDebug();
     
-    public static Description createFromString(final String value)
+    public static @NotNull Description createFromString(@NotNull final String value)
     {
         return new DescriptionString(value);
     }
 }
 
 class DescriptionString implements Description {
-    private final String value;
+    @NotNull private final String value;
     
-    DescriptionString(String value)
+    DescriptionString(@NotNull String value)
     {
         this.value = value;
     }

@@ -9,6 +9,8 @@ import automater.utilities.Errors;
 import automater.utilities.Looper;
 import automater.utilities.SimpleCallback;
 import automater.work.model.ActionContext;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 /**
  * An action process, that wraps a single action, and is performed when requested.
@@ -20,13 +22,13 @@ import automater.work.model.ActionContext;
  * @author Bytevi
  */
 public class ActionProcess implements BaseActionProcess {
-    private final Object _lock = new Object();
+    @NotNull private final Object _lock = new Object();
     
-    private final BaseAction _action;
+    @NotNull private final BaseAction _action;
     private final boolean _isComplexAction;
-    private ActionContext _context;
+    @Nullable private ActionContext _context;
     
-    public ActionProcess(BaseAction action)
+    public ActionProcess(@NotNull BaseAction action)
     {
         _action = action;
         _isComplexAction = _action.isComplex();
@@ -44,13 +46,13 @@ public class ActionProcess implements BaseActionProcess {
     }
     
     @Override
-    public BaseAction getAction()
+    public @NotNull BaseAction getAction()
     {
         return _action;
     }
     
     @Override
-    public void perform(ActionContext context) throws Exception
+    public void perform(@NotNull ActionContext context) throws Exception
     {
         if (!_isComplexAction)
         {

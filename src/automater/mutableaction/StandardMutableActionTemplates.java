@@ -13,6 +13,7 @@ import automater.utilities.Description;
 import automater.utilities.FileSystem;
 import automater.work.Action;
 import automater.work.BaseAction;
+import com.sun.istack.internal.Nullable;
 
 /**
  * Builder for BaseMutableActions.
@@ -20,7 +21,7 @@ import automater.work.BaseAction;
  * @author Byti
  */
 public class StandardMutableActionTemplates {
-    public static StandardMutableAction buildTemplateFromTypeIndex(int typeIndex, long timestamp)
+    public static @Nullable StandardMutableAction buildTemplateFromTypeIndex(int typeIndex, long timestamp)
     {
         switch (typeIndex)
         {
@@ -45,17 +46,17 @@ public class StandardMutableActionTemplates {
         return null;
     }
     
-    public static StandardMutableAction buildTemplateDoNothing(long timestamp)
+    public static @Nullable StandardMutableAction buildTemplateDoNothing(long timestamp)
     {
         return new StandartMutableActionDoNothing(timestamp);
     }
     
-    public static StandardMutableAction buildTemplateWait(long timestamp)
+    public static @Nullable StandardMutableAction buildTemplateWait(long timestamp)
     {
         return new StandartMutableActionWait(timestamp, 0);
     }
     
-    public static StandardMutableAction buildTemplateKeyboardClick(long timestamp)
+    public static @Nullable StandardMutableAction buildTemplateKeyboardClick(long timestamp)
     {
         final InputKey key = new InputKey(InputKeyValue._A);
         
@@ -88,7 +89,7 @@ public class StandardMutableActionTemplates {
         return StandardMutableAction.createFromAction(action);
     }
     
-    public static StandardMutableAction buildTemplateMouseClick(long timestamp)
+    public static @Nullable StandardMutableAction buildTemplateMouseClick(long timestamp)
     {
         final InputKey key = new InputKey(InputKeyValue._MOUSE_LEFT_CLICK);
         
@@ -121,7 +122,7 @@ public class StandardMutableActionTemplates {
         return StandardMutableAction.createFromAction(action);
     }
     
-    public static StandardMutableAction buildTemplateMouseMove(long timestamp)
+    public static @Nullable StandardMutableAction buildTemplateMouseMove(long timestamp)
     {
         BaseAction action;
         
@@ -135,7 +136,7 @@ public class StandardMutableActionTemplates {
         return StandardMutableAction.createFromAction(action);
     }
     
-    public static StandardMutableAction buildTemplateSystemCommand(long timestamp)
+    public static @Nullable StandardMutableAction buildTemplateSystemCommand(long timestamp)
     {
         BaseAction action;
         
@@ -149,7 +150,7 @@ public class StandardMutableActionTemplates {
         return StandardMutableAction.createFromAction(action);
     }
     
-    public static StandardMutableAction buildTemplateScreenshot(long timestamp)
+    public static @Nullable StandardMutableAction buildTemplateScreenshot(long timestamp)
     {
         BaseAction action;
         

@@ -8,6 +8,8 @@ package automater.work;
 import automater.work.model.ExecutorProgress;
 import automater.work.model.Macro;
 import automater.work.model.MacroParameters;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 /**
  * Represents an object that performs actions.
@@ -26,16 +28,16 @@ public interface BaseExecutorProcess {
     public boolean isWaiting();
     public boolean isFinished();
     
-    public Macro getMacro();
+    public @NotNull Macro getMacro();
     
-    public BaseActionProcess getCurrentActionProcess();
-    public BaseActionProcess getPreviousActionProcess();
+    public @Nullable BaseActionProcess getCurrentActionProcess();
+    public @Nullable BaseActionProcess getPreviousActionProcess();
     
-    public ExecutorProgress getProgress();
+    public @NotNull ExecutorProgress getProgress();
     
-    public void setExecutorTimer(BaseExecutorTimer timer);
-    public void setListener(ExecutorListener listener);
+    public void setExecutorTimer(@NotNull BaseExecutorTimer timer);
+    public void setListener(@NotNull ExecutorListener listener);
     
-    public void start(Macro macro, MacroParameters parameters) throws Exception;
+    public void start(@NotNull Macro macro, @NotNull MacroParameters parameters) throws Exception;
     public void stop() throws Exception;
 }

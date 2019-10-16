@@ -5,6 +5,8 @@
  */
 package automater.work.model;
 
+import com.sun.istack.internal.NotNull;
+
 /**
  * Holds information for how far an execution has made it.
  * 
@@ -13,7 +15,7 @@ package automater.work.model;
  * @author Bytevi
  */
 public interface ExecutorProgress {
-    public String getCurrentStatus();
+    public @NotNull String getCurrentStatus();
     
     public double getPercentageDone();
     public int getCurrentActionIndex();

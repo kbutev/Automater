@@ -8,6 +8,7 @@ package automater.input;
 import automater.TextValue;
 import automater.utilities.Description;
 import automater.utilities.FileSystem;
+import com.sun.istack.internal.NotNull;
 import java.io.Serializable;
 
 /**
@@ -38,7 +39,7 @@ public class InputDescriptions {
         return new InputDescription(name, description, verbose, tooltip);
     }
     
-    public static Description getKeyboardInputDescription(long timestamp, boolean press, InputKey key)
+    public static Description getKeyboardInputDescription(long timestamp, boolean press, @NotNull InputKey key)
     {
         String time = String.valueOf(timestamp);
         
@@ -60,7 +61,7 @@ public class InputDescriptions {
         return new InputDescription(name, description, verbose, tooltip);
     }
     
-    public static Description getMouseInputDescription(long timestamp, boolean press, InputKey key)
+    public static Description getMouseInputDescription(long timestamp, boolean press, @NotNull InputKey key)
     {
         String time = String.valueOf(timestamp);
         
@@ -93,7 +94,7 @@ public class InputDescriptions {
         return new InputDescription(name, description, verbose, tooltip);
     }
     
-    public static Description getMouseMotionDescription(long timestamp, InputMouseMove first, InputMouseMove last, int numberOfMovements)
+    public static Description getMouseMotionDescription(long timestamp, @NotNull InputMouseMove first, @NotNull InputMouseMove last, int numberOfMovements)
     {
         int x = last.getX();
         int y = last.getY();
@@ -118,7 +119,7 @@ public class InputDescriptions {
         return new InputDescription(name, description, verbose, tooltip);
     }
     
-    public static Description getSystemCommand(long timestamp, String value)
+    public static Description getSystemCommand(long timestamp, @NotNull String value)
     {
         String name = "SystemCommand";
         String time = String.valueOf(timestamp);
@@ -129,7 +130,7 @@ public class InputDescriptions {
         return new InputDescription(name, description, verbose, tooltip);
     }
     
-    public static Description getScreenshot(long timestamp, String path)
+    public static Description getScreenshot(long timestamp, @NotNull String path)
     {
         String fileName = FileSystem.createFileNameFromFilePath(path);
         
@@ -149,7 +150,7 @@ class InputDescription implements Description, Serializable {
     String verbose;
     String tooltip;
     
-    InputDescription(String name, String value, String verbose, String tooltip)
+    InputDescription(@NotNull String name, @NotNull String value, @NotNull String verbose, @NotNull String tooltip)
     {
         this.name = name;
         this.value = value;

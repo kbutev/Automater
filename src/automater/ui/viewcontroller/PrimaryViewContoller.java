@@ -14,6 +14,8 @@ import automater.settings.Hotkey;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.work.model.Macro;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 /**
  * Root view controller responsible for picking which view controller will be
@@ -22,23 +24,18 @@ import automater.work.model.Macro;
  * @author Bytevi
  */
 public class PrimaryViewContoller implements RootViewController {
-    private BaseViewController _currentViewController;
+    @Nullable private BaseViewController _currentViewController;
     
     // Cached view controllers and their presenters
     // These view controllers are never initialized twice
-    private OpenMacroViewController _openMacroViewController;
-    private OpenMacroPresenter _openMacroPresenter;
-    private RecordMacroViewController _recordMacroViewController;
-    private RecordMacroPresenter _recordMacroPresenter;
+    @Nullable private OpenMacroViewController _openMacroViewController;
+    @Nullable private OpenMacroPresenter _openMacroPresenter;
+    @Nullable private RecordMacroViewController _recordMacroViewController;
+    @Nullable private RecordMacroPresenter _recordMacroPresenter;
     
     public PrimaryViewContoller()
     {
         
-    }
-    
-    public BaseViewController getCurrentViewController()
-    {
-        return _currentViewController;
     }
     
     public void start()
@@ -52,6 +49,12 @@ public class PrimaryViewContoller implements RootViewController {
     }
     
     // # RootViewController
+    
+    @Override
+    public @Nullable BaseViewController getCurrentViewController()
+    {
+        return _currentViewController;
+    }
     
     @Override
     public void navigateToRecordScreen()
@@ -70,7 +73,7 @@ public class PrimaryViewContoller implements RootViewController {
     }
     
     @Override
-    public void navigateToPlayScreen(automater.work.model.Macro macro)
+    public void navigateToPlayScreen(@NotNull automater.work.model.Macro macro)
     {
         Logger.messageEvent(this, "Navigating to play macro screen.");
         
@@ -78,7 +81,7 @@ public class PrimaryViewContoller implements RootViewController {
     }
     
     @Override
-    public void navigateToEditScreen(automater.work.model.Macro macro)
+    public void navigateToEditScreen(@NotNull automater.work.model.Macro macro)
     {
         Logger.messageEvent(this, "Navigating to edit macro screen.");
         
@@ -157,7 +160,7 @@ public class PrimaryViewContoller implements RootViewController {
         _recordMacroPresenter.start();
     }
     
-    private void switchScreenToPlay(Macro macro)
+    private void switchScreenToPlay(@NotNull Macro macro)
     {
         Hotkey playOrStopHotkey;
         playOrStopHotkey = new Hotkey(InputKeyValue._F4);
@@ -179,7 +182,7 @@ public class PrimaryViewContoller implements RootViewController {
         presenter.start();
     }
     
-    private void switchScreenToEdit(Macro macro)
+    private void switchScreenToEdit(@NotNull Macro macro)
     {
         EditMacroPresenter presenter = new EditMacroPresenter(this, macro);
         EditMacroViewController vc = new EditMacroViewController(presenter);

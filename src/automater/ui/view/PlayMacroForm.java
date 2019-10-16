@@ -7,6 +7,7 @@ package automater.ui.view;
 
 import automater.TextValue;
 import automater.utilities.SimpleCallback;
+import com.sun.istack.internal.NotNull;
 import javax.swing.DefaultListSelectionModel;
 
 /**
@@ -283,14 +284,14 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         cancelRecording();
     }
     
-    public void setMacroInfo(String macroName, String macroDescription, StandardDescriptionsDataSource macroActionsDataSource)
+    public void setMacroInfo(@NotNull String macroName, @NotNull String macroDescription, @NotNull StandardDescriptionsDataSource macroActionsDataSource)
     {
         macroNameLabel.setText(macroName);
         macroDescriptionLabel.setText(macroDescription);
         macroActionsList.setModel(macroActionsDataSource);
     }
     
-    public void setMacroParametersDescription(String value)
+    public void setMacroParametersDescription(@NotNull String value)
     {
         optionsLabel.setText(value);
     }

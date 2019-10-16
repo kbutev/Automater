@@ -18,6 +18,8 @@ import automater.utilities.CollectionUtilities;
 import automater.utilities.DeviceScreen;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -34,17 +36,17 @@ import org.jnativehook.mouse.NativeMouseWheelEvent;
  */
 public class Recorder implements RecorderJHookListenerDelegate {
     private static Recorder singleton;
-    private final Object _lock = new Object();
+    @NotNull private final Object _lock = new Object();
     
-    public final Defaults defaults = new Defaults();
+    @NotNull public final Defaults defaults = new Defaults();
     
-    private RecorderJHookListener _nativeListener;
-    private final RecorderMasterNativeParser _masterParser;
+    @NotNull private final RecorderMasterNativeParser _masterParser;
+    @Nullable private RecorderJHookListener _nativeListener;
     
     private boolean _recording = false;
-    private BaseRecorderListener _listener;
-    private BaseRecorderNativeParser _inputParser;
-    private BaseRecorderModel _recorderModel;
+    @Nullable private BaseRecorderListener _listener;
+    @Nullable private BaseRecorderNativeParser _inputParser;
+    @Nullable private BaseRecorderModel _recorderModel;
     
     private Recorder()
     {
@@ -53,7 +55,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
     
     // # Public
     
-    synchronized public static Recorder getDefault()
+    synchronized public static @NotNull Recorder getDefault()
     {
         if (singleton == null)
         {
@@ -70,12 +72,12 @@ public class Recorder implements RecorderJHookListenerDelegate {
         startIfNotStarted();
     }
     
-    public void start(BaseRecorderNativeParser parser, BaseRecorderModel model, BaseRecorderListener listener) throws Exception
+    public void start(@NotNull BaseRecorderNativeParser parser, @NotNull BaseRecorderModel model, @NotNull BaseRecorderListener listener) throws Exception
     {
         start(parser, model, listener, null);
     }
     
-    public void start(BaseRecorderNativeParser parser, BaseRecorderModel model, BaseRecorderListener listener, Hotkey stopHotkey) throws Exception
+    public void start(@NotNull BaseRecorderNativeParser parser, @NotNull BaseRecorderModel model, @NotNull BaseRecorderListener listener, @Nullable Hotkey stopHotkey) throws Exception
     {
         startIfNotStarted();
         
@@ -124,19 +126,19 @@ public class Recorder implements RecorderJHookListenerDelegate {
         }
     }
     
-    public void registerHotkeyListener(RecorderHotkeyListener listener)
+    public void registerHotkeyListener(@NotNull RecorderHotkeyListener listener)
     {
         startIfNotStarted();
         
         _masterParser.registerHotkeyListener(listener);
     }
     
-    public void unregisterHotkeyListener(RecorderHotkeyListener listener)
+    public void unregisterHotkeyListener(@NotNull RecorderHotkeyListener listener)
     {
         _masterParser.unregisterHotkeyListener(listener);
     }
     
-    public void registerPlayStopHotkeyListener(RecorderHotkeyListener listener)
+    public void registerPlayStopHotkeyListener(@NotNull RecorderHotkeyListener listener)
     {
         startIfNotStarted();
         
@@ -159,7 +161,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
     // # RecorderJHookListenerDelegate
     
     @Override
-    public void onParseInput(RecorderUserInput input)
+    public void onParseInput(@NotNull RecorderUserInput input)
     {
         // If not recording, do nothing
         if (!_recording)
@@ -224,7 +226,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
         }
     }
     
-    private void cancel(boolean success, Exception exception) throws Exception
+    private void cancel(boolean success, @NotNull Exception exception) throws Exception
     {
         synchronized (_lock)
         {
@@ -251,7 +253,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
     // Default values
     public class Defaults
     {
-        public ArrayList<RecorderParserFlag> getDefaultRecordFlags()
+        public @NotNull ArrayList<RecorderParserFlag> getDefaultRecordFlags()
         {
             ArrayList<RecorderParserFlag> settings;
             settings = new ArrayList();
@@ -264,7 +266,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
             return settings;
         }
         
-        public ArrayList<RecorderParserFlag> getRecordOnlyKeyClicksAndMouseMotionFlags()
+        public @NotNull ArrayList<RecorderParserFlag> getRecordOnlyKeyClicksAndMouseMotionFlags()
         {
             ArrayList<RecorderParserFlag> settings;
             settings = new ArrayList();
@@ -275,7 +277,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
             return settings;
         }
         
-        public ArrayList<RecorderParserFlag> getRecordOnlyKeyClicksFlags()
+        public @NotNull ArrayList<RecorderParserFlag> getRecordOnlyKeyClicksFlags()
         {
             ArrayList<RecorderParserFlag> settings;
             settings = new ArrayList();
@@ -285,7 +287,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
             return settings;
         }
         
-        public ArrayList<RecorderParserFlag> getRecordOnlyKeyClicksAndMouseMotionSilentlyFlags()
+        public @NotNull ArrayList<RecorderParserFlag> getRecordOnlyKeyClicksAndMouseMotionSilentlyFlags()
         {
             ArrayList<RecorderParserFlag> settings;
             settings = new ArrayList();
@@ -295,7 +297,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
             return settings;
         }
         
-        public ArrayList<RecorderParserFlag> getRecordOnlyKeyClicksSilentlyFlags()
+        public @NotNull ArrayList<RecorderParserFlag> getRecordOnlyKeyClicksSilentlyFlags()
         {
             ArrayList<RecorderParserFlag> settings;
             settings = new ArrayList();
@@ -308,13 +310,13 @@ public class Recorder implements RecorderJHookListenerDelegate {
 
 class RecorderMasterNativeParser implements BaseRecorderNativeParser 
 {
-    private final Object _lock = new Object();
+    @NotNull private final Object _lock = new Object();
     
-    private BaseRecorderNativeParser _subParser;
+    @Nullable private BaseRecorderNativeParser _subParser;
     
-    private final RecorderSystemKeyboardTranslator _keyboardTranslator = new RecorderSystemKeyboardTranslator();
-    private final HashSet<RecorderHotkeyListener> _hotkeyListeners = new HashSet<>();
-    private RecorderHotkeyListener _playStopHotkeyListener;
+    @NotNull private final RecorderSystemKeyboardTranslator _keyboardTranslator = new RecorderSystemKeyboardTranslator();
+    @NotNull private final HashSet<RecorderHotkeyListener> _hotkeyListeners = new HashSet<>();
+    @Nullable private RecorderHotkeyListener _playStopHotkeyListener;
     
     public RecorderMasterNativeParser()
     {
@@ -329,24 +331,15 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         }
     }
     
-    public void setSubparser(BaseRecorderNativeParser parser)
+    public void setSubparser(@Nullable BaseRecorderNativeParser parser)
     {
-        if (parser != null)
-        {
-            Logger.message(this, "set parser to " + parser.toString());
-        }
-        else
-        {
-            Logger.message(this, "set parser to null");
-        }
-        
         synchronized (_lock)
         {
             _subParser = parser;
         }
     }
     
-    public void registerHotkeyListener(RecorderHotkeyListener listener)
+    public void registerHotkeyListener(@NotNull RecorderHotkeyListener listener)
     {
         synchronized (_lock)
         {
@@ -354,7 +347,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         }
     }
     
-    public void unregisterHotkeyListener(RecorderHotkeyListener listener)
+    public void unregisterHotkeyListener(@NotNull RecorderHotkeyListener listener)
     {
         synchronized (_lock)
         {
@@ -362,7 +355,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         }
     }
     
-    public RecorderHotkeyListener getPlayStopHotkeyListener()
+    public @Nullable RecorderHotkeyListener getPlayStopHotkeyListener()
     {
         synchronized (_lock)
         {
@@ -370,7 +363,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         }
     }
     
-    public void setPlayStopHotkeyListener(RecorderHotkeyListener listener)
+    public void setPlayStopHotkeyListener(@Nullable RecorderHotkeyListener listener)
     {
         synchronized (_lock)
         {
@@ -388,7 +381,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     }
     
     @Override
-    public RecorderUserInput evaluatePress(NativeKeyEvent keyboardEvent) {
+    public RecorderUserInput evaluatePress(@NotNull NativeKeyEvent keyboardEvent) {
         // Hotkey listeners update & alert
         InputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, true);
         
@@ -414,7 +407,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     }
 
     @Override
-    public RecorderUserInput evaluateRelease(NativeKeyEvent keyboardEvent) {
+    public RecorderUserInput evaluateRelease(@NotNull NativeKeyEvent keyboardEvent) {
         // Hotkey listeners update
         InputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, false);
         boolean continueParsing = updateHotkeyListeners(translatedKey, false);
@@ -436,7 +429,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     }
 
     @Override
-    public RecorderUserInput evaluatePress(NativeMouseEvent mouseEvent) {
+    public RecorderUserInput evaluatePress(@NotNull NativeMouseEvent mouseEvent) {
         BaseRecorderNativeParser subparser = getSubparser();
         
         if (subparser == null)
@@ -448,7 +441,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     }
 
     @Override
-    public RecorderUserInput evaluateRelease(NativeMouseEvent mouseEvent) {
+    public RecorderUserInput evaluateRelease(@NotNull NativeMouseEvent mouseEvent) {
         BaseRecorderNativeParser subparser = getSubparser();
         
         if (subparser == null)
@@ -460,7 +453,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     }
 
     @Override
-    public RecorderUserInput evaluateMouseMove(NativeMouseEvent mouseMoveEvent) {
+    public RecorderUserInput evaluateMouseMove(@NotNull NativeMouseEvent mouseMoveEvent) {
         BaseRecorderNativeParser subparser = getSubparser();
         
         if (subparser == null)
@@ -472,7 +465,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     }
 
     @Override
-    public RecorderUserInput evaluateMouseWheel(NativeMouseWheelEvent mouseWheelEvent) {
+    public RecorderUserInput evaluateMouseWheel(@NotNull NativeMouseWheelEvent mouseWheelEvent) {
         BaseRecorderNativeParser subparser = getSubparser();
         
         if (subparser == null)
@@ -484,7 +477,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     }
 
     @Override
-    public RecorderUserInput evaluateWindowEvent(WindowEvent windowEvent) {
+    public RecorderUserInput evaluateWindowEvent(@NotNull WindowEvent windowEvent) {
         BaseRecorderNativeParser subparser = getSubparser();
         
         if (subparser == null)
@@ -495,7 +488,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         return subparser.evaluateWindowEvent(windowEvent);
     }
     
-    private boolean updateHotkeyListeners(InputKey translatedKey, boolean performDelegateCall)
+    private boolean updateHotkeyListeners(@NotNull InputKey translatedKey, boolean performDelegateCall)
     {
         boolean continueWithParsing = true;
         
@@ -527,14 +520,14 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         return continueWithParsing;
     }
     
-    public boolean hotkeyListenerIsEligibleForKeystrokeEvent(RecorderHotkeyListener l, InputKey translatedKey)
+    public boolean hotkeyListenerIsEligibleForKeystrokeEvent(@NotNull RecorderHotkeyListener l, @NotNull InputKey translatedKey)
     {
         return l.isListeningForAnyHotkey() || isHotkeyEvent(l.getHotkey(), translatedKey);
     }
     
-    public boolean isHotkeyEvent(Hotkey hotkey, InputKey translatedKey)
+    public boolean isHotkeyEvent(@Nullable Hotkey hotkey, @NotNull InputKey translatedKey)
     {
-        if (translatedKey == null)
+        if (hotkey == null)
         {
             return false;
         }

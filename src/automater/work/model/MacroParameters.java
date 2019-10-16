@@ -6,6 +6,7 @@
 package automater.work.model;
 
 import automater.TextValue;
+import com.sun.istack.internal.NotNull;
 import java.io.Serializable;
 
 /**
@@ -18,7 +19,7 @@ public class MacroParameters implements Serializable {
     public final int repeatTimes;
     public final boolean repeatForever;
     
-    public static MacroParameters defaultValues()
+    public static @NotNull MacroParameters defaultValues()
     {
         return new MacroParameters();
     }

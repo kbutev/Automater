@@ -7,6 +7,8 @@ package automater.recorder;
 
 import automater.recorder.model.RecorderResult;
 import automater.recorder.model.RecorderUserInput;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 /**
  * Describes a recorded user input model.
@@ -24,10 +26,10 @@ import automater.recorder.model.RecorderUserInput;
 public interface BaseRecorderModel {
     public int getSize();
     
-    public RecorderUserInput getFirstAddedInput();
-    public RecorderUserInput getLastAddedInput();
+    public @Nullable RecorderUserInput getFirstAddedInput();
+    public @Nullable RecorderUserInput getLastAddedInput();
     
-    public void addInput(RecorderUserInput input) throws Exception;
+    public void addInput(@NotNull RecorderUserInput input) throws Exception;
     
-    public RecorderResult retrieveRecordedData();
+    public @Nullable RecorderResult retrieveRecordedData();
 }

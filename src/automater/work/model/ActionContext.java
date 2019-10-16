@@ -6,10 +6,10 @@
 package automater.work.model;
 
 import automater.work.BaseExecutorTimer;
+import com.sun.istack.internal.NotNull;
 import java.awt.Robot;
 import java.util.HashSet;
 import java.awt.Dimension;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -20,16 +20,16 @@ import java.util.Set;
  * @author Bytevi
  */
 public class ActionContext implements BaseActionContext {
-    private final Robot _robot;
-    private final BaseExecutorTimer _timer;
-    private final Dimension _recordedScreenSize;
-    private final Dimension _currentScreenSize;
+    @NotNull private final Robot _robot;
+    @NotNull private final BaseExecutorTimer _timer;
+    @NotNull private final Dimension _recordedScreenSize;
+    @NotNull private final Dimension _currentScreenSize;
     
-    private ActionSystemKeyModifiers _modifiers = ActionSystemKeyModifiers.none();
+    @NotNull private ActionSystemKeyModifiers _modifiers = ActionSystemKeyModifiers.none();
     
-    private final HashSet<ActionSystemKey> _keysPressed = new HashSet<>();
+    @NotNull private final HashSet<ActionSystemKey> _keysPressed = new HashSet<>();
     
-    public ActionContext(Robot robot, BaseExecutorTimer timer, Dimension recordedScreenSize, Dimension currentScreenSize)
+    public ActionContext(@NotNull Robot robot, @NotNull BaseExecutorTimer timer, @NotNull Dimension recordedScreenSize, @NotNull Dimension currentScreenSize)
     {
         this._robot = robot;
         this._timer = timer;
@@ -38,41 +38,41 @@ public class ActionContext implements BaseActionContext {
     }
 
     @Override
-    public Robot getRobot() {
+    public @NotNull Robot getRobot() {
         return _robot;
     }
     
     @Override
-    public BaseExecutorTimer getTimer() {
+    public @NotNull BaseExecutorTimer getTimer() {
         return _timer;
     }
     
     @Override
-    public Dimension getRecordedScreenSize()
+    public @NotNull Dimension getRecordedScreenSize()
     {
         return _recordedScreenSize;
     }
     
     @Override
-    public Dimension getCurrentScreenSize()
+    public @NotNull Dimension getCurrentScreenSize()
     {
         return _currentScreenSize;
     }
     
     @Override
-    public ActionSystemKeyModifiers getPressedModifiers()
+    public @NotNull ActionSystemKeyModifiers getPressedModifiers()
     {
         return _modifiers;
     }
     
     @Override
-    public Set<ActionSystemKey> getPressedKeys()
+    public @NotNull Set<ActionSystemKey> getPressedKeys()
     {
         return new HashSet(_keysPressed);
     }
     
     @Override
-    public boolean isModifierPressed(ActionSystemKeyModifierValue modifier)
+    public boolean isModifierPressed(@NotNull ActionSystemKeyModifierValue modifier)
     {
         return _modifiers.modifiers.contains(modifier);
     }
@@ -96,13 +96,13 @@ public class ActionContext implements BaseActionContext {
     }
     
     @Override
-    public boolean isKeyPressed(ActionSystemKey key)
+    public boolean isKeyPressed(@NotNull ActionSystemKey key)
     {
         return _keysPressed.contains(key);
     }
     
     @Override
-    public void onPressKey(ActionSystemKey key, ActionSystemKeyModifiers modifiers)
+    public void onPressKey(@NotNull ActionSystemKey key, @NotNull ActionSystemKeyModifiers modifiers)
     {
         _modifiers = _modifiers.combine(modifiers);
         
@@ -110,7 +110,7 @@ public class ActionContext implements BaseActionContext {
     }
     
     @Override
-    public void onReleaseKey(ActionSystemKey key, ActionSystemKeyModifiers modifiers)
+    public void onReleaseKey(@NotNull ActionSystemKey key, @NotNull ActionSystemKeyModifiers modifiers)
     {
         for (ActionSystemKeyModifierValue value : modifiers.modifiers)
         {

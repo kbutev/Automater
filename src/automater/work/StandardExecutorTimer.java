@@ -6,6 +6,7 @@
 package automater.work;
 
 import automater.work.model.MacroParameters;
+import com.sun.istack.internal.NotNull;
 import java.util.List;
 
 /**
@@ -18,9 +19,9 @@ import java.util.List;
  * @author Byti
  */
 public class StandardExecutorTimer implements BaseExecutorTimer {
-    private final Object _timerLock = new Object();
+    @NotNull private final Object _timerLock = new Object();
     
-    private List<BaseAction> _actions;
+    @NotNull private List<BaseAction> _actions;
     
     private long _durationTotal = 0;
     
@@ -40,7 +41,7 @@ public class StandardExecutorTimer implements BaseExecutorTimer {
     // # ExecutorTimer
     
     @Override
-    public void setup(List<BaseAction> actions, MacroParameters parameters) throws Exception {
+    public void setup(@NotNull List<BaseAction> actions, @NotNull MacroParameters parameters) throws Exception {
         BaseAction firstAction = actions.get(0);
         
         synchronized (_timerLock)
@@ -114,7 +115,7 @@ public class StandardExecutorTimer implements BaseExecutorTimer {
     }
     
     @Override
-    public boolean canPerformNextAction(BaseAction action) {
+    public boolean canPerformNextAction(@NotNull BaseAction action) {
         long currentTime = getCurrentTimeValue();
         long actionPerformTime = action.getPerformTime();
         
@@ -122,7 +123,7 @@ public class StandardExecutorTimer implements BaseExecutorTimer {
     }
     
     @Override
-    public void willPerformNextAction(BaseAction action) {
+    public void willPerformNextAction(@NotNull BaseAction action) {
         if (isActionATypeOfWaiting(action))
         {
             _timeToWait = action.getWaitTime();
@@ -170,7 +171,7 @@ public class StandardExecutorTimer implements BaseExecutorTimer {
         return 0;
     }
     
-    private boolean isActionATypeOfWaiting(BaseAction action) 
+    private boolean isActionATypeOfWaiting(@NotNull BaseAction action) 
     {
         return action.getWaitTime() > 0;
     }

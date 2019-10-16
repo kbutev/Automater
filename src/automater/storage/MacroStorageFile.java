@@ -11,6 +11,8 @@ import automater.utilities.Errors;
 import automater.utilities.FileSystem;
 import automater.utilities.StringFormatting;
 import automater.work.model.Macro;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -28,16 +30,16 @@ public class MacroStorageFile {
     public static final int MACRO_NAME_MIN_LENGTH = 3;
     public static final int MACRO_NAME_MAX_LENGTH = 32;
     
-    private final Object _lock = new Object();
+    @NotNull private final Object _lock = new Object();
     
-    private Macro _macro;
+    @NotNull private Macro _macro;
     
-    public static MacroStorageFile createFromMacro(Macro macro)
+    public static @Nullable MacroStorageFile createFromMacro(@NotNull Macro macro)
     {
         return new MacroStorageFile(macro);
     }
     
-    public static MacroStorageFile createFromFile(File file)
+    public static @Nullable MacroStorageFile createFromFile(@NotNull File file)
     {
         String data = MacroStorageFile.readFromFile(file);
         
@@ -62,14 +64,14 @@ public class MacroStorageFile {
         return new MacroStorageFile(macro);
     }
     
-    private MacroStorageFile(Macro macro)
+    private MacroStorageFile(@NotNull Macro macro)
     {
         _macro = macro;
     }
     
     // # Validators
     
-    public static List<Character> getAllowedSpecialCharacters()
+    public static @NotNull List<Character> getAllowedSpecialCharacters()
     {
         ArrayList<Character> chars = new ArrayList<>();
         chars.add(' ');
@@ -83,7 +85,7 @@ public class MacroStorageFile {
         return chars;
     }
     
-    public static Exception getMacroNameIsUnavailableError(String name)
+    public static @NotNull Exception getMacroNameIsUnavailableError(@NotNull String name)
     {
         if (name.isEmpty())
         {
@@ -109,7 +111,7 @@ public class MacroStorageFile {
         return null;
     }
     
-    public static boolean isMacroCharsValid(String name)
+    public static boolean isMacroCharsValid(@NotNull String name)
     {
         List<Character> allowedChars = getAllowedSpecialCharacters();
         
@@ -133,7 +135,7 @@ public class MacroStorageFile {
     
     // # Properties
     
-    public Macro getMacro()
+    public @NotNull Macro getMacro()
     {
         synchronized (_lock)
         {
@@ -141,17 +143,17 @@ public class MacroStorageFile {
         }
     }
     
-    public String name()
+    public @NotNull String name()
     {
         return _macro.name;
     }
     
-    public String fileName()
+    public @NotNull String fileName()
     {
         return name() + FILE_NAME_EXTENSION;
     }
     
-    public String filePath()
+    public @NotNull String filePath()
     {
         String path = FileSystem.getLocalFilePath();
         return FileSystem.createFilePathWithBasePath(path, fileName());
@@ -189,7 +191,7 @@ public class MacroStorageFile {
         }
     }
     
-    public void update(Macro macro) throws Exception
+    public void update(@NotNull Macro macro) throws Exception
     {
         File file = getFile();
         
@@ -227,20 +229,20 @@ public class MacroStorageFile {
     
     // # Parsing
     
-    private static Macro parseMacroFromData(String data) throws Exception
+    private static @NotNull Macro parseMacroFromData(@NotNull String data) throws Exception
     {
         return Archiver.deserializeObject(Macro.class, data);
     }
     
     // # Private
     
-    private File getFile() throws Exception
+    private @NotNull File getFile() throws Exception
     {
         File file = new File(filePath());
         return file;
     }
     
-    private static void writeToFile(File file, String data) throws Exception
+    private static void writeToFile(@NotNull File file, @NotNull String data) throws Exception
     {
         PrintWriter writer = null;
         
@@ -267,7 +269,7 @@ public class MacroStorageFile {
         }
     }
     
-    private static String readFromFile(File file)
+    private static @NotNull String readFromFile(@NotNull File file)
     {
         String data = "";
         

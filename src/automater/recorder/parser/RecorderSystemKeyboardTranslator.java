@@ -10,6 +10,8 @@ import automater.input.InputKeyModifiers;
 import automater.input.InputKeyModifierValue;
 import automater.input.InputKeyValue;
 import automater.utilities.Logger;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.util.HashMap;
 import org.jnativehook.keyboard.NativeKeyEvent;
 
@@ -19,26 +21,26 @@ import org.jnativehook.keyboard.NativeKeyEvent;
  * @author Bytevi
  */
 public class RecorderSystemKeyboardTranslator {
-    private static HashMap<Integer, InputKeyValue> _keyMapping = new HashMap<>();
+    @NotNull private static HashMap<Integer, InputKeyValue> _keyMapping = new HashMap<>();
     
-    private InputKeyModifiers _mask = InputKeyModifiers.none();
+    @NotNull private InputKeyModifiers _mask = InputKeyModifiers.none();
     
     public RecorderSystemKeyboardTranslator()
     {
         
     }
     
-    public InputKeyModifiers getCurrentMask()
+    public @NotNull InputKeyModifiers getCurrentMask()
     {
         return _mask;
     }
     
-    public InputKey translate(NativeKeyEvent keyEvent)
+    public @Nullable InputKey translate(@NotNull NativeKeyEvent keyEvent)
     {
         return translate(false, keyEvent, true);
     }
     
-    public InputKey translate(boolean recordKeystroke, NativeKeyEvent keyEvent, boolean press)
+    public @Nullable InputKey translate(boolean recordKeystroke, @NotNull NativeKeyEvent keyEvent, boolean press)
     {
         int keyCode = keyEvent.getKeyCode();
         
@@ -59,7 +61,7 @@ public class RecorderSystemKeyboardTranslator {
         return new InputKey(keyValue , _mask);
     }
     
-    private void handleMaskKey(InputKeyValue keyValue, boolean press)
+    private void handleMaskKey(@NotNull InputKeyValue keyValue, boolean press)
     {
         InputKeyModifierValue mask = maskValueFoKey(keyValue);
         
@@ -71,6 +73,38 @@ public class RecorderSystemKeyboardTranslator {
         {
             _mask = _mask.createWithRemovedModifier(mask);
         }
+    }
+    
+    public static @NotNull InputKeyValue keyValueForJNativeHookKey(int keyCode)
+    {
+        InputKeyValue result = getKeyMapping().get(keyCode);
+        
+        if (result == null)
+        {
+            return InputKeyValue.UNKNOWN;
+        }
+        
+        return result;
+    }
+    
+    public static @NotNull InputKeyModifierValue maskValueFoKey(@NotNull InputKeyValue keyValue)
+    {
+        if (keyValue == InputKeyValue._SHIFT)
+        {
+            return InputKeyModifierValue.SHIFT;
+        }
+        
+        if (keyValue == InputKeyValue._CONTROL)
+        {
+            return InputKeyModifierValue.CTRL;
+        }
+        
+        if (keyValue == InputKeyValue._ALT)
+        {
+            return InputKeyModifierValue.ALT;
+        }
+            
+        return InputKeyModifierValue.NONE;
     }
     
     public static synchronized HashMap<Integer, InputKeyValue> getKeyMapping()
@@ -185,37 +219,5 @@ public class RecorderSystemKeyboardTranslator {
         _keyMapping.put(NativeKeyEvent.VC_VOLUME_DOWN, InputKeyValue._VOLUME_DOWN);
         
         return _keyMapping;
-    }
-    
-    public static InputKeyValue keyValueForJNativeHookKey(int keyCode)
-    {
-        InputKeyValue result = getKeyMapping().get(keyCode);
-        
-        if (result == null)
-        {
-            return InputKeyValue.UNKNOWN;
-        }
-        
-        return result;
-    }
-    
-    public static InputKeyModifierValue maskValueFoKey(InputKeyValue keyValue)
-    {
-        if (keyValue == InputKeyValue._SHIFT)
-        {
-            return InputKeyModifierValue.SHIFT;
-        }
-        
-        if (keyValue == InputKeyValue._CONTROL)
-        {
-            return InputKeyModifierValue.CTRL;
-        }
-        
-        if (keyValue == InputKeyValue._ALT)
-        {
-            return InputKeyModifierValue.ALT;
-        }
-            
-        return InputKeyModifierValue.NONE;
     }
 }

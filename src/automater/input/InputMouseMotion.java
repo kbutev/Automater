@@ -5,6 +5,7 @@
  */
 package automater.input;
 
+import com.sun.istack.internal.NotNull;
 import java.util.List;
 
 /**
@@ -17,8 +18,8 @@ import java.util.List;
 public interface InputMouseMotion extends InputMouse {
     public int numberOfMovements();
     
-    public List<InputMouseMove> getMoves();
-    public InputMouseMove getFirstMove();
-    public InputMouseMove getLastMove();
-    public InputMouseMove getMoveAt(int index);
+    public @NotNull List<InputMouseMove> getMoves();
+    public @NotNull InputMouseMove getFirstMove();
+    public @NotNull InputMouseMove getLastMove();
+    public @NotNull InputMouseMove getMoveAt(int index);
 }

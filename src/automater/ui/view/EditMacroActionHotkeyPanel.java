@@ -5,7 +5,6 @@
  */
 package automater.ui.view;
 
-import automater.TextValue;
 import automater.utilities.Callback;
 import automater.utilities.SimpleCallback;
 

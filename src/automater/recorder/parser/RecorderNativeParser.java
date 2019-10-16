@@ -9,6 +9,8 @@ import automater.recorder.model.RecorderUserInput;
 import automater.input.InputKey;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.Logger;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.awt.event.WindowEvent;
 import java.util.Date;
 import java.util.List;
@@ -22,32 +24,32 @@ import org.jnativehook.mouse.NativeMouseWheelEvent;
  * @author Bytevi
  */
 public class RecorderNativeParser implements BaseRecorderNativeParser {
-    public final List<RecorderParserFlag> flags;
+    @NotNull public final List<RecorderParserFlag> flags;
     
-    private final RecorderSystemKeyboardTranslator _keyboardTranslator = new RecorderSystemKeyboardTranslator();
-    private final RecorderSystemMouseTranslator _mouseTranslator = new RecorderSystemMouseTranslator(_keyboardTranslator);
-    private final EventLogger _eventLogger = new EventLogger();
+    @NotNull private final RecorderSystemKeyboardTranslator _keyboardTranslator = new RecorderSystemKeyboardTranslator();
+    @NotNull private final RecorderSystemMouseTranslator _mouseTranslator = new RecorderSystemMouseTranslator(_keyboardTranslator);
+    @NotNull private final EventLogger _eventLogger = new EventLogger();
     
     private Date _firstDate;
     
-    public RecorderNativeParser(List<RecorderParserFlag> flags)
+    public RecorderNativeParser(@NotNull List<RecorderParserFlag> flags)
     {
         this.flags = CollectionUtilities.copyAsImmutable(flags);
     }
     
     @Override
-    public RecorderUserInput evaluatePress(NativeKeyEvent keyboardEvent)
+    public @Nullable RecorderUserInput evaluatePress(@NotNull NativeKeyEvent keyboardEvent)
     {
         return evaluateKeyboard(keyboardEvent, true);
     }
     
     @Override
-    public RecorderUserInput evaluateRelease(NativeKeyEvent keyboardEvent)
+    public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeKeyEvent keyboardEvent)
     {
         return evaluateKeyboard(keyboardEvent, false);
     }
     
-    private RecorderUserInput evaluateKeyboard(NativeKeyEvent keyboardEvent, boolean press)
+    private @Nullable RecorderUserInput evaluateKeyboard(@NotNull NativeKeyEvent keyboardEvent, boolean press)
     {
         if (!flags.contains(RecorderParserFlag.RECORD_KEYBOARD_EVENTS))
         {
@@ -81,18 +83,18 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
     }
     
     @Override
-    public RecorderUserInput evaluatePress(NativeMouseEvent mouseEvent)
+    public @Nullable RecorderUserInput evaluatePress(@NotNull NativeMouseEvent mouseEvent)
     {
         return evaluateMouse(mouseEvent, true);
     }
     
     @Override
-    public RecorderUserInput evaluateRelease(NativeMouseEvent mouseEvent)
+    public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeMouseEvent mouseEvent)
     {
         return evaluateMouse(mouseEvent, false);
     }
     
-    private RecorderUserInput evaluateMouse(NativeMouseEvent mouseEvent, boolean press)
+    private @Nullable RecorderUserInput evaluateMouse(@NotNull NativeMouseEvent mouseEvent, boolean press)
     {
         if (!flags.contains(RecorderParserFlag.RECORD_MOUSE_CLICKS))
         {
@@ -126,7 +128,7 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
     }
     
     @Override
-    public RecorderUserInput evaluateMouseMove(NativeMouseEvent mouseMoveEvent)
+    public @Nullable RecorderUserInput evaluateMouseMove(@NotNull NativeMouseEvent mouseMoveEvent)
     {
         if (!flags.contains(RecorderParserFlag.RECORD_MOUSE_MOTION))
         {
@@ -148,7 +150,7 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
     }
     
     @Override
-    public RecorderUserInput evaluateMouseWheel(NativeMouseWheelEvent mouseWheelEvent)
+    public @Nullable RecorderUserInput evaluateMouseWheel(@NotNull NativeMouseWheelEvent mouseWheelEvent)
     {
         if (!flags.contains(RecorderParserFlag.RECORD_MOUSE_WHEEL))
         {
@@ -172,7 +174,7 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
     }
     
     @Override
-    public RecorderUserInput evaluateWindowEvent(WindowEvent windowEvent)
+    public @Nullable RecorderUserInput evaluateWindowEvent(@NotNull WindowEvent windowEvent)
     {
         if (!flags.contains(RecorderParserFlag.RECORD_WINDOW_EVENTS))
         {
@@ -199,7 +201,7 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
     // Private logger
     private class EventLogger
     {
-        void logKeyboardClickEvent(NativeKeyEvent keyboardEvent, InputKey translatedKey)
+        void logKeyboardClickEvent(@NotNull NativeKeyEvent keyboardEvent, @NotNull InputKey translatedKey)
         {
             if (flags.contains(RecorderParserFlag.LOG_EVENTS))
             {
@@ -207,7 +209,7 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
             }
         }
         
-        void logMouseClickEvent(NativeMouseEvent keyboardEvent, InputKey translatedKey)
+        void logMouseClickEvent(@NotNull NativeMouseEvent keyboardEvent, @NotNull InputKey translatedKey)
         {
             if (flags.contains(RecorderParserFlag.LOG_EVENTS))
             {
@@ -215,7 +217,7 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
             }
         }
         
-        void logMouseMovementEvent(NativeMouseEvent keyboardEvent, int x, int y)
+        void logMouseMovementEvent(@NotNull NativeMouseEvent keyboardEvent, int x, int y)
         {
             if (flags.contains(RecorderParserFlag.LOG_EVENTS))
             {
@@ -223,7 +225,7 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
             }
         }
         
-        void logMouseWheelEvent(NativeMouseWheelEvent keyboardEvent)
+        void logMouseWheelEvent(@NotNull NativeMouseWheelEvent keyboardEvent)
         {
             if (flags.contains(RecorderParserFlag.LOG_EVENTS))
             {
@@ -231,7 +233,7 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
             }
         }
         
-        void logWindowEvent(WindowEvent keyboardEvent)
+        void logWindowEvent(@NotNull WindowEvent keyboardEvent)
         {
             if (flags.contains(RecorderParserFlag.LOG_EVENTS))
             {

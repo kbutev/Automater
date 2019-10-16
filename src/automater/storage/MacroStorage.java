@@ -10,6 +10,8 @@ import automater.utilities.Errors;
 import automater.utilities.FileSystem;
 import automater.utilities.Logger;
 import automater.work.model.Macro;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,16 +24,16 @@ import java.util.List;
  * @author Bytevi
  */
 public class MacroStorage {
-    private final Object _lock = new Object();
+    @NotNull private final Object _lock = new Object();
     
-    private final ArrayList<MacroStorageFile> _macros = new ArrayList<>();
+    @NotNull private final ArrayList<MacroStorageFile> _macros = new ArrayList<>();
     
     public MacroStorage()
     {
         loadMacrosFromDevice();
     }
     
-    public List<Macro> getMacros()
+    public @NotNull List<Macro> getMacros()
     {
         ArrayList<MacroStorageFile> currentMacros = macros();
         ArrayList<Macro> macros = new ArrayList<>();
@@ -54,7 +56,7 @@ public class MacroStorage {
     
     // # Validators
     
-    public boolean macroExistsWithName(String name)
+    public boolean macroExistsWithName(@NotNull String name)
     {
         synchronized (_lock)
         {
@@ -72,12 +74,12 @@ public class MacroStorage {
         }
     }
     
-    public boolean isMacroNameAvailable(String name)
+    public boolean isMacroNameAvailable(@NotNull String name)
     {
         return MacroStorageFile.getMacroNameIsUnavailableError(name) == null;
     }
     
-    public Exception getSaveMacroError(Macro macro)
+    public @Nullable Exception getSaveMacroError(@NotNull Macro macro)
     {
         if (macro.actions.isEmpty())
         {
@@ -87,7 +89,7 @@ public class MacroStorage {
         return null;
     }
     
-    public Exception getSaveMacroNameError(String name, boolean checkIfNameIsTaken)
+    public @Nullable Exception getSaveMacroNameError(@NotNull String name, boolean checkIfNameIsTaken)
     {
         if (checkIfNameIsTaken && GeneralStorage.getDefault().getMacrosStorage().macroExistsWithName(name))
         {
@@ -99,7 +101,7 @@ public class MacroStorage {
     
     // # Operations
     
-    public void saveMacroToStorage(Macro macro) throws Exception
+    public void saveMacroToStorage(@NotNull Macro macro) throws Exception
     {
         Logger.message(this, "Saving new macro '" + macro.name + "' to storage...");
         
@@ -141,7 +143,7 @@ public class MacroStorage {
         }
     }
     
-    public void updateMacroInStorage(Macro macro) throws Exception
+    public void updateMacroInStorage(@NotNull Macro macro) throws Exception
     {
         Logger.message(this, "Updating macro " + macro.toString() + ".");
         
@@ -187,7 +189,7 @@ public class MacroStorage {
         Logger.messageEvent(this, "Succesfully updated macro '" + macro.name + "' in storage!");
     }
     
-    public void deleteMacro(Macro macro) throws Exception
+    public void deleteMacro(@NotNull Macro macro) throws Exception
     {
         Logger.message(this, "Deleting macro " + macro.toString() + " from storage.");
         
@@ -234,7 +236,7 @@ public class MacroStorage {
     
     // # Private
     
-    private ArrayList<MacroStorageFile> macros()
+    private @NotNull ArrayList<MacroStorageFile> macros()
     {
         synchronized (_lock)
         {

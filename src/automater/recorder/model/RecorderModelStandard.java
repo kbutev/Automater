@@ -6,7 +6,8 @@
 package automater.recorder.model;
 
 import automater.recorder.BaseRecorderModel;
-import automater.utilities.Logger;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.util.ArrayList;
 
 /**
@@ -15,9 +16,9 @@ import java.util.ArrayList;
  * @author Bytevi
  */
 public class RecorderModelStandard implements BaseRecorderModel {
-    private final ArrayList<RecorderUserInput> _recordedInput = new ArrayList<>();
-    private RecorderUserInput _firstInput;
-    private RecorderUserInput _lastInput;
+    @NotNull private final ArrayList<RecorderUserInput> _recordedInput = new ArrayList<>();
+    @Nullable private RecorderUserInput _firstInput;
+    @Nullable private RecorderUserInput _lastInput;
     
     public RecorderModelStandard()
     {
@@ -31,27 +32,20 @@ public class RecorderModelStandard implements BaseRecorderModel {
     }
     
     @Override
-    public RecorderUserInput getFirstAddedInput()
+    public @Nullable RecorderUserInput getFirstAddedInput()
     {
         return _firstInput;
     }
     
     @Override
-    public RecorderUserInput getLastAddedInput()
+    public @Nullable RecorderUserInput getLastAddedInput()
     {
         return _lastInput;
     }
     
     @Override
-    public void addInput(RecorderUserInput input) throws Exception
+    public void addInput(@NotNull RecorderUserInput input) throws Exception
     {
-        if (input == null)
-        {
-            return;
-        }
-        
-        Logger.message(this, "Add input " + input.toString());
-        
         _recordedInput.add(input);
         
         if (_firstInput == null)
@@ -63,7 +57,7 @@ public class RecorderModelStandard implements BaseRecorderModel {
     }
     
     @Override
-    public RecorderResult retrieveRecordedData()
+    public @Nullable RecorderResult retrieveRecordedData()
     {
         return new RecorderResult(_recordedInput);
     }

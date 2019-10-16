@@ -10,6 +10,8 @@ import automater.utilities.CollectionUtilities;
 import automater.utilities.DateUtilities;
 import automater.utilities.Description;
 import automater.work.BaseAction;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.awt.Dimension;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,21 +24,21 @@ import java.util.List;
  * @author Bytevi
  */
 public class Macro implements Serializable, Description {
-    public final String name;
-    public final List<BaseAction> actions;
-    public final List<Description> actionDescriptions;
-    private String description = "";
-    public final Date dateCreated;
+    @NotNull public final String name;
+    @NotNull public final List<BaseAction> actions;
+    @NotNull public final List<Description> actionDescriptions;
+    @NotNull private String description = "";
+    @NotNull public final Date dateCreated;
     private int numberOfTimesPlayed = 0;
-    private Date lastDatePlayed;
-    public final Dimension screenSize;
+    @NotNull private Date lastDatePlayed;
+    @NotNull public final Dimension screenSize;
     
-    public Macro(String name, List<BaseAction> actions, Date dateCreated, Dimension screenSize)
+    public Macro(@NotNull String name, @NotNull List<BaseAction> actions, @NotNull Date dateCreated, @NotNull Dimension screenSize)
     {
         this(name, actions, dateCreated, dateCreated, screenSize);
     }
     
-    public Macro(String name, List<BaseAction> actions, Date dateCreated, Date lastDatePlayed, Dimension screenSize)
+    public Macro(@NotNull String name, @NotNull List<BaseAction> actions, @NotNull Date dateCreated, @NotNull Date lastDatePlayed, @NotNull Dimension screenSize)
     {
         this.name = name;
         this.actions = CollectionUtilities.copyAsImmutable(actions);
@@ -117,7 +119,7 @@ public class Macro implements Serializable, Description {
         return description;
     }
     
-    public void setDescription(String description)
+    public void setDescription(@Nullable String description)
     {
         this.description = description != null ? description : "";
     }
@@ -137,16 +139,13 @@ public class Macro implements Serializable, Description {
         this.numberOfTimesPlayed++;
     }
     
-    public Date getLastTimePlayedDate()
+    public @NotNull Date getLastTimePlayedDate()
     {
         return this.lastDatePlayed;
     }
     
-    public void setLastTimePlayedDate(Date date)
+    public void setLastTimePlayedDate(@NotNull Date date)
     {
-        if (date != null)
-        {
-            this.lastDatePlayed = date;
-        }
+        this.lastDatePlayed = date;
     }
 }

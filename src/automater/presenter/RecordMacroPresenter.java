@@ -29,6 +29,8 @@ import automater.work.BaseAction;
 import automater.work.model.Macro;
 import automater.work.parser.ActionsFromMacroInputsParser;
 import automater.work.parser.BaseActionsParser;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,27 +44,27 @@ import java.util.List;
  * @author Bytevi
  */
 public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener, RecorderHotkeyListener {
-    private final RootViewController _rootViewController;
-    private BasePresenterDelegate _delegate;
+    @NotNull private final RootViewController _rootViewController;
+    @Nullable private BasePresenterDelegate _delegate;
     
-    private final MacroStorage _storage = GeneralStorage.getDefault().getMacrosStorage();
+    @NotNull private final MacroStorage _storage = GeneralStorage.getDefault().getMacrosStorage();
     
-    private final Recorder _recorder = Recorder.getDefault();
-    private final List<RecorderParserFlag> _recordFlags = _recorder.defaults.getDefaultRecordFlags();
-    private RecorderModelStandard _recorderModel = new RecorderModelStandard();
-    private RecorderNativeParser _recorderMacroParser;
+    @NotNull private final Recorder _recorder = Recorder.getDefault();
+    @NotNull private final List<RecorderParserFlag> _recordFlags = _recorder.defaults.getDefaultRecordFlags();
+    @NotNull private RecorderModelStandard _recorderModel = new RecorderModelStandard();
+    @Nullable private RecorderNativeParser _recorderMacroParser;
     private boolean _hasStartedMacroRecording = false;
-    private RecorderResult _recordedResult;
+    @Nullable private RecorderResult _recordedResult;
     
-    private final BaseActionsParser _parser = new ActionsFromMacroInputsParser();
+    @NotNull private final BaseActionsParser _parser = new ActionsFromMacroInputsParser();
     
-    private final ArrayList<Description> _macroActionDescriptionsList = new ArrayList<>();
+    @NotNull private final ArrayList<Description> _macroActionDescriptionsList = new ArrayList<>();
     
-    private Hotkey _recordOrStopHotkey;
+    @Nullable private Hotkey _recordOrStopHotkey;
     
-    private final ActionsParsing _actionsParsing = new ActionsParsing();
+    @NotNull private final ActionsParsing _actionsParsing = new ActionsParsing();
     
-    public RecordMacroPresenter(RootViewController rootViewController)
+    public RecordMacroPresenter(@NotNull RootViewController rootViewController)
     {
         _rootViewController = rootViewController;
     }
@@ -88,7 +90,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     }
     
     @Override
-    public void setDelegate(BasePresenterDelegate delegate)
+    public void setDelegate(@NotNull BasePresenterDelegate delegate)
     {
         if (_delegate != null)
         {
@@ -107,7 +109,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     // # BaseRecorderListener
     
     @Override
-    public void onRecordedUserInput(RecorderUserInput input)
+    public void onRecordedUserInput(@NotNull RecorderUserInput input)
     {
         if (input == null)
         {
@@ -128,13 +130,13 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     }
     
     @Override
-    public void onFailedRecordedUserInput(RecorderUserInput input)
+    public void onFailedRecordedUserInput(@NotNull RecorderUserInput input)
     {
         _delegate.onActionsRecordedChange(getActionStringsData());
     }
     
     @Override
-    public void onFinishedRecording(RecorderResult result, boolean success, Exception exception)
+    public void onFinishedRecording(@NotNull RecorderResult result, boolean success, @NotNull Exception exception)
     {
         Logger.messageEvent(this, "Recording was stopped.");
         
@@ -152,13 +154,13 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     }
     
     @Override
-    public Hotkey getHotkey()
+    public @Nullable Hotkey getHotkey()
     {
         return _recordOrStopHotkey;
     }
     
     @Override
-    public void onHotkeyPressed(Hotkey hotkey)
+    public void onHotkeyPressed(@NotNull Hotkey hotkey)
     {
         Logger.message(this, "Record hotkey tapped!");
         
@@ -234,7 +236,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         }
     }
     
-    public void onSaveRecording(String name, String description)
+    public void onSaveRecording(@NotNull String name, @NotNull String description)
     {
         if (_recordedResult == null)
         {
@@ -307,7 +309,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         onSwitchToPlayScreen();
     }
     
-    public void setPlayOrStopHotkey(Hotkey hotkey)
+    public void setPlayOrStopHotkey(@NotNull Hotkey hotkey)
     {
         synchronized (this)
         {
@@ -345,7 +347,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         }
     }
     
-    private List<Description> getActionStringsData()
+    private @NotNull List<Description> getActionStringsData()
     {
         return CollectionUtilities.copyAsReversed(_macroActionDescriptionsList);
     }
@@ -372,7 +374,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     
     // Parsing
     class ActionsParsing {
-        public List<BaseAction> parseUserInputs(Collection<RecorderUserInput> userInputs, BaseActionsParser actionParser) throws Exception
+        public List<BaseAction> parseUserInputs(@NotNull Collection<RecorderUserInput> userInputs, @NotNull BaseActionsParser actionParser) throws Exception
         {
             actionParser.onBeginParsing();
             

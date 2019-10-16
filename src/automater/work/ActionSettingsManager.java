@@ -5,6 +5,8 @@
  */
 package automater.work;
 
+import com.sun.istack.internal.NotNull;
+
 /**
  * Holds global values for actions, that can be used to customize their behavior.
  * 
@@ -20,7 +22,7 @@ public class ActionSettingsManager {
     public static final int MAX_SUBMOVEMENTS = 3;
     
     // Private
-    private final Object _lock = new Object();
+    @NotNull private final Object _lock = new Object();
     private int _maxNumberOfSubmovements = MAX_SUBMOVEMENTS;
     
     private ActionSettingsManager()
@@ -28,7 +30,7 @@ public class ActionSettingsManager {
         
     }
     
-    synchronized public static ActionSettingsManager getDefault()
+    synchronized public static @NotNull ActionSettingsManager getDefault()
     {
         if (singleton == null)
         {

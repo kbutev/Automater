@@ -5,6 +5,8 @@
  */
 package automater.utilities;
 
+import com.sun.istack.internal.NotNull;
+
 /**
  * Defines commonly used errors.
  * 
@@ -13,52 +15,52 @@ package automater.utilities;
  * @author Bytevi
  */
 public class Errors {
-    public static void throwUnknownError(String description) throws Exception
+    public static void throwUnknownError(@NotNull String description) throws Exception
     {
         throw new Exception(description);
     }
     
-    public static void throwInvalidArgument(String description)
+    public static void throwInvalidArgument(@NotNull String description)
     {
         throw new IllegalArgumentException(description);
     }
     
-    public static void throwIndexOutOfBounds(String description)
+    public static void throwIndexOutOfBounds(@NotNull String description)
     {
         throw new IndexOutOfBoundsException(description);
     }
     
-    public static void throwIllegalMathOperation(String description)
+    public static void throwIllegalMathOperation(@NotNull String description)
     {
         throw new ArithmeticException(description);
     }
     
-    public static void throwNotImplemented(String description) throws RuntimeException
+    public static void throwNotImplemented(@NotNull String description) throws RuntimeException
     {
         throw new UnsupportedOperationException(description);
     }
     
-    public static void throwIllegalStateError(String description) throws RuntimeException
+    public static void throwIllegalStateError(@NotNull String description) throws RuntimeException
     {
         throw new IllegalStateException(description);
     }
     
-    public static void throwInternalLogicError(String description) throws RuntimeException
+    public static void throwInternalLogicError(@NotNull String description) throws RuntimeException
     {
         throw new RuntimeException(description);
     }
     
-    public static void throwCannotStartTwice(String description) throws RuntimeException
+    public static void throwCannotStartTwice(@NotNull String description) throws RuntimeException
     {
         throw new RuntimeException(description);
     }
     
-    public static void throwSerializationFailed(String description) throws RuntimeException
+    public static void throwSerializationFailed(@NotNull String description) throws RuntimeException
     {
         throw new RuntimeException(description);
     }
     
-    public static void throwClassNotFound(String description) throws ClassNotFoundException
+    public static void throwClassNotFound(@NotNull String description) throws ClassNotFoundException
     {
         throw new ClassNotFoundException(description);
     }

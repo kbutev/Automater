@@ -7,6 +7,7 @@ package automater.recorder.model;
 
 import automater.utilities.CollectionUtilities;
 import automater.utilities.Description;
+import com.sun.istack.internal.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,19 +20,19 @@ import java.util.List;
  * @author Bytevi
  */
 public class RecorderResult implements Serializable {
-    public final Collection<RecorderUserInput> userInputs;
+    @NotNull public final Collection<RecorderUserInput> userInputs;
     
-    public RecorderResult(ArrayList<RecorderUserInput> userInputs)
+    public RecorderResult(@NotNull ArrayList<RecorderUserInput> userInputs)
     {
         this.userInputs = CollectionUtilities.copyAsImmutable(userInputs);
     }
     
-    public Iterator<RecorderUserInput> getIteratorForUserInputs()
+    public @NotNull Iterator<RecorderUserInput> getIteratorForUserInputs()
     {
         return userInputs.iterator();
     }
     
-    public List<Description> getUserInputAsDescriptions()
+    public @NotNull List<Description> getUserInputAsDescriptions()
     {
         ArrayList<Description> descriptions = new ArrayList<>();
         descriptions.addAll(userInputs);

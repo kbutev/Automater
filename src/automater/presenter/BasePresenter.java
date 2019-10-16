@@ -5,6 +5,8 @@
  */
 package automater.presenter;
 
+import com.sun.istack.internal.NotNull;
+
 /**
  * Base implementation for presenters.
  * 
@@ -12,7 +14,7 @@ package automater.presenter;
  */
 public interface BasePresenter {
     public void start();
-    public void setDelegate(BasePresenterDelegate delegate);
+    public void setDelegate(@NotNull BasePresenterDelegate delegate);
     
     public void requestDataUpdate();
 }

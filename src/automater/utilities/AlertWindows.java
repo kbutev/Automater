@@ -5,6 +5,8 @@
  */
 package automater.utilities;
 
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.awt.Component;
 import javax.swing.JOptionPane;
 
@@ -14,17 +16,17 @@ import javax.swing.JOptionPane;
  * @author Bytevi
  */
 public class AlertWindows {
-    public static void showMessage(Component parent, 
-            String title, String message, 
-            String buttonText)
+    public static void showMessage(@NotNull Component parent, 
+            @NotNull String title, @NotNull String message, 
+            @NotNull String buttonText)
     {
         showMessage(parent, title, message, buttonText, null);
     }
     
-    public static void showMessage(Component parent, 
-            String title, String message, 
-            String buttonText,
-            SimpleCallback okCallback)
+    public static void showMessage(@NotNull Component parent, 
+            @NotNull String title, @NotNull String message, 
+            @NotNull String buttonText,
+            @Nullable SimpleCallback okCallback)
     {
         Object[] options = {buttonText};
         
@@ -44,10 +46,10 @@ public class AlertWindows {
         }
     }
     
-    public static void showConfirmationMessage(Component parent, 
-            String title, String message,
-            SimpleCallback confirmCallback,
-            SimpleCallback cancelCallback)
+    public static void showConfirmationMessage(@NotNull Component parent, 
+            @NotNull String title, @NotNull String message,
+            @Nullable SimpleCallback confirmCallback,
+            @Nullable SimpleCallback cancelCallback)
     {
         int result = JOptionPane.showConfirmDialog(parent, message, title, JOptionPane.YES_NO_OPTION);
         
@@ -67,17 +69,17 @@ public class AlertWindows {
         }
     }
     
-    public static void showErrorMessage(Component parent, 
-            String title, String message, 
-            String buttonText)
+    public static void showErrorMessage(@NotNull Component parent, 
+            @NotNull String title, @NotNull String message, 
+            @NotNull String buttonText)
     {
         showErrorMessage(parent, title, message, buttonText, null);
     }
     
-    public static void showErrorMessage(Component parent, 
-            String title, String message, 
-            String buttonText,
-            SimpleCallback okCallback)
+    public static void showErrorMessage(@NotNull Component parent, 
+            @NotNull String title, @NotNull String message, 
+            @NotNull String buttonText,
+            @Nullable SimpleCallback okCallback)
     {
         Object[] options = {buttonText};
         

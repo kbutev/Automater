@@ -15,6 +15,7 @@ import automater.utilities.Looper;
 import automater.utilities.LooperSwing;
 import automater.utilities.SimpleCallback;
 import automater.work.model.Macro;
+import com.sun.istack.internal.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,15 +25,15 @@ import java.util.List;
  * @author Bytevi
  */
 public class OpenMacroPresenter implements BasePresenter {
-    private final RootViewController _rootViewController;
-    private BasePresenterDelegate _delegate;
+    @NotNull private final RootViewController _rootViewController;
+    @NotNull private BasePresenterDelegate _delegate;
     
-    private final MacroStorage _macrosStorage = GeneralStorage.getDefault().getMacrosStorage();
+    @NotNull private final MacroStorage _macrosStorage = GeneralStorage.getDefault().getMacrosStorage();
     
-    private List<Macro> _macros = new ArrayList<>();
-    private final List<Description> _macrosAsDescriptions = new ArrayList<>();
+    @NotNull private List<Macro> _macros = new ArrayList<>();
+    @NotNull private final List<Description> _macrosAsDescriptions = new ArrayList<>();
     
-    public OpenMacroPresenter(RootViewController rootViewController)
+    public OpenMacroPresenter(@NotNull RootViewController rootViewController)
     {
         _rootViewController = rootViewController;
     }
@@ -53,7 +54,7 @@ public class OpenMacroPresenter implements BasePresenter {
     }
     
     @Override
-    public void setDelegate(BasePresenterDelegate delegate)
+    public void setDelegate(@NotNull BasePresenterDelegate delegate)
     {
         if (_delegate != null)
         {
@@ -154,7 +155,7 @@ public class OpenMacroPresenter implements BasePresenter {
         });
     }
     
-    private void setMacroData(List<Macro> data)
+    private void setMacroData(@NotNull List<Macro> data)
     {
         _macros = data;
         

@@ -5,6 +5,7 @@
  */
 package automater.input;
 
+import com.sun.istack.internal.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -17,19 +18,19 @@ public class InputKey implements Serializable {
     public final InputKeyValue value;
     public final InputKeyModifiers modifiers;
     
-    public InputKey(InputKeyValue value)
+    public InputKey(@NotNull InputKeyValue value)
     {
         this.value = value;
         this.modifiers = InputKeyModifiers.none();
     }
     
-    public InputKey(InputKeyValue value, InputKeyModifiers modifiers)
+    public InputKey(@NotNull InputKeyValue value, @NotNull InputKeyModifiers modifiers)
     {
         this.value = value;
         this.modifiers = modifiers.copy();
     }
     
-    public InputKey(String string)
+    public InputKey(@NotNull String string)
     {
         this.value = InputKeyValue.fromString(extractKeyValueFromKeyString(string));
         this.modifiers = new InputKeyModifiers(extractKeyModifiersFromKeyString(string));
@@ -76,7 +77,7 @@ public class InputKey implements Serializable {
                 value == InputKeyValue._MOUSE_5_CLICK;
     }
     
-    public static String extractKeyValueFromKeyString(String value)
+    public static String extractKeyValueFromKeyString(@NotNull String value)
     {
         int lastIndexOfModifierSeparator = value.lastIndexOf(InputKeyModifierValue.getSeparatorSymbol());
         
@@ -94,7 +95,7 @@ public class InputKey implements Serializable {
         return result;
     }
     
-    public static String extractKeyModifiersFromKeyString(String value)
+    public static String extractKeyModifiersFromKeyString(@NotNull String value)
     {
         int lastIndexOfModifierSeparator = value.lastIndexOf(InputKeyModifierValue.getSeparatorSymbol());
         

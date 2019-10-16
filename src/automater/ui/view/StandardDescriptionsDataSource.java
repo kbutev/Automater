@@ -7,6 +7,7 @@ package automater.ui.view;
 
 import automater.utilities.CollectionUtilities;
 import automater.utilities.Description;
+import com.sun.istack.internal.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ListModel;
@@ -18,19 +19,19 @@ import javax.swing.event.ListDataListener;
  * @author Bytevi
  */
 public class StandardDescriptionsDataSource implements ListModel<String> {
-    public final List<Description> data;
+    @NotNull public final List<Description> data;
     
-    public static StandardDescriptionsDataSource createGeneric()
+    public static @NotNull StandardDescriptionsDataSource createGeneric()
     {
         return new StandardDescriptionsDataSource();
     }
     
-    public static StandardDescriptionsDataSource createDataSourceForStandartText(List<Description> actions)
+    public static @NotNull StandardDescriptionsDataSource createDataSourceForStandartText(@NotNull List<Description> actions)
     {
         return new StandardDescriptionsDataSource(actions);
     }
     
-    public static StandardDescriptionsDataSource createDataSourceForVerboseText(List<Description> actions)
+    public static @NotNull StandardDescriptionsDataSource createDataSourceForVerboseText(@NotNull List<Description> actions)
     {
         return new StandartDescriptionsDataSourceVerbose(actions);
     }
@@ -40,7 +41,7 @@ public class StandardDescriptionsDataSource implements ListModel<String> {
         this.data = new ArrayList();
     }
     
-    protected StandardDescriptionsDataSource(List<Description> actions)
+    protected StandardDescriptionsDataSource(@NotNull List<Description> actions)
     {
         this.data = CollectionUtilities.copyAsImmutable(actions);
     }
@@ -79,7 +80,7 @@ public class StandardDescriptionsDataSource implements ListModel<String> {
 }
 
 class StandartDescriptionsDataSourceVerbose extends StandardDescriptionsDataSource {
-    StandartDescriptionsDataSourceVerbose(List<Description> actions)
+    StandartDescriptionsDataSourceVerbose(@NotNull List<Description> actions)
     {
         super(actions);
     }

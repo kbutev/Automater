@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import automater.input.InputMouseMotion;
 import automater.input.InputMouseMove;
 import automater.utilities.CollectionUtilities;
+import com.sun.istack.internal.NotNull;
 import java.util.List;
 
 /**
@@ -18,14 +19,14 @@ import java.util.List;
  * @author Bytevi
  */
 public class RecorderUserInputMouseMotion extends RecorderUserInput implements InputMouseMotion {
-    private final ArrayList<InputMouseMove> _moves;
+    @NotNull private final ArrayList<InputMouseMove> _moves;
     
-    public static RecorderUserInputMouseMotion create(InputMouseMove firstMove)
+    public static RecorderUserInputMouseMotion create(@NotNull InputMouseMove firstMove)
     {
         return new RecorderUserInputMouseMotion(firstMove);
     }
     
-    private RecorderUserInputMouseMotion(InputMouseMove firstMove)
+    private RecorderUserInputMouseMotion(@NotNull InputMouseMove firstMove)
     {
         super(firstMove.getTimestamp());
         
@@ -59,28 +60,28 @@ public class RecorderUserInputMouseMotion extends RecorderUserInput implements I
     }
     
     @Override
-    public List<InputMouseMove> getMoves() {
+    public @NotNull List<InputMouseMove> getMoves() {
         return CollectionUtilities.copyAsImmutable(_moves);
     }
 
     @Override
-    public InputMouseMove getFirstMove() {
+    public @NotNull InputMouseMove getFirstMove() {
         return _moves.get(0);
     }
 
     @Override
-    public InputMouseMove getLastMove() {
+    public @NotNull InputMouseMove getLastMove() {
         return _moves.get(_moves.size()-1);
     }
 
     @Override
-    public InputMouseMove getMoveAt(int index) {
+    public @NotNull InputMouseMove getMoveAt(int index) {
         return _moves.get(index);
     }
     
     // # Public
     
-    public void addMovementPoint(InputMouseMove move)
+    public void addMovementPoint(@NotNull InputMouseMove move)
     {
         _moves.add(move);
     }

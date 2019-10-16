@@ -5,6 +5,8 @@
  */
 package automater.utilities;
 
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintStream;
@@ -33,7 +35,7 @@ public class Logger {
     
     private static final PrintStream _outStream = System.out;
     
-    public static void printLine(String data)
+    public static void printLine(@Nullable String data)
     {
         _outStream.println(data);
         
@@ -43,66 +45,66 @@ public class Logger {
         }
     }
     
-    public static <T> void message(T origin, String string)
+    public static <T> void message(@NotNull T origin, @Nullable String string)
     {
         printLine(generateText(origin, "", string));
     }
     
-    public static <T> void message(String prefix, String string)
+    public static <T> void message(String prefix, @Nullable String string)
     {
         printLine(generateText(prefix, string));
     }
     
-    public static <T> void messageAction(T origin, String string)
+    public static <T> void messageAction(T origin, @Nullable String string)
     {
         printLine(generateText(origin, MESSAGE_ACTION_PREFIX, string));
     }
     
-    public static <T> void messageEvent(T origin, String string)
+    public static <T> void messageEvent(T origin, @Nullable String string)
     {
         printLine(generateText(origin, MESSAGE_EVENT_PREFIX, string));
     }
     
-    public static <T> void warning(String prefix, String string)
+    public static <T> void warning(String prefix, @Nullable String string)
     {
         prefix = WARNING_PREFIX + " " + prefix;
         
         printLine(generateText(prefix, string));
     }
     
-    public static <T> void warning(T origin, String string)
+    public static <T> void warning(T origin, @Nullable String string)
     {
         printLine(generateText(origin, WARNING_PREFIX, string));
     }
     
-    public static <T> void error(T origin, String string)
+    public static <T> void error(T origin, @Nullable String string)
     {
         printLine(generateText(origin, ERROR_PREFIX, string));
     }
     
-    public static <T> void error(String prefix, String string)
+    public static <T> void error(@Nullable String prefix, @Nullable String string)
     {
         prefix = ERROR_PREFIX + " " + prefix;
         
         printLine(generateText(prefix, string));
     }
     
-    public static <T> void utilityError(T origin, String string)
+    public static <T> void utilityError(T origin, @Nullable String string)
     {
         printLine(generateText(origin, UTILITY_ERROR_PREFIX, string));
     }
     
-    public static <T> void systemError(T origin, String string)
+    public static <T> void systemError(T origin, @Nullable String string)
     {
         printLine(generateText(origin, SYSTEM_ERROR_PREFIX, string));
     }
     
-    public static <T> void overrideMe(T origin, String methodName)
+    public static <T> void overrideMe(T origin, @Nullable String methodName)
     {
         printLine(generateText(origin, WARNING_PREFIX, OVERRIDE_ME_MESSAGE + methodName));
     }
     
-    private static <T> String generateText(T origin, String prefix, String text)
+    private static <T> @NotNull String generateText(T origin, @Nullable String prefix, @Nullable String text)
     {
         String reportingClass = origin != null ? origin.getClass().getSimpleName() : "Static";
         String textPrefix = generatePrefix(prefix);
@@ -110,14 +112,14 @@ public class Logger {
         return generateText(textPrefix, text);
     }
     
-    private static <T> String generateText(String prefix, String text)
+    private static <T> @NotNull String generateText(@Nullable String prefix, @Nullable String text)
     {
         String textPrefix = generatePrefix(prefix);
         
         return textPrefix + ": " + text;
     }
     
-    private static String generatePrefix(String prefix)
+    private static @NotNull String generatePrefix(@Nullable String prefix)
     {
         if (!DISPLAY_TIMESTAMPS)
         {
@@ -127,7 +129,7 @@ public class Logger {
         return prefix.length() > 0 ? getTimestamp() + " " + prefix : getTimestamp();
     }
     
-    private static String getTimestamp()
+    private static @NotNull String getTimestamp()
     {
         String pattern = "HH:mm:ss.SSS";
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -137,17 +139,17 @@ public class Logger {
 }
 
 class LoggerFile {
-    private static final Object _lock = new Object();
-    private static File _logFile;
-    private static FileWriter _logWriter;
+    @NotNull private static final Object _lock = new Object();
+    @Nullable private static File _logFile;
+    @Nullable private static FileWriter _logWriter;
     
-    public static String getFilePath()
+    public static @NotNull String getFilePath()
     {
         String path = FileSystem.getLocalFilePath();
         return FileSystem.createFilePathWithBasePath(path, Logger.LOG_FILE_NAME);
     }
     
-    public static String getLogFilePath()
+    public static @NotNull String getLogFilePath()
     {
         if (Logger.LOG_BACKUP_FILE_NAME.isEmpty())
         {
@@ -158,12 +160,12 @@ class LoggerFile {
         return FileSystem.createFilePathWithBasePath(path, Logger.LOG_BACKUP_FILE_NAME);
     }
     
-    public static File getFile()
+    public static @NotNull File getFile()
     {
         return setupFileIfNecessary();
     }
     
-    public static void writeToFile(String data)
+    public static void writeToFile(@NotNull String data)
     {
         FileWriter writer = setupFileWriterIfNecessary();
         
@@ -186,7 +188,7 @@ class LoggerFile {
         }
     }
     
-    public static File setupFileIfNecessary()
+    public static @NotNull File setupFileIfNecessary()
     {
         synchronized (_lock)
         {
@@ -254,7 +256,7 @@ class LoggerFile {
         }
     }
     
-    public static FileWriter setupFileWriterIfNecessary()
+    public static @NotNull FileWriter setupFileWriterIfNecessary()
     {
         File logFile = getFile();
         

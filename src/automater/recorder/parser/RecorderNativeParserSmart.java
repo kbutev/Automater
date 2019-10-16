@@ -13,6 +13,8 @@ import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseWheelEvent;
 import automater.input.InputMouseMove;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 /**
  * Optimizes mouse click inputs, by grouping them in a single record event.
@@ -23,43 +25,43 @@ import automater.input.InputMouseMove;
  * @author Bytevi
  */
 public class RecorderNativeParserSmart extends RecorderNativeParser {
-    private RecorderUserInputMouseMotion _currentMouseMotion;
+    @Nullable private RecorderUserInputMouseMotion _currentMouseMotion;
     
-    public RecorderNativeParserSmart(List<RecorderParserFlag> flags)
+    public RecorderNativeParserSmart(@NotNull List<RecorderParserFlag> flags)
     {
         super(flags);
     }
     
     @Override
-    public RecorderUserInput evaluatePress(NativeKeyEvent keyboardEvent)
+    public @Nullable RecorderUserInput evaluatePress(@NotNull NativeKeyEvent keyboardEvent)
     {
         clearCurrentMouseMotion();
         return super.evaluatePress(keyboardEvent);
     }
     
     @Override
-    public RecorderUserInput evaluateRelease(NativeKeyEvent keyboardEvent)
+    public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeKeyEvent keyboardEvent)
     {
         clearCurrentMouseMotion();
         return super.evaluateRelease(keyboardEvent);
     }
     
     @Override
-    public RecorderUserInput evaluatePress(NativeMouseEvent mouseEvent)
+    public @Nullable RecorderUserInput evaluatePress(@NotNull NativeMouseEvent mouseEvent)
     {
         clearCurrentMouseMotion();
         return super.evaluatePress(mouseEvent);
     }
     
     @Override
-    public RecorderUserInput evaluateRelease(NativeMouseEvent mouseEvent)
+    public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeMouseEvent mouseEvent)
     {
         clearCurrentMouseMotion();
         return super.evaluateRelease(mouseEvent);
     }
     
     @Override
-    public RecorderUserInput evaluateMouseMove(NativeMouseEvent mouseMoveEvent)
+    public @Nullable RecorderUserInput evaluateMouseMove(@NotNull NativeMouseEvent mouseMoveEvent)
     {
         RecorderUserInput result = super.evaluateMouseMove(mouseMoveEvent);
         
@@ -86,14 +88,14 @@ public class RecorderNativeParserSmart extends RecorderNativeParser {
     }
     
     @Override
-    public RecorderUserInput evaluateMouseWheel(NativeMouseWheelEvent mouseWheelEvent)
+    public @Nullable RecorderUserInput evaluateMouseWheel(@NotNull NativeMouseWheelEvent mouseWheelEvent)
     {
         clearCurrentMouseMotion();
         return super.evaluateMouseWheel(mouseWheelEvent);
     }
     
     @Override
-    public RecorderUserInput evaluateWindowEvent(WindowEvent windowEvent)
+    public @Nullable RecorderUserInput evaluateWindowEvent(@NotNull WindowEvent windowEvent)
     {
         clearCurrentMouseMotion();
         return super.evaluateWindowEvent(windowEvent);

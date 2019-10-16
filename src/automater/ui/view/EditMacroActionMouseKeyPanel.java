@@ -5,9 +5,9 @@
  */
 package automater.ui.view;
 
-import automater.TextValue;
 import automater.utilities.Callback;
 import automater.utilities.Description;
+import com.sun.istack.internal.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ComboBoxModel;
@@ -107,14 +107,14 @@ public class EditMacroActionMouseKeyPanel extends javax.swing.JPanel {
         
     }
     
-    public void setSpecificValues(List<String> values)
+    public void setSpecificValues(@NotNull List<String> values)
     {
         _model = new EditMacroActionMouseKeyPressModel(values);
         
         mouseKeysDrop.setModel(_model);
     }
     
-    public void selectSpecificValue(String value)
+    public void selectSpecificValue(@NotNull String value)
     {
         if (_model == null)
         {
@@ -140,11 +140,11 @@ public class EditMacroActionMouseKeyPanel extends javax.swing.JPanel {
 }
 
 class EditMacroActionMouseKeyPressModel implements ComboBoxModel {
-    public final StandardDescriptionsDataSource dataSource;
+    @NotNull public final StandardDescriptionsDataSource dataSource;
     
     private int _selectedIndex = 0;
     
-    public EditMacroActionMouseKeyPressModel(List<String> values)
+    public EditMacroActionMouseKeyPressModel(@NotNull List<String> values)
     {
         this.dataSource = parseValues(values);
     }
@@ -191,7 +191,7 @@ class EditMacroActionMouseKeyPressModel implements ComboBoxModel {
         
     }
     
-    public static StandardDescriptionsDataSource parseValues(List<String> values)
+    public static @NotNull StandardDescriptionsDataSource parseValues(@NotNull List<String> values)
     {
         ArrayList<Description> actions = new ArrayList<>();
         

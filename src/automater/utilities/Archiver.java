@@ -5,6 +5,7 @@
  */
 package automater.utilities;
 
+import com.sun.istack.internal.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -27,7 +28,7 @@ public class Archiver
         
     }
     
-    public static String serializeObject(Serializable object)
+    public static @Nullable String serializeObject(Serializable object)
     {
         if (object == null)
         {
@@ -55,42 +56,42 @@ public class Archiver
         return null;
     }
     
-    public static String deserializeString(String data) throws Exception
+    public static @Nullable String deserializeString(String data) throws Exception
     {
         return deserializeObject(String.class, data);
     }
     
-    public static ArrayList<String> deserializeStrings(String data) throws Exception
+    public static @Nullable ArrayList<String> deserializeStrings(String data) throws Exception
     {
         return deserializeObject(String.class, data);
     }
     
-    public static Integer deserializeInteger(String data) throws Exception
+    public static @Nullable Integer deserializeInteger(String data) throws Exception
     {
         return deserializeObject(Integer.class, data);
     }
     
-    public static ArrayList<Integer> deserializeIntegers(String data) throws Exception
+    public static @Nullable ArrayList<Integer> deserializeIntegers(String data) throws Exception
     {
         return deserializeObject(Integer.class, data);
     }
     
-    public static Double deserializeDouble(String data) throws Exception
+    public static @Nullable Double deserializeDouble(String data) throws Exception
     {
         return deserializeObject(Double.class, data);
     }
     
-    public static ArrayList<Double> deserializeDoubles(String data) throws Exception
+    public static @Nullable ArrayList<Double> deserializeDoubles(String data) throws Exception
     {
         return deserializeObject(Double.class, data);
     }
     
-    public static Date deserializeDate(String data) throws Exception
+    public static @Nullable Date deserializeDate(String data) throws Exception
     {
         return deserializeObject(Date.class, data);
     }
     
-    public static <T> T deserializeObject(Class type, String data) throws Exception
+    public static <T> @Nullable T deserializeObject(Class type, String data) throws Exception
     {
         if (data == null || data.isEmpty())
         {
@@ -123,7 +124,7 @@ public class Archiver
         return null;
     }
     
-    public static <T> ArrayList<T> deserializeArray(Class elementType, String data) throws Exception
+    public static <T> @Nullable ArrayList<T> deserializeArray(Class elementType, String data) throws Exception
     {
         if (data == null || data.isEmpty())
         {

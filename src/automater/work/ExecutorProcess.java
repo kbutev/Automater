@@ -20,6 +20,8 @@ import automater.work.model.ActionSystemKeyModifiers;
 import automater.work.model.ExecutorProgress;
 import automater.work.model.Macro;
 import automater.work.model.MacroParameters;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.awt.Dimension;
 import java.awt.Robot;
 import java.util.ArrayList;
@@ -42,32 +44,32 @@ import java.util.List;
  * @author Bytevi
  */
 public class ExecutorProcess implements BaseExecutorProcess, LooperClient, ExecutorProgress {
-    private final Object _lock = new Object();
+    @NotNull private final Object _lock = new Object();
     
     // Basic
-    private final Robot _robot;
-    private ActionContext _context;
-    private final List<BaseAction> _actions;
+    @NotNull private final Robot _robot;
+    @NotNull private ActionContext _context;
+    @NotNull private final List<BaseAction> _actions;
     
-    private BaseExecutorTimer _timer;
-    private ExecutorListenerDelegateOperations _listener;
+    @NotNull private BaseExecutorTimer _timer;
+    @Nullable private ExecutorListenerDelegateOperations _listener;
     
-    private MacroParameters _parameters;
+    @Nullable private MacroParameters _parameters;
     
     // Current state
     private boolean _started = false;
     private boolean _cancelled = false;
     
-    private Macro _macro;
+    @Nullable private Macro _macro;
     
     private int _playCount = 0;
-    private BaseActionProcess _previousActionProcess;
-    private BaseActionProcess _currentActionProcess;
+    @Nullable private BaseActionProcess _previousActionProcess;
+    @Nullable private BaseActionProcess _currentActionProcess;
     
     // Timer
-    private Date _previousDate;
+    @Nullable private Date _previousDate;
     
-    public static ExecutorProcess create(Robot robot, List<BaseAction> actions, BaseExecutorTimer timer)
+    public static ExecutorProcess create(@NotNull Robot robot, @NotNull List<BaseAction> actions, @NotNull BaseExecutorTimer timer)
     {
         try {
             return new ExecutorProcess(robot, actions, timer);
@@ -78,7 +80,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
         return null;
     }
     
-    protected ExecutorProcess(Robot robot, List<BaseAction> actions, BaseExecutorTimer timer) throws Exception
+    protected ExecutorProcess(@NotNull Robot robot, @NotNull List<BaseAction> actions, @NotNull BaseExecutorTimer timer) throws Exception
     {
         if (actions.isEmpty())
         {
@@ -89,6 +91,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
         this._actions = CollectionUtilities.copyAsImmutable(actions);
         this._timer = timer;
         this._currentActionProcess = null;
+        this._listener = new ExecutorListenerDelegateOperations(null);
     }
     
     // # BaseExecutorProcess
@@ -126,13 +129,13 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
     }
     
     @Override
-    public Macro getMacro()
+    public @Nullable Macro getMacro()
     {
         return _macro;
     }
     
     @Override
-    public BaseActionProcess getCurrentActionProcess()
+    public @Nullable BaseActionProcess getCurrentActionProcess()
     {
         synchronized (_lock)
         {
@@ -141,7 +144,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
     }
     
     @Override
-    public BaseActionProcess getPreviousActionProcess()
+    public @Nullable BaseActionProcess getPreviousActionProcess()
     {
         synchronized (_lock)
         {
@@ -150,25 +153,25 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
     }
     
     @Override
-    public ExecutorProgress getProgress()
+    public @NotNull ExecutorProgress getProgress()
     {
         return this;
     }
     
     @Override
-    public void setExecutorTimer(BaseExecutorTimer timer)
+    public void setExecutorTimer(@NotNull BaseExecutorTimer timer)
     {
         this._timer = timer;
     }
     
     @Override
-    public void setListener(ExecutorListener listener)
+    public void setListener(@NotNull ExecutorListener listener)
     {
         this._listener = new ExecutorListenerDelegateOperations(listener);
     }
     
     @Override
-    public void start(Macro macro, MacroParameters parameters) throws Exception
+    public void start(@NotNull Macro macro, @NotNull MacroParameters parameters) throws Exception
     {
         Logger.messageEvent(this, "Start.");
         
@@ -252,7 +255,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
     // # ExecutorProgress
     
     @Override
-    public String getCurrentStatus() {
+    public @NotNull String getCurrentStatus() {
         if (isFinished())
         {
             return TextValue.getText(TextValue.Play_StatusFinished);
@@ -389,7 +392,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
         _timer.reset();
     }
     
-    private void setCurrentActionProcessSafely(BaseActionProcess p)
+    private void setCurrentActionProcessSafely(@NotNull BaseActionProcess p)
     {
         synchronized (_lock)
         {
@@ -397,7 +400,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
         }
     }
     
-    private void setPreviousActionProcessSafely(BaseActionProcess p)
+    private void setPreviousActionProcessSafely(@NotNull BaseActionProcess p)
     {
         synchronized (_lock)
         {
@@ -431,7 +434,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
         }
     }
     
-    private List<BaseAction> getRemainingActions() {
+    private @NotNull List<BaseAction> getRemainingActions() {
         BaseActionProcess previousActionProcess = getPreviousActionProcess();
         
         if (previousActionProcess == null)
@@ -457,15 +460,15 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
         return remaining;
     }
     
-    private BaseAction getFirstAction() {
+    private @NotNull BaseAction getFirstAction() {
         return _actions.get(0);
     }
     
-    private BaseAction getLastAction() {
+    private @NotNull BaseAction getLastAction() {
         return _actions.get(_actions.size()-1);
     }
     
-    private boolean isLastAction(BaseAction action) {
+    private boolean isLastAction(@NotNull BaseAction action) {
         return action == getLastAction();
     }
     
@@ -658,15 +661,15 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
        _previousActionProcess = new ActionProcess(getLastAction());
         _context = null;
        _currentActionProcess = null;
-       _listener = null;
+       _listener = new ExecutorListenerDelegateOperations(null);
         Looper.getShared().unsubscribe(this);
     }
 }
 
 class ExecutorListenerDelegateOperations {
-    final ExecutorListener listener;
+    @Nullable final ExecutorListener listener;
     
-    ExecutorListenerDelegateOperations(ExecutorListener listener)
+    ExecutorListenerDelegateOperations(@Nullable ExecutorListener listener)
     {
         this.listener = listener;
     }
@@ -686,7 +689,7 @@ class ExecutorListenerDelegateOperations {
         });
     }
     
-    public void onActionExecute(BaseAction action)
+    public void onActionExecute(@NotNull BaseAction action)
     {
         if (listener == null)
         {
@@ -701,7 +704,7 @@ class ExecutorListenerDelegateOperations {
         });
     }
     
-    public void onActionUpdate(BaseAction action)
+    public void onActionUpdate(@NotNull BaseAction action)
     {
         if (listener == null)
         {

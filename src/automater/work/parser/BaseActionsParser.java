@@ -7,6 +7,7 @@ package automater.work.parser;
 
 import automater.recorder.model.RecorderUserInput;
 import automater.work.BaseAction;
+import com.sun.istack.internal.NotNull;
 import java.util.List;
 
 /**
@@ -17,6 +18,6 @@ import java.util.List;
  */
 public interface BaseActionsParser {
     public void onBeginParsing() throws Exception;
-    public void onParseInput(RecorderUserInput input) throws Exception;
-    public List<BaseAction> onFinishParsingMacro() throws Exception;
+    public void onParseInput(@NotNull RecorderUserInput input) throws Exception;
+    public @NotNull List<BaseAction> onFinishParsingMacro() throws Exception;
 }

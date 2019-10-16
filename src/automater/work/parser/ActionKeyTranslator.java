@@ -14,6 +14,7 @@ import automater.utilities.Errors;
 import automater.work.model.ActionSystemKey;
 import automater.work.model.ActionSystemKeyModifierValue;
 import automater.work.model.ActionSystemKeyModifiers;
+import com.sun.istack.internal.NotNull;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
@@ -26,10 +27,10 @@ import java.util.Set;
  * @author Bytevi
  */
 public class ActionKeyTranslator {
-    private static final HashMap<InputKeyValue, Integer> _keyboardMapping = new HashMap<>();
-    private static final HashMap<InputKeyValue, Integer> _mouseKeyMapping = new HashMap<>();
+    @NotNull private static final HashMap<InputKeyValue, Integer> _keyboardMapping = new HashMap<>();
+    @NotNull private static final HashMap<InputKeyValue, Integer> _mouseKeyMapping = new HashMap<>();
     
-    public static ActionSystemKey translateKeystroke(InputKey key) throws Exception
+    public static ActionSystemKey translateKeystroke(@NotNull InputKey key) throws Exception
     {
         if (isKeyboardRecorderUserInputKey(key))
         {
@@ -45,7 +46,7 @@ public class ActionKeyTranslator {
         return null;
     }
     
-    public static ActionSystemKeyModifiers translateModifiers(InputKey key)
+    public static ActionSystemKeyModifiers translateModifiers(@NotNull InputKey key)
     {
         InputKeyModifiers modifiers = key.modifiers;
         Set<InputKeyModifierValue> values = modifiers.getValues();
@@ -78,17 +79,17 @@ public class ActionKeyTranslator {
         return ActionSystemKeyModifiers.createModifierValues(modifierValues);
     }
     
-    public static boolean isKeyboardRecorderUserInputKey(InputKey key)
+    public static boolean isKeyboardRecorderUserInputKey(@NotNull InputKey key)
     {
         return key.isKeyboardKey();
     }
     
-    public static boolean isMouseRecorderUserInputKey(InputKey key)
+    public static boolean isMouseRecorderUserInputKey(@NotNull InputKey key)
     {
         return key.isMouseKey();
     }
     
-    public static int translateKeyboardKey(InputKey key) throws Exception
+    public static int translateKeyboardKey(@NotNull InputKey key) throws Exception
     {
         HashMap<InputKeyValue, Integer> keyMapping = getKeyboardMapping();
         
@@ -100,7 +101,7 @@ public class ActionKeyTranslator {
         return 0;
     }
     
-    public static int translateMouseKey(InputKey key) throws Exception
+    public static int translateMouseKey(@NotNull InputKey key) throws Exception
     {
         HashMap<InputKeyValue, Integer> keyMapping = getMouseKeyMapping();
         
@@ -112,7 +113,7 @@ public class ActionKeyTranslator {
         return 0;
     }
     
-    public static synchronized HashMap<InputKeyValue, Integer> getKeyboardMapping()
+    public static synchronized @NotNull HashMap<InputKeyValue, Integer> getKeyboardMapping()
     {
         if (_keyboardMapping.size() > 0)
         {
@@ -217,7 +218,7 @@ public class ActionKeyTranslator {
         return _keyboardMapping;
     }
     
-    public static synchronized HashMap<InputKeyValue, Integer> getMouseKeyMapping()
+    public static synchronized @NotNull HashMap<InputKeyValue, Integer> getMouseKeyMapping()
     {
         if (_mouseKeyMapping.size() > 0)
         {

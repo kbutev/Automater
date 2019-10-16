@@ -9,6 +9,8 @@ import automater.utilities.Logger;
 import automater.work.model.ExecutorState;
 import automater.work.model.Macro;
 import automater.work.model.MacroParameters;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.awt.Robot;
 
 /**
@@ -17,19 +19,19 @@ import java.awt.Robot;
  * @author Bytevi
  */
 public class Executor {
-    private static Executor singleton;
-    private final Object _lock = new Object();
+    @NotNull private static Executor singleton;
+    @NotNull private final Object _lock = new Object();
     
-    private final ExecutorState _state = new ExecutorState();
+    @NotNull private final ExecutorState _state = new ExecutorState();
     
-    private Robot _robot;
+    @Nullable private Robot _robot;
     
     private Executor()
     {
         
     }
     
-    synchronized public static Executor getDefault()
+    synchronized public static @NotNull Executor getDefault()
     {
         if (singleton == null)
         {
@@ -47,17 +49,17 @@ public class Executor {
         }
     }
     
-    public BaseExecutorProcess performMacro(Macro macro, ExecutorListener listener) throws Exception
+    public BaseExecutorProcess performMacro(@NotNull Macro macro, @NotNull ExecutorListener listener) throws Exception
     {
         return performMacro(macro, MacroParameters.defaultValues(), listener);
     }
     
-    public BaseExecutorProcess performMacro(Macro macro, MacroParameters parameters, ExecutorListener listener) throws Exception
+    public BaseExecutorProcess performMacro(@NotNull Macro macro, @NotNull MacroParameters parameters, @NotNull ExecutorListener listener) throws Exception
     {
         return performMacro(macro, parameters, listener, new StandardExecutorTimer());
     }
     
-    public BaseExecutorProcess performMacro(Macro macro, MacroParameters parameters, ExecutorListener listener, BaseExecutorTimer timer) throws Exception
+    public BaseExecutorProcess performMacro(@NotNull Macro macro, @NotNull MacroParameters parameters, @NotNull ExecutorListener listener, @NotNull BaseExecutorTimer timer) throws Exception
     {
         Logger.messageEvent(this, "Perform macro '" + macro.getName() + "' with parameters " + parameters.toString());
         

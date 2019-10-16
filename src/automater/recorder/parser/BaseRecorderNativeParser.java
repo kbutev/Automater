@@ -6,6 +6,8 @@
 package automater.recorder.parser;
 
 import automater.recorder.model.RecorderUserInput;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.awt.event.WindowEvent;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.mouse.NativeMouseEvent;
@@ -17,14 +19,14 @@ import org.jnativehook.mouse.NativeMouseWheelEvent;
  * @author Bytevi
  */
 public interface BaseRecorderNativeParser {
-    public RecorderUserInput evaluatePress(NativeKeyEvent keyboardEvent);
-    public RecorderUserInput evaluateRelease(NativeKeyEvent keyboardEvent);
+    public @Nullable RecorderUserInput evaluatePress(@NotNull NativeKeyEvent keyboardEvent);
+    public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeKeyEvent keyboardEvent);
     
-    public RecorderUserInput evaluatePress(NativeMouseEvent mouseEvent);
-    public RecorderUserInput evaluateRelease(NativeMouseEvent mouseEvent);
+    public @Nullable RecorderUserInput evaluatePress(@NotNull NativeMouseEvent mouseEvent);
+    public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeMouseEvent mouseEvent);
     
-    public RecorderUserInput evaluateMouseMove(NativeMouseEvent mouseMoveEvent);
-    public RecorderUserInput evaluateMouseWheel(NativeMouseWheelEvent mouseWheelEvent);
+    public @Nullable RecorderUserInput evaluateMouseMove(@NotNull NativeMouseEvent mouseMoveEvent);
+    public @Nullable RecorderUserInput evaluateMouseWheel(@NotNull NativeMouseWheelEvent mouseWheelEvent);
     
-    public RecorderUserInput evaluateWindowEvent(WindowEvent windowEvent);
+    public @Nullable RecorderUserInput evaluateWindowEvent(@NotNull WindowEvent windowEvent);
 }

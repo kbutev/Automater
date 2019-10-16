@@ -6,6 +6,7 @@
 package automater.recorder.parser;
 
 import automater.recorder.model.RecorderUserInput;
+import com.sun.istack.internal.NotNull;
 
 /**
  * Forwards requests for parsed input objects.
@@ -16,6 +17,6 @@ import automater.recorder.model.RecorderUserInput;
  * @author Bytevi
  */
 public interface RecorderJHookListenerDelegate {
-    public void onParseInput(RecorderUserInput input);
+    public void onParseInput(@NotNull RecorderUserInput input);
     public void onInputDataChange();
 }

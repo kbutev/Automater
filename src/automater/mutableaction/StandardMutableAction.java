@@ -21,6 +21,8 @@ import automater.utilities.Errors;
 import automater.utilities.StringFormatting;
 import automater.work.Action;
 import automater.work.BaseAction;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,14 +40,14 @@ public class StandardMutableAction implements BaseMutableAction {
     
     protected MutableActionType type;
     protected long timestamp;
-    protected ArrayList<BaseMutableActionProperty> properties = new ArrayList<>();
+    @NotNull protected ArrayList<BaseMutableActionProperty> properties = new ArrayList<>();
     
     public static StandardMutableAction createDoNothing(long timestamp)
     {
         return new StandartMutableActionDoNothing(timestamp);
     }
     
-    public static StandardMutableAction createFromAction(BaseAction action)
+    public static StandardMutableAction createFromAction(@NotNull BaseAction action)
     {
         MutableActionType type = StandardMutableActionConstants.getTypeFromAction(action);
         long timestamp = action.getPerformTime();
@@ -131,7 +133,7 @@ public class StandardMutableAction implements BaseMutableAction {
         return null;
     }
     
-    public StandardMutableAction(MutableActionType type, long timestamp)
+    public StandardMutableAction(@NotNull MutableActionType type, long timestamp)
     {
         this.type = type;
         this.timestamp = timestamp;
@@ -143,17 +145,17 @@ public class StandardMutableAction implements BaseMutableAction {
     }
 
     @Override
-    public List<BaseMutableActionProperty> getProperties() {
+    public @NotNull List<BaseMutableActionProperty> getProperties() {
         return properties;
     }
     
     @Override
-    public BaseMutableActionProperty getFirstProperty() {
+    public @NotNull BaseMutableActionProperty getFirstProperty() {
         return getProperties().get(0);
     }
     
     @Override
-    public BaseMutableActionProperty getSecondProperty() {
+    public @NotNull BaseMutableActionProperty getSecondProperty() {
         return getProperties().get(1);
     }
     
@@ -168,7 +170,7 @@ public class StandardMutableAction implements BaseMutableAction {
     }
     
     @Override
-    public Description getDescription() {
+    public @NotNull Description getDescription() {
         return Description.createFromString("unknown");
     }
     
@@ -189,19 +191,19 @@ class StandartMutableActionDoNothing extends StandardMutableAction implements In
     }
     
     @Override
-    public Description getDescription() {
+    public @NotNull Description getDescription() {
         Description d = InputDescriptions.getDoNothingDescription(timestamp);
         
         return d;
     }
     
     @Override
-    public String getStateDescription() {
+    public @NotNull String getStateDescription() {
         return TextValue.getText(TextValue.EditAction_DescriptionDoNothing);
     }
     
     @Override
-    public BaseAction buildAction() throws Exception {
+    public @NotNull BaseAction buildAction() throws Exception {
         return Action.createDoNothing(timestamp);
     }
     
@@ -222,14 +224,14 @@ class StandartMutableActionWait extends StandardMutableAction implements InputDo
     }
     
     @Override
-    public Description getDescription() {
+    public @NotNull Description getDescription() {
         Description d = InputDescriptions.getWaitDescription(timestamp, getDuration());
         
         return d;
     }
     
     @Override
-    public String getStateDescription() {
+    public @NotNull String getStateDescription() {
         return TextValue.getText(TextValue.EditAction_DescriptionWait);
     }
     
@@ -260,7 +262,7 @@ class StandartMutableActionWait extends StandardMutableAction implements InputDo
 }
 
 class StandartMutableActionKeyboardClick extends StandardMutableAction {
-    public StandartMutableActionKeyboardClick(MutableActionType type, long timestamp, InputKeyClick keyboardClick)
+    public StandartMutableActionKeyboardClick(@NotNull MutableActionType type, long timestamp, @NotNull InputKeyClick keyboardClick)
     {
         super(type, timestamp);
         
@@ -274,7 +276,7 @@ class StandartMutableActionKeyboardClick extends StandardMutableAction {
     }
     
     @Override
-    public Description getDescription() {
+    public @NotNull Description getDescription() {
         InputKey inputKey = new InputKey(getFirstProperty().getValue());
         boolean isPress = Boolean.valueOf(getSecondProperty().getValue());
         
@@ -284,12 +286,12 @@ class StandartMutableActionKeyboardClick extends StandardMutableAction {
     }
     
     @Override
-    public String getStateDescription() {
+    public @NotNull String getStateDescription() {
         return TextValue.getText(TextValue.EditAction_DescriptionKeyboardClick);
     }
     
     @Override
-    public BaseAction buildAction() throws Exception {
+    public @NotNull BaseAction buildAction() throws Exception {
         InputKey inputKey = new InputKey(getFirstProperty().getValue());
         boolean isPress = Boolean.valueOf(getSecondProperty().getValue());
         
@@ -315,7 +317,7 @@ class StandartMutableActionKeyboardClick extends StandardMutableAction {
 }
 
 class StandartMutableActionMouseClick extends StandardMutableAction {
-    public StandartMutableActionMouseClick(MutableActionType type, long timestamp, InputKeyClick mouseClick)
+    public StandartMutableActionMouseClick(@NotNull MutableActionType type, long timestamp, @NotNull InputKeyClick mouseClick)
     {
         super(type, timestamp);
         
@@ -332,7 +334,7 @@ class StandartMutableActionMouseClick extends StandardMutableAction {
     }
     
     @Override
-    public Description getDescription() {
+    public @NotNull Description getDescription() {
         InputKey inputKey = getMouseKey();
         
         if (inputKey == null)
@@ -348,11 +350,11 @@ class StandartMutableActionMouseClick extends StandardMutableAction {
     }
     
     @Override
-    public String getStateDescription() {
+    public @NotNull String getStateDescription() {
         return TextValue.getText(TextValue.EditAction_DescriptionMouseClick);
     }
     
-    public InputKey getMouseKey()
+    public @Nullable InputKey getMouseKey()
     {
         String selectedValue = getFirstProperty().getValue();
         return StandardMutableActionConstants.getMouseKeyForTextValue(selectedValue);
@@ -391,7 +393,7 @@ class StandartMutableActionMouseClick extends StandardMutableAction {
 }
 
 class StandartMutableActionMouseMove extends StandardMutableAction {
-    public StandartMutableActionMouseMove(MutableActionType type, long timestamp, InputMouseMove move)
+    public StandartMutableActionMouseMove(@NotNull MutableActionType type, long timestamp, @NotNull InputMouseMove move)
     {
         super(type, timestamp);
         
@@ -405,7 +407,7 @@ class StandartMutableActionMouseMove extends StandardMutableAction {
     }
     
     @Override
-    public Description getDescription() {
+    public @NotNull Description getDescription() {
         String sX = getFirstProperty().getValue();
         String sY = getSecondProperty().getValue();
         
@@ -418,7 +420,7 @@ class StandartMutableActionMouseMove extends StandardMutableAction {
     }
     
     @Override
-    public String getStateDescription() {
+    public @NotNull String getStateDescription() {
         return TextValue.getText(TextValue.EditAction_DescriptionMouseMove);
     }
     
@@ -447,9 +449,9 @@ class StandartMutableActionMouseMove extends StandardMutableAction {
 class StandartMutableActionMouseMotion extends StandardMutableAction {
     long originalTimestamp;
     long originalTimestampForLastMove;
-    List<InputMouseMove> moves;
+    @NotNull List<InputMouseMove> moves;
     
-    public StandartMutableActionMouseMotion(MutableActionType type, long timestamp, List<InputMouseMove> moves, InputMouseMove lastMove)
+    public StandartMutableActionMouseMotion(@NotNull MutableActionType type, long timestamp, @NotNull List<InputMouseMove> moves, @NotNull InputMouseMove lastMove)
     {
         super(type, timestamp);
         
@@ -467,7 +469,7 @@ class StandartMutableActionMouseMotion extends StandardMutableAction {
     }
     
     @Override
-    public Description getDescription() {
+    public @NotNull Description getDescription() {
         InputMouseMove first = moves.get(0);
         InputMouseMove last = getEnteredLastMove(0);
         
@@ -482,7 +484,7 @@ class StandartMutableActionMouseMotion extends StandardMutableAction {
     }
     
     @Override
-    public String getStateDescription() {
+    public @NotNull String getStateDescription() {
         return TextValue.getText(TextValue.EditAction_DescriptionMouseMotion, String.valueOf(moves.size()));
     }
     
@@ -522,7 +524,7 @@ class StandartMutableActionMouseMotion extends StandardMutableAction {
         return Action.createMouseMovement(timestamp, newMoves, getDescription());
     }
     
-    private InputMouseMove getEnteredLastMove(long timestampOffset)
+    private @NotNull InputMouseMove getEnteredLastMove(long timestampOffset)
     {
         String sX = getFirstProperty().getValue();
         String sY = getSecondProperty().getValue();
@@ -553,7 +555,7 @@ class StandartMutableActionMouseMotion extends StandardMutableAction {
         return null;
     }
     
-    private ArrayList<InputMouseMove> getNewMovesWithTimestampOffset(long timestampOffset) throws Exception
+    private @NotNull ArrayList<InputMouseMove> getNewMovesWithTimestampOffset(long timestampOffset) throws Exception
     {
         ArrayList<InputMouseMove> newMoves = new ArrayList<>();
         
@@ -576,7 +578,7 @@ class StandartMutableActionMouseMotion extends StandardMutableAction {
 }
 
 class StandartMutableActionSystemCommand extends StandardMutableAction {
-    public StandartMutableActionSystemCommand(MutableActionType type, long timestamp, String value, boolean reportsErrors)
+    public StandartMutableActionSystemCommand(@NotNull MutableActionType type, long timestamp, @NotNull String value, boolean reportsErrors)
     {
         super(type, timestamp);
         
@@ -588,14 +590,14 @@ class StandartMutableActionSystemCommand extends StandardMutableAction {
     }
     
     @Override
-    public Description getDescription() {
+    public @NotNull Description getDescription() {
         Description d = InputDescriptions.getSystemCommand(timestamp, getFirstProperty().getValue());
         
         return d;
     }
     
     @Override
-    public String getStateDescription() {
+    public @NotNull String getStateDescription() {
         return TextValue.getText(TextValue.EditAction_DescriptionSystemCommand);
     }
     
@@ -611,7 +613,7 @@ class StandartMutableActionSystemCommand extends StandardMutableAction {
 }
 
 class StandartMutableActionScreenshot extends StandardMutableAction {
-    public StandartMutableActionScreenshot(MutableActionType type, long timestamp, String path)
+    public StandartMutableActionScreenshot(@NotNull MutableActionType type, long timestamp, @NotNull String path)
     {
         super(type, timestamp);
         
@@ -621,14 +623,14 @@ class StandartMutableActionScreenshot extends StandardMutableAction {
     }
     
     @Override
-    public Description getDescription() {
+    public @NotNull Description getDescription() {
         Description d = InputDescriptions.getScreenshot(timestamp, getFirstProperty().getValue());
         
         return d;
     }
     
     @Override
-    public String getStateDescription() {
+    public @NotNull String getStateDescription() {
         return TextValue.getText(TextValue.EditAction_DescriptionScreenshot);
     }
     

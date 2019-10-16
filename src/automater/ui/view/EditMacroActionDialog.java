@@ -20,6 +20,7 @@ import javax.swing.event.ListDataListener;
 import automater.mutableaction.BaseMutableAction;
 import automater.mutableaction.BaseMutableActionProperty;
 import automater.mutableaction.MutableActionPropertyList;
+import com.sun.istack.internal.NotNull;
 
 /**
  *
@@ -228,7 +229,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     
     // # Public
     
-    public void setTypesDropdownModel(StandardDescriptionsDataSource dataSource)
+    public void setTypesDropdownModel(@NotNull StandardDescriptionsDataSource dataSource)
     {
         _actionTypesModel = new EditMacroActionTypesModel(dataSource);
         typesDropdown.setModel(_actionTypesModel);
@@ -246,7 +247,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         typesDropdown.setSelectedIndex(index);
     }
     
-    public void setMutableAction(BaseMutableAction mutableAction)
+    public void setMutableAction(@NotNull BaseMutableAction mutableAction)
     {
         _mutableAction = mutableAction;
         
@@ -267,7 +268,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         timeField.setEnabled(true);
     }
     
-    public void endHotkeyListening(String hotkey)
+    public void endHotkeyListening(@NotNull String hotkey)
     {
         endHotkeyListeningWithoutAnyKeyEntered();
         
@@ -279,14 +280,14 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         setActionFirstValue(hotkey);
     }
     
-    public void displayError(String error)
+    public void displayError(@NotNull String error)
     {
         statusLabel.setText(TextValue.getText(TextValue.EditAction_StatusError, error));
     }
     
     // # Private - properties
     
-    private void setActionFirstValue(String value)
+    private void setActionFirstValue(@NotNull String value)
     {
         if (_mutableAction == null)
         {
@@ -298,7 +299,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         onAnyValueChanged();
     }
     
-    private void setActionSecondValue(String value)
+    private void setActionSecondValue(@NotNull String value)
     {
         if (_mutableAction == null)
         {
@@ -754,11 +755,11 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
 }
 
 class EditMacroActionTypesModel implements ComboBoxModel {
-    public final StandardDescriptionsDataSource dataSource;
+    @NotNull public final StandardDescriptionsDataSource dataSource;
     
     private int _selectedIndex = 0;
     
-    public EditMacroActionTypesModel(StandardDescriptionsDataSource dataSource)
+    public EditMacroActionTypesModel(@NotNull StandardDescriptionsDataSource dataSource)
     {
         this.dataSource = dataSource;
     }

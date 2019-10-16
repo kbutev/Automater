@@ -17,6 +17,7 @@ import automater.input.InputKeyClick;
 import automater.input.InputMouseMotion;
 import automater.input.InputMouseMove;
 import automater.input.InputMouseWheel;
+import com.sun.istack.internal.NotNull;
 
 /**
  * Converts RecorderUserInputs to BaseActions.
@@ -24,7 +25,7 @@ import automater.input.InputMouseWheel;
  * @author Bytevi
  */
 public class ActionsFromMacroInputsParser implements BaseActionsParser {
-    private ArrayList<BaseAction> _actions = null;
+    private @NotNull ArrayList<BaseAction> _actions = null;
     
     public ActionsFromMacroInputsParser()
     {
@@ -42,7 +43,7 @@ public class ActionsFromMacroInputsParser implements BaseActionsParser {
     }
 
     @Override
-    public void onParseInput(RecorderUserInput input) throws Exception {
+    public void onParseInput(@NotNull RecorderUserInput input) throws Exception {
         if (_actions == null)
         {
             Errors.throwIllegalStateError("Parser cannot parse before beginning.");
@@ -100,7 +101,7 @@ public class ActionsFromMacroInputsParser implements BaseActionsParser {
     }
 
     @Override
-    public List<BaseAction> onFinishParsingMacro() throws Exception {
+    public @NotNull List<BaseAction> onFinishParsingMacro() throws Exception {
         if (_actions == null)
         {
             Errors.throwIllegalStateError("Parser cannot finish before beginning.");

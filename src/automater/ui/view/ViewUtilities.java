@@ -7,6 +7,7 @@ package automater.ui.view;
 
 import automater.Strings;
 import automater.utilities.Resources;
+import com.sun.istack.internal.NotNull;
 import java.awt.Image;
 import java.awt.Toolkit;
 
@@ -15,13 +16,13 @@ import java.awt.Toolkit;
  * @author Byti
  */
 public class ViewUtilities {
-    public static void setAppIconForFrame(javax.swing.JFrame frame)
+    public static void setAppIconForFrame(@NotNull javax.swing.JFrame frame)
     {
         Image image = Toolkit.getDefaultToolkit().createImage(Resources.getImagePath(Strings.APP_ICON_FILE));
         frame.setIconImage(image);
     }
     
-    public static void setAppRedIconForFrame(javax.swing.JFrame frame)
+    public static void setAppRedIconForFrame(@NotNull javax.swing.JFrame frame)
     {
         Image image = Toolkit.getDefaultToolkit().createImage(Resources.getImagePath(Strings.APP_ICON_RED_FILE));
         frame.setIconImage(image);

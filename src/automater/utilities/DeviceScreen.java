@@ -5,6 +5,7 @@
  */
 package automater.utilities;
 
+import com.sun.istack.internal.NotNull;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
@@ -14,7 +15,7 @@ import java.awt.Toolkit;
  * @author Byti
  */
 public class DeviceScreen {
-    public static Dimension getPrimaryScreenSize()
+    public static @NotNull Dimension getPrimaryScreenSize()
     {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         return screenSize;
