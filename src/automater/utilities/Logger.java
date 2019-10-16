@@ -22,11 +22,6 @@ public class Logger {
     public static final String LOG_BACKUP_FILE_NAME = "logs-previous.txt";
     public static final boolean DISPLAY_TIMESTAMPS = true;
     
-    private static final Object _lock = new Object();
-    private static final PrintStream _outStream = System.out;
-    private static File _logFile;
-    private static FileWriter _logWriter;
-    
     public static final String MESSAGE_ACTION_PREFIX = "#ACTION#";
     public static final String MESSAGE_EVENT_PREFIX = "#EVENT#";
     public static final String WARNING_PREFIX = "#WARNING#";
@@ -36,13 +31,15 @@ public class Logger {
     
     public static final String OVERRIDE_ME_MESSAGE = "Calling non-overriden base method ";
     
+    private static final PrintStream _outStream = System.out;
+    
     public static void printLine(String data)
     {
         _outStream.println(data);
         
         if (PRINT_TO_LOG_FILE)
         {
-            writeToLogFile(data);
+            LoggerFile.writeToFile(data);
         }
     }
     
@@ -105,138 +102,6 @@ public class Logger {
         printLine(generateText(origin, WARNING_PREFIX, OVERRIDE_ME_MESSAGE + methodName));
     }
     
-    private static String getLogFilePath()
-    {
-        String path = FileSystem.getLocalFilePath();
-        return FileSystem.createFilePathWithBasePath(path, LOG_FILE_NAME);
-    }
-    
-    private static String getLogBackupFilePath()
-    {
-        if (LOG_BACKUP_FILE_NAME.isEmpty())
-        {
-            return "";
-        }
-        
-        String path = FileSystem.getLocalFilePath();
-        return FileSystem.createFilePathWithBasePath(path, LOG_BACKUP_FILE_NAME);
-    }
-    
-    private static File getLogFile()
-    {
-        return setupLogFileIfNecessary();
-    }
-    
-    private static void writeToLogFile(String data)
-    {
-        FileWriter writer = setupLogFileWriterIfNecessary();
-        
-        if (writer == null)
-        {
-            return;
-        }
-        
-        try {
-            String[] lines = data.split("\n");
-            
-            for (String line : lines)
-            {
-                writer.append(line + "\n");
-            }
-            
-            writer.flush();
-        } catch (Exception e) {
-            
-        }
-    }
-    
-    private static File setupLogFileIfNecessary()
-    {
-        synchronized (_lock)
-        {
-            boolean initialized = _logFile != null;
-            
-            if (!initialized)
-            {
-                // Backup current log file if a backup name is defined
-                // Otherwise just delete the current log file
-                if (!getLogBackupFilePath().isEmpty())
-                {
-                    backupLogFile();
-                }
-                else
-                {
-                    deleteLogFile();
-                }
-                
-                _logFile = new File(getLogFilePath());
-            }
-            
-            return _logFile;
-        }
-    }
-    
-    private static void backupLogFile()
-    {
-        if (getLogBackupFilePath().isEmpty())
-        {
-            return;
-        }
-        
-        // Delete backup file (if it exists)
-        // Backup current log file
-        // Delete log file (if it exists)
-        File backup = new File(getLogBackupFilePath());
-        File logFile = new File(getLogFilePath());
-        
-        try {
-            backup.delete();
-        } catch (Exception e) {
-            
-        }
-        
-        if (logFile.exists())
-        {
-            logFile.renameTo(backup);
-            
-            try {
-                logFile.delete();
-            } catch (Exception e) {
-            
-            }
-        }
-    }
-    
-    private static void deleteLogFile()
-    {
-        File logFile = new File(getLogFilePath());
-        
-        try {
-            logFile.delete();
-        } catch (Exception e) {
-            
-        }
-    }
-    
-    private static FileWriter setupLogFileWriterIfNecessary()
-    {
-        File logFile = getLogFile();
-        
-        synchronized (_lock)
-        {
-            if (_logWriter == null)
-            {
-                try {
-                    _logWriter = new FileWriter(logFile, true);
-                } catch (Exception e) {
-                    System.out.println("Logger could not start a log writer for the log file: " + e.toString());
-                }
-            }
-            
-            return _logWriter;
-        }
-    }
-    
     private static <T> String generateText(T origin, String prefix, String text)
     {
         String reportingClass = origin != null ? origin.getClass().getSimpleName() : "Static";
@@ -268,5 +133,143 @@ public class Logger {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         
         return simpleDateFormat.format(new Date());
+    }
+}
+
+class LoggerFile {
+    private static final Object _lock = new Object();
+    private static File _logFile;
+    private static FileWriter _logWriter;
+    
+    public static String getFilePath()
+    {
+        String path = FileSystem.getLocalFilePath();
+        return FileSystem.createFilePathWithBasePath(path, Logger.LOG_FILE_NAME);
+    }
+    
+    public static String getLogFilePath()
+    {
+        if (Logger.LOG_BACKUP_FILE_NAME.isEmpty())
+        {
+            return "";
+        }
+        
+        String path = FileSystem.getLocalFilePath();
+        return FileSystem.createFilePathWithBasePath(path, Logger.LOG_BACKUP_FILE_NAME);
+    }
+    
+    public static File getFile()
+    {
+        return setupFileIfNecessary();
+    }
+    
+    public static void writeToFile(String data)
+    {
+        FileWriter writer = setupFileWriterIfNecessary();
+        
+        if (writer == null)
+        {
+            return;
+        }
+        
+        try {
+            String[] lines = data.split("\n");
+            
+            for (String line : lines)
+            {
+                writer.append(line + "\n");
+            }
+            
+            writer.flush();
+        } catch (Exception e) {
+            
+        }
+    }
+    
+    public static File setupFileIfNecessary()
+    {
+        synchronized (_lock)
+        {
+            boolean initialized = _logFile != null;
+            
+            if (!initialized)
+            {
+                // Backup current log file if a backup name is defined
+                // Otherwise just delete the current log file
+                if (!getLogFilePath().isEmpty())
+                {
+                    backupFile();
+                }
+                else
+                {
+                    deleteFile();
+                }
+                
+                _logFile = new File(getFilePath());
+            }
+            
+            return _logFile;
+        }
+    }
+    
+    public static void backupFile()
+    {
+        if (getLogFilePath().isEmpty())
+        {
+            return;
+        }
+        
+        // Delete backup file (if it exists)
+        // Backup current log file
+        // Delete log file (if it exists)
+        File backup = new File(getLogFilePath());
+        File logFile = new File(getFilePath());
+        
+        try {
+            backup.delete();
+        } catch (Exception e) {
+            
+        }
+        
+        if (logFile.exists())
+        {
+            logFile.renameTo(backup);
+            
+            try {
+                logFile.delete();
+            } catch (Exception e) {
+            
+            }
+        }
+    }
+    
+    public static void deleteFile()
+    {
+        File logFile = new File(getFilePath());
+        
+        try {
+            logFile.delete();
+        } catch (Exception e) {
+            
+        }
+    }
+    
+    public static FileWriter setupFileWriterIfNecessary()
+    {
+        File logFile = getFile();
+        
+        synchronized (_lock)
+        {
+            if (_logWriter == null)
+            {
+                try {
+                    _logWriter = new FileWriter(logFile, true);
+                } catch (Exception e) {
+                    System.out.println("Logger could not start a log writer for the log file: " + e.toString());
+                }
+            }
+            
+            return _logWriter;
+        }
     }
 }
