@@ -10,8 +10,12 @@ import automater.recorder.model.RecorderUserInput;
 /**
  * Forwards requests for parsed input objects.
  * 
+ * Call onParseInput() when new input is forwarded.
+ * Call onInputDataChange() when input data has changed without new input being delivered.
+ * 
  * @author Bytevi
  */
 public interface RecorderJHookListenerDelegate {
     public void onParseInput(RecorderUserInput input);
+    public void onInputDataChange();
 }

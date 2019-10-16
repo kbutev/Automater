@@ -9,7 +9,7 @@ import automater.TextValue;
 import automater.recorder.BaseRecorderListener;
 import automater.recorder.Recorder;
 import automater.recorder.RecorderHotkeyListener;
-import automater.recorder.model.RecorderModel;
+import automater.recorder.model.RecorderModelStandard;
 import automater.recorder.model.RecorderResult;
 import automater.recorder.model.RecorderUserInput;
 import automater.recorder.parser.RecorderNativeParser;
@@ -49,7 +49,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     
     private final Recorder _recorder = Recorder.getDefault();
     private final List<RecorderParserFlag> _recordFlags = _recorder.defaults.getDefaultRecordFlags();
-    private RecorderModel _recorderModel = new RecorderModel();
+    private RecorderModelStandard _recorderModel = new RecorderModelStandard();
     private RecorderNativeParser _recorderMacroParser;
     private boolean _hasStartedMacroRecording = false;
     private RecorderResult _recordedResult;
@@ -322,7 +322,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         ArrayList<RecorderUserInput> userInputs;
         userInputs = new ArrayList<>();
         userInputs.add(RecorderUserInput.createDoNothing(0));
-        _recorderModel = new RecorderModel();
+        _recorderModel = new RecorderModelStandard();
         _recordedResult = new RecorderResult(userInputs);
         
         _macroActionDescriptionsList.clear();
@@ -331,7 +331,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     
     private void clearData()
     {
-        _recorderModel = new RecorderModel();
+        _recorderModel = new RecorderModelStandard();
         _recordedResult = null;
         
         _macroActionDescriptionsList.clear();

@@ -156,7 +156,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
         _masterParser.setPlayStopHotkeyListener(null);
     }
     
-    // # RecorderNativeListenerDelegate
+    // # RecorderJHookListenerDelegate
     
     @Override
     public void onParseInput(RecorderUserInput input)
@@ -184,16 +184,23 @@ public class Recorder implements RecorderJHookListenerDelegate {
         }
         
         // Alert listener
-        if (_listener == null)
+        if (_listener != null)
+        {
+            _listener.onRecordedUserInput(input);
+        }
+    }
+    
+    @Override
+    public void onInputDataChange()
+    {
+        // If not recording, do nothing
+        if (!_recording)
         {
             return;
         }
         
-        if (input != null)
-        {
-            _listener.onRecordedUserInput(input);
-        }
-        else
+        // Alert listener
+        if (_listener != null)
         {
             _listener.onRecordedUserInputChanged();
         }

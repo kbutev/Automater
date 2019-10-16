@@ -14,12 +14,12 @@ import java.util.ArrayList;
  * 
  * @author Bytevi
  */
-public class RecorderModel implements BaseRecorderModel {
+public class RecorderModelStandard implements BaseRecorderModel {
     private final ArrayList<RecorderUserInput> _recordedInput = new ArrayList<>();
     private RecorderUserInput _firstInput;
     private RecorderUserInput _lastInput;
     
-    public RecorderModel()
+    public RecorderModelStandard()
     {
         
     }

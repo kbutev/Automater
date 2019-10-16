@@ -122,13 +122,29 @@ public class RecorderJHookListener {
         @Override
         public void nativeKeyPressed(NativeKeyEvent nke) {
             RecorderUserInput input = _parser.evaluatePress(nke);
-            _delegate.onParseInput(input);
+            
+            if (input != null)
+            {
+                _delegate.onParseInput(input);
+            }
+            else
+            {
+                _delegate.onInputDataChange();
+            }
         }
 
         @Override
         public void nativeKeyReleased(NativeKeyEvent nke) {
             RecorderUserInput input = _parser.evaluateRelease(nke);
-            _delegate.onParseInput(input);
+            
+            if (input != null)
+            {
+                _delegate.onParseInput(input);
+            }
+            else
+            {
+                _delegate.onInputDataChange();
+            }
         }
 
         @Override
@@ -139,31 +155,71 @@ public class RecorderJHookListener {
         @Override
         public void nativeMousePressed(NativeMouseEvent nme) {
             RecorderUserInput input = _parser.evaluatePress(nme);
-            _delegate.onParseInput(input);
+            
+            if (input != null)
+            {
+                _delegate.onParseInput(input);
+            }
+            else
+            {
+                _delegate.onInputDataChange();
+            }
         }
 
         @Override
         public void nativeMouseReleased(NativeMouseEvent nme) {
             RecorderUserInput input = _parser.evaluateRelease(nme);
-            _delegate.onParseInput(input);
+            
+            if (input != null)
+            {
+                _delegate.onParseInput(input);
+            }
+            else
+            {
+                _delegate.onInputDataChange();
+            }
         }
 
         @Override
         public void nativeMouseMoved(NativeMouseEvent nme) {
             RecorderUserInput input = _parser.evaluateMouseMove(nme);
-            _delegate.onParseInput(input);
+            
+            if (input != null)
+            {
+                _delegate.onParseInput(input);
+            }
+            else
+            {
+                _delegate.onInputDataChange();
+            }
         }
 
         @Override
         public void nativeMouseDragged(NativeMouseEvent nme) {
             RecorderUserInput input = _parser.evaluateMouseMove(nme);
-            _delegate.onParseInput(input);
+            
+            if (input != null)
+            {
+                _delegate.onParseInput(input);
+            }
+            else
+            {
+                _delegate.onInputDataChange();
+            }
         }
 
         @Override
         public void nativeMouseWheelMoved(NativeMouseWheelEvent nmwe) {
             RecorderUserInput input = _parser.evaluateMouseWheel(nmwe);
-            _delegate.onParseInput(input);
+            
+            if (input != null)
+            {
+                _delegate.onParseInput(input);
+            }
+            else
+            {
+                _delegate.onInputDataChange();
+            }
         }
 
         @Override
