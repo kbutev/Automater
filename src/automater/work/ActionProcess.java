@@ -93,7 +93,7 @@ public class ActionProcess implements BaseActionProcess {
             
             final ActionProcess process = this;
             
-            Looper.getShared().performAsyncCallback(new SimpleCallback() {
+            Looper.getShared().performAsyncCallbackInBackground(new SimpleCallback() {
                 @Override
                 public void perform() {
                     process.perform();

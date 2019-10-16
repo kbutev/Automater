@@ -16,8 +16,6 @@ import java.util.concurrent.TimeUnit;
  * 
  * LooperClients are updated by one single specific background thread. Do not block it!
  * 
- * All callbacks are done on new separate background threads, they can be blocked w/o any worries.
- * 
  * The performSyncCallback blocks the caller thread until the given callback is performed on
  * a background thread (same background thread as the LooperClients).
  *
@@ -48,6 +46,8 @@ public class Looper {
     {
         loopAgain();
     }
+    
+    // # Public
 
     synchronized public static Looper getShared()
     {
@@ -74,23 +74,88 @@ public class Looper {
         _clientsManager.unsubscribe(client);
     }
     
-    public void performSyncCallback(final SimpleCallback callback)
+    public void performSyncCallbackInBackground(final SimpleCallback callback)
     {
         _callbacksManager.queueCallback(callback);
         enterSyncWaitLock();
     }
     
-    public void performAsyncCallback(final SimpleCallback callback)
-    {
-        _callbacksManager.queueCallback(callback);
-    }
-    
-    public <T> void performSyncCallback(final Callback<T> callback, final T parameter)
+    public <T> void performSyncCallbackInBackground(final Callback<T> callback, final T parameter)
     {
         _callbacksManager.queueCallback(callback, parameter);
         enterSyncWaitLock();
     }
-
+    
+    public void performSyncCallbackOnAWTQueue(final SimpleCallback callback)
+    {
+        if (java.awt.EventQueue.isDispatchThread())
+        {
+            callback.perform();
+            return;
+        }
+        
+        try {
+            java.awt.EventQueue.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    callback.perform();
+                }
+            });
+        } catch (Exception e) {
+            
+        }
+    }
+    
+    public <T> void performSyncCallbackOnAWTQueue(final Callback<T> callback, final T parameter)
+    {
+        if (java.awt.EventQueue.isDispatchThread())
+        {
+            callback.perform(parameter);
+            return;
+        }
+        
+        try {
+            java.awt.EventQueue.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    callback.perform(parameter);
+                }
+            });
+        } catch (Exception e) {
+            
+        }
+    }
+    
+    public void performAsyncCallbackInBackground(final SimpleCallback callback)
+    {
+        _callbacksManager.queueCallback(callback);
+    }
+    
+    public <T> void performAsyncCallbackInBackground(final Callback<T> callback, final T parameter)
+    {
+        _callbacksManager.queueCallback(callback, parameter);
+    }
+    
+    public void performAsyncCallbackOnAWTQueue(final SimpleCallback callback)
+    {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                callback.perform();
+            }
+        });
+    }
+    
+    public <T> void performAsyncCallbackOnAWTQueue(final Callback<T> callback, final T parameter)
+    {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                callback.perform(parameter);
+            }
+        });
+    }
+    
+    // # Private
+    
     private void loop()
     {
         _clientsManager.loop();
