@@ -12,6 +12,7 @@ import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.Looper;
 import automater.utilities.LooperClient;
+import automater.utilities.SimpleCallback;
 import automater.work.model.ActionContext;
 import automater.work.model.ActionSystemKey;
 import automater.work.model.ActionSystemKeyModifierValue;
@@ -36,6 +37,8 @@ import java.util.List;
  * isWaiting() - is waiting for specific time to perform next actions
  * isFinished() - performed all actions or was stopped manually
  * 
+ * The ExecutorListener delegate methods are always called on the java AWT queue.
+ * 
  * @author Bytevi
  */
 public class ExecutorProcess implements BaseExecutorProcess, LooperClient, ExecutorProgress {
@@ -47,12 +50,13 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
     private final List<BaseAction> _actions;
     
     private BaseExecutorTimer _timer;
-    private ExecutorListener _listener;
+    private ExecutorListenerDelegateOperations _listener;
     
     private MacroParameters _parameters;
     
     // Current state
     private boolean _started = false;
+    private boolean _cancelled = false;
     
     private Macro _macro;
     
@@ -160,7 +164,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
     @Override
     public void setListener(ExecutorListener listener)
     {
-        this._listener = listener;
+        this._listener = new ExecutorListenerDelegateOperations(listener);
     }
     
     @Override
@@ -220,17 +224,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
                 return;
             }
             
-            // Release all pressed keys, to avoid keys getting stuck
-            releaseAllPressedKeys();
-            
-            // Reset values to their defaults
-            cleanup();
-        }
-        
-        // Listener alert
-        if (_listener != null)
-        {
-            _listener.onCancel();
+            _cancelled = true;
         }
     }
     
@@ -239,6 +233,19 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
     @Override
     public void loop()
     {
+        boolean cancelled;
+        
+        synchronized (_lock)
+        {
+            cancelled = _cancelled;
+        }
+        
+        if (cancelled)
+        {
+            cancel();
+            return;
+        }
+        
         update();
     }
     
@@ -347,6 +354,25 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
     }
     
     // # Private
+    
+    private void cancel()
+    {
+        ExecutorListenerDelegateOperations listener;
+        
+        synchronized (_lock)
+        {
+            listener = _listener;
+            
+            // Release all pressed keys, to avoid keys getting stuck
+            releaseAllPressedKeys();
+            
+            // Reset values to their defaults
+            cleanup();
+        }
+        
+        // Listener alert
+        listener.onCancel();
+    }
     
     private boolean canRepeat()
     {
@@ -470,10 +496,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
             BaseAction action = currentActionProcess.getAction();
             
             // Listener alert
-            if (_listener != null)
-            {
-                _listener.onActionUpdate(action);
-            }
+            _listener.onActionUpdate(action);
             
             // Process finished? Mark as done
             if (!currentActionProcess.isActive())
@@ -487,10 +510,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
                 isIdle = true;
                 
                 // Listener alert
-                if (_listener != null)
-                {
-                    _listener.onActionFinish(action);
-                }
+                _listener.onActionFinish(action);
             }
         }
         
@@ -539,10 +559,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
                 _timer.willPerformNextAction(nextAction);
                 
                 // Listener alert
-                if (_listener != null)
-                {
-                    _listener.onActionExecute(nextAction);
-                }
+                _listener.onActionExecute(nextAction);
                 
                 // Perform
                 performCurrentActionProcess();
@@ -557,10 +574,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
                 isIdle = true;
                 
                 // Listener alert
-                if (_listener != null)
-                {
-                    _listener.onActionFinish(nextAction);
-                }
+                _listener.onActionFinish(nextAction);
             }
         }
         
@@ -581,10 +595,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
                 }
                 
                 // Listener alert
-                if (_listener != null)
-                {
-                    _listener.onRepeat(timesPlayed, timesWillPlay);
-                }
+                _listener.onRepeat(timesPlayed, timesWillPlay);
                 
                 return;
             }
@@ -592,10 +603,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
             Logger.messageEvent(this, "Finished.");
             
             // Listener alert
-            if (_listener != null)
-            {
-                _listener.onFinish();
-            }
+            _listener.onFinish();
             
             // Stop
             synchronized (_lock)
@@ -619,10 +627,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
             }
             
             // Listener alert
-            if (_listener != null)
-            {
-                _listener.onWait();
-            }
+            _listener.onWait();
         }
     }
     
@@ -653,6 +658,136 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
        _previousActionProcess = new ActionProcess(getLastAction());
         _context = null;
        _currentActionProcess = null;
+       _listener = null;
         Looper.getShared().unsubscribe(this);
+    }
+}
+
+class ExecutorListenerDelegateOperations {
+    final ExecutorListener listener;
+    
+    ExecutorListenerDelegateOperations(ExecutorListener listener)
+    {
+        this.listener = listener;
+    }
+    
+    public void onStart(int repeatTimes)
+    {
+        if (listener == null)
+        {
+            return;
+        }
+        
+        Looper.getShared().performSyncCallbackOnAWTQueue(new SimpleCallback() {
+            @Override
+            public void perform() {
+                listener.onStart(repeatTimes);
+            }
+        });
+    }
+    
+    public void onActionExecute(BaseAction action)
+    {
+        if (listener == null)
+        {
+            return;
+        }
+        
+        Looper.getShared().performSyncCallbackOnAWTQueue(new SimpleCallback() {
+            @Override
+            public void perform() {
+                listener.onActionExecute(action);
+            }
+        });
+    }
+    
+    public void onActionUpdate(BaseAction action)
+    {
+        if (listener == null)
+        {
+            return;
+        }
+        
+        Looper.getShared().performSyncCallbackOnAWTQueue(new SimpleCallback() {
+            @Override
+            public void perform() {
+                listener.onActionUpdate(action);
+            }
+        });
+    }
+    
+    public void onActionFinish(BaseAction action)
+    {
+        if (listener == null)
+        {
+            return;
+        }
+        
+        Looper.getShared().performSyncCallbackOnAWTQueue(new SimpleCallback() {
+            @Override
+            public void perform() {
+                listener.onActionFinish(action);
+            }
+        });
+    }
+    
+    public void onWait()
+    {
+        if (listener == null)
+        {
+            return;
+        }
+        
+        Looper.getShared().performSyncCallbackOnAWTQueue(new SimpleCallback() {
+            @Override
+            public void perform() {
+                listener.onWait();
+            }
+        });
+    }
+    
+    public void onCancel()
+    {
+        if (listener == null)
+        {
+            return;
+        }
+        
+        Looper.getShared().performSyncCallbackOnAWTQueue(new SimpleCallback() {
+            @Override
+            public void perform() {
+                listener.onCancel();
+            }
+        });
+    }
+    
+    public void onRepeat(int numberOfTimesPlayed, int numberOfTimesToPlay)
+    {
+        if (listener == null)
+        {
+            return;
+        }
+        
+        Looper.getShared().performSyncCallbackOnAWTQueue(new SimpleCallback() {
+            @Override
+            public void perform() {
+                listener.onRepeat(numberOfTimesPlayed, numberOfTimesToPlay);
+            }
+        });
+    }
+    
+    public void onFinish()
+    {
+        if (listener == null)
+        {
+            return;
+        }
+        
+        Looper.getShared().performSyncCallbackOnAWTQueue(new SimpleCallback() {
+            @Override
+            public void perform() {
+                listener.onFinish();
+            }
+        });
     }
 }
