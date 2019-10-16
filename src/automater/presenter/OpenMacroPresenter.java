@@ -135,7 +135,7 @@ public class OpenMacroPresenter implements BasePresenter {
     {
         final OpenMacroPresenter presenter = this;
         
-        Looper.getShared().performCallback(new SimpleCallback() {
+        Looper.getShared().performAsyncCallback(new SimpleCallback() {
             @Override
             public void perform() {
                 final List<Macro> macros = _macrosStorage.getMacros();

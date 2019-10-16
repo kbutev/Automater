@@ -15,7 +15,11 @@ import java.util.concurrent.TimeUnit;
  * Contains utilities for performing callbacks, and updating objects every interval.
  * 
  * LooperClients are updated by one single specific background thread. Do not block it!
- * All callbacks are done on separate background threads, they can be blocked w/o any worries.
+ * 
+ * All callbacks are done on new separate background threads, they can be blocked w/o any worries.
+ * 
+ * The performSyncCallback blocks the caller thread until the given callback is performed on
+ * a background thread (same background thread as the LooperClients).
  *
  * @author Bytevi
  */
@@ -36,6 +40,9 @@ public class Looper {
     };
     
     private final ScheduledThreadPoolExecutor _looperExecutor = new ScheduledThreadPoolExecutor(1);
+    
+    private final Object _syncWaitLock = new Object();
+    private final ArrayList<Thread> _syncWaitingThreads = new ArrayList<>();
     
     private Looper()
     {
@@ -67,14 +74,21 @@ public class Looper {
         _clientsManager.unsubscribe(client);
     }
     
-    public void performCallback(final SimpleCallback callback)
+    public void performSyncCallback(final SimpleCallback callback)
+    {
+        _callbacksManager.queueCallback(callback);
+        enterSyncWaitLock();
+    }
+    
+    public void performAsyncCallback(final SimpleCallback callback)
     {
         _callbacksManager.queueCallback(callback);
     }
     
-    public <T> void performCallback(final Callback<T> callback, final T parameter)
+    public <T> void performSyncCallback(final Callback<T> callback, final T parameter)
     {
         _callbacksManager.queueCallback(callback, parameter);
+        enterSyncWaitLock();
     }
 
     private void loop()
@@ -85,7 +99,38 @@ public class Looper {
     
     private void loopAgain()
     {
+        releaseAllSyncWaitLocks();
+        
         _looperExecutor.schedule(_looperRunnable, LOOPER_INTERVAL_MSEC, TimeUnit.MILLISECONDS);
+    }
+    
+    private void enterSyncWaitLock()
+    {
+        synchronized(_syncWaitLock)
+        {
+            _syncWaitingThreads.add(Thread.currentThread());
+        }
+        
+        try {
+            Thread.currentThread().wait();
+        } catch (Exception e) {
+            
+        }
+        
+        // No need to remove itself from the array, its removed by the releaser
+    }
+    
+    private void releaseAllSyncWaitLocks()
+    {
+        synchronized(_syncWaitLock)
+        {
+            for (Thread t : _syncWaitingThreads)
+            {
+                t.interrupt();
+            }
+            
+            _syncWaitingThreads.clear();
+        }
     }
     
     class ClientsManager 
