@@ -56,12 +56,12 @@ public class Macro implements Serializable, Description {
     // # Description
 
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return name;
     }
 
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         String stringNumOfActions = TextValue.getText(TextValue.Open_NumActions, String.valueOf(getNumberOfActions()));
         String stringCreatedOn = TextValue.getText(TextValue.Open_CreatedOn, DateUtilities.asStandartDate(dateCreated));
         String stringLastPlayedOn = TextValue.getText(TextValue.Open_LastPlayedOn, DateUtilities.asStandartDate(lastDatePlayed));
@@ -93,22 +93,22 @@ public class Macro implements Serializable, Description {
     }
 
     @Override
-    public String getStandartTooltip() {
+    public @Nullable String getStandartTooltip() {
         return "Recorded on " + this.dateCreated.toString();
     }
 
     @Override
-    public String getVerboseTooltip() {
+    public @Nullable String getVerboseTooltip() {
         return "Recorded on " + this.dateCreated.toString() + ", last played on " + this.lastDatePlayed.toString();
     }
 
     @Override
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
     @Override
-    public String getDebug() {
+    public @Nullable String getDebug() {
         return getVerbose();
     }
     

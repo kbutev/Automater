@@ -28,7 +28,7 @@ public interface BaseExecutorProcess {
     public boolean isWaiting();
     public boolean isFinished();
     
-    public @NotNull Macro getMacro();
+    public @Nullable Macro getMacro();
     
     public @Nullable BaseActionProcess getCurrentActionProcess();
     public @Nullable BaseActionProcess getPreviousActionProcess();

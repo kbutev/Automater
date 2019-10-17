@@ -381,7 +381,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     }
     
     @Override
-    public RecorderUserInput evaluatePress(@NotNull NativeKeyEvent keyboardEvent) {
+    public @Nullable RecorderUserInput evaluatePress(@NotNull NativeKeyEvent keyboardEvent) {
         // Hotkey listeners update & alert
         InputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, true);
         
@@ -407,7 +407,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     }
 
     @Override
-    public RecorderUserInput evaluateRelease(@NotNull NativeKeyEvent keyboardEvent) {
+    public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeKeyEvent keyboardEvent) {
         // Hotkey listeners update
         InputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, false);
         boolean continueParsing = updateHotkeyListeners(translatedKey, false);
@@ -429,7 +429,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     }
 
     @Override
-    public RecorderUserInput evaluatePress(@NotNull NativeMouseEvent mouseEvent) {
+    public @Nullable RecorderUserInput evaluatePress(@NotNull NativeMouseEvent mouseEvent) {
         BaseRecorderNativeParser subparser = getSubparser();
         
         if (subparser == null)
@@ -441,7 +441,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     }
 
     @Override
-    public RecorderUserInput evaluateRelease(@NotNull NativeMouseEvent mouseEvent) {
+    public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeMouseEvent mouseEvent) {
         BaseRecorderNativeParser subparser = getSubparser();
         
         if (subparser == null)
@@ -453,7 +453,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     }
 
     @Override
-    public RecorderUserInput evaluateMouseMove(@NotNull NativeMouseEvent mouseMoveEvent) {
+    public @Nullable RecorderUserInput evaluateMouseMove(@NotNull NativeMouseEvent mouseMoveEvent) {
         BaseRecorderNativeParser subparser = getSubparser();
         
         if (subparser == null)
@@ -465,7 +465,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     }
 
     @Override
-    public RecorderUserInput evaluateMouseWheel(@NotNull NativeMouseWheelEvent mouseWheelEvent) {
+    public @Nullable RecorderUserInput evaluateMouseWheel(@NotNull NativeMouseWheelEvent mouseWheelEvent) {
         BaseRecorderNativeParser subparser = getSubparser();
         
         if (subparser == null)
@@ -477,7 +477,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     }
 
     @Override
-    public RecorderUserInput evaluateWindowEvent(@NotNull WindowEvent windowEvent) {
+    public @Nullable RecorderUserInput evaluateWindowEvent(@NotNull WindowEvent windowEvent) {
         BaseRecorderNativeParser subparser = getSubparser();
         
         if (subparser == null)

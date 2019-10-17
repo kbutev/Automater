@@ -13,6 +13,7 @@ import automater.utilities.Description;
 import automater.utilities.FileSystem;
 import automater.work.Action;
 import automater.work.BaseAction;
+import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 
 /**
@@ -62,7 +63,7 @@ public class StandardMutableActionTemplates {
         
         InputKeyClick keyClick = new InputKeyClick() {
             @Override
-            public InputKey getKeyValue() {
+            public @NotNull InputKey getKeyValue() {
                 return key;
             }
 
@@ -95,7 +96,7 @@ public class StandardMutableActionTemplates {
         
         InputKeyClick keyClick = new InputKeyClick() {
             @Override
-            public InputKey getKeyValue() {
+            public @NotNull InputKey getKeyValue() {
                 return key;
             }
 

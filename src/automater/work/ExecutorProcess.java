@@ -270,7 +270,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
                 return TextValue.getText(TextValue.Play_StatusWaiting);
             }
             
-            return TextValue.getText(TextValue.Play_StatusPerformedWaiting, previous.getAction().getDescription().getStandart());
+            return TextValue.getText(TextValue.Play_StatusPerformedWaiting, previous.getAction().getStandart());
         }
         
         BaseActionProcess current = getCurrentActionProcess();
@@ -280,7 +280,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
             return TextValue.getText(TextValue.Play_StatusIdle);
         }
         
-        String actionDescription = current.getAction().getDescription().getStandart();
+        String actionDescription = current.getAction().getStandart();
         
         if (getTimesWillPlay() > 1 && !isRepeatForever())
         {
@@ -504,7 +504,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
             // Process finished? Mark as done
             if (!currentActionProcess.isActive())
             {
-                String actionDescription = action.getDescription().getStandart();
+                String actionDescription = action.getStandart();
                 
                 Logger.messageEvent(this, "Finished action: " + actionDescription + "!");
                 
@@ -540,7 +540,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
                 BaseActionProcess p = new ActionProcess(nextAction);
                 setCurrentActionProcessSafely(p);
                 
-                String actionDescription = nextAction.getDescription().getStandart();
+                String actionDescription = nextAction.getStandart();
                 
                 if (!isComplex && !waits)
                 {

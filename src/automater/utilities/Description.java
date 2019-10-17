@@ -6,6 +6,7 @@
 package automater.utilities;
 
 import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 /**
  * Describes an object.
@@ -13,12 +14,12 @@ import com.sun.istack.internal.NotNull;
  * @author Bytevi
  */
 public interface Description {
-    public String getStandart();
-    public String getVerbose();
-    public String getStandartTooltip();
-    public String getVerboseTooltip();
-    public String getName();
-    public String getDebug();
+    public @Nullable String getStandart();
+    public @Nullable String getVerbose();
+    public @Nullable String getStandartTooltip();
+    public @Nullable String getVerboseTooltip();
+    public @Nullable String getName();
+    public @Nullable String getDebug();
     
     public static @NotNull Description createFromString(@NotNull final String value)
     {
@@ -35,32 +36,32 @@ class DescriptionString implements Description {
     }
 
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return value;
     }
 
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return value;
     }
 
     @Override
-    public String getStandartTooltip() {
+    public @Nullable String getStandartTooltip() {
         return value;
     }
 
     @Override
-    public String getVerboseTooltip() {
+    public @Nullable String getVerboseTooltip() {
         return value;
     }
 
     @Override
-    public String getName() {
+    public @Nullable String getName() {
         return value;
     }
 
     @Override
-    public String getDebug() {
+    public @Nullable String getDebug() {
         return value;
     }
 }

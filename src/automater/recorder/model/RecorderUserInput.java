@@ -118,32 +118,32 @@ public class RecorderUserInput implements Input, Serializable, Description {
     // # Description
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return "unknown";
     }
 
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return getStandart();
     }
 
     @Override
-    public String getStandartTooltip() {
+    public @Nullable String getStandartTooltip() {
         return "";
     }
 
     @Override
-    public String getVerboseTooltip() {
+    public @Nullable String getVerboseTooltip() {
         return "";
     }
 
     @Override
-    public String getName() {
+    public @Nullable String getName() {
         return this.getClass().getCanonicalName();
     }
 
     @Override
-    public String getDebug() {
+    public @Nullable String getDebug() {
         return getVerbose();
     }
 }
@@ -155,7 +155,7 @@ class RecorderUserInputDoNothing extends RecorderUserInput implements InputDoNot
     }
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return InputDescriptions.getDoNothingDescription(getTimestamp()).getStandart();
     }
 
@@ -178,12 +178,12 @@ class RecorderUserInputKeyboardPress extends RecorderUserInput implements InputK
     // # Description
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return InputDescriptions.getKeyboardInputDescription(getTimestamp(), true, key).getStandart();
     }
     
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return InputDescriptions.getKeyboardInputDescription(getTimestamp(), true, key).getVerbose();
     }
     
@@ -213,12 +213,12 @@ class RecorderUserInputKeyboardRelease extends RecorderUserInput implements Inpu
     // # Description
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return InputDescriptions.getKeyboardInputDescription(getTimestamp(), false, key).getStandart();
     }
     
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return InputDescriptions.getKeyboardInputDescription(getTimestamp(), false, key).getVerbose();
     }
 
@@ -278,12 +278,12 @@ class RecorderUserInputMousePress extends RecorderUserInput implements InputKeyC
     // # Description
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return InputDescriptions.getMouseInputDescription(getTimestamp(), true, key).getStandart();
     }
     
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return InputDescriptions.getMouseInputDescription(getTimestamp(), true, key).getVerbose();
     }
     
@@ -343,12 +343,12 @@ class RecorderUserInputMouseRelease extends RecorderUserInput implements InputKe
     // # Description
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return InputDescriptions.getMouseInputDescription(getTimestamp(), false, key).getStandart();
     }
     
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return InputDescriptions.getMouseInputDescription(getTimestamp(), false, key).getVerbose();
     }
     
@@ -380,12 +380,12 @@ class RecorderUserInputMouseMove extends RecorderUserInput implements InputMouse
     // # Description
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return InputDescriptions.getMouseMoveDescription(getTimestamp(), x, y).getStandart();
     }
     
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return InputDescriptions.getMouseMoveDescription(getTimestamp(), x, y).getVerbose();
     }
 
@@ -417,12 +417,12 @@ class RecorderUserInputMouseWheel extends RecorderUserInput implements InputMous
     // # Description
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return InputDescriptions.getMouseWheelDescription(getTimestamp(), scrollValue).getStandart();
     }
     
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return InputDescriptions.getMouseWheelDescription(getTimestamp(), scrollValue).getVerbose();
     }
     

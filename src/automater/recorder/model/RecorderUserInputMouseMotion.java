@@ -11,6 +11,7 @@ import automater.input.InputMouseMotion;
 import automater.input.InputMouseMove;
 import automater.utilities.CollectionUtilities;
 import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.util.List;
 
 /**
@@ -37,7 +38,7 @@ public class RecorderUserInputMouseMotion extends RecorderUserInput implements I
     // # Description
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         InputMouseMove firstMove = getFirstMove();
         InputMouseMove lastMove = getLastMove();
         
@@ -45,7 +46,7 @@ public class RecorderUserInputMouseMotion extends RecorderUserInput implements I
     }
     
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         InputMouseMove firstMove = getFirstMove();
         InputMouseMove lastMove = getLastMove();
         

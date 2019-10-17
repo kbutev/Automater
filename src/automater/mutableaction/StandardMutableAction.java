@@ -140,7 +140,7 @@ public class StandardMutableAction implements BaseMutableAction {
     }
     
     @Override
-    public MutableActionType getType() {
+    public @NotNull MutableActionType getType() {
         return type;
     }
 
@@ -175,7 +175,7 @@ public class StandardMutableAction implements BaseMutableAction {
     }
     
     @Override
-    public String getStateDescription() {
+    public @NotNull String getStateDescription() {
         return "unknown";
     }
     
@@ -297,7 +297,7 @@ class StandartMutableActionKeyboardClick extends StandardMutableAction {
         
         InputKeyClick keyClick = new InputKeyClick() {
             @Override
-            public InputKey getKeyValue() {
+            public @NotNull InputKey getKeyValue() {
                 return inputKey;
             }
 
@@ -373,7 +373,7 @@ class StandartMutableActionMouseClick extends StandardMutableAction {
         
         InputKeyClick keyClick = new InputKeyClick() {
             @Override
-            public InputKey getKeyValue() {
+            public @NotNull InputKey getKeyValue() {
                 return inputKey;
             }
 

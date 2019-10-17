@@ -9,6 +9,7 @@ import automater.TextValue;
 import automater.utilities.Description;
 import automater.utilities.FileSystem;
 import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.io.Serializable;
 
 /**
@@ -159,32 +160,32 @@ class InputDescription implements Description, Serializable {
     }
 
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return value;
     }
 
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return verbose;
     }
 
     @Override
-    public String getStandartTooltip() {
+    public @Nullable String getStandartTooltip() {
         return tooltip;
     }
 
     @Override
-    public String getVerboseTooltip() {
+    public @Nullable String getVerboseTooltip() {
         return tooltip;
     }
 
     @Override
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
     @Override
-    public String getDebug() {
+    public @Nullable String getDebug() {
         return getVerbose();
     }
 }

@@ -150,44 +150,38 @@ public class Action extends BaseAction {
     }
     
     @Override
-    public @Nullable Description getDescription()
-    {
-        return this;
-    }
-    
-    @Override
     public void perform(@NotNull BaseActionContext context)
     {
         Errors.throwNotImplemented("Action perform method has not been implemented!");
     }
 
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return toString();
     }
 
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return getStandart();
     }
 
     @Override
-    public String getStandartTooltip() {
+    public @Nullable String getStandartTooltip() {
         return getStandart();
     }
 
     @Override
-    public String getVerboseTooltip() {
+    public @Nullable String getVerboseTooltip() {
         return getStandart();
     }
 
     @Override
-    public String getName() {
+    public @Nullable String getName() {
         return getStandart();
     }
 
     @Override
-    public String getDebug() {
+    public @Nullable String getDebug() {
         return getVerbose();
     }
 }
@@ -215,12 +209,12 @@ class ActionDoNothing extends Action implements InputDoNothing {
     }
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return description.getStandart();
     }
     
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return description.getVerbose();
     }
     
@@ -275,12 +269,12 @@ class ActionWait extends Action implements InputDoNothing {
     }
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return description.getStandart();
     }
     
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return description.getVerbose();
     }
     
@@ -357,17 +351,17 @@ class ActionKeyPress extends Action implements InputKeyClick {
     }
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return standartDescription;
     }
     
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return verboseDescription;
     }
 
     @Override
-    public InputKey getKeyValue() {
+    public @NotNull InputKey getKeyValue() {
         return inputKey;
     }
 
@@ -444,17 +438,17 @@ class ActionKeyRelease extends Action implements InputKeyClick {
     }
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return standartDescription;
     }
     
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return verboseDescription;
     }
 
     @Override
-    public InputKey getKeyValue() {
+    public @NotNull InputKey getKeyValue() {
         return inputKey;
     }
 
@@ -531,12 +525,12 @@ class ActionMouseMove extends Action implements InputMouseMove {
     }
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return standartDescription;
     }
     
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return verboseDescription;
     }
 
@@ -636,12 +630,12 @@ class ActionMouseMovement extends Action implements InputMouseMotion {
     }
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return standartDescription;
     }
     
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return verboseDescription;
     }
     
@@ -800,12 +794,12 @@ class ActionMouseWheel extends Action implements InputMouseWheel {
     }
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return standartDescription;
     }
     
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return verboseDescription;
     }
 
@@ -878,17 +872,17 @@ class ActionSystemCommand extends Action implements InputSystemCommand {
     }
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return standartDescription;
     }
     
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return verboseDescription;
     }
     
     @Override
-    public String getValue() {
+    public @NotNull String getValue() {
         return value;
     }
     
@@ -959,17 +953,17 @@ class ActionScreenshot extends Action implements InputScreenshot {
     }
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return standartDescription;
     }
     
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return verboseDescription;
     }
     
     @Override
-    public String getPath() {
+    public @NotNull String getPath() {
         return screenshotPath;
     }
 

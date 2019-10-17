@@ -7,6 +7,7 @@ package automater.work.model;
 
 import automater.utilities.Description;
 import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import java.io.Serializable;
 
 /**
@@ -60,32 +61,32 @@ public class ActionSystemKey implements Serializable, Description {
     }
 
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return "unknown";
     }
 
     @Override
-    public String getVerbose() {
+    public @Nullable String getVerbose() {
         return getStandart();
     }
 
     @Override
-    public String getStandartTooltip() {
+    public @Nullable String getStandartTooltip() {
         return getStandart();
     }
 
     @Override
-    public String getVerboseTooltip() {
+    public @Nullable String getVerboseTooltip() {
         return getStandart();
     }
 
     @Override
-    public String getName() {
+    public @Nullable String getName() {
         return getStandart();
     }
 
     @Override
-    public String getDebug() {
+    public @Nullable String getDebug() {
         return getStandart();
     }
 }
@@ -111,7 +112,7 @@ class ActionSystemKeyKeyboard extends ActionSystemKey {
     }
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return String.valueOf(value);
     }
 }
@@ -137,7 +138,7 @@ class ActionSystemKeyMouse extends ActionSystemKey {
     }
     
     @Override
-    public String getStandart() {
+    public @Nullable String getStandart() {
         return String.valueOf(value);
     }
 }

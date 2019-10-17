@@ -427,7 +427,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         {
             BaseAction doNothing = Action.createDoNothing(0);
             _macroActions.add(doNothing);
-            _macroActionDescriptions.add(doNothing.getDescription());
+            _macroActionDescriptions.add(doNothing);
         }
         
         // Update delegate
@@ -534,7 +534,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
             BaseAction action = a.buildAction();
             
             _macroActions.add(action);
-            _macroActionDescriptions.add(action.getDescription());
+            _macroActionDescriptions.add(action);
             
             sortActions();
         } 
@@ -555,7 +555,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
             long newTime = a.getTimestamp();
             
             _macroActions.set(actionBeingEditedIndex, action);
-            _macroActionDescriptions.set(actionBeingEditedIndex, action.getDescription());
+            _macroActionDescriptions.set(actionBeingEditedIndex, action);
             
             if (originalTime != newTime)
             {
