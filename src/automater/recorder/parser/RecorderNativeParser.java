@@ -180,11 +180,6 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
     @Override
     public @Nullable RecorderUserInput evaluateWindowEvent(@NotNull WindowEvent windowEvent)
     {
-        if (!flags.contains(RecorderParserFlag.RECORD_WINDOW_EVENTS))
-        {
-            return null;
-        }
-        
         return null;
     }
     

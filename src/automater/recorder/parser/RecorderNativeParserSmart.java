@@ -35,45 +35,72 @@ public class RecorderNativeParserSmart extends RecorderNativeParser {
     @Override
     public @Nullable RecorderUserInput evaluatePress(@NotNull NativeKeyEvent keyboardEvent)
     {
-        clearCurrentMouseMotion();
-        return super.evaluatePress(keyboardEvent);
+        RecorderUserInput input = super.evaluatePress(keyboardEvent);
+        
+        if (input != null)
+        {
+            clearCurrentMouseMotion();
+        }
+        
+        return input;
     }
     
     @Override
     public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeKeyEvent keyboardEvent)
     {
-        clearCurrentMouseMotion();
-        return super.evaluateRelease(keyboardEvent);
+        RecorderUserInput input = super.evaluateRelease(keyboardEvent);
+        
+        if (input != null)
+        {
+            clearCurrentMouseMotion();
+        }
+        
+        return input;
     }
     
     @Override
     public @Nullable RecorderUserInput evaluatePress(@NotNull NativeMouseEvent mouseEvent)
     {
-        clearCurrentMouseMotion();
-        return super.evaluatePress(mouseEvent);
+        RecorderUserInput input = super.evaluatePress(mouseEvent);
+        
+        if (input != null)
+        {
+            clearCurrentMouseMotion();
+        }
+        
+        return input;
     }
     
     @Override
     public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeMouseEvent mouseEvent)
     {
-        clearCurrentMouseMotion();
-        return super.evaluateRelease(mouseEvent);
+        RecorderUserInput input = super.evaluateRelease(mouseEvent);
+        
+        if (input != null)
+        {
+            clearCurrentMouseMotion();
+        }
+        
+        return input;
     }
     
     @Override
     public @Nullable RecorderUserInput evaluateMouseMove(@NotNull NativeMouseEvent mouseMoveEvent)
     {
-        RecorderUserInput result = super.evaluateMouseMove(mouseMoveEvent);
+        RecorderUserInput input = super.evaluateMouseMove(mouseMoveEvent);
         
         // Not a mouse motion input, clear current mouse motion input
-        if (!(result instanceof InputMouseMove))
+        if (!(input instanceof InputMouseMove))
         {
-            clearCurrentMouseMotion();
+            if (input != null)
+            {
+                clearCurrentMouseMotion();
+            }
             
-            return result;
+            return input;
         }
         
-        InputMouseMove mouseInput = (InputMouseMove)result;
+        InputMouseMove mouseInput = (InputMouseMove)input;
         
         // Not currently parsing a mouse motion input, create a new one
         // from scratch
@@ -90,15 +117,27 @@ public class RecorderNativeParserSmart extends RecorderNativeParser {
     @Override
     public @Nullable RecorderUserInput evaluateMouseWheel(@NotNull NativeMouseWheelEvent mouseWheelEvent)
     {
-        clearCurrentMouseMotion();
-        return super.evaluateMouseWheel(mouseWheelEvent);
+        RecorderUserInput input = super.evaluateMouseWheel(mouseWheelEvent);
+        
+        if (input != null)
+        {
+            clearCurrentMouseMotion();
+        }
+        
+        return input;
     }
     
     @Override
     public @Nullable RecorderUserInput evaluateWindowEvent(@NotNull WindowEvent windowEvent)
     {
-        clearCurrentMouseMotion();
-        return super.evaluateWindowEvent(windowEvent);
+        RecorderUserInput input = super.evaluateWindowEvent(windowEvent);
+        
+        if (input != null)
+        {
+            clearCurrentMouseMotion();
+        }
+        
+        return input;
     }
     
     private void clearCurrentMouseMotion()
