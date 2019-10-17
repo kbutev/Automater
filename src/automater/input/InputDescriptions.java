@@ -8,8 +8,8 @@ package automater.input;
 import automater.TextValue;
 import automater.utilities.Description;
 import automater.utilities.FileSystem;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.io.Serializable;
 
 /**

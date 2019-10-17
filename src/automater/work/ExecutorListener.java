@@ -5,7 +5,7 @@
  */
 package automater.work;
 
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Forwards requests when the executor does something.

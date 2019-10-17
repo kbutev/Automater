@@ -7,8 +7,8 @@ package automater.recorder;
 
 import automater.recorder.model.RecorderResult;
 import automater.recorder.model.RecorderUserInput;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A listener for recorded user input actions.

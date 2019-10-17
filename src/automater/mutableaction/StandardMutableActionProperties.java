@@ -7,8 +7,8 @@ package automater.mutableaction;
 
 import automater.utilities.CollectionUtilities;
 import automater.utilities.StringFormatting;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**

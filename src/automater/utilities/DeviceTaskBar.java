@@ -5,8 +5,8 @@
  */
 package automater.utilities;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import javax.swing.JFrame;
 import org.bridj.Pointer;
 import org.bridj.cpp.com.COMRuntime;

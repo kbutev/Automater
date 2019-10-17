@@ -8,7 +8,7 @@ package automater.settings;
 import automater.input.InputKey;
 import automater.input.InputKeyModifiers;
 import automater.input.InputKeyValue;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A keystroke.

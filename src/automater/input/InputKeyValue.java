@@ -5,7 +5,7 @@
  */
 package automater.input;
 
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a system key value.

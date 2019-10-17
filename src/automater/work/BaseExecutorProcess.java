@@ -8,8 +8,8 @@ package automater.work;
 import automater.work.model.ExecutorProgress;
 import automater.work.model.Macro;
 import automater.work.model.MacroParameters;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents an object that performs actions.

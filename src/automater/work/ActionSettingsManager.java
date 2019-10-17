@@ -5,7 +5,7 @@
  */
 package automater.work;
 
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Holds global values for actions, that can be used to customize their behavior.

@@ -10,7 +10,7 @@ import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  *

@@ -5,7 +5,7 @@
  */
 package automater.work.model;
 
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Holds information for how far an execution has made it.

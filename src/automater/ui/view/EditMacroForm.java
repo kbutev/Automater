@@ -8,7 +8,7 @@ package automater.ui.view;
 import automater.TextValue;
 import automater.utilities.Callback;
 import automater.utilities.SimpleCallback;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 

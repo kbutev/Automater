@@ -6,7 +6,7 @@
 package automater.work.model;
 
 import automater.work.BaseExecutorTimer;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import java.awt.Robot;
 import java.util.HashSet;
 import java.awt.Dimension;

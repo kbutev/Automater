@@ -18,8 +18,8 @@ import automater.utilities.SimpleCallback;
 import java.awt.event.WindowEvent;
 import java.util.List;
 import automater.utilities.Description;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Open macro screen.

@@ -5,7 +5,7 @@
  */
 package automater.storage;
 
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Holds and maintains the storage of the application.

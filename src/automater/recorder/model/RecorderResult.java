@@ -7,7 +7,7 @@ package automater.recorder.model;
 
 import automater.utilities.CollectionUtilities;
 import automater.utilities.Description;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;

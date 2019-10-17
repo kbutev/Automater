@@ -22,6 +22,13 @@
 	<artifactId>jna-platform</artifactId>
 	<version>4.1.0</version>
     </dependency>
+    
+    <!-- For the @NotNull and @Nullable imports -->
+    <dependency>
+        <groupId>org.jetbrains</groupId>
+        <artifactId>annotations</artifactId>
+        <version>13.0</version>
+    </dependency>
   </dependencies>
   
   <build>

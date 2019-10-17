@@ -10,8 +10,8 @@ import automater.input.InputKeyModifiers;
 import automater.input.InputKeyModifierValue;
 import automater.input.InputKeyValue;
 import automater.utilities.Logger;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import org.jnativehook.keyboard.NativeKeyEvent;
 

@@ -6,7 +6,7 @@
 package automater.mutableaction;
 
 import automater.utilities.Description;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**

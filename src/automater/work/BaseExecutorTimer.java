@@ -6,7 +6,7 @@
 package automater.work;
 
 import automater.work.model.MacroParameters;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**

@@ -9,7 +9,7 @@ import automater.utilities.Archiver;
 import automater.utilities.Errors;
 import automater.utilities.FileSystem;
 import automater.utilities.Logger;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;

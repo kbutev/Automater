@@ -10,7 +10,7 @@ import automater.utilities.Logger;
 import automater.utilities.Looper;
 import automater.utilities.LooperClient;
 import automater.work.BaseExecutorProcess;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 

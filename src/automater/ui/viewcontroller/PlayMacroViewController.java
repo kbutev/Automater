@@ -18,8 +18,8 @@ import automater.utilities.DeviceTaskBar;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
 import automater.work.model.MacroParameters;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.awt.event.WindowEvent;
 import java.util.List;
 

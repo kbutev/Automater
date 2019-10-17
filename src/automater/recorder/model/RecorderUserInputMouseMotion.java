@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import automater.input.InputMouseMotion;
 import automater.input.InputMouseMove;
 import automater.utilities.CollectionUtilities;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**

@@ -9,7 +9,7 @@ import automater.recorder.Recorder;
 import automater.ui.viewcontroller.PrimaryViewContoller;
 import automater.utilities.DeviceNotifications;
 import automater.work.Executor;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;

@@ -13,8 +13,8 @@ import automater.utilities.Description;
 import automater.utilities.FileSystem;
 import automater.work.Action;
 import automater.work.BaseAction;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Builder for BaseMutableActions.

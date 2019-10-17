@@ -14,7 +14,7 @@ import automater.utilities.Errors;
 import automater.work.model.ActionSystemKey;
 import automater.work.model.ActionSystemKeyModifierValue;
 import automater.work.model.ActionSystemKeyModifiers;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;

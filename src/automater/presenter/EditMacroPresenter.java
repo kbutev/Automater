@@ -26,8 +26,8 @@ import java.util.Comparator;
 import java.util.Date;
 import automater.mutableaction.BaseMutableAction;
 import automater.work.Action;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Presenter for the edit macro screen.

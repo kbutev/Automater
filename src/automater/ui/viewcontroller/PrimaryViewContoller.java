@@ -14,8 +14,8 @@ import automater.settings.Hotkey;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.work.model.Macro;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Root view controller responsible for picking which view controller will be

@@ -6,7 +6,7 @@
 package automater.recorder.parser;
 
 import automater.recorder.model.RecorderUserInput;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Forwards requests for parsed input objects.

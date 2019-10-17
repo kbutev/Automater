@@ -5,8 +5,8 @@
  */
 package automater.ui.viewcontroller;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The one and only view controller that is active at all times.

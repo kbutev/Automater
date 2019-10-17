@@ -5,7 +5,7 @@
  */
 package automater.utilities;
 
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Collection of resource utility methods and some resource constant values.

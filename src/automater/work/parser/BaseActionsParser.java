@@ -7,7 +7,7 @@ package automater.work.parser;
 
 import automater.recorder.model.RecorderUserInput;
 import automater.work.BaseAction;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**

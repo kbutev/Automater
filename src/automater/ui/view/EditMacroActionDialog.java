@@ -20,7 +20,7 @@ import javax.swing.event.ListDataListener;
 import automater.mutableaction.BaseMutableAction;
 import automater.mutableaction.BaseMutableActionProperty;
 import automater.mutableaction.MutableActionPropertyList;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  *

@@ -7,7 +7,7 @@ package automater.recorder.parser;
 
 import automater.input.InputKey;
 import automater.input.InputKeyValue;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import org.jnativehook.mouse.NativeMouseEvent;
 
 /**

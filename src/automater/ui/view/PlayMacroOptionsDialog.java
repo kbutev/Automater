@@ -9,7 +9,7 @@ import automater.TextValue;
 import automater.storage.PreferencesStorageValues;
 import automater.utilities.SimpleCallback;
 import automater.utilities.StringFormatting;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 

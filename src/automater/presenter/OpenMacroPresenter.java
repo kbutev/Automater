@@ -15,7 +15,7 @@ import automater.utilities.Looper;
 import automater.utilities.LooperSwing;
 import automater.utilities.SimpleCallback;
 import automater.work.model.Macro;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -17,7 +17,7 @@ import automater.input.InputKeyClick;
 import automater.input.InputMouseMotion;
 import automater.input.InputMouseMove;
 import automater.input.InputMouseWheel;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Converts RecorderUserInputs to BaseActions.

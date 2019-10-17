@@ -5,7 +5,7 @@
  */
 package automater.utilities;
 
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A function callback that takes 1 parameter and returns no value.

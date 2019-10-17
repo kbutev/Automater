@@ -7,7 +7,7 @@ package automater.ui.view;
 
 import automater.Strings;
 import automater.utilities.Resources;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import java.awt.Image;
 import java.awt.Toolkit;
 

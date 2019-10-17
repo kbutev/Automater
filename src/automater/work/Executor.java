@@ -9,8 +9,8 @@ import automater.utilities.Logger;
 import automater.work.model.ExecutorState;
 import automater.work.model.Macro;
 import automater.work.model.MacroParameters;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.awt.Robot;
 
 /**

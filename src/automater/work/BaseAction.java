@@ -7,7 +7,7 @@ package automater.work;
 
 import automater.utilities.Description;
 import automater.work.model.BaseActionContext;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 
 /**

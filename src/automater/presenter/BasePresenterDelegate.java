@@ -8,7 +8,7 @@ package automater.presenter;
 import java.util.List;
 import automater.storage.PreferencesStorageValues;
 import automater.utilities.Description;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Presenter's delegate.

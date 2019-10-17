@@ -6,7 +6,7 @@
 package automater.work;
 
 import automater.work.model.ActionContext;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents the process of performing an action.

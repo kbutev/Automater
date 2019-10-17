@@ -10,7 +10,7 @@ import static automater.TextValue.*;
 import automater.utilities.Callback;
 import automater.utilities.Description;
 import automater.utilities.SimpleCallback;
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 import java.awt.Rectangle;
 import java.util.List;
 

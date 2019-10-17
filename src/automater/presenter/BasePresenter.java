@@ -5,7 +5,7 @@
  */
 package automater.presenter;
 
-import com.sun.istack.internal.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Base implementation for presenters.

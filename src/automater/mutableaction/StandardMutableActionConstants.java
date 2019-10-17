@@ -17,8 +17,8 @@ import automater.input.InputScreenshot;
 import automater.input.InputSystemCommand;
 import automater.utilities.Description;
 import automater.work.BaseAction;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 

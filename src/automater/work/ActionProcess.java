@@ -9,8 +9,8 @@ import automater.utilities.Errors;
 import automater.utilities.Looper;
 import automater.utilities.SimpleCallback;
 import automater.work.model.ActionContext;
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An action process, that wraps a single action, and is performed when requested.
