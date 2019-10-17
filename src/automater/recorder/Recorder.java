@@ -412,6 +412,8 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         
         if (translatedKey != null)
         {
+            // Play/stop hotkey and the other hotkey listeners are alerted only when
+            // releasing the keyboard key
             updateHotkeyListeners(translatedKey);
             
             // Never parse the play/stop keystroke
