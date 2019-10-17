@@ -8,6 +8,7 @@ package automater.recorder;
 import automater.recorder.model.RecorderResult;
 import automater.recorder.model.RecorderUserInput;
 import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 /**
  * A listener for recorded user input actions.
@@ -27,5 +28,5 @@ public interface BaseRecorderListener {
     public void onRecordedUserInputChanged();
     public void onFailedRecordedUserInput(@NotNull RecorderUserInput input);
     
-    public void onFinishedRecording(@NotNull RecorderResult result, boolean success, @NotNull Exception exception);
+    public void onFinishedRecording(@Nullable RecorderResult result, boolean success, @Nullable Exception exception);
 }

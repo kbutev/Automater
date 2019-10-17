@@ -111,11 +111,6 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     @Override
     public void onRecordedUserInput(@NotNull RecorderUserInput input)
     {
-        if (input == null)
-        {
-            return;
-        }
-        
         Logger.messageEvent(this, "Captured user input " + input.toString());
         
         _macroActionDescriptionsList.add(input);
@@ -136,7 +131,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     }
     
     @Override
-    public void onFinishedRecording(@NotNull RecorderResult result, boolean success, @NotNull Exception exception)
+    public void onFinishedRecording(@Nullable RecorderResult result, boolean success, @Nullable Exception exception)
     {
         Logger.messageEvent(this, "Recording was stopped.");
         

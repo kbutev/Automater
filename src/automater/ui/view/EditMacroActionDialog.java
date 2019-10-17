@@ -27,6 +27,8 @@ import com.sun.istack.internal.NotNull;
  * @author Bytevi
  */
 public class EditMacroActionDialog extends javax.swing.JDialog {
+    public static final int MAX_TIMESTAMP_VALUE_LENGTH = 7;
+    
     // UI callbacks
     public SimpleCallback onCancelButtonCallback = SimpleCallback.createDoNothing();
     public SimpleCallback onSaveButtonCallback = SimpleCallback.createDoNothing();
@@ -654,7 +656,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
             return false;
         }
         
-        if (timetamp.length() > 7)
+        if (timetamp.length() > MAX_TIMESTAMP_VALUE_LENGTH)
         {
             return false;
         }

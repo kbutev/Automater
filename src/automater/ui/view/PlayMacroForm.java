@@ -320,7 +320,7 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
     
     // # Private properties
     private boolean isPlaying = false;
-    private DisabledItemSelectionModel selectionModel = new DisabledItemSelectionModel();
+    private final DisabledItemSelectionModel selectionModel = new DisabledItemSelectionModel();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton backButton;

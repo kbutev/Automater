@@ -267,7 +267,7 @@ public class Looper {
             }
         }
         
-        private <T> void queueCallback(@NotNull Callback<T> callback, @NotNull T parameter)
+        private <T> void queueCallback(@NotNull Callback<T> callback, @Nullable T parameter)
         {
             synchronized (_mainLock)
             {

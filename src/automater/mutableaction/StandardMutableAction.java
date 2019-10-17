@@ -52,8 +52,8 @@ public class StandardMutableAction implements BaseMutableAction {
         MutableActionType type = StandardMutableActionConstants.getTypeFromAction(action);
         long timestamp = action.getPerformTime();
         
-        StandardMutableAction a = null;
-        BaseMutableActionProperty property = null;
+        StandardMutableAction a;
+        BaseMutableActionProperty property;
         
         boolean isInputKeyClick = action instanceof InputKeyClick;
         boolean isInputKeyboardClick = !(action instanceof InputMouse);
@@ -475,7 +475,7 @@ class StandartMutableActionMouseMotion extends StandardMutableAction {
         
         if (last == null)
         {
-            return null;
+            return InputDescriptions.getMouseMoveDescription(timestamp, first.getX(), first.getY());
         }
         
         Description d = InputDescriptions.getMouseMotionDescription(timestamp, first, last, moves.size());
@@ -524,7 +524,7 @@ class StandartMutableActionMouseMotion extends StandardMutableAction {
         return Action.createMouseMovement(timestamp, newMoves, getDescription());
     }
     
-    private @NotNull InputMouseMove getEnteredLastMove(long timestampOffset)
+    private @Nullable InputMouseMove getEnteredLastMove(long timestampOffset)
     {
         String sX = getFirstProperty().getValue();
         String sY = getSecondProperty().getValue();

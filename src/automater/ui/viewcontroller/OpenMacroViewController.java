@@ -29,7 +29,7 @@ import com.sun.istack.internal.Nullable;
 public class OpenMacroViewController implements BaseViewController, BasePresenterDelegate {
     @NotNull private final OpenMacroPresenter _presenter;
     
-    @NotNull private OpenMacroForm _form;
+    @NotNull private final OpenMacroForm _form;
     
     @Nullable private StandardDescriptionsDataSource _dataSource;
     

@@ -9,6 +9,7 @@ import automater.recorder.Recorder;
 import automater.ui.viewcontroller.PrimaryViewContoller;
 import automater.utilities.DeviceNotifications;
 import automater.work.Executor;
+import com.sun.istack.internal.NotNull;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -20,7 +21,7 @@ import org.jnativehook.GlobalScreen;
  * @author Bytevi
  */
 public class Automater {
-    public static final PrimaryViewContoller primaryViewContoller = new PrimaryViewContoller();
+    @NotNull public static final PrimaryViewContoller primaryViewContoller = new PrimaryViewContoller();
     
     /**
      * @param args the command line arguments

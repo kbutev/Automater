@@ -43,11 +43,6 @@ public class MacroStorageFile {
     {
         String data = MacroStorageFile.readFromFile(file);
         
-        if (data == null)
-        {
-            return null;
-        }
-        
         Macro macro = null;
         
         try {
@@ -85,7 +80,7 @@ public class MacroStorageFile {
         return chars;
     }
     
-    public static @NotNull Exception getMacroNameIsUnavailableError(@NotNull String name)
+    public static @Nullable Exception getMacroNameIsUnavailableError(@NotNull String name)
     {
         if (name.isEmpty())
         {
@@ -175,6 +170,7 @@ public class MacroStorageFile {
         if (data == null)
         {
             Errors.throwSerializationFailed("Failed to serialize macro '" + macro.name + "'");
+            return;
         }
         
         File file = getFile();
@@ -182,6 +178,7 @@ public class MacroStorageFile {
         if (file.exists())
         {
             Errors.throwSerializationFailed("Failed to create macro '" + macro.name + "', already exists");
+            return;
         }
         
         // Update file
@@ -198,6 +195,7 @@ public class MacroStorageFile {
         if (!file.exists())
         {
             Errors.throwIllegalStateError("Failed to update macro '" + macro.name + "', macro file doesn't exists");
+            return;
         }
         
         // Override the contents of this macro
@@ -206,6 +204,7 @@ public class MacroStorageFile {
         if (data == null)
         {
             Errors.throwSerializationFailed("Failed to serialize macro '" + macro.name + "'");
+            return;
         }
         
         // Update local variable
@@ -220,16 +219,12 @@ public class MacroStorageFile {
     public void delete() throws Exception
     {
         File file = getFile();
-        
-        if (file != null)
-        {
-            file.delete();
-        }
+        file.delete();
     }
     
     // # Parsing
     
-    private static @NotNull Macro parseMacroFromData(@NotNull String data) throws Exception
+    private static @Nullable Macro parseMacroFromData(@NotNull String data) throws Exception
     {
         return Archiver.deserializeObject(Macro.class, data);
     }

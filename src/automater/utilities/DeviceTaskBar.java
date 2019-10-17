@@ -43,7 +43,7 @@ public class DeviceTaskBar {
         _active = (_item != null);
     }
 
-    synchronized public static @Nullable DeviceTaskBar getShared()
+    synchronized public static @NotNull DeviceTaskBar getShared()
     {
         if (singleton == null)
         {

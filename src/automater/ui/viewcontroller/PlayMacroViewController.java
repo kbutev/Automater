@@ -20,7 +20,6 @@ import automater.utilities.SimpleCallback;
 import automater.work.model.MacroParameters;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
-import java.awt.Frame;
 import java.awt.event.WindowEvent;
 import java.util.List;
 
@@ -250,9 +249,7 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
             return;
         }
         
-        Frame frame = _form.getFrames()[0];
-        
-        _optionsDialog = new PlayMacroOptionsDialog(frame, true);
+        _optionsDialog = new PlayMacroOptionsDialog(_form, true);
         
         _optionsDialog.onCancelButtonCallback = new SimpleCallback() {
             @Override

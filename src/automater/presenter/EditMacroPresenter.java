@@ -262,7 +262,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
             return;
         }
         
-        long timestamp = 0;
+        long timestamp;
         
         if (index < _macroActions.size())
         {
@@ -455,14 +455,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         
         Description description = a.getDescription();
         
-        if (description != null)
-        {
-            Logger.messageEvent(this, "Change macro action type to " + description.getName());
-        }
-        else
-        {
-            Logger.messageEvent(this, "Change macro action type");
-        }
+         Logger.messageEvent(this, "Change macro action type to " + description.getName());
         
         _actionTypeSelectedIndex = index;
         

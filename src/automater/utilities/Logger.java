@@ -108,7 +108,16 @@ public class Logger {
     {
         String reportingClass = origin != null ? origin.getClass().getSimpleName() : "Static";
         String textPrefix = generatePrefix(prefix);
-        textPrefix = textPrefix + " " + reportingClass;
+        
+        if (!textPrefix.isEmpty())
+        {
+            textPrefix = textPrefix + " " + reportingClass;
+        }
+        else
+        {
+            textPrefix = reportingClass;
+        }
+        
         return generateText(textPrefix, text);
     }
     
@@ -116,14 +125,19 @@ public class Logger {
     {
         String textPrefix = generatePrefix(prefix);
         
+        if (textPrefix.isEmpty())
+        {
+            return text != null ? text : "";
+        }
+        
         return textPrefix + ": " + text;
     }
     
     private static @NotNull String generatePrefix(@Nullable String prefix)
     {
-        if (!DISPLAY_TIMESTAMPS)
+        if (!DISPLAY_TIMESTAMPS || prefix == null)
         {
-            return prefix;
+            return prefix != null ? prefix : "";
         }
         
         return prefix.length() > 0 ? getTimestamp() + " " + prefix : getTimestamp();
@@ -256,7 +270,7 @@ class LoggerFile {
         }
     }
     
-    public static @NotNull FileWriter setupFileWriterIfNecessary()
+    public static @Nullable FileWriter setupFileWriterIfNecessary()
     {
         File logFile = getFile();
         

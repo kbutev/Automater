@@ -226,7 +226,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
         }
     }
     
-    private void cancel(boolean success, @NotNull Exception exception) throws Exception
+    private void cancel(boolean success, @Nullable Exception exception) throws Exception
     {
         synchronized (_lock)
         {
@@ -410,7 +410,12 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeKeyEvent keyboardEvent) {
         // Hotkey listeners update
         InputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, false);
-        boolean continueParsing = updateHotkeyListeners(translatedKey, false);
+        boolean continueParsing = true;
+        
+        if (translatedKey != null)
+        {
+            updateHotkeyListeners(translatedKey, false);
+        }
         
         if (!continueParsing)
         {

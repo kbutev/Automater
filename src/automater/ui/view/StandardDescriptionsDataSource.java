@@ -69,7 +69,9 @@ public class StandardDescriptionsDataSource implements ListModel<String> {
     public int indexOf(String str) {
         for (int e = 0; e < data.size(); e++)
         {
-            if (data.get(e).getStandart().equals(str))
+            String standartDescription = data.get(e).getStandart();
+            
+            if (standartDescription != null && standartDescription.equals(str))
             {
                 return e;
             }

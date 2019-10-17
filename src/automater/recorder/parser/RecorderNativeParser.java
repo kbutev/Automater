@@ -104,11 +104,6 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
         long timestamp = evaluteTimeForNextEvent();
         InputKey mouseKey = _mouseTranslator.translate(mouseEvent);
         
-        if (mouseKey == null)
-        {
-            return null;
-        }
-        
         _eventLogger.logMouseClickEvent(mouseEvent, mouseKey);
         
         RecorderUserInput userInput;
