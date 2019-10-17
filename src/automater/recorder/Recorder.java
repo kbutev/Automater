@@ -387,9 +387,8 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         
         if (translatedKey != null)
         {
-            boolean continueParsing = updateHotkeyListeners(translatedKey, true);
-            
-            if (!continueParsing)
+            // Never parse the play/stop keystroke
+            if (isPlayStopHotkeyMatchingInputKey(translatedKey))
             {
                 return null;
             }
@@ -410,16 +409,16 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeKeyEvent keyboardEvent) {
         // Hotkey listeners update
         InputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, false);
-        boolean continueParsing = true;
         
         if (translatedKey != null)
         {
-            updateHotkeyListeners(translatedKey, false);
-        }
-        
-        if (!continueParsing)
-        {
-            return null;
+            updateHotkeyListeners(translatedKey);
+            
+            // Never parse the play/stop keystroke
+            if (isPlayStopHotkeyMatchingInputKey(translatedKey))
+            {
+                return null;
+            }
         }
         
         // Subparser delegation
@@ -493,10 +492,8 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         return subparser.evaluateWindowEvent(windowEvent);
     }
     
-    private boolean updateHotkeyListeners(@NotNull InputKey translatedKey, boolean performDelegateCall)
+    private void updateHotkeyListeners(@NotNull InputKey translatedKey)
     {
-        boolean continueWithParsing = true;
-        
         Collection<RecorderHotkeyListener> listeners;
         
         synchronized (_lock)
@@ -506,31 +503,20 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         
         for (RecorderHotkeyListener l : listeners)
         {
-            if (hotkeyListenerIsEligibleForKeystrokeEvent(l, translatedKey))
+            if (hotkeyListenerIsListeningForKeystroke(l, translatedKey))
             {
-                if (performDelegateCall)
-                {
-                    Hotkey hotkey = new Hotkey(translatedKey);
-                    l.onHotkeyPressed(hotkey);
-                }
-                
-                // Play/stop hotkey is never recorded
-                if (l == _playStopHotkeyListener)
-                {
-                    continueWithParsing = false;
-                }
+                Hotkey hotkey = new Hotkey(translatedKey);
+                l.onHotkeyPressed(hotkey);
             }
         }
-        
-        return continueWithParsing;
     }
     
-    public boolean hotkeyListenerIsEligibleForKeystrokeEvent(@NotNull RecorderHotkeyListener l, @NotNull InputKey translatedKey)
+    private boolean hotkeyListenerIsListeningForKeystroke(@NotNull RecorderHotkeyListener l, @NotNull InputKey translatedKey)
     {
-        return l.isListeningForAnyHotkey() || isHotkeyEvent(l.getHotkey(), translatedKey);
+        return l.isListeningForAnyHotkey() || isHotkeyMatchingInputKey(l.getHotkey(), translatedKey);
     }
     
-    public boolean isHotkeyEvent(@Nullable Hotkey hotkey, @NotNull InputKey translatedKey)
+    private boolean isHotkeyMatchingInputKey(@Nullable Hotkey hotkey, @NotNull InputKey translatedKey)
     {
         if (hotkey == null)
         {
@@ -538,6 +524,11 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
         }
         
         return hotkey.isEqualTo(translatedKey);
+    }
+    
+    private boolean isPlayStopHotkeyMatchingInputKey(@NotNull InputKey translatedKey)
+    {
+        return _playStopHotkeyListener != null && isHotkeyMatchingInputKey(_playStopHotkeyListener.getHotkey(), translatedKey);
     }
 }
 
