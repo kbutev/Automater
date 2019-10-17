@@ -26,8 +26,8 @@ import org.jnativehook.mouse.NativeMouseWheelEvent;
 public class RecorderNativeParser implements BaseRecorderNativeParser {
     @NotNull public final List<RecorderParserFlag> flags;
     
-    @NotNull private final RecorderSystemKeyboardTranslator _keyboardTranslator = new RecorderSystemKeyboardTranslator();
-    @NotNull private final RecorderSystemMouseTranslator _mouseTranslator = new RecorderSystemMouseTranslator(_keyboardTranslator);
+    @NotNull private final BaseRecorderKeyboardTranslator _keyboardTranslator;
+    @NotNull private final RecorderSystemMouseTranslator _mouseTranslator;
     @NotNull private final EventLogger _eventLogger = new EventLogger();
     
     private Date _firstDate;
@@ -35,6 +35,15 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
     public RecorderNativeParser(@NotNull List<RecorderParserFlag> flags)
     {
         this.flags = CollectionUtilities.copyAsImmutable(flags);
+        this._keyboardTranslator = new RecorderSystemKeyboardTranslator();
+        this._mouseTranslator = new RecorderSystemMouseTranslator(_keyboardTranslator);
+    }
+    
+    public RecorderNativeParser(@NotNull List<RecorderParserFlag> flags, BaseRecorderKeyboardTranslator keyboardTranslator)
+    {
+        this.flags = CollectionUtilities.copyAsImmutable(flags);
+        this._keyboardTranslator = keyboardTranslator;
+        this._mouseTranslator = new RecorderSystemMouseTranslator(_keyboardTranslator);
     }
     
     @Override

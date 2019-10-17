@@ -16,9 +16,9 @@ import org.jnativehook.mouse.NativeMouseEvent;
  * @author Bytevi
  */
 public class RecorderSystemMouseTranslator {
-    @NotNull private final RecorderSystemKeyboardTranslator keyboardTranslator;
+    @NotNull private final BaseRecorderKeyboardTranslator keyboardTranslator;
     
-    public RecorderSystemMouseTranslator(@NotNull RecorderSystemKeyboardTranslator keyboardTranslator)
+    public RecorderSystemMouseTranslator(@NotNull BaseRecorderKeyboardTranslator keyboardTranslator)
     {
         this.keyboardTranslator = keyboardTranslator;
     }

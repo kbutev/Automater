@@ -20,7 +20,7 @@ import org.jnativehook.keyboard.NativeKeyEvent;
  * 
  * @author Bytevi
  */
-public class RecorderSystemKeyboardTranslator {
+public class RecorderSystemKeyboardTranslator implements BaseRecorderKeyboardTranslator {
     @NotNull private static HashMap<Integer, InputKeyValue> _keyMapping = new HashMap<>();
     
     @NotNull private InputKeyModifiers _mask = InputKeyModifiers.none();
@@ -30,16 +30,19 @@ public class RecorderSystemKeyboardTranslator {
         
     }
     
+    @Override
     public @NotNull InputKeyModifiers getCurrentMask()
     {
         return _mask;
     }
     
+    @Override
     public @Nullable InputKey translate(@NotNull NativeKeyEvent keyEvent)
     {
         return translate(false, keyEvent, true);
     }
     
+    @Override
     public @Nullable InputKey translate(boolean recordKeystroke, @NotNull NativeKeyEvent keyEvent, boolean press)
     {
         int keyCode = keyEvent.getKeyCode();
@@ -75,7 +78,8 @@ public class RecorderSystemKeyboardTranslator {
         }
     }
     
-    public static @NotNull InputKeyValue keyValueForJNativeHookKey(int keyCode)
+    @Override
+    public InputKeyValue keyValueForJNativeHookKey(int keyCode)
     {
         InputKeyValue result = getKeyMapping().get(keyCode);
         
@@ -87,7 +91,8 @@ public class RecorderSystemKeyboardTranslator {
         return result;
     }
     
-    public static @NotNull InputKeyModifierValue maskValueFoKey(@NotNull InputKeyValue keyValue)
+    @Override
+    public @NotNull InputKeyModifierValue maskValueFoKey(InputKeyValue keyValue)
     {
         if (keyValue == InputKeyValue._SHIFT)
         {
