@@ -19,7 +19,7 @@ import java.util.List;
  * @author Byti
  */
 public class StandardExecutorTimer implements BaseExecutorTimer {
-    @NotNull private final Object _timerLock = new Object();
+    @NotNull private final Object _lock = new Object();
     
     @NotNull private List<BaseAction> _actions;
     
@@ -44,7 +44,7 @@ public class StandardExecutorTimer implements BaseExecutorTimer {
     public void setup(@NotNull List<BaseAction> actions, @NotNull MacroParameters parameters) throws Exception {
         BaseAction firstAction = actions.get(0);
         
-        synchronized (_timerLock)
+        synchronized (_lock)
         {
             _actions = actions;
             
@@ -72,7 +72,7 @@ public class StandardExecutorTimer implements BaseExecutorTimer {
     public void reset() {
         BaseAction firstAction = _actions.get(0);
         
-        synchronized (_timerLock)
+        synchronized (_lock)
         {
             _currentTimeValue = firstAction.getPerformTime();
             _totalTimeWaited = 0;
@@ -92,7 +92,7 @@ public class StandardExecutorTimer implements BaseExecutorTimer {
     
     @Override
     public long getCurrentTimeValue() {
-        synchronized (_timerLock)
+        synchronized (_lock)
         {
             return _currentTimeValue;
         }
@@ -100,7 +100,7 @@ public class StandardExecutorTimer implements BaseExecutorTimer {
 
     @Override
     public double getTimeScale() {
-        synchronized (_timerLock)
+        synchronized (_lock)
         {
             return _timeScale;
         }
@@ -108,7 +108,7 @@ public class StandardExecutorTimer implements BaseExecutorTimer {
     
     @Override
     public void setTimeScale(double scale) {
-        synchronized (_timerLock)
+        synchronized (_lock)
         {
             _timeScale = scale;
         }
@@ -132,7 +132,7 @@ public class StandardExecutorTimer implements BaseExecutorTimer {
     
     @Override
     public long updateCurrentTime(long dt) {
-        synchronized (_timerLock)
+        synchronized (_lock)
         {
             // Apply timescale
             dt *= _timeScale;
