@@ -66,7 +66,7 @@ public class RecorderNativeParser implements BaseRecorderNativeParser {
         }
         
         long timestamp = evaluteTimeForNextEvent();
-        InputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, press);
+        InputKey translatedKey = _keyboardTranslator.recordAndTranslate(keyboardEvent, press);
         
         if (translatedKey == null)
         {

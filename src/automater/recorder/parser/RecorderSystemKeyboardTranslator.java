@@ -10,20 +10,24 @@ import automater.input.InputKeyModifiers;
 import automater.input.InputKeyModifierValue;
 import automater.input.InputKeyValue;
 import automater.utilities.Logger;
+import java.util.ArrayList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
+import java.util.List;
 import org.jnativehook.keyboard.NativeKeyEvent;
 
 /**
  * Translates native keyboard key events.
+ * 
+ * Does NOT support getCurrentlyPressedKeys()! Only modifier keys are recorded!
  * 
  * @author Bytevi
  */
 public class RecorderSystemKeyboardTranslator implements BaseRecorderKeyboardTranslator {
     @NotNull private static HashMap<Integer, InputKeyValue> _keyMapping = new HashMap<>();
     
-    @NotNull private InputKeyModifiers _mask = InputKeyModifiers.none();
+    @NotNull private InputKeyModifiers _modifiers = InputKeyModifiers.none();
     
     public RecorderSystemKeyboardTranslator()
     {
@@ -31,19 +35,18 @@ public class RecorderSystemKeyboardTranslator implements BaseRecorderKeyboardTra
     }
     
     @Override
-    public @NotNull InputKeyModifiers getCurrentMask()
-    {
-        return _mask;
-    }
-    
-    @Override
     public @Nullable InputKey translate(@NotNull NativeKeyEvent keyEvent)
     {
-        return translate(false, keyEvent, true);
+        return recordAndTranslate(false, keyEvent, true);
     }
     
     @Override
-    public @Nullable InputKey translate(boolean recordKeystroke, @NotNull NativeKeyEvent keyEvent, boolean press)
+    public @Nullable InputKey recordAndTranslate(@NotNull NativeKeyEvent keyEvent, boolean press)
+    {
+        return recordAndTranslate(true, keyEvent, press);
+    }
+    
+    private @Nullable InputKey recordAndTranslate(boolean recordKeystroke, @NotNull NativeKeyEvent keyEvent, boolean press)
     {
         int keyCode = keyEvent.getKeyCode();
         
@@ -57,29 +60,41 @@ public class RecorderSystemKeyboardTranslator implements BaseRecorderKeyboardTra
         
         if (recordKeystroke && keyValue.isModifier())
         {
-            handleMaskKey(keyValue, press);
+            handleModifierPressedKey(keyValue, press);
             return null;
         }
         
-        return new InputKey(keyValue , _mask);
-    }
-    
-    private void handleMaskKey(@NotNull InputKeyValue keyValue, boolean press)
-    {
-        InputKeyModifierValue mask = maskValueFoKey(keyValue);
-        
-        if (press)
-        {
-            _mask = _mask.createWithNewAddedModifier(mask);
-        }
-        else
-        {
-            _mask = _mask.createWithRemovedModifier(mask);
-        }
+        return new InputKey(keyValue, _modifiers);
     }
     
     @Override
-    public InputKeyValue keyValueForJNativeHookKey(int keyCode)
+    public @NotNull List<InputKeyValue> getCurrentlyPressedKeys()
+    {
+        // Not supported
+        return new ArrayList<>();
+    }
+    
+    @Override
+    public @NotNull InputKeyModifiers getCurrentlyPressedModifiers()
+    {
+        return _modifiers;
+    }
+    
+    private void handleModifierPressedKey(@NotNull InputKeyValue keyValue, boolean press)
+    {
+        InputKeyModifierValue modifier = modifierValueForKey(keyValue);
+        
+        if (press)
+        {
+            _modifiers = _modifiers.createWithNewAddedModifier(modifier);
+        }
+        else
+        {
+            _modifiers = _modifiers.createWithRemovedModifier(modifier);
+        }
+    }
+    
+    private InputKeyValue keyValueForJNativeHookKey(int keyCode)
     {
         InputKeyValue result = getKeyMapping().get(keyCode);
         
@@ -91,8 +106,7 @@ public class RecorderSystemKeyboardTranslator implements BaseRecorderKeyboardTra
         return result;
     }
     
-    @Override
-    public @NotNull InputKeyModifierValue maskValueFoKey(InputKeyValue keyValue)
+    private @NotNull InputKeyModifierValue modifierValueForKey(InputKeyValue keyValue)
     {
         if (keyValue == InputKeyValue._SHIFT)
         {

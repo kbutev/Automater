@@ -6,25 +6,26 @@
 package automater.recorder.parser;
 
 import automater.input.InputKey;
-import automater.input.InputKeyModifierValue;
-import automater.input.InputKeyValue;
 import automater.input.InputKeyModifiers;
+import automater.input.InputKeyValue;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jnativehook.keyboard.NativeKeyEvent;
 
 /**
+ * Describes a keyboard object, that translates keys and memorizes the pressed keys.
+ * 
+ * Use translate(NativeKeyEvent) to simply convert NativeKeyEvent to InputKey.
+ * Use recordAndTranslate() to not just convert, but record the key, which later
+ * you can check.
  *
  * @author Byti
  */
 public interface BaseRecorderKeyboardTranslator {
-    public @NotNull InputKeyModifiers getCurrentMask();
-    
     public @Nullable InputKey translate(@NotNull NativeKeyEvent keyEvent);
+    public @Nullable InputKey recordAndTranslate(@NotNull NativeKeyEvent keyEvent, boolean press);
     
-    public @Nullable InputKey translate(boolean recordKeystroke, @NotNull NativeKeyEvent keyEvent, boolean press);
-    
-    public InputKeyValue keyValueForJNativeHookKey(int keyCode);
-    
-    public @NotNull InputKeyModifierValue maskValueFoKey(InputKeyValue keyValue);
+    public @NotNull List<InputKeyValue> getCurrentlyPressedKeys();
+    public @NotNull InputKeyModifiers getCurrentlyPressedModifiers();
 }

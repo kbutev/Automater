@@ -385,7 +385,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     @Override
     public @Nullable RecorderUserInput evaluatePress(@NotNull NativeKeyEvent keyboardEvent) {
         // Hotkey listeners update & alert
-        InputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, true);
+        InputKey translatedKey = _keyboardTranslator.recordAndTranslate(keyboardEvent, true);
         
         if (translatedKey != null)
         {
@@ -410,7 +410,7 @@ class RecorderMasterNativeParser implements BaseRecorderNativeParser
     @Override
     public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeKeyEvent keyboardEvent) {
         // Hotkey listeners update
-        InputKey translatedKey = _keyboardTranslator.translate(true, keyboardEvent, false);
+        InputKey translatedKey = _keyboardTranslator.recordAndTranslate(keyboardEvent, false);
         
         if (translatedKey != null)
         {

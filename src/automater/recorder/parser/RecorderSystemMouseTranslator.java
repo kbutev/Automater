@@ -13,6 +13,8 @@ import org.jnativehook.mouse.NativeMouseEvent;
 /**
  * Translates native mouse key events.
  * 
+ * Does NOT support getCurrentlyPressedKeys()! Only modifier keys are recorded!
+ * 
  * @author Bytevi
  */
 public class RecorderSystemMouseTranslator {
@@ -48,6 +50,6 @@ public class RecorderSystemMouseTranslator {
                 break;
         }
         
-        return new InputKey(key, keyboardTranslator.getCurrentMask());
+        return new InputKey(key, keyboardTranslator.getCurrentlyPressedModifiers());
     }
 }
