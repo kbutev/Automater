@@ -218,7 +218,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
     @Override
     public void stop() throws Exception
     {
-        Logger.messageEvent(this, "Stop.");
+        Logger.messageEvent(this, "Stopping executor process...");
         
         synchronized (_lock)
         {
@@ -581,6 +581,8 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
             // Reset values to their defaults
             cleanup();
         }
+        
+        Logger.messageEvent(this, "Stopped.");
         
         // Listener alert
         listener.onCancel();
