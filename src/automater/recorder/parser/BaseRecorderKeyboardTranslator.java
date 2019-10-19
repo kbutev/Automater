@@ -17,8 +17,7 @@ import org.jnativehook.keyboard.NativeKeyEvent;
  * Describes a keyboard object, that translates keys and memorizes the pressed keys.
  * 
  * Use translate(NativeKeyEvent) to simply convert NativeKeyEvent to InputKey.
- * Use recordAndTranslate() to not just convert, but record the key, which later
- * you can check.
+ * Use recordAndTranslate() to convert and record the key.
  *
  * @author Byti
  */
