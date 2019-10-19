@@ -549,9 +549,6 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
         {
             _finished = true;
             
-            // Release all pressed keys, to avoid keys getting stuck
-            releaseAllPressedKeys();
-                
             // Reset values to their defaults
             cleanup();
         }
@@ -574,9 +571,6 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
             listener = _listener;
             
             _finished = true;
-            
-            // Release all pressed keys, to avoid keys getting stuck
-            releaseAllPressedKeys();
             
             // Reset values to their defaults
             cleanup();
@@ -741,31 +735,10 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
     
     // # Cleanup
     
-    private void releaseAllPressedKeys()
-    {
-        if (_context == null)
-        {
-            return;
-        }
-        
-        Robot robot = _context.getRobot();
-        
-        ActionSystemKeyModifiers modifiers = _context.getPressedModifiers();
-        
-        for (ActionSystemKeyModifierValue value : modifiers.modifiers)
-        {
-            robot.keyRelease(value.getValue());
-        }
-        
-        for (ActionSystemKey key : _context.getPressedKeys())
-        {
-            robot.keyRelease(key.getValue());
-        }
-    }
-    
     private void cleanup()
     {
        _previousActionProcess = new ActionProcess(getLastAction());
+       _context.cleanup();
         _context = null;
        _currentActionProcess = null;
        _listener = new ListenerDelegate(null);

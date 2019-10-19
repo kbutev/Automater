@@ -123,14 +123,22 @@ public class ActionContext implements BaseActionContext {
     @Override
     public void cleanup()
     {
-        for (ActionSystemKeyModifierValue modifier : _modifiers.modifiers)
+        for (ActionSystemKeyModifierValue value : _modifiers.modifiers)
         {
-            _robot.keyRelease(modifier.getValue());
+            try {
+                _robot.keyRelease(value.getValue());
+            } catch (Exception e) {
+                
+            }
         }
         
         for (ActionSystemKey key : _keysPressed)
         {
-            _robot.keyRelease(key.getValue());
+            try {
+                _robot.keyRelease(key.getValue());
+            } catch (Exception e) {
+                
+            }
         }
     }
 }
