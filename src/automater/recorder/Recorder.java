@@ -32,6 +32,8 @@ import org.jnativehook.mouse.NativeMouseWheelEvent;
 /**
  * A service that listens to system user input and records it as RecorderResult.
  * 
+ * The BaseRecorderListener delegate methods are always called on the java AWT queue.
+ * 
  * @author Bytevi
  */
 public class Recorder implements RecorderJHookListenerDelegate {

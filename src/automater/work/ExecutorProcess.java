@@ -32,7 +32,7 @@ import java.util.List;
  * Performs a given number of actions, one by one, when the time is right.
  * 
  * Has a state. When created, the process is idle.
- * Once started, the process can never be restarted , it is a one time execution.
+ * Once started, the process can never be restarted, it is a one time execution.
  * 
  * The state can be read by using these methods:
  * isIdle() - waiting to start
@@ -41,8 +41,7 @@ import java.util.List;
  * 
  * The ExecutorListener delegate methods are always called on the java AWT queue.
  * 
- * Only the public and protected methods are thread safe.
- * Private methods should receive their thread safety from their callers.
+ * Note for subclasses: Only the public and protected methods are thread safe.
  * 
  * @author Bytevi
  */

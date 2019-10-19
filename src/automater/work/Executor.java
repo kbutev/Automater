@@ -15,6 +15,8 @@ import java.awt.Robot;
 
 /**
  * Executes macros. Can execute multiple macros simultaneously.
+ * 
+ * The ExecutorListener delegate methods are always called on the java AWT queue.
  *
  * @author Bytevi
  */
