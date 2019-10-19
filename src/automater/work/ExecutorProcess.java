@@ -443,9 +443,9 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
         
         if (currentActionProcess != null)
         {
-            boolean finished = evaluateCurrentAction(currentActionProcess, listener);
+            EvaluateActionResult result = evaluateCurrentAction(currentActionProcess, listener);
             
-            if (finished)
+            if (result.isFinished())
             {
                 synchronized (_lock)
                 {
@@ -590,7 +590,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
     
     // # Perform
     
-    private boolean evaluateCurrentAction(@NotNull BaseActionProcess actionProcess, @NotNull ListenerDelegate listener)
+    private @NotNull EvaluateActionResult evaluateCurrentAction(@NotNull BaseActionProcess actionProcess, @NotNull ListenerDelegate listener)
     {
         BaseAction action = actionProcess.getAction();
         
@@ -607,10 +607,10 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
             // Listener alert
             listener.onActionFinish(action);
             
-            return true;
+            return EvaluateActionResult.createFinished();
         }
         
-        return false;
+        return EvaluateActionResult.createInProgress();
     }
     
     private @NotNull ActionProcess preparePerformNextAction(@NotNull BaseAction nextAction)
@@ -620,7 +620,7 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
         return process;
     }
     
-    private PerformNextResult performNextAction(@NotNull ActionProcess actionProcess, @NotNull ListenerDelegate listener)
+    private @NotNull PerformNextResult performNextAction(@NotNull ActionProcess actionProcess, @NotNull ListenerDelegate listener)
     {
         BaseAction nextAction = actionProcess.getAction();
         
@@ -770,6 +770,30 @@ public class ExecutorProcess implements BaseExecutorProcess, LooperClient, Execu
        _currentActionProcess = null;
        _listener = new ListenerDelegate(null);
         Looper.getShared().unsubscribe(this);
+    }
+}
+
+class EvaluateActionResult {
+    private final boolean _finished;
+    
+    public static EvaluateActionResult createInProgress()
+    {
+        return new EvaluateActionResult(false);
+    }
+    
+    public static EvaluateActionResult createFinished()
+    {
+        return new EvaluateActionResult(true);
+    }
+    
+    private EvaluateActionResult(boolean finished)
+    {
+        _finished = finished;
+    }
+    
+    public boolean isFinished()
+    {
+        return _finished;
     }
 }
 
