@@ -11,6 +11,7 @@ import automater.utilities.SimpleCallback;
 import org.jetbrains.annotations.NotNull;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import org.jetbrains.annotations.Nullable;
 
 /**
  *
@@ -435,7 +436,7 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
     }
     
     private int _selectedIndex = -1;
-    private StandardDescriptionsDataSource _dataSource;
+    private @Nullable StandardDescriptionsDataSource _dataSource;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel actionsLabel;
