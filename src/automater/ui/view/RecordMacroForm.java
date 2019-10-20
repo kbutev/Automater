@@ -5,7 +5,9 @@
  */
 package automater.ui.view;
 
+import automater.Strings;
 import automater.TextValue;
+import automater.settings.Hotkey;
 import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import automater.utilities.Logger;
@@ -229,7 +231,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
         macroNameField.setText(TextValue.getText(TextValue.Record_MacroNameFieldDefaultText));
         macroNameField.setToolTipText(TextValue.getText(TextValue.Record_MacroNameFieldTip));
         
-        macroStateLabel.setText(TextValue.getText(TextValue.Record_IdleStatus, "F4"));
+        macroStateLabel.setText(TextValue.getText(TextValue.Record_IdleStatus, recordOrStopHotkey));
         
         saveMacroButton.setText(TextValue.getText(TextValue.Record_SaveButton));
         saveMacroButton.setToolTipText(TextValue.getText(TextValue.Record_SaveButtonDisabledTip));
@@ -336,6 +338,13 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
         AlertWindows.showErrorMessage(getParent(), title, message, "Ok");
     }
     
+    public void setRecordOrStopHotkeyText(@NotNull Hotkey hotkey)
+    {
+        recordOrStopHotkey = hotkey.toString();
+        
+        macroStateLabel.setText(TextValue.getText(TextValue.Record_IdleStatus, recordOrStopHotkey));
+    }
+    
     // # Private
     
     private void updateRecordState()
@@ -354,6 +363,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
     
     // Private properties
     private boolean _isRecording = false;
+    private @NotNull String recordOrStopHotkey = Strings.DEFAULT_PLAY_OR_STOP_HOTKEY;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel descriptionLabel;

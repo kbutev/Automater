@@ -57,6 +57,8 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         
         _macro = macro;
         _macroActionDescriptions = macro.actionDescriptions;
+        
+        _playOrStopHotkey = _options.playOrStopHotkey;
     }
     
     // # BasePresenter
@@ -83,7 +85,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         _delegate.onLoadedMacroFromStorage(_macro.name, _macro.getDescription(), _macroActionDescriptions);
         
         _options = GeneralStorage.getDefault().getPreferencesStorage().getValues();
-        
+        _playOrStopHotkey = _options.playOrStopHotkey;
         _delegate.onLoadedPreferencesFromStorage(_options);
     }
     
@@ -258,14 +260,6 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         _recorder.unregisterHotkeyListener(this);
         
         _rootViewController.navigateToOpenScreen();
-    }
-    
-    public void setPlayOrStopHotkey(@NotNull Hotkey hotkey)
-    {
-        synchronized (this)
-        {
-            _playOrStopHotkey = hotkey;
-        }
     }
     
     // # Private

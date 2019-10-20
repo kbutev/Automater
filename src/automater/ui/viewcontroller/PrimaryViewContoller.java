@@ -132,10 +132,7 @@ public class PrimaryViewContoller implements RootViewController {
         
         if (recordViewControllerStart)
         {
-            Hotkey playOrStopHotkey;
-            playOrStopHotkey = new Hotkey(InputKeyValue._F4);
             _recordMacroPresenter = new RecordMacroPresenter(this);
-            _recordMacroPresenter.setPlayOrStopHotkey(playOrStopHotkey);
             RecordMacroViewController vc = new RecordMacroViewController(_recordMacroPresenter);
             _recordMacroViewController = vc;
             _recordMacroPresenter.setDelegate(vc);
@@ -162,11 +159,7 @@ public class PrimaryViewContoller implements RootViewController {
     
     private void switchScreenToPlay(@NotNull Macro macro)
     {
-        Hotkey playOrStopHotkey;
-        playOrStopHotkey = new Hotkey(InputKeyValue._F4);
-        
         PlayMacroPresenter presenter = new PlayMacroPresenter(this, macro);
-        presenter.setPlayOrStopHotkey(playOrStopHotkey);
         PlayMacroViewController vc = new PlayMacroViewController(presenter);
         presenter.setDelegate(vc);
         

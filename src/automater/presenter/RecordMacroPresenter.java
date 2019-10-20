@@ -18,6 +18,7 @@ import automater.recorder.parser.RecorderParserFlag;
 import automater.settings.Hotkey;
 import automater.storage.GeneralStorage;
 import automater.storage.MacroStorage;
+import automater.storage.PreferencesStorageValues;
 import automater.ui.viewcontroller.RootViewController;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.Description;
@@ -67,6 +68,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     public RecordMacroPresenter(@NotNull RootViewController rootViewController)
     {
         _rootViewController = rootViewController;
+        _recordOrStopHotkey = GeneralStorage.getDefault().getPreferencesStorage().getValues().recordOrStopHotkey;
     }
     
     // # BasePresenter
@@ -87,6 +89,11 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         // without recording a single action
         setupDefaultRecordedInputData();
         updateDelegateActionsData();
+        
+        // Load preferences, just once, for the hotkey
+        PreferencesStorageValues preferences = GeneralStorage.getDefault().getPreferencesStorage().getValues();
+        _recordOrStopHotkey = preferences.recordOrStopHotkey;
+        _delegate.onLoadedPreferencesFromStorage(preferences);
     }
     
     @Override
@@ -302,14 +309,6 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         updateDelegateActionsData();
         
         onSwitchToPlayScreen();
-    }
-    
-    public void setPlayOrStopHotkey(@NotNull Hotkey hotkey)
-    {
-        synchronized (this)
-        {
-            _recordOrStopHotkey = hotkey;
-        }
     }
     
     // # Private

@@ -182,7 +182,7 @@ public class RecordMacroViewController implements BaseViewController, BasePresen
     @Override
     public void onLoadedPreferencesFromStorage(@NotNull PreferencesStorageValues values)
     {
-        
+        _form.setRecordOrStopHotkeyText(values.recordOrStopHotkey);
     }
     
     @Override

@@ -5,6 +5,9 @@
  */
 package automater.storage;
 
+import automater.Strings;
+import automater.input.InputKeyValue;
+import automater.settings.Hotkey;
 import automater.work.model.MacroParameters;
 import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
@@ -15,6 +18,9 @@ import java.io.Serializable;
  * @author Bytevi
  */
 public class PreferencesStorageValues implements Serializable {
+    public Hotkey recordOrStopHotkey = getDefaultRecordOrStopHotkey();
+    public Hotkey playOrStopHotkey = getDefaultPlayOrStopHotkey();
+    
     public boolean displayStartNotification = false;
     public boolean displayStopNotification = false;
     public boolean displayRepeatNotification = false;
@@ -38,5 +44,19 @@ public class PreferencesStorageValues implements Serializable {
         copied.displayRepeatNotification = displayRepeatNotification;
         copied.macroParameters = macroParameters;
         return copied;
+    }
+    
+    public static Hotkey getDefaultRecordOrStopHotkey()
+    {
+        InputKeyValue key = InputKeyValue.fromString(Strings.DEFAULT_RECORD_OR_STOP_HOTKEY);
+        
+        return new Hotkey(key);
+    }
+    
+    public static Hotkey getDefaultPlayOrStopHotkey()
+    {
+        InputKeyValue key = InputKeyValue.fromString(Strings.DEFAULT_PLAY_OR_STOP_HOTKEY);
+        
+        return new Hotkey(key);
     }
 }

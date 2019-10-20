@@ -188,6 +188,8 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         _currentPreferences = values;
         
         setMacroParametersDescription(values.macroParameters);
+        
+        _form.setPlayOrStopHotkeyText(values.playOrStopHotkey);
     }
     
     @Override

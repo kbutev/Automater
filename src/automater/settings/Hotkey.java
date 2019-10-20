@@ -37,4 +37,10 @@ public class Hotkey {
         
         return this.key.equals(key);
     }
+    
+    @Override
+    public String toString()
+    {
+        return key.toString();
+    }
 }

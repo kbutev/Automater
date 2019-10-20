@@ -5,7 +5,9 @@
  */
 package automater.ui.view;
 
+import automater.Strings;
 import automater.TextValue;
+import automater.settings.Hotkey;
 import automater.utilities.SimpleCallback;
 import org.jetbrains.annotations.NotNull;
 import javax.swing.DefaultListSelectionModel;
@@ -206,7 +208,7 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         this.setTitle(TextValue.getText(TextValue.Play_FormTitle));
         
         backButton.setText(TextValue.getText(TextValue.Play_BackButtonTitle));
-        playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, "F4"));
+        playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, playOrStopHotkey));
         
         // Set model from start
         macroActionsList.setSelectionModel(selectionModel);
@@ -255,7 +257,7 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         
         isPlaying = true;
         
-        playAndStopButton.setText(TextValue.getText(TextValue.Play_StopButtonTitle, "F4"));
+        playAndStopButton.setText(TextValue.getText(TextValue.Play_StopButtonTitle, playOrStopHotkey));
         backButton.setEnabled(false);
         optionsButton.setEnabled(false);
         setProgressBarValue(0);
@@ -272,7 +274,7 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         
         isPlaying = false;
         
-        playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, "F4"));
+        playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, playOrStopHotkey));
         backButton.setEnabled(true);
         optionsButton.setEnabled(true);
         
@@ -318,9 +320,24 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         }
     }
     
+    public void setPlayOrStopHotkeyText(@NotNull Hotkey hotkey)
+    {
+        playOrStopHotkey = hotkey.toString();
+        
+        if (!isPlaying)
+        {
+            playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, playOrStopHotkey));
+        }
+        else
+        {
+            playAndStopButton.setText(TextValue.getText(TextValue.Play_StopButtonTitle, playOrStopHotkey));
+        }
+    }
+    
     // # Private properties
     private boolean isPlaying = false;
-    private final DisabledItemSelectionModel selectionModel = new DisabledItemSelectionModel();
+    private @NotNull final DisabledItemSelectionModel selectionModel = new DisabledItemSelectionModel();
+    private @NotNull String playOrStopHotkey = Strings.DEFAULT_PLAY_OR_STOP_HOTKEY;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton backButton;
