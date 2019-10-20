@@ -106,6 +106,12 @@ public class PreferencesStorage {
         try {
             values = Archiver.deserializeObject(PreferencesStorageValues.class, data);
         } catch (Exception e) {
+            Logger.error(this, "Failed to deserialize the storage values: " + e.getMessage());
+            return;
+        }
+        
+        if (values == null)
+        {
             Logger.error(this, "Failed to deserialize the storage values");
             return;
         }
