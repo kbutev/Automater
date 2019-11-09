@@ -5,8 +5,8 @@
  */
 package automater.presenter;
 
-import automater.mvp.BasePresenterDelegate;
 import automater.mvp.BasePresenter.OpenMacroPresenter;
+import automater.mvp.BasePresenterDelegate.OpenMacroPresenterDelegate;
 import automater.storage.GeneralStorage;
 import automater.storage.MacroStorage;
 import automater.ui.viewcontroller.RootViewController;
@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class OpenMacroPresenterStandard implements OpenMacroPresenter {
     @NotNull private final RootViewController _rootViewController;
-    @NotNull private BasePresenterDelegate _delegate;
+    @NotNull private OpenMacroPresenterDelegate _delegate;
     
     @NotNull private final MacroStorage _macrosStorage = GeneralStorage.getDefault().getMacrosStorage();
     
@@ -56,7 +56,7 @@ public class OpenMacroPresenterStandard implements OpenMacroPresenter {
     }
     
     @Override
-    public void setDelegate(@NotNull BasePresenterDelegate delegate)
+    public void setDelegate(@NotNull OpenMacroPresenterDelegate delegate)
     {
         if (_delegate != null)
         {

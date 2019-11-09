@@ -6,8 +6,8 @@
 package automater.ui.viewcontroller;
 
 import automater.TextValue;
-import automater.mvp.BasePresenterDelegate;
 import automater.mvp.BasePresenter.PlayMacroPresenter;
+import automater.mvp.BasePresenterDelegate.PlayMacroPresenterDelegate;
 import automater.storage.PreferencesStorageValues;
 import automater.ui.view.PlayMacroForm;
 import automater.ui.view.PlayMacroOptionsDialog;
@@ -28,7 +28,7 @@ import java.util.List;
  *
  * @author Bytevi
  */
-public class PlayMacroViewController implements BaseViewController, BasePresenterDelegate {
+public class PlayMacroViewController implements BaseViewController, PlayMacroPresenterDelegate {
     @NotNull private final PlayMacroPresenter _presenter;
     
     @NotNull private final PlayMacroForm _form;
@@ -109,38 +109,33 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         _form.dispatchEvent(new WindowEvent(_form, WindowEvent.WINDOW_CLOSING));
     }
     
-    // # BasePresenterDelegate
+    // # PlayMacroPresenterDelegate
 
     @Override
-    public void startRecording() 
+    public void onErrorEncountered(@NotNull Exception e)
     {
+        Logger.error(this, "Error encountered: " + e.toString());
         
+        _form.cancelRecording();
+        
+        // Show message alert
+        String textTitle = TextValue.getText(TextValue.Play_DialogErrorTitle);
+        String textMessage = e.toString();
+        String ok = TextValue.getText(TextValue.Dialog_OK);
+        
+        AlertWindows.showErrorMessage(_form, textTitle, textMessage, ok);
     }
-
+    
     @Override
-    public void stopRecording() 
+    public void onLoadedPreferencesFromStorage(@NotNull automater.storage.PreferencesStorageValues values)
     {
+        _currentPreferences = values;
         
-    }
-
-    @Override
-    public void onActionsRecordedChange(@NotNull List<Description> actions) 
-    {
+        setMacroParametersDescription(values.macroParameters);
         
+        _form.setPlayOrStopHotkeyText(values.playOrStopHotkey);
     }
-
-    @Override
-    public void onRecordingSaved(@NotNull String name, boolean success) 
-    {
-        
-    }
-
-    @Override
-    public void onLoadedMacrosFromStorage(@NotNull List<Description> macros)
-    {
-        
-    }
-
+    
     @Override
     public void onLoadedMacroFromStorage(@NotNull String macroName, @NotNull String macroDescription, @NotNull List<Description> macroActions)
     {
@@ -157,6 +152,23 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
     }
     
     @Override
+    public void stopPlaying(boolean wasCancelled)
+    {
+        if (!wasCancelled)
+        {
+            _form.finishRecording();
+            
+            DeviceTaskBar.getShared().resetAppTaskBarProgress(_form);
+        }
+        else
+        {
+            _form.cancelRecording();
+            
+            DeviceTaskBar.getShared().resetAppTaskBarProgress(_form);
+        }
+    }
+    
+    @Override
     public void updatePlayStatus(@NotNull automater.work.model.ExecutorProgress progress)
     {
         _form.setProgressBarValue(progress.getPercentageDone());
@@ -164,77 +176,6 @@ public class PlayMacroViewController implements BaseViewController, BasePresente
         _form.setSelectedIndex(progress.getCurrentActionIndex());
         
         DeviceTaskBar.getShared().setAppTaskBarProgress(_form, progress.getPercentageDone() * 100);
-    }
-
-    @Override
-    public void cancelPlaying()
-    {
-        _form.cancelRecording();
-        
-        DeviceTaskBar.getShared().resetAppTaskBarProgress(_form);
-    }
-    
-    @Override
-    public void finishPlaying()
-    {
-        _form.finishRecording();
-        
-        DeviceTaskBar.getShared().resetAppTaskBarProgress(_form);
-    }
-    
-    @Override
-    public void onLoadedPreferencesFromStorage(@NotNull PreferencesStorageValues values)
-    {
-        _currentPreferences = values;
-        
-        setMacroParametersDescription(values.macroParameters);
-        
-        _form.setPlayOrStopHotkeyText(values.playOrStopHotkey);
-    }
-    
-    @Override
-    public void onCreateMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
-    {
-        
-    }
-    
-    @Override
-    public void onEditMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
-    {
-        
-    }
-    
-    @Override
-    public void onSaveMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
-    {
-        
-    }
-    
-    @Override
-    public void onEditedMacroActions(@NotNull List<Description> newMacroActions)
-    {
-        
-    }
-    
-    @Override
-    public void onClosingMacroWithoutSavingChanges()
-    {
-        
-    }
-
-    @Override
-    public void onErrorEncountered(@NotNull Exception e)
-    {
-        Logger.error(this, "Error encountered: " + e.toString());
-        
-        _form.cancelRecording();
-        
-        // Show message alert
-        String textTitle = TextValue.getText(TextValue.Play_DialogErrorTitle);
-        String textMessage = e.toString();
-        String ok = TextValue.getText(TextValue.Dialog_OK);
-        
-        AlertWindows.showErrorMessage(_form, textTitle, textMessage, ok);
     }
     
     // # Private

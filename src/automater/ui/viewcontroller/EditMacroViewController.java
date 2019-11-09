@@ -6,10 +6,8 @@
 package automater.ui.viewcontroller;
 
 import automater.TextValue;
-import automater.mvp.BasePresenterDelegate;
 import automater.mvp.BasePresenter.EditMacroPresenter;
 import automater.settings.Hotkey;
-import automater.storage.PreferencesStorageValues;
 import automater.ui.view.EditMacroActionDialog;
 import automater.ui.view.EditMacroForm;
 import automater.ui.view.StandardDescriptionsDataSource;
@@ -21,6 +19,7 @@ import automater.utilities.SimpleCallback;
 import java.awt.event.WindowEvent;
 import java.util.List;
 import automater.mutableaction.BaseMutableAction;
+import automater.mvp.BasePresenterDelegate.EditMacroPresenterDelegate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Bytevi
  */
-public class EditMacroViewController implements BaseViewController, BasePresenterDelegate {
+public class EditMacroViewController implements BaseViewController, EditMacroPresenterDelegate {
     @NotNull private final EditMacroPresenter _presenter;
     
     @NotNull private final EditMacroForm _form;
@@ -146,36 +145,25 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         _form.dispatchEvent(new WindowEvent(_form, WindowEvent.WINDOW_CLOSING));
     }
     
-    // # BasePresenterDelegate
-
+    // # EditMacroPresenterDelegate
+    
     @Override
-    public void startRecording()
+    public void onErrorEncountered(@NotNull Exception e)
     {
+        Logger.error(this, "Error encountered: " + e.toString());
         
-    }
-
-    @Override
-    public void stopRecording() 
-    {
+        if (_editActionDialog != null)
+        {
+            _editActionDialog.displayError(e.getMessage());
+            return;
+        }
         
-    }
-
-    @Override
-    public void onActionsRecordedChange(@NotNull List<Description> actions) 
-    {
+        // Show message alert
+        String textTitle = TextValue.getText(TextValue.Play_DialogErrorTitle);
+        String textMessage = e.getMessage();
+        String ok = TextValue.getText(TextValue.Dialog_OK);
         
-    }
-
-    @Override
-    public void onRecordingSaved(@NotNull String name, boolean success)
-    {
-        
-    }
-
-    @Override
-    public void onLoadedMacrosFromStorage(@NotNull List<Description> macros)
-    {
-        
+        AlertWindows.showErrorMessage(_form, textTitle, textMessage, ok);
     }
 
     @Override
@@ -185,55 +173,19 @@ public class EditMacroViewController implements BaseViewController, BasePresente
         _form.setMacroInfo(macroName, macroDescription);
         _form.setMacroDataSource(_dataSource);
     }
-    
-    @Override
-    public void startPlaying()
-    {
-        
-    }
 
     @Override
-    public void updatePlayStatus(@NotNull automater.work.model.ExecutorProgress progress)
-    {
-        
-    }
-
-    @Override
-    public void cancelPlaying() 
-    {
-        
-    }
-
-    @Override
-    public void finishPlaying()
-    {
-        
-    }
-
-    @Override
-    public void onLoadedPreferencesFromStorage(@NotNull PreferencesStorageValues values)
-    {
-        
-    }
-    
-    @Override
-    public void onCreateMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
+    public void onBeginCreateMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
     {
         startCreatingMacroAction(action);
     }
     
     @Override
-    public void onEditMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
+    public void onBeginEditMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
     {
         startEditingMacroAction(action);
     }
-    
-    @Override
-    public void onSaveMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
-    {
-        
-    }
-    
+
     @Override
     public void onEditedMacroActions(@NotNull List<Description> newMacroActions)
     {
@@ -254,25 +206,6 @@ public class EditMacroViewController implements BaseViewController, BasePresente
                 _presenter.navigateBack();
             }
         }, null);
-    }
-    
-    @Override
-    public void onErrorEncountered(@NotNull Exception e)
-    {
-        Logger.error(this, "Error encountered: " + e.toString());
-        
-        if (_editActionDialog != null)
-        {
-            _editActionDialog.displayError(e.getMessage());
-            return;
-        }
-        
-        // Show message alert
-        String textTitle = TextValue.getText(TextValue.Play_DialogErrorTitle);
-        String textMessage = e.getMessage();
-        String ok = TextValue.getText(TextValue.Dialog_OK);
-        
-        AlertWindows.showErrorMessage(_form, textTitle, textMessage, ok);
     }
     
     // # Private

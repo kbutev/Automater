@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import automater.utilities.Callback;
 import automater.utilities.Description;
+import automater.mvp.BasePresenterDelegate.*;
 
 /**
  * Base implementation for presenters.
@@ -18,12 +19,12 @@ import automater.utilities.Description;
  */
 public interface BasePresenter {
     public void start();
-    public void setDelegate(@NotNull BasePresenterDelegate delegate);
     
     public void requestDataUpdate();
     
     public interface EditMacroPresenter extends BasePresenter {
         // Properties
+        public void setDelegate(@NotNull EditMacroPresenterDelegate delegate);
         public @NotNull List<Description> getActionTypes();
         public int getActionTypeSelectedIndex();
     
@@ -48,6 +49,9 @@ public interface BasePresenter {
     }
     
     public interface OpenMacroPresenter extends BasePresenter {
+        // Properties
+        public void setDelegate(@NotNull OpenMacroPresenterDelegate delegate);
+        
         // Navigation
         public void onSwitchToRecordScreen();
     
@@ -58,6 +62,9 @@ public interface BasePresenter {
     }
     
     public interface PlayMacroPresenter extends BasePresenter {
+        // Properties
+        public void setDelegate(@NotNull PlayMacroPresenterDelegate delegate);
+        
         // Navigation
         public void navigateBack();
     
@@ -68,6 +75,9 @@ public interface BasePresenter {
     }
     
     public interface RecordMacroPresenter extends BasePresenter {
+        // Properties
+        public void setDelegate(@NotNull RecordMacroPresenterDelegate delegate);
+        
         // Navigation
         public void onSwitchToPlayScreen();
     

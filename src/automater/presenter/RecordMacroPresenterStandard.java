@@ -5,9 +5,9 @@
  */
 package automater.presenter;
 
-import automater.mvp.BasePresenterDelegate;
 import automater.mvp.BasePresenter.RecordMacroPresenter;
 import automater.TextValue;
+import automater.mvp.BasePresenterDelegate.RecordMacroPresenterDelegate;
 import automater.recorder.BaseRecorderListener;
 import automater.recorder.Recorder;
 import automater.recorder.RecorderHotkeyListener;
@@ -48,7 +48,7 @@ import java.util.List;
  */
 public class RecordMacroPresenterStandard implements RecordMacroPresenter, BaseRecorderListener, RecorderHotkeyListener {
     @NotNull private final RootViewController _rootViewController;
-    @Nullable private BasePresenterDelegate _delegate;
+    @Nullable private RecordMacroPresenterDelegate _delegate;
     
     @NotNull private final MacroStorage _storage = GeneralStorage.getDefault().getMacrosStorage();
     
@@ -99,7 +99,7 @@ public class RecordMacroPresenterStandard implements RecordMacroPresenter, BaseR
     }
     
     @Override
-    public void setDelegate(@NotNull BasePresenterDelegate delegate)
+    public void setDelegate(@NotNull RecordMacroPresenterDelegate delegate)
     {
         if (_delegate != null)
         {

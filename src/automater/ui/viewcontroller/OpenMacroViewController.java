@@ -6,9 +6,8 @@
 package automater.ui.viewcontroller;
 
 import automater.TextValue;
-import automater.mvp.BasePresenterDelegate;
 import automater.mvp.BasePresenter.OpenMacroPresenter;
-import automater.storage.PreferencesStorageValues;
+import automater.mvp.BasePresenterDelegate.OpenMacroPresenterDelegate;
 import automater.ui.view.OpenMacroForm;
 import automater.ui.view.StandardDescriptionsDataSource;
 import automater.utilities.AlertWindows;
@@ -26,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Bytevi
  */
-public class OpenMacroViewController implements BaseViewController, BasePresenterDelegate {
+public class OpenMacroViewController implements BaseViewController, OpenMacroPresenterDelegate {
     @NotNull private final OpenMacroPresenter _presenter;
     
     @NotNull private final OpenMacroForm _form;
@@ -118,30 +117,12 @@ public class OpenMacroViewController implements BaseViewController, BasePresente
         _form.dispatchEvent(new WindowEvent(_form, WindowEvent.WINDOW_CLOSING));
     }
     
-    // # BasePresenterDelegate
+    // # OpenMacroPresenterDelegate
     
     @Override
-    public void startRecording()
+    public void onErrorEncountered(@NotNull Exception e)
     {
-        
-    }
-    
-    @Override
-    public void stopRecording()
-    {
-        
-    }
-    
-    @Override
-    public void onActionsRecordedChange(@NotNull List<Description> actions)
-    {
-    
-    }
-    
-    @Override
-    public void onRecordingSaved(@NotNull String name, boolean success)
-    {
-        
+        Logger.error(this, "Error encountered: " + e.toString());
     }
     
     @Override
@@ -149,78 +130,6 @@ public class OpenMacroViewController implements BaseViewController, BasePresente
     {
         _dataSource = StandardDescriptionsDataSource.createDataSourceForStandartText(macros);
         _form.setListDataSource(_dataSource);
-    }
-    
-    @Override
-    public void onLoadedMacroFromStorage(@NotNull String macroName, @NotNull String macroDescription, @NotNull List<Description> macroActions)
-    {
-        
-    }
-    
-    @Override
-    public void startPlaying()
-    {
-        
-    }
-    
-    @Override
-    public void updatePlayStatus(@NotNull automater.work.model.ExecutorProgress progress)
-    {
-        
-    }
-        
-    @Override    
-    public void cancelPlaying()
-    {
-        
-    }
-    
-    @Override
-    public void finishPlaying()
-    {
-        
-    }
-    
-    @Override
-    public void onLoadedPreferencesFromStorage(@NotNull PreferencesStorageValues values)
-    {
-        
-    }
-    
-    @Override
-    public void onCreateMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
-    {
-        
-    }
-    
-    @Override
-    public void onEditMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
-    {
-        
-    }
-    
-    @Override
-    public void onSaveMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
-    {
-        
-    }
-    
-    @Override
-    public void onEditedMacroActions(@NotNull List<Description> newMacroActions)
-    {
-        
-    }
-    
-    @Override
-    public void onClosingMacroWithoutSavingChanges()
-    {
-        
-    }
-    
-    @Override
-    public void onErrorEncountered(@NotNull Exception e)
-    {
-        Logger.error(this, "Error encountered: " + e.toString());
     }
     
     // # Public

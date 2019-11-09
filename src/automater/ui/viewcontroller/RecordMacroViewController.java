@@ -6,9 +6,8 @@
 package automater.ui.viewcontroller;
 
 import automater.TextValue;
-import automater.mvp.BasePresenterDelegate;
 import automater.mvp.BasePresenter.RecordMacroPresenter;
-import automater.storage.PreferencesStorageValues;
+import automater.mvp.BasePresenterDelegate.RecordMacroPresenterDelegate;
 import automater.ui.view.RecordMacroForm;
 import automater.ui.view.StandardDescriptionsDataSource;
 import automater.utilities.AlertWindows;
@@ -26,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
  * 
  * @author Bytevi
  */
-public class RecordMacroViewController implements BaseViewController, BasePresenterDelegate {
+public class RecordMacroViewController implements BaseViewController, RecordMacroPresenterDelegate {
     @NotNull private final RecordMacroPresenter _presenter;
     
     @NotNull private final RecordMacroForm _form;
@@ -102,7 +101,26 @@ public class RecordMacroViewController implements BaseViewController, BasePresen
         _form.dispatchEvent(new WindowEvent(_form, WindowEvent.WINDOW_CLOSING));
     }
     
-    // # BasePresenterDelegate
+    // # RecordMacroPresenterDelegate
+    
+    @Override
+    public void onErrorEncountered(@NotNull Exception e)
+    {
+        Logger.error(this, "Error encountered: " + e.toString());
+        
+        // Show message alert
+        String textTitle = TextValue.getText(TextValue.Dialog_SaveRecordingFailedTitle);
+        String textMessage = TextValue.getText(TextValue.Dialog_SaveRecordingFailedMessage, e.getMessage());
+        String ok = TextValue.getText(TextValue.Dialog_OK);
+        
+        AlertWindows.showErrorMessage(_form, textTitle, textMessage, ok);
+    }
+    
+    @Override
+    public void onLoadedPreferencesFromStorage(@NotNull automater.storage.PreferencesStorageValues values)
+    {
+        _form.setRecordOrStopHotkeyText(values.recordOrStopHotkey);
+    }
     
     @Override
     public void startRecording()
@@ -141,90 +159,5 @@ public class RecordMacroViewController implements BaseViewController, BasePresen
                 _presenter.onRecordingSavedSuccessufllyClosed();
             }
         });
-    }
-    
-    @Override
-    public void onLoadedMacrosFromStorage(@NotNull List<Description> macros)
-    {
-        
-    }
-    
-    @Override
-    public void onLoadedMacroFromStorage(@NotNull String macroName, @NotNull String macroDescription, @NotNull List<Description> macroActions)
-    {
-        
-    }
-    
-    @Override
-    public void startPlaying()
-    {
-        
-    }
-    
-    @Override
-    public void updatePlayStatus(@NotNull automater.work.model.ExecutorProgress progress)
-    {
-        
-    }
-        
-    @Override    
-    public void cancelPlaying()
-    {
-        
-    }
-    
-    @Override
-    public void finishPlaying()
-    {
-        
-    }
-    
-    @Override
-    public void onLoadedPreferencesFromStorage(@NotNull PreferencesStorageValues values)
-    {
-        _form.setRecordOrStopHotkeyText(values.recordOrStopHotkey);
-    }
-    
-    @Override
-    public void onCreateMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
-    {
-        
-    }
-    
-    @Override
-    public void onEditMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
-    {
-        
-    }
-    
-    @Override
-    public void onSaveMacroAction(@NotNull automater.mutableaction.BaseMutableAction action)
-    {
-        
-    }
-    
-    @Override
-    public void onEditedMacroActions(@NotNull List<Description> newMacroActions)
-    {
-        
-    }
-    
-    @Override
-    public void onClosingMacroWithoutSavingChanges()
-    {
-        
-    }
-    
-    @Override
-    public void onErrorEncountered(@NotNull Exception e)
-    {
-        Logger.error(this, "Error encountered: " + e.toString());
-        
-        // Show message alert
-        String textTitle = TextValue.getText(TextValue.Dialog_SaveRecordingFailedTitle);
-        String textMessage = TextValue.getText(TextValue.Dialog_SaveRecordingFailedMessage, e.getMessage());
-        String ok = TextValue.getText(TextValue.Dialog_OK);
-        
-        AlertWindows.showErrorMessage(_form, textTitle, textMessage, ok);
     }
 }

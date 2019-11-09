@@ -5,9 +5,9 @@
  */
 package automater.presenter;
 
-import automater.mvp.BasePresenterDelegate;
 import automater.mvp.BasePresenter.PlayMacroPresenter;
 import automater.TextValue;
+import automater.mvp.BasePresenterDelegate.PlayMacroPresenterDelegate;
 import automater.recorder.Recorder;
 import automater.recorder.RecorderHotkeyListener;
 import automater.settings.Hotkey;
@@ -37,7 +37,7 @@ import java.util.Date;
  */
 public class PlayMacroPresenterStandard implements PlayMacroPresenter, ExecutorListener, RecorderHotkeyListener {
     @NotNull private final RootViewController _rootViewController;
-    @Nullable private BasePresenterDelegate _delegate;
+    @Nullable private PlayMacroPresenterDelegate _delegate;
     
     @NotNull private final Executor _executor = Executor.getDefault();
     @NotNull private final MacroStorage _macrosStorage = GeneralStorage.getDefault().getMacrosStorage();
@@ -92,7 +92,7 @@ public class PlayMacroPresenterStandard implements PlayMacroPresenter, ExecutorL
     }
     
     @Override
-    public void setDelegate(@NotNull BasePresenterDelegate delegate)
+    public void setDelegate(@NotNull PlayMacroPresenterDelegate delegate)
     {
         if (_delegate != null)
         {
@@ -149,17 +149,21 @@ public class PlayMacroPresenterStandard implements PlayMacroPresenter, ExecutorL
     @Override
     public void onCancel()
     {
-        _delegate.finishPlaying();
+        Logger.message(this, "Playing was cancelled!");
+        
+        _delegate.stopPlaying(true);
     }
     
     @Override
     public void onFinish()
     {
+        Logger.message(this, "Successfully finished playing!");
+        
         displayPlayingFinishedNotification();
         
         _ongoingExecution = null;
         
-        _delegate.finishPlaying();
+        _delegate.stopPlaying(false);
     }
     
     // # RecorderHotkeyListener
@@ -238,7 +242,7 @@ public class PlayMacroPresenterStandard implements PlayMacroPresenter, ExecutorL
             return;
         }
         
-        Logger.messageEvent(this, "Stop.");
+        Logger.messageEvent(this, "Stop playing...");
         
         try {
             _ongoingExecution.stop();
@@ -246,10 +250,10 @@ public class PlayMacroPresenterStandard implements PlayMacroPresenter, ExecutorL
             _ongoingExecution = null;
         } catch (Exception e) {
             Logger.error(this, "Failed to stop execution process: " + e.toString());
-            return;
         }
         
-        _delegate.stopRecording();
+        // Do not alert the presenter delegate here, as a BaseExecutorListener we should
+        // be alerted by the execution that the process stopped
     }
     
     @Override

@@ -6,7 +6,6 @@
 package automater.presenter;
 
 import automater.mvp.BasePresenter.EditMacroPresenter;
-import automater.mvp.BasePresenterDelegate;
 import automater.recorder.Recorder;
 import automater.recorder.RecorderHotkeyListener;
 import automater.settings.Hotkey;
@@ -23,6 +22,7 @@ import java.util.List;
 import automater.mutableaction.StandardMutableAction;
 import automater.mutableaction.StandardMutableActionTemplates;
 import automater.mutableaction.StandardMutableActionConstants;
+import automater.mvp.BasePresenterDelegate.EditMacroPresenterDelegate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -40,7 +40,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, RecorderH
     public final static int CREATE_NEW_ACTION_TIMESTAMP_OFFSET = 1;
     
     @NotNull private final RootViewController _rootViewController;
-    @Nullable private BasePresenterDelegate _delegate;
+    @Nullable private EditMacroPresenterDelegate _delegate;
     
     @NotNull private final Macro _originalMacro;
     
@@ -100,7 +100,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, RecorderH
     }
 
     @Override
-    public void setDelegate(@NotNull BasePresenterDelegate delegate)
+    public void setDelegate(@NotNull EditMacroPresenterDelegate delegate)
     {
         if (_delegate != null)
         {
@@ -301,7 +301,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, RecorderH
             return;
         }
         
-        _delegate.onCreateMacroAction(_actionBeingEdited);
+        _delegate.onBeginCreateMacroAction(_actionBeingEdited);
     }
     
     @Override
@@ -341,7 +341,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, RecorderH
             return;
         }
         
-        _delegate.onCreateMacroAction(_actionBeingEdited);
+        _delegate.onBeginCreateMacroAction(_actionBeingEdited);
     }
     
     @Override
@@ -404,7 +404,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, RecorderH
         
         _delegate.onEditedMacroActions(_macroActionDescriptions);
         
-        _delegate.onCreateMacroAction(a);
+        _delegate.onBeginCreateMacroAction(a);
     }
     
     @Override
