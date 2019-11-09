@@ -24,7 +24,30 @@ import java.util.List;
  *
  * @author Bytevi
  */
-public class OpenMacroPresenter implements BasePresenter {
+public interface OpenMacroPresenter extends BasePresenter {
+    // Navigation
+    public void onSwitchToRecordScreen();
+    
+    // Macro operations
+    public void openMacroAt(int index);
+    public void editMacroAt(int index);
+    public void deleteMacroAt(int index);
+    
+    // Factories
+    public static OpenMacroPresenter create(@NotNull RootViewController rootViewController)
+    {
+        return new OpenMacroPresenterStandard(rootViewController);
+    }
+}
+
+/**
+ * Standard implementation for OpenMacroPresenter interface.
+ * 
+ * Use the OpenMacroPresenter factories to create an instance.
+ *
+ * @author Bytevi
+ */
+class OpenMacroPresenterStandard implements OpenMacroPresenter {
     @NotNull private final RootViewController _rootViewController;
     @NotNull private BasePresenterDelegate _delegate;
     
@@ -33,7 +56,7 @@ public class OpenMacroPresenter implements BasePresenter {
     @NotNull private List<Macro> _macros = new ArrayList<>();
     @NotNull private final List<Description> _macrosAsDescriptions = new ArrayList<>();
     
-    public OpenMacroPresenter(@NotNull RootViewController rootViewController)
+    public OpenMacroPresenterStandard(@NotNull RootViewController rootViewController)
     {
         _rootViewController = rootViewController;
     }
@@ -72,13 +95,15 @@ public class OpenMacroPresenter implements BasePresenter {
         updateMacroData();
     }
     
-    // # Public functionality
+    // # OpenMacroPresenter
     
+    @Override
     public void onSwitchToRecordScreen()
     {
         _rootViewController.navigateToRecordScreen();
     }
     
+    @Override
     public void openMacroAt(int index)
     {
         Logger.messageEvent(this, "Open macro at " + String.valueOf(index));
@@ -94,6 +119,7 @@ public class OpenMacroPresenter implements BasePresenter {
         _rootViewController.navigateToPlayScreen(macro);
     }
     
+    @Override
     public void editMacroAt(int index)
     {
         Logger.messageEvent(this, "Edit macro at " + String.valueOf(index));
@@ -109,6 +135,7 @@ public class OpenMacroPresenter implements BasePresenter {
         _rootViewController.navigateToEditScreen(macro);
     }
     
+    @Override
     public void deleteMacroAt(int index)
     {
         Logger.messageEvent(this, "Delete macro at " + String.valueOf(index));
@@ -134,7 +161,7 @@ public class OpenMacroPresenter implements BasePresenter {
     
     private void updateMacroData()
     {
-        final OpenMacroPresenter presenter = this;
+        final OpenMacroPresenterStandard presenter = this;
         
         Looper.getShared().performAsyncCallbackInBackground(new SimpleCallback() {
             @Override

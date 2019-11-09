@@ -9,8 +9,6 @@ import automater.presenter.EditMacroPresenter;
 import automater.presenter.OpenMacroPresenter;
 import automater.presenter.PlayMacroPresenter;
 import automater.presenter.RecordMacroPresenter;
-import automater.input.InputKeyValue;
-import automater.settings.Hotkey;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.work.model.Macro;
@@ -101,7 +99,7 @@ public class PrimaryViewContoller implements RootViewController {
         
         if (playViewControllerStart)
         {
-            _openMacroPresenter = new OpenMacroPresenter(this);
+            _openMacroPresenter = OpenMacroPresenter.create(this);
             OpenMacroViewController vc = new OpenMacroViewController(_openMacroPresenter);
             _openMacroViewController = vc;
             _openMacroPresenter.setDelegate(vc);
@@ -132,7 +130,7 @@ public class PrimaryViewContoller implements RootViewController {
         
         if (recordViewControllerStart)
         {
-            _recordMacroPresenter = new RecordMacroPresenter(this);
+            _recordMacroPresenter = RecordMacroPresenter.create(this);
             RecordMacroViewController vc = new RecordMacroViewController(_recordMacroPresenter);
             _recordMacroViewController = vc;
             _recordMacroPresenter.setDelegate(vc);
@@ -159,7 +157,7 @@ public class PrimaryViewContoller implements RootViewController {
     
     private void switchScreenToPlay(@NotNull Macro macro)
     {
-        PlayMacroPresenter presenter = new PlayMacroPresenter(this, macro);
+        PlayMacroPresenter presenter = PlayMacroPresenter.create(this, macro);
         PlayMacroViewController vc = new PlayMacroViewController(presenter);
         presenter.setDelegate(vc);
         
@@ -177,7 +175,7 @@ public class PrimaryViewContoller implements RootViewController {
     
     private void switchScreenToEdit(@NotNull Macro macro)
     {
-        EditMacroPresenter presenter = new EditMacroPresenter(this, macro);
+        EditMacroPresenter presenter = EditMacroPresenter.create(this, macro);
         EditMacroViewController vc = new EditMacroViewController(presenter);
         presenter.setDelegate(vc);
         

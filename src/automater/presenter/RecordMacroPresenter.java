@@ -44,7 +44,31 @@ import java.util.List;
  *
  * @author Bytevi
  */
-public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener, RecorderHotkeyListener {
+public interface RecordMacroPresenter extends BasePresenter {
+    // Navigation
+    public void onSwitchToPlayScreen();
+    
+    // Recording operations
+    public void onStartRecording();
+    public void onStopRecording();
+    public void onSaveRecording(@NotNull String name, @NotNull String description);
+    public void onRecordingSavedSuccessufllyClosed();
+    
+    // Factories
+    public static RecordMacroPresenter create(@NotNull RootViewController rootViewController)
+    {
+        return new RecordMacroPresenterStandard(rootViewController);
+    }
+}
+
+/**
+ * Standard implementation for RecordMacroPresenter interface.
+ * 
+ * Use the RecordMacroPresenter factories to create an instance.
+ *
+ * @author Bytevi
+ */
+class RecordMacroPresenterStandard implements RecordMacroPresenter, BaseRecorderListener, RecorderHotkeyListener {
     @NotNull private final RootViewController _rootViewController;
     @Nullable private BasePresenterDelegate _delegate;
     
@@ -65,7 +89,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
     
     @NotNull private final ActionsParsing _actionsParsing = new ActionsParsing();
     
-    public RecordMacroPresenter(@NotNull RootViewController rootViewController)
+    public RecordMacroPresenterStandard(@NotNull RootViewController rootViewController)
     {
         _rootViewController = rootViewController;
         _recordOrStopHotkey = GeneralStorage.getDefault().getPreferencesStorage().getValues().recordOrStopHotkey;
@@ -180,8 +204,9 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         }
     }
     
-    // # Public
+    // # RecordMacroPresenter
     
+    @Override
     public void onSwitchToPlayScreen()
     {
         _recorder.unregisterPlayStopHotkeyListener();
@@ -189,6 +214,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         _rootViewController.navigateToOpenScreen();
     }
     
+    @Override
     public void onStartRecording()
     {
         if (_hasStartedMacroRecording)
@@ -215,6 +241,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         _delegate.startRecording();
     }
     
+    @Override
     public void onStopRecording()
     {
         if (!_hasStartedMacroRecording)
@@ -238,6 +265,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         }
     }
     
+    @Override
     public void onSaveRecording(@NotNull String name, @NotNull String description)
     {
         if (_recordedResult == null)
@@ -302,6 +330,7 @@ public class RecordMacroPresenter implements BasePresenter, BaseRecorderListener
         _delegate.onRecordingSaved(name, true);
     }
     
+    @Override
     public void onRecordingSavedSuccessufllyClosed()
     {
         clearData();

@@ -33,7 +33,30 @@ import java.util.Date;
  *
  * @author Bytevi
  */
-public class PlayMacroPresenter implements BasePresenter, ExecutorListener, RecorderHotkeyListener {
+public interface PlayMacroPresenter extends BasePresenter {
+    // Navigation
+    public void navigateBack();
+    
+    // Play macro operations
+    public void play();
+    public void stop();
+    public void setOptionValues(@NotNull PreferencesStorageValues values);
+    
+    // Factories
+    public static PlayMacroPresenter create(@NotNull RootViewController rootViewController, @NotNull Macro macro)
+    {
+        return new PlayMacroPresenterStandard(rootViewController, macro);
+    }
+}
+
+/**
+ * Standard implementation for PlayMacroPresenter interface.
+ * 
+ * Use the PlayMacroPresenter factories to create an instance.
+ *
+ * @author Bytevi
+ */
+class PlayMacroPresenterStandard implements PlayMacroPresenter, ExecutorListener, RecorderHotkeyListener {
     @NotNull private final RootViewController _rootViewController;
     @Nullable private BasePresenterDelegate _delegate;
     
@@ -51,7 +74,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
     
     @NotNull private PreferencesStorageValues _options = PreferencesStorageValues.defaultValues();
     
-    public PlayMacroPresenter(@NotNull RootViewController rootViewController, @NotNull Macro macro)
+    public PlayMacroPresenterStandard(@NotNull RootViewController rootViewController, @NotNull Macro macro)
     {
         _rootViewController = rootViewController;
         
@@ -189,13 +212,19 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         }
     }
     
-    // # Public
+    // # PlayMacroPresenter
     
-    public boolean isPlaying()
+    @Override
+    public void navigateBack()
     {
-        return _executor.isPerforming();
+        Logger.messageEvent(this, "Navigate back.");
+        
+        _recorder.unregisterHotkeyListener(this);
+        
+        _rootViewController.navigateToOpenScreen();
     }
     
+    @Override
     public void play()
     {
         Logger.messageEvent(this, "Play.");
@@ -221,6 +250,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         _delegate.startPlaying();
     }
     
+    @Override
     public void stop()
     {
         if (_ongoingExecution == null)
@@ -243,6 +273,7 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         _delegate.stopRecording();
     }
     
+    @Override
     public void setOptionValues(@NotNull PreferencesStorageValues values)
     {
         Logger.messageEvent(this, "Play parameters changed: " + values.macroParameters.toString());
@@ -251,15 +282,6 @@ public class PlayMacroPresenter implements BasePresenter, ExecutorListener, Reco
         
         // Save the option values to storage
         GeneralStorage.getDefault().getPreferencesStorage().saveValues(values);
-    }
-    
-    public void navigateBack()
-    {
-        Logger.messageEvent(this, "Navigate back.");
-        
-        _recorder.unregisterHotkeyListener(this);
-        
-        _rootViewController.navigateToOpenScreen();
     }
     
     // # Private

@@ -34,7 +34,45 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Bytevi
  */
-public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener {
+public interface EditMacroPresenter extends BasePresenter {
+    // Properties
+    public @NotNull List<Description> getActionTypes();
+    public int getActionTypeSelectedIndex();
+    
+    // Navigation
+    public void navigateBack();
+    public void onCloseMacroWithoutSaving();
+    public void onSaveMacro();
+    
+    // Macro operations
+    public void onStartCreatingMacroActionAt(int index);
+    public void onStartEditMacroActionAt(int index);
+    public @Nullable Exception canSuccessfullyEndEditMacroAction();
+    public void onEndCreateOrEditMacroAction(boolean save);
+    public void onDeleteMacroActionAt(int index);
+    public @Nullable BaseMutableAction changeEditMacroActionTypeForTypeIndex(int index);
+    public void onMacroNameChanged(@NotNull String name);
+    public void onMacroDescriptionChanged(@NotNull String description);
+    
+    // Keystroke events
+    public void startListeningForKeystrokes(@NotNull Callback<Hotkey> onKeystrokeEnteredCallback);
+    public void endListeningForKeystrokes();
+    
+    // Factories
+    public static EditMacroPresenter create(@NotNull RootViewController rootViewController, @NotNull Macro macro)
+    {
+        return new EditMacroPresenterStandard(rootViewController, macro);
+    }
+}
+
+/**
+ * Standard implementation for EditMacroPresenter interface.
+ * 
+ * Use the EditMacroPresenter factories to create an instance.
+ *
+ * @author Bytevi
+ */
+class EditMacroPresenterStandard implements EditMacroPresenter, RecorderHotkeyListener {
     public final static int CREATE_ACTION_DEFAULT_TYPE = 0;
     public final static int CREATE_NEW_ACTION_TIMESTAMP_OFFSET = 1;
     
@@ -66,7 +104,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
     // Edit detection
     private boolean _wasEdited = false;
     
-    public EditMacroPresenter(@NotNull RootViewController rootViewController, @NotNull Macro macro)
+    public EditMacroPresenterStandard(@NotNull RootViewController rootViewController, @NotNull Macro macro)
     {
         _rootViewController = rootViewController;
         
@@ -144,20 +182,21 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         endListeningForKeystrokes();
     }
     
-    // # Public values
+    // # EditMacroPresenter
     
+    @Override
     public @NotNull List<Description> getActionTypes()
     {
         return StandardMutableActionConstants.getActionTypes();
     }
     
+    @Override
     public int getActionTypeSelectedIndex()
     {
         return _actionTypeSelectedIndex;
     }
     
-    // # Public operations
-    
+    @Override
     public void navigateBack()
     {
         Logger.messageEvent(this, "Navigate back.");
@@ -170,6 +209,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _rootViewController.navigateToOpenScreen();
     }
     
+    @Override
     public void onCloseMacroWithoutSaving()
     {
         Logger.messageEvent(this, "Close without saving changes.");
@@ -183,6 +223,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         navigateBack();
     }
     
+    @Override
     public void onSaveMacro()
     {
         Logger.messageEvent(this, "Save macro and go back.");
@@ -248,6 +289,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         navigateBack();
     }
     
+    @Override
     public void onStartCreatingMacroActionAt(int index)
     {
         if (index < 0 || index >= _macroActions.size())
@@ -299,6 +341,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _delegate.onCreateMacroAction(_actionBeingEdited);
     }
     
+    @Override
     public void onStartEditMacroActionAt(int index)
     {
         if (index < 0 || index >= _macroActions.size())
@@ -338,6 +381,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _delegate.onCreateMacroAction(_actionBeingEdited);
     }
     
+    @Override
     public @Nullable Exception canSuccessfullyEndEditMacroAction()
     {
         if (!_isEditingOrCreatingAction)
@@ -353,6 +397,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         }
     }
     
+    @Override
     public void onEndCreateOrEditMacroAction(boolean save)
     {
         if (!_isEditingOrCreatingAction)
@@ -399,6 +444,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _delegate.onCreateMacroAction(a);
     }
     
+    @Override
     public void onDeleteMacroActionAt(int index)
     {
         if (index < 0 || index >= _macroActions.size())
@@ -434,6 +480,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _delegate.onEditedMacroActions(_macroActionDescriptions);
     }
     
+    @Override
     public @Nullable BaseMutableAction changeEditMacroActionTypeForTypeIndex(int index)
     {
         if (!_isEditingOrCreatingAction)
@@ -464,6 +511,23 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         return a;
     }
     
+    @Override
+    public void onMacroNameChanged(@NotNull String name)
+    {
+        _wasEdited = true;
+        
+        _name = name;
+    }
+    
+    @Override
+    public void onMacroDescriptionChanged(@NotNull String description)
+    {
+        _wasEdited = true;
+        
+        _description = description;
+    }
+    
+    @Override
     public void startListeningForKeystrokes(@NotNull Callback<Hotkey> onKeystrokeEnteredCallback)
     {
         if (_recording)
@@ -482,6 +546,7 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _recorder.registerHotkeyListener(this);
     }
     
+    @Override
     public void endListeningForKeystrokes()
     {
         if (!_recording)
@@ -496,20 +561,6 @@ public class EditMacroPresenter implements BasePresenter, RecorderHotkeyListener
         _onKeystrokeEnteredCallback.perform(_hotkeyRecorded);
         
         _recorder.unregisterHotkeyListener(this);
-    }
-    
-    public void onMacroNameChanged(@NotNull String name)
-    {
-        _wasEdited = true;
-        
-        _name = name;
-    }
-    
-    public void onMacroDescriptionChanged(@NotNull String description)
-    {
-        _wasEdited = true;
-        
-        _description = description;
     }
     
     // # Private
