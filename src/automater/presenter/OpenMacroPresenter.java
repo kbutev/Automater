@@ -5,6 +5,8 @@
  */
 package automater.presenter;
 
+import automater.mvp.BasePresenterDelegate;
+import automater.mvp.BasePresenter;
 import automater.storage.GeneralStorage;
 import automater.storage.MacroStorage;
 import automater.ui.viewcontroller.RootViewController;

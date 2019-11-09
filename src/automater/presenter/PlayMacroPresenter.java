@@ -5,6 +5,8 @@
  */
 package automater.presenter;
 
+import automater.mvp.BasePresenterDelegate;
+import automater.mvp.BasePresenter;
 import automater.TextValue;
 import automater.recorder.Recorder;
 import automater.recorder.RecorderHotkeyListener;
