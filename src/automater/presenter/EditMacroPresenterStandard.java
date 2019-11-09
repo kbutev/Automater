@@ -5,8 +5,8 @@
  */
 package automater.presenter;
 
+import automater.mvp.BasePresenter.EditMacroPresenter;
 import automater.mvp.BasePresenterDelegate;
-import automater.mvp.BasePresenter;
 import automater.recorder.Recorder;
 import automater.recorder.RecorderHotkeyListener;
 import automater.settings.Hotkey;
@@ -26,7 +26,6 @@ import automater.mutableaction.StandardMutableActionConstants;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import automater.mutableaction.BaseMutableAction;
 import automater.work.Action;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,45 +35,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Bytevi
  */
-public interface EditMacroPresenter extends BasePresenter {
-    // Properties
-    public @NotNull List<Description> getActionTypes();
-    public int getActionTypeSelectedIndex();
-    
-    // Navigation
-    public void navigateBack();
-    public void onCloseMacroWithoutSaving();
-    public void onSaveMacro();
-    
-    // Macro operations
-    public void onStartCreatingMacroActionAt(int index);
-    public void onStartEditMacroActionAt(int index);
-    public @Nullable Exception canSuccessfullyEndEditMacroAction();
-    public void onEndCreateOrEditMacroAction(boolean save);
-    public void onDeleteMacroActionAt(int index);
-    public @Nullable BaseMutableAction changeEditMacroActionTypeForTypeIndex(int index);
-    public void onMacroNameChanged(@NotNull String name);
-    public void onMacroDescriptionChanged(@NotNull String description);
-    
-    // Keystroke events
-    public void startListeningForKeystrokes(@NotNull Callback<Hotkey> onKeystrokeEnteredCallback);
-    public void endListeningForKeystrokes();
-    
-    // Factories
-    public static EditMacroPresenter create(@NotNull RootViewController rootViewController, @NotNull Macro macro)
-    {
-        return new EditMacroPresenterStandard(rootViewController, macro);
-    }
-}
-
-/**
- * Standard implementation for EditMacroPresenter interface.
- * 
- * Use the EditMacroPresenter factories to create an instance.
- *
- * @author Bytevi
- */
-class EditMacroPresenterStandard implements EditMacroPresenter, RecorderHotkeyListener {
+public class EditMacroPresenterStandard implements EditMacroPresenter, RecorderHotkeyListener {
     public final static int CREATE_ACTION_DEFAULT_TYPE = 0;
     public final static int CREATE_NEW_ACTION_TIMESTAMP_OFFSET = 1;
     
@@ -483,7 +444,7 @@ class EditMacroPresenterStandard implements EditMacroPresenter, RecorderHotkeyLi
     }
     
     @Override
-    public @Nullable BaseMutableAction changeEditMacroActionTypeForTypeIndex(int index)
+    public @Nullable automater.mutableaction.BaseMutableAction changeEditMacroActionTypeForTypeIndex(int index)
     {
         if (!_isEditingOrCreatingAction)
         {
@@ -530,7 +491,7 @@ class EditMacroPresenterStandard implements EditMacroPresenter, RecorderHotkeyLi
     }
     
     @Override
-    public void startListeningForKeystrokes(@NotNull Callback<Hotkey> onKeystrokeEnteredCallback)
+    public void startListeningForKeystrokes(@NotNull Callback<automater.settings.Hotkey> onKeystrokeEnteredCallback)
     {
         if (_recording)
         {

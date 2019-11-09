@@ -6,7 +6,7 @@
 package automater.presenter;
 
 import automater.mvp.BasePresenterDelegate;
-import automater.mvp.BasePresenter;
+import automater.mvp.BasePresenter.OpenMacroPresenter;
 import automater.storage.GeneralStorage;
 import automater.storage.MacroStorage;
 import automater.ui.viewcontroller.RootViewController;
@@ -26,30 +26,7 @@ import java.util.List;
  *
  * @author Bytevi
  */
-public interface OpenMacroPresenter extends BasePresenter {
-    // Navigation
-    public void onSwitchToRecordScreen();
-    
-    // Macro operations
-    public void openMacroAt(int index);
-    public void editMacroAt(int index);
-    public void deleteMacroAt(int index);
-    
-    // Factories
-    public static OpenMacroPresenter create(@NotNull RootViewController rootViewController)
-    {
-        return new OpenMacroPresenterStandard(rootViewController);
-    }
-}
-
-/**
- * Standard implementation for OpenMacroPresenter interface.
- * 
- * Use the OpenMacroPresenter factories to create an instance.
- *
- * @author Bytevi
- */
-class OpenMacroPresenterStandard implements OpenMacroPresenter {
+public class OpenMacroPresenterStandard implements OpenMacroPresenter {
     @NotNull private final RootViewController _rootViewController;
     @NotNull private BasePresenterDelegate _delegate;
     

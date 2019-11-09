@@ -5,15 +5,16 @@
  */
 package automater.ui.viewcontroller;
 
-import automater.presenter.EditMacroPresenter;
-import automater.presenter.OpenMacroPresenter;
-import automater.presenter.PlayMacroPresenter;
-import automater.presenter.RecordMacroPresenter;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.work.model.Macro;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import automater.mvp.BasePresenter.*;
+import automater.presenter.EditMacroPresenterStandard;
+import automater.presenter.OpenMacroPresenterStandard;
+import automater.presenter.PlayMacroPresenterStandard;
+import automater.presenter.RecordMacroPresenterStandard;
 
 /**
  * Root view controller responsible for picking which view controller will be
@@ -29,7 +30,7 @@ public class PrimaryViewContoller implements RootViewController {
     @Nullable private OpenMacroViewController _openMacroViewController;
     @Nullable private OpenMacroPresenter _openMacroPresenter;
     @Nullable private RecordMacroViewController _recordMacroViewController;
-    @Nullable private RecordMacroPresenter _recordMacroPresenter;
+    @Nullable private RecordMacroPresenterStandard _recordMacroPresenter;
     
     public PrimaryViewContoller()
     {
@@ -99,7 +100,7 @@ public class PrimaryViewContoller implements RootViewController {
         
         if (playViewControllerStart)
         {
-            _openMacroPresenter = OpenMacroPresenter.create(this);
+            _openMacroPresenter = new OpenMacroPresenterStandard(this);
             OpenMacroViewController vc = new OpenMacroViewController(_openMacroPresenter);
             _openMacroViewController = vc;
             _openMacroPresenter.setDelegate(vc);
@@ -130,7 +131,7 @@ public class PrimaryViewContoller implements RootViewController {
         
         if (recordViewControllerStart)
         {
-            _recordMacroPresenter = RecordMacroPresenter.create(this);
+            _recordMacroPresenter = new RecordMacroPresenterStandard(this);
             RecordMacroViewController vc = new RecordMacroViewController(_recordMacroPresenter);
             _recordMacroViewController = vc;
             _recordMacroPresenter.setDelegate(vc);
@@ -157,7 +158,7 @@ public class PrimaryViewContoller implements RootViewController {
     
     private void switchScreenToPlay(@NotNull Macro macro)
     {
-        PlayMacroPresenter presenter = PlayMacroPresenter.create(this, macro);
+        PlayMacroPresenterStandard presenter = new PlayMacroPresenterStandard(this, macro);
         PlayMacroViewController vc = new PlayMacroViewController(presenter);
         presenter.setDelegate(vc);
         
@@ -175,7 +176,7 @@ public class PrimaryViewContoller implements RootViewController {
     
     private void switchScreenToEdit(@NotNull Macro macro)
     {
-        EditMacroPresenter presenter = EditMacroPresenter.create(this, macro);
+        EditMacroPresenter presenter = new EditMacroPresenterStandard(this, macro);
         EditMacroViewController vc = new EditMacroViewController(presenter);
         presenter.setDelegate(vc);
         

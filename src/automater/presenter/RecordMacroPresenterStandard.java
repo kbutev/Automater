@@ -6,7 +6,7 @@
 package automater.presenter;
 
 import automater.mvp.BasePresenterDelegate;
-import automater.mvp.BasePresenter;
+import automater.mvp.BasePresenter.RecordMacroPresenter;
 import automater.TextValue;
 import automater.recorder.BaseRecorderListener;
 import automater.recorder.Recorder;
@@ -46,31 +46,7 @@ import java.util.List;
  *
  * @author Bytevi
  */
-public interface RecordMacroPresenter extends BasePresenter {
-    // Navigation
-    public void onSwitchToPlayScreen();
-    
-    // Recording operations
-    public void onStartRecording();
-    public void onStopRecording();
-    public void onSaveRecording(@NotNull String name, @NotNull String description);
-    public void onRecordingSavedSuccessufllyClosed();
-    
-    // Factories
-    public static RecordMacroPresenter create(@NotNull RootViewController rootViewController)
-    {
-        return new RecordMacroPresenterStandard(rootViewController);
-    }
-}
-
-/**
- * Standard implementation for RecordMacroPresenter interface.
- * 
- * Use the RecordMacroPresenter factories to create an instance.
- *
- * @author Bytevi
- */
-class RecordMacroPresenterStandard implements RecordMacroPresenter, BaseRecorderListener, RecorderHotkeyListener {
+public class RecordMacroPresenterStandard implements RecordMacroPresenter, BaseRecorderListener, RecorderHotkeyListener {
     @NotNull private final RootViewController _rootViewController;
     @Nullable private BasePresenterDelegate _delegate;
     

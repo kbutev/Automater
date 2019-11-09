@@ -7,7 +7,7 @@ package automater.ui.viewcontroller;
 
 import automater.TextValue;
 import automater.mvp.BasePresenterDelegate;
-import automater.presenter.PlayMacroPresenter;
+import automater.mvp.BasePresenter.PlayMacroPresenter;
 import automater.storage.PreferencesStorageValues;
 import automater.ui.view.PlayMacroForm;
 import automater.ui.view.PlayMacroOptionsDialog;

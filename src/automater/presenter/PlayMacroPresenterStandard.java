@@ -6,7 +6,7 @@
 package automater.presenter;
 
 import automater.mvp.BasePresenterDelegate;
-import automater.mvp.BasePresenter;
+import automater.mvp.BasePresenter.PlayMacroPresenter;
 import automater.TextValue;
 import automater.recorder.Recorder;
 import automater.recorder.RecorderHotkeyListener;
@@ -35,30 +35,7 @@ import java.util.Date;
  *
  * @author Bytevi
  */
-public interface PlayMacroPresenter extends BasePresenter {
-    // Navigation
-    public void navigateBack();
-    
-    // Play macro operations
-    public void play();
-    public void stop();
-    public void setOptionValues(@NotNull PreferencesStorageValues values);
-    
-    // Factories
-    public static PlayMacroPresenter create(@NotNull RootViewController rootViewController, @NotNull Macro macro)
-    {
-        return new PlayMacroPresenterStandard(rootViewController, macro);
-    }
-}
-
-/**
- * Standard implementation for PlayMacroPresenter interface.
- * 
- * Use the PlayMacroPresenter factories to create an instance.
- *
- * @author Bytevi
- */
-class PlayMacroPresenterStandard implements PlayMacroPresenter, ExecutorListener, RecorderHotkeyListener {
+public class PlayMacroPresenterStandard implements PlayMacroPresenter, ExecutorListener, RecorderHotkeyListener {
     @NotNull private final RootViewController _rootViewController;
     @Nullable private BasePresenterDelegate _delegate;
     
