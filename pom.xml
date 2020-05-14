@@ -17,6 +17,7 @@
         <version>0.7.0</version> 
     </dependency>
     
+    <!-- Java native -->
     <dependency>
 	<groupId>net.java.dev.jna</groupId>
 	<artifactId>jna-platform</artifactId>
@@ -48,6 +49,17 @@
     </resource>
     </resources>
     <plugins>
+      <!-- Include source code -->
+      <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-eclipse-plugin</artifactId>
+            <version>1.0</version>
+            <configuration>
+                <downloadSources>true</downloadSources>
+                <downloadJavadocs>true</downloadJavadocs>
+            </configuration>
+      </plugin>
+        
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.0</version>
