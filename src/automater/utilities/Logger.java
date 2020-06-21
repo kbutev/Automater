@@ -106,23 +106,13 @@ public class Logger {
     private static <T> @NotNull String generateText(T origin, @Nullable String prefix, @Nullable String text)
     {
         String reportingClass = origin != null ? origin.getClass().getSimpleName() : "Static";
-        String textPrefix = generatePrefix(prefix);
         
-        if (!textPrefix.isEmpty())
-        {
-            textPrefix = textPrefix + " " + reportingClass;
-        }
-        else
-        {
-            textPrefix = reportingClass;
-        }
-        
-        return generateText(textPrefix, text);
+        return generateText(reportingClass, text);
     }
     
     private static <T> @NotNull String generateText(@Nullable String prefix, @Nullable String text)
     {
-        String textPrefix = generatePrefix(prefix);
+        String textPrefix = generateTimestamp(prefix);
         
         if (textPrefix.isEmpty())
         {
@@ -132,7 +122,7 @@ public class Logger {
         return textPrefix + ": " + text;
     }
     
-    private static @NotNull String generatePrefix(@Nullable String prefix)
+    private static @NotNull String generateTimestamp(@Nullable String prefix)
     {
         if (!DISPLAY_TIMESTAMPS || prefix == null)
         {
