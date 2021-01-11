@@ -5,8 +5,12 @@
 package automater.ui.view;
 
 import automater.utilities.Callback;
+import automater.utilities.TimeType;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import org.jetbrains.annotations.NotNull;
 
 /**
  *
@@ -15,6 +19,27 @@ import javax.swing.event.DocumentListener;
 public class EditMacroActionWaitPanel extends javax.swing.JPanel {
     // UI callbacks
     public Callback<String> onWaitTimeCallback = Callback.createDoNothing();
+    public Callback<TimeType> onTimeTypeCallback = Callback.createDoNothing();
+    
+    public void setTimeFromMS(long ms, @NotNull String timeTypeString) {
+        timeValueInMS = ms;
+        timeTypeCombo.setSelectedItem(TimeType.fromStringValue(timeTypeString).stringValue());
+        String text = currentSelectedTimeType().asStringFromMS(ms);
+        waitField.setText(text);
+    }
+    
+    public TimeType currentSelectedTimeType() {
+        try {
+            String item = (String) timeTypeCombo.getSelectedItem();
+            return TimeType.fromStringValue(item);
+        } catch (Exception exc) {
+            throw new RuntimeException("Invalid time type");
+        }
+    }
+    
+    public long getCurrentTimeInMS() {
+        return currentSelectedTimeType().asMilliseconds(waitField.getText());
+    }
 
     /**
      * Creates new form EditMacroActionWaitPanel
@@ -35,8 +60,9 @@ public class EditMacroActionWaitPanel extends javax.swing.JPanel {
 
         waitLabel = new javax.swing.JLabel();
         waitField = new javax.swing.JTextField();
+        timeTypeCombo = new javax.swing.JComboBox<>();
 
-        waitLabel.setText("Wait (ms)");
+        waitLabel.setText("Wait interval");
 
         waitField.setText("0");
 
@@ -46,10 +72,12 @@ public class EditMacroActionWaitPanel extends javax.swing.JPanel {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(waitLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(waitLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(waitField, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(250, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(timeTypeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(122, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -57,7 +85,8 @@ public class EditMacroActionWaitPanel extends javax.swing.JPanel {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(waitLabel)
-                    .addComponent(waitField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(waitField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(timeTypeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -82,10 +111,32 @@ public class EditMacroActionWaitPanel extends javax.swing.JPanel {
         };
         
         waitField.getDocument().addDocumentListener(listener);
+        
+        for (TimeType t : TimeType.listOfSimpleTypes()) {
+            timeTypeCombo.addItem(t.stringValue());
+        }
+        
+        timeTypeCombo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String selectedType = (String) timeTypeCombo.getSelectedItem();
+                    setTimeFromMS(timeValueInMS, selectedType);
+                    
+                    TimeType timeType = TimeType.fromStringValue(selectedType);
+                    onTimeTypeCallback.perform(timeType);
+                } catch (Exception exc) {
+                    
+                }
+            }
+        });
     }
+    
+    private long timeValueInMS = 0;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> timeTypeCombo;
     public javax.swing.JTextField waitField;
-    public javax.swing.JLabel waitLabel;
+    private javax.swing.JLabel waitLabel;
     // End of variables declaration//GEN-END:variables
 }

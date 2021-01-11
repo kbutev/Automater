@@ -23,6 +23,7 @@ public interface BaseMutableAction {
     public @NotNull BaseMutableActionProperty getSecondProperty();
     
     public long getTimestamp();
+    public long getOriginalTimestamp();
     public void setTimestamp(long timestamp);
     
     public @NotNull Description getDescription();

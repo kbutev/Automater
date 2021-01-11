@@ -75,7 +75,7 @@ public enum TextValue {
     EditAction_DialogTitle, EditAction_CancelButtonTitle, EditAction_SaveButtonTitle,
     EditAction_StatusDefault, EditAction_StatusListeningToHotkey, EditAction_StatusError,
     EditAction_Time,
-    EditAction_Wait,
+    EditAction_Wait, EditAction_WaitTimeType,
     EditAction_Key, EditAction_Press,
     EditAction_X, EditAction_Y, EditAction_FinalX, EditAction_FinalY,
     EditAction_Command,
@@ -218,7 +218,7 @@ public enum TextValue {
         
         // Input descriptions
         put(Input_DoNothing, "DoNothing");   
-        put(Input_Wait, "Wait for %@ms");   
+        put(Input_Wait, "Wait for %@");   
         put(Input_KeyboardPress, "KeyboardPress '%@'");   
         put(Input_KeyboardRelease, "KeyboardRelease '%@'");   
         put(Input_MousePress, "MousePress '%@'");   
@@ -314,8 +314,9 @@ public enum TextValue {
         put(EditAction_StatusDefault, "");
         put(EditAction_StatusListeningToHotkey, "Enter hotkey...");
         put(EditAction_StatusError, "Error: %@");
-        put(EditAction_Time, "Time (ms)");
-        put(EditAction_Wait, "Wait (ms)");
+        put(EditAction_Time, "Time position");
+        put(EditAction_Wait, "Wait interval");
+        put(EditAction_WaitTimeType, "Time type");
         put(EditAction_Key, "Key");
         put(EditAction_Press, "Press");
         put(EditAction_X, "X");

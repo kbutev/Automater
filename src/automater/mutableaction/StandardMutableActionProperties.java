@@ -6,6 +6,7 @@ package automater.mutableaction;
 
 import automater.utilities.CollectionUtilities;
 import automater.utilities.StringFormatting;
+import automater.utilities.TimeType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
@@ -39,6 +40,11 @@ public class StandardMutableActionProperties {
     public static BaseMutableActionProperty createString(@NotNull String name, @NotNull String value, int min, int max)
     {
         return new StandartMutableActionPropertyString(name, value, min, max);
+    }
+    
+     public static BaseMutableActionProperty createTime(@NotNull String name, long ms, @NotNull TimeType defaultType)
+    {
+        return new StandartMutableActionPropertyTime(name, ms, defaultType);
     }
     
     public static BaseMutableActionProperty createHotkey(@NotNull String name, @NotNull String value, boolean modifiersAllowed)
@@ -215,6 +221,47 @@ class StandartMutableActionPropertyString extends StandartMutableActionPropertyG
     @Override
     public int getMinLength() {
         return min;
+    }
+}
+
+class StandartMutableActionPropertyTime extends StandartMutableActionPropertyGeneric implements MutableActionPropertyTime {
+    final long ms;
+    final TimeType type;
+    
+    StandartMutableActionPropertyTime(@NotNull String name, long ms, TimeType type)
+    {
+        super(name, Long.toString(ms));
+        
+        this.ms = ms;
+        this.type = type;
+    }
+    
+    @Override
+    public @Nullable String getInvalidError() {
+        String string = getValue();
+        
+        if (type == TimeType.milliseconds)
+        {
+            if (!StringFormatting.isStringANonNegativeInt(string)) {
+                return "Must be non-negative";
+            }
+        }
+        
+        if (!StringFormatting.isStringANonNegativeDouble(string)) {
+            return "Must be non-negative";
+        }
+        
+        return null;
+    }
+    
+    @Override
+    public long getTimeInMS() {
+        return ms;
+    }
+    
+    @Override
+    public @NotNull TimeType getTimeType() {
+        return type;
     }
 }
 

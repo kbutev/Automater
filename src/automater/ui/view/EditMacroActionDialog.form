@@ -39,13 +39,19 @@
                               <Component id="cancelButton" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="timeLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="timeField" min="-2" pref="63" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Group type="102" attributes="0">
+                                      <Component id="timeLabel" min="-2" pref="84" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="timeField" min="-2" pref="73" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Component id="typesDropdown" min="-2" pref="161" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="timeTypeCombo" min="-2" pref="80" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="typesDropdown" alignment="0" min="-2" pref="161" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="0" pref="219" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="133" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -61,6 +67,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="timeLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="timeField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="timeTypeCombo" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
               <Component id="panel" min="-2" max="-2" attributes="0"/>
@@ -138,8 +145,19 @@
     </Component>
     <Component class="javax.swing.JLabel" name="timeLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Time"/>
+        <Property name="text" type="java.lang.String" value="Time position"/>
+        <Property name="toolTipText" type="java.lang.String" value="Time at which this action is performed"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="timeTypeCombo">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="0"/>
+        </Property>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+      </AuxValues>
     </Component>
   </SubComponents>
 </Form>

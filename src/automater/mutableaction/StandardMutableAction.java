@@ -18,6 +18,7 @@ import automater.input.InputSystemCommand;
 import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.utilities.StringFormatting;
+import automater.utilities.TimeType;
 import automater.work.Action;
 import automater.work.BaseAction;
 import org.jetbrains.annotations.NotNull;
@@ -39,6 +40,7 @@ public class StandardMutableAction implements BaseMutableAction {
     
     protected MutableActionType type;
     protected long timestamp;
+    protected final long originalTimestamp;
     @NotNull protected ArrayList<BaseMutableActionProperty> properties = new ArrayList<>();
     
     public static StandardMutableAction createDoNothing(long timestamp)
@@ -136,6 +138,7 @@ public class StandardMutableAction implements BaseMutableAction {
     {
         this.type = type;
         this.timestamp = timestamp;
+        this.originalTimestamp = timestamp;
     }
     
     @Override
@@ -161,6 +164,11 @@ public class StandardMutableAction implements BaseMutableAction {
     @Override
     public long getTimestamp() {
         return timestamp;
+    }
+    
+    @Override
+    public long getOriginalTimestamp() {
+        return originalTimestamp;
     }
 
     @Override
@@ -218,8 +226,11 @@ class StandartMutableActionWait extends StandardMutableAction implements InputDo
         super(MutableActionType.Wait, timestamp);
         
         String name = TextValue.getText(TextValue.EditAction_Wait);
+        String waitTimeType = TextValue.getText(TextValue.EditAction_WaitTimeType);
+        TimeType defaultTimeType = TimeType.seconds;
         
-        properties.add(StandardMutableActionProperties.createNonNegativeInt(name, wait, MAX_WAIT_VALUE));
+        properties.add(StandardMutableActionProperties.createTime(name, wait, defaultTimeType));
+        properties.add(StandardMutableActionProperties.createString(waitTimeType, defaultTimeType.name(), 10000));
     }
     
     @Override
@@ -236,15 +247,14 @@ class StandartMutableActionWait extends StandardMutableAction implements InputDo
     
     @Override
     public BaseAction buildAction() throws Exception {
-        String value = getFirstProperty().getValue();
+        String timeInMS = getFirstProperty().getValue();
         
-        if (!StringFormatting.isStringANonNegativeInt(value))
+        if (!StringFormatting.isStringANonNegativeInt(timeInMS))
         {
             Errors.throwInvalidArgument("Enter a non-negative wait int");
         }
         
-        long wait = Long.parseLong(value);
-        return Action.createWait(timestamp, wait);
+        return Action.createWait(timestamp, Long.parseLong(timeInMS));
     }
 
     @Override

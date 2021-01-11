@@ -19,6 +19,9 @@ import javax.swing.event.ListDataListener;
 import automater.mutableaction.BaseMutableAction;
 import automater.mutableaction.BaseMutableActionProperty;
 import automater.mutableaction.MutableActionPropertyList;
+import automater.utilities.TimeType;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -36,6 +39,8 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     
     public SimpleCallback onHotkeyButtonCallback = SimpleCallback.createDoNothing();
     public SimpleCallback onPressCheckCallback = SimpleCallback.createDoNothing();
+    
+    public TimeType defaultSelectedTimeType = TimeType.seconds;
     
     /**
      * Creates new form EditMacroActionDialog
@@ -62,6 +67,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         statusLabel = new javax.swing.JLabel();
         timeField = new javax.swing.JTextField();
         timeLabel = new javax.swing.JLabel();
+        timeTypeCombo = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -106,7 +112,8 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
 
         timeField.setText("0");
 
-        timeLabel.setText("Time");
+        timeLabel.setText("Time position");
+        timeLabel.setToolTipText("Time at which this action is performed");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -124,11 +131,15 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(cancelButton))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(timeLabel)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(timeField, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(typesDropdown, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 219, Short.MAX_VALUE)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(timeField, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(typesDropdown, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(timeTypeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 133, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -139,7 +150,8 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(timeLabel)
-                    .addComponent(timeField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(timeField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(timeTypeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -226,6 +238,12 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         statusLabel.setText(TextValue.getText(TextValue.EditAction_StatusDefault));
         
         timeLabel.setText(TextValue.getText(TextValue.EditAction_Time));
+        
+        for (TimeType t : TimeType.listOfSimpleTypes()) {
+            timeTypeCombo.addItem(t.stringValue());
+        }
+        
+        timeTypeCombo.setSelectedItem(defaultSelectedTimeType.stringValue());
     }
     
     // # Public
@@ -326,8 +344,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
             return;
         }
         
-        // Time
-        timeField.setText(String.valueOf(_mutableAction.getTimestamp()));
+        timeField.setText(timestampStoredInAsAppropriateString());
         timeField.setEditable(true);
         
         DocumentListener listener = new DocumentListener() {
@@ -348,6 +365,15 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         };
         
         timeField.getDocument().addDocumentListener(listener);
+        
+        timeTypeCombo.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String newTime = currentTimeTypeSelected().asStringFromMS(_mutableAction.getOriginalTimestamp());
+                timeField.setText(newTime);
+                onAnyValueChanged();
+            }
+        });
         
         // Setup state
         updateState();
@@ -420,6 +446,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         
         // Properties
         BaseMutableActionProperty first = _mutableAction.getFirstProperty();
+        BaseMutableActionProperty second = _mutableAction.getSecondProperty();
         
         // Setup view
         EditMacroActionWaitPanel view = new EditMacroActionWaitPanel();
@@ -427,8 +454,22 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         view.onWaitTimeCallback = new Callback<String>() {
             @Override
             public void perform(String argument) {
-                String newValue = argument;
-                setActionFirstValue(newValue);
+                if (argument.isEmpty()) {
+                    return;
+                }
+                
+                TimeType timeType = view.currentSelectedTimeType();
+                long ms = timeType.asMilliseconds(argument);
+                String msAsString = TimeType.milliseconds.asStringFromMS(ms);
+                setActionFirstValue(msAsString);
+                onPressCheckCallback.perform();
+            }
+        };
+        
+        view.onTimeTypeCallback = new Callback<TimeType>() {
+            @Override
+            public void perform(TimeType argument) {
+                setActionSecondValue(argument.name());
                 onPressCheckCallback.perform();
             }
         };
@@ -438,8 +479,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         panel.add(view, BorderLayout.NORTH);
         
         // Setup values and their labels
-        view.waitLabel.setText(first.getName());
-        view.waitField.setText(first.getValue());
+        view.setTimeFromMS(Long.parseLong(first.getValue()), second.getValue());
     }
     
     private void setupHotkeyPanel()
@@ -649,10 +689,18 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     private boolean isTimestampValid()
     {
         String timetamp = timeField.getText();
+        TimeType timeType = currentTimeType();
         
-        if (!StringFormatting.isStringANonNegativeInt(timetamp))
-        {
-            return false;
+        if (timeType == TimeType.milliseconds) {
+            if (!StringFormatting.isStringANonNegativeInt(timetamp))
+            {
+                return false;
+            }
+        } else {
+            if (!StringFormatting.isStringANonNegativeDouble(timetamp))
+            {
+                return false;
+            }
         }
         
         if (timetamp.length() > MAX_TIMESTAMP_VALUE_LENGTH)
@@ -732,10 +780,46 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         }
         
         // Update value
-        long timestamp = Long.parseLong(timeField.getText());
-        
-        _mutableAction.setTimestamp(timestamp);
+        _mutableAction.setTimestamp(timestampCurrentlyDisplayedAsMS());
         onAnyValueChanged();
+    }
+    
+    // Returns a string in the specified time type, based on the currently stored ms in mutable action.
+    private String timestampInAsAppropriateString(@NotNull TimeType type) {
+        // Get the timestamp from the action
+        // The action always stores it in milliseconds
+        String timestampString = String.valueOf(_mutableAction.getTimestamp());
+        long timestampMS = Long.parseLong(timestampString);
+        
+        // convert ms to most appropriate type
+        return type.asStringFromMS(timestampMS);
+    }
+    
+    // Returns a string in correct time type, based on the currently stored ms in mutable action.
+    private String timestampStoredInAsAppropriateString() {
+        String selectedItem = (String)timeTypeCombo.getSelectedItem();
+        TimeType type = TimeType.fromStringValue(selectedItem);
+        return timestampInAsAppropriateString(type);
+    }
+    
+    // Returns the text currently being displayed, in ms.
+    private long timestampCurrentlyDisplayedAsMS() {
+        String text = timeField.getText();
+        return currentTimeType().asMilliseconds(text);
+    }
+    
+    private TimeType currentTimeType() {
+        String selectedItem = (String)timeTypeCombo.getSelectedItem();
+        
+        try {
+            return TimeType.fromStringValue(selectedItem);
+        } catch (Exception e) {
+            throw new RuntimeException("Time type is invalid");
+        }
+    }
+    
+    private TimeType currentTimeTypeSelected() {
+        return TimeType.fromStringValue((String)timeTypeCombo.getSelectedItem());
     }
     
     private int _selectedTypeIndex = 0;
@@ -751,6 +835,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     private javax.swing.JLabel statusLabel;
     private javax.swing.JTextField timeField;
     private javax.swing.JLabel timeLabel;
+    private javax.swing.JComboBox<String> timeTypeCombo;
     private javax.swing.JComboBox<String> typesDropdown;
     // End of variables declaration//GEN-END:variables
 }
