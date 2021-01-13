@@ -7,6 +7,7 @@ package automater.mutableaction;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.StringFormatting;
 import automater.utilities.TimeType;
+import automater.utilities.TimeValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.List;
@@ -42,9 +43,9 @@ public class StandardMutableActionProperties {
         return new StandartMutableActionPropertyString(name, value, min, max);
     }
     
-     public static BaseMutableActionProperty createTime(@NotNull String name, long ms, @NotNull TimeType defaultType)
+     public static BaseMutableActionProperty createTime(@NotNull String name, @NotNull TimeValue time, @NotNull TimeType defaultType)
     {
-        return new StandartMutableActionPropertyTime(name, ms, defaultType);
+        return new StandartMutableActionPropertyTime(name, time, defaultType);
     }
     
     public static BaseMutableActionProperty createHotkey(@NotNull String name, @NotNull String value, boolean modifiersAllowed)
@@ -225,14 +226,14 @@ class StandartMutableActionPropertyString extends StandartMutableActionPropertyG
 }
 
 class StandartMutableActionPropertyTime extends StandartMutableActionPropertyGeneric implements MutableActionPropertyTime {
-    final long ms;
-    final TimeType type;
+    final @NotNull TimeValue time;
+    final @NotNull TimeType type;
     
-    StandartMutableActionPropertyTime(@NotNull String name, long ms, TimeType type)
+    StandartMutableActionPropertyTime(@NotNull String name, @NotNull TimeValue time, TimeType type)
     {
-        super(name, Long.toString(ms));
+        super(name, time.inMillisecondsAsString());
         
-        this.ms = ms;
+        this.time = time;
         this.type = type;
     }
     
@@ -256,7 +257,7 @@ class StandartMutableActionPropertyTime extends StandartMutableActionPropertyGen
     
     @Override
     public long getTimeInMS() {
-        return ms;
+        return time.inMilliseconds();
     }
     
     @Override

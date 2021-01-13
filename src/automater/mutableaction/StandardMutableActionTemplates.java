@@ -10,6 +10,7 @@ import automater.input.InputKeyClick;
 import automater.input.InputKeyValue;
 import automater.utilities.Description;
 import automater.utilities.FileSystem;
+import automater.utilities.TimeValue;
 import automater.work.Action;
 import automater.work.BaseAction;
 import org.jetbrains.annotations.NotNull;
@@ -53,7 +54,7 @@ public class StandardMutableActionTemplates {
     
     public static @Nullable StandardMutableAction buildTemplateWait(long timestamp)
     {
-        return new StandartMutableActionWait(timestamp, 0);
+        return new StandartMutableActionWait(timestamp, TimeValue.zero());
     }
     
     public static @Nullable StandardMutableAction buildTemplateKeyboardClick(long timestamp)

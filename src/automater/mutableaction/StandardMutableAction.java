@@ -19,6 +19,7 @@ import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.utilities.StringFormatting;
 import automater.utilities.TimeType;
+import automater.utilities.TimeValue;
 import automater.work.Action;
 import automater.work.BaseAction;
 import org.jetbrains.annotations.NotNull;
@@ -70,8 +71,8 @@ public class StandardMutableAction implements BaseMutableAction {
             }
             else
             {
-                int duration = (int)input.getDuration();
-                a = new StandartMutableActionWait(timestamp, duration);
+                long duration = input.getDuration();
+                a = new StandartMutableActionWait(timestamp, TimeValue.fromMilliseconds(duration));
                 return a;
             }
             
@@ -221,7 +222,7 @@ class StandartMutableActionDoNothing extends StandardMutableAction implements In
 }
 
 class StandartMutableActionWait extends StandardMutableAction implements InputDoNothing {
-    public StandartMutableActionWait(long timestamp, int wait)
+    public StandartMutableActionWait(long timestamp, @NotNull TimeValue time)
     {
         super(MutableActionType.Wait, timestamp);
         
@@ -229,7 +230,7 @@ class StandartMutableActionWait extends StandardMutableAction implements InputDo
         String waitTimeType = TextValue.getText(TextValue.EditAction_WaitTimeType);
         TimeType defaultTimeType = TimeType.seconds;
         
-        properties.add(StandardMutableActionProperties.createTime(name, wait, defaultTimeType));
+        properties.add(StandardMutableActionProperties.createTime(name, time, defaultTimeType));
         properties.add(StandardMutableActionProperties.createString(waitTimeType, defaultTimeType.name(), 10000));
     }
     

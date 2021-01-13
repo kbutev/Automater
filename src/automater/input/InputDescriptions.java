@@ -8,6 +8,7 @@ import automater.TextValue;
 import automater.utilities.Description;
 import automater.utilities.FileSystem;
 import automater.utilities.TimeType;
+import automater.utilities.TimeValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.io.Serializable;
@@ -18,13 +19,12 @@ import java.io.Serializable;
  * @author Bytevi
  */
 public class InputDescriptions {
-    private static TimeType TIMESTAMP_TIME_TYPE = TimeType.milliseconds;
+    private static TimeType TIMESTAMP_TIME_TYPE = TimeType.seconds;
     
     public static Description getDoNothingDescription(long timestamp)
     {
         String name = "DoNothing";
-        String timeStampMSAsString = String.valueOf(timestamp);
-        String time = String.format("%.1f", TIMESTAMP_TIME_TYPE.asSeconds(timeStampMSAsString));
+        String time = String.format("%s", TIMESTAMP_TIME_TYPE.asStringFromTime(TimeValue.fromMilliseconds(timestamp)));
         String description = TextValue.getText(TextValue.Input_DoNothing);
         String verbose = time + " " + description;
         String tooltip = description;
@@ -35,14 +35,8 @@ public class InputDescriptions {
     public static Description getWaitDescription(long timestamp, long wait)
     {
         String name = "Wait";
-        String timestampMSAsString = String.valueOf(timestamp);
-        String time = String.format("%.1f", TIMESTAMP_TIME_TYPE.asSeconds(timestampMSAsString));
-        
-        long waitMS = Long.parseLong(String.valueOf(wait));
-        TimeType appropriateWaitTimeType = TimeType.appropriateTypeForMS(waitMS);
-        double waitInterval = TimeType.convertMSToValue(waitMS, appropriateWaitTimeType);
-        String waitString = String.format("%.1f%s", waitInterval, appropriateWaitTimeType.stringValue());
-        
+        String time = String.format("%s", TIMESTAMP_TIME_TYPE.asStringFromTime(TimeValue.fromMilliseconds(timestamp)));
+        String waitString = TimeValue.fromMilliseconds(wait).toString();
         String description = TextValue.getText(TextValue.Input_Wait, waitString);
         String verbose = time + " " + description;
         String tooltip = description;
@@ -52,8 +46,7 @@ public class InputDescriptions {
     
     public static Description getKeyboardInputDescription(long timestamp, boolean press, @NotNull InputKey key)
     {
-        String timeStampMSAsString = String.valueOf(timestamp);
-        String time = String.format("%.1f", TIMESTAMP_TIME_TYPE.asSeconds(timeStampMSAsString));
+        String time = String.format("%s", TIMESTAMP_TIME_TYPE.asStringFromTime(TimeValue.fromMilliseconds(timestamp)));
         
         if (press)
         {
@@ -75,8 +68,7 @@ public class InputDescriptions {
     
     public static Description getMouseInputDescription(long timestamp, boolean press, @NotNull InputKey key)
     {
-        String timeStampMSAsString = String.valueOf(timestamp);
-        String time = String.format("%.1f",TIMESTAMP_TIME_TYPE.asSeconds(timeStampMSAsString));
+        String time = String.format("%s", TIMESTAMP_TIME_TYPE.asStringFromTime(TimeValue.fromMilliseconds(timestamp)));
         
         if (press)
         {
@@ -99,8 +91,7 @@ public class InputDescriptions {
     public static Description getMouseMoveDescription(long timestamp, int x, int y)
     {
         String name = "MouseMove";
-        String timeStampMSAsString = String.valueOf(timestamp);
-        String time = String.format("%.1f", TIMESTAMP_TIME_TYPE.asSeconds(timeStampMSAsString));
+        String time = String.format("%s", TIMESTAMP_TIME_TYPE.asStringFromTime(TimeValue.fromMilliseconds(timestamp)));
         String description = TextValue.getText(TextValue.Input_MouseMove, String.valueOf(x), String.valueOf(y));
         String verbose = time + " " + description;
         String tooltip = description;
@@ -114,8 +105,7 @@ public class InputDescriptions {
         int y = last.getY();
         
         String name = "MouseMotion";
-        String timeStampMSAsString = String.valueOf(timestamp);
-        String time = String.format("%.1f", TIMESTAMP_TIME_TYPE.asSeconds(timeStampMSAsString));
+        String time = String.format("%s", TIMESTAMP_TIME_TYPE.asStringFromTime(TimeValue.fromMilliseconds(timestamp)));
         String description = TextValue.getText(TextValue.Input_MouseMotion, String.valueOf(numberOfMovements), String.valueOf(x), String.valueOf(y));
         String verbose = time + " " + description;
         String tooltip = description;
@@ -126,8 +116,7 @@ public class InputDescriptions {
     public static Description getMouseWheelDescription(long timestamp, int value)
     {
         String name = "MouseWheel";
-        String timeStampMSAsString = String.valueOf(timestamp);
-        String time = String.format("%.1f", TIMESTAMP_TIME_TYPE.asSeconds(timeStampMSAsString));
+        String time = String.format("%s", TIMESTAMP_TIME_TYPE.asStringFromTime(TimeValue.fromMilliseconds(timestamp)));
         String description = TextValue.getText(TextValue.Input_MouseWheel, String.valueOf(value));
         String verbose = time + " " + description;
         String tooltip = description;
@@ -138,8 +127,7 @@ public class InputDescriptions {
     public static Description getSystemCommand(long timestamp, @NotNull String value)
     {
         String name = "SystemCommand";
-        String timeStampMSAsString = String.valueOf(timestamp);
-        String time = String.format("%.1f", TIMESTAMP_TIME_TYPE.asSeconds(timeStampMSAsString));
+        String time = String.format("%s", TIMESTAMP_TIME_TYPE.asStringFromTime(TimeValue.fromMilliseconds(timestamp)));
         String description = TextValue.getText(TextValue.Input_SystemCommand, value);
         String verbose = time + " " + description;
         String tooltip = description;
@@ -152,8 +140,7 @@ public class InputDescriptions {
         String fileName = FileSystem.createFileNameFromFilePath(path);
         
         String name = "Screenshot";
-        String timeStampMSAsString = String.valueOf(timestamp);
-        String time = String.format("%.1f", TIMESTAMP_TIME_TYPE.asSeconds(timeStampMSAsString));
+        String time = String.format("%s", TIMESTAMP_TIME_TYPE.asStringFromTime(TimeValue.fromMilliseconds(timestamp)));
         String description = TextValue.getText(TextValue.Input_Screenshot, fileName);
         String verbose = time + " " + description;
         String tooltip = description;

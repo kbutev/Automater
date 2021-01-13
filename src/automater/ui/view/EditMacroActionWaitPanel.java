@@ -6,6 +6,7 @@ package automater.ui.view;
 
 import automater.utilities.Callback;
 import automater.utilities.TimeType;
+import automater.utilities.TimeValue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.event.DocumentEvent;
@@ -21,10 +22,10 @@ public class EditMacroActionWaitPanel extends javax.swing.JPanel {
     public Callback<String> onWaitTimeCallback = Callback.createDoNothing();
     public Callback<TimeType> onTimeTypeCallback = Callback.createDoNothing();
     
-    public void setTimeFromMS(long ms, @NotNull String timeTypeString) {
-        timeValueInMS = ms;
+    public void setTime(@NotNull TimeValue time, @NotNull String timeTypeString) {
+        timeValue = time;
         timeTypeCombo.setSelectedItem(TimeType.fromStringValue(timeTypeString).stringValue());
-        String text = currentSelectedTimeType().asStringFromMS(ms);
+        String text = currentSelectedTimeType().asStringFromTime(time);
         waitField.setText(text);
     }
     
@@ -37,10 +38,6 @@ public class EditMacroActionWaitPanel extends javax.swing.JPanel {
         }
     }
     
-    public long getCurrentTimeInMS() {
-        return currentSelectedTimeType().asMilliseconds(waitField.getText());
-    }
-
     /**
      * Creates new form EditMacroActionWaitPanel
      */
@@ -121,7 +118,7 @@ public class EditMacroActionWaitPanel extends javax.swing.JPanel {
             public void actionPerformed(ActionEvent e) {
                 try {
                     String selectedType = (String) timeTypeCombo.getSelectedItem();
-                    setTimeFromMS(timeValueInMS, selectedType);
+                    setTime(timeValue, selectedType);
                     
                     TimeType timeType = TimeType.fromStringValue(selectedType);
                     onTimeTypeCallback.perform(timeType);
@@ -132,7 +129,7 @@ public class EditMacroActionWaitPanel extends javax.swing.JPanel {
         });
     }
     
-    private long timeValueInMS = 0;
+    private @NotNull TimeValue timeValue = TimeValue.zero();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> timeTypeCombo;

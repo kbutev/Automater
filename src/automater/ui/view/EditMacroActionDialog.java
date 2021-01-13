@@ -20,6 +20,7 @@ import automater.mutableaction.BaseMutableAction;
 import automater.mutableaction.BaseMutableActionProperty;
 import automater.mutableaction.MutableActionPropertyList;
 import automater.utilities.TimeType;
+import automater.utilities.TimeValue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import org.jetbrains.annotations.NotNull;
@@ -344,7 +345,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
             return;
         }
         
-        timeField.setText(timestampStoredInAsAppropriateString());
+        timeField.setText(originalTimestampAsString());
         timeField.setEditable(true);
         
         DocumentListener listener = new DocumentListener() {
@@ -369,8 +370,9 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         timeTypeCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String newTime = currentTimeTypeSelected().asStringFromMS(_mutableAction.getOriginalTimestamp());
-                timeField.setText(newTime);
+                // When we change the type we convert the time typed in the box.
+                // We will use the original timestamp, as opposed to the one currently typed.
+                timeField.setText(originalTimestampAsString());
                 onAnyValueChanged();
             }
         });
@@ -458,10 +460,9 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
                     return;
                 }
                 
+                
                 TimeType timeType = view.currentSelectedTimeType();
-                long ms = timeType.asMilliseconds(argument);
-                String msAsString = TimeType.milliseconds.asStringFromMS(ms);
-                setActionFirstValue(msAsString);
+                setActionFirstValue(timeType.asTimeFromString(argument).inMillisecondsAsString());
                 onPressCheckCallback.perform();
             }
         };
@@ -479,7 +480,9 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         panel.add(view, BorderLayout.NORTH);
         
         // Setup values and their labels
-        view.setTimeFromMS(Long.parseLong(first.getValue()), second.getValue());
+        String firstValue = first.getValue();
+        long timeValueMS = Long.parseLong(firstValue);
+        view.setTime(TimeValue.fromMilliseconds(timeValueMS), second.getValue());
     }
     
     private void setupHotkeyPanel()
@@ -780,32 +783,8 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         }
         
         // Update value
-        _mutableAction.setTimestamp(timestampCurrentlyDisplayedAsMS());
+        _mutableAction.setTimestamp(currentTimeTypedInField().inMilliseconds());
         onAnyValueChanged();
-    }
-    
-    // Returns a string in the specified time type, based on the currently stored ms in mutable action.
-    private String timestampInAsAppropriateString(@NotNull TimeType type) {
-        // Get the timestamp from the action
-        // The action always stores it in milliseconds
-        String timestampString = String.valueOf(_mutableAction.getTimestamp());
-        long timestampMS = Long.parseLong(timestampString);
-        
-        // convert ms to most appropriate type
-        return type.asStringFromMS(timestampMS);
-    }
-    
-    // Returns a string in correct time type, based on the currently stored ms in mutable action.
-    private String timestampStoredInAsAppropriateString() {
-        String selectedItem = (String)timeTypeCombo.getSelectedItem();
-        TimeType type = TimeType.fromStringValue(selectedItem);
-        return timestampInAsAppropriateString(type);
-    }
-    
-    // Returns the text currently being displayed, in ms.
-    private long timestampCurrentlyDisplayedAsMS() {
-        String text = timeField.getText();
-        return currentTimeType().asMilliseconds(text);
     }
     
     private TimeType currentTimeType() {
@@ -818,8 +797,22 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         }
     }
     
-    private TimeType currentTimeTypeSelected() {
-        return TimeType.fromStringValue((String)timeTypeCombo.getSelectedItem());
+    // The timestamp that is current stored in the mutable action.
+    private @NotNull TimeValue currentTimestampStored() {
+        String timestampString = String.valueOf(_mutableAction.getTimestamp());
+        TimeType type = currentTimeType();
+        return type.asTimeFromString(timestampString);
+    }
+    
+    // Converts the currently typed string in the text field, to a time value.
+    private @NotNull TimeValue currentTimeTypedInField() {
+        String text = timeField.getText();
+        return currentTimeType().asTimeFromString(text);
+    }
+    
+    private @NotNull String originalTimestampAsString() {
+        TimeValue newTime = TimeValue.fromMilliseconds(_mutableAction.getOriginalTimestamp());
+        return currentTimeType().asStringFromTime(newTime);
     }
     
     private int _selectedTypeIndex = 0;

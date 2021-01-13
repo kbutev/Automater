@@ -5,20 +5,38 @@
 package automater.utilities;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 public enum TimeType {
     milliseconds, seconds, minutes, hours, days;
     
+    // Basic construction method.
+    // Use this over the built-in valueOf() method.
+    static public TimeType fromStringValue(String value) {
+        switch (value) {
+            case "ms":
+                return TimeType.milliseconds;
+            case "sec":
+                return TimeType.seconds;
+            case "min":
+                return TimeType.minutes;
+            case "hours":
+                return TimeType.hours;
+            case "days":
+                return TimeType.days;
+            default:
+                return TimeType.valueOf(value);
+        }
+    }
+    
     // Returns list of ms, sec, minutes and hours.
     static public List<TimeType> listOfSimpleTypes() {
-        TimeType[] result = values();
-        
-        ArrayList l = new ArrayList(Arrays.asList(result));
-        l.remove(TimeType.days);
-        
+        ArrayList l = new ArrayList();
+        l.add(TimeType.milliseconds);
+        l.add(TimeType.seconds);
+        l.add(TimeType.minutes);
+        l.add(TimeType.hours);
         return l;
     }
     
@@ -39,134 +57,46 @@ public enum TimeType {
         }
     }
     
-    // Converts the given time value, using the instance time type, to ms.
-    public long asMilliseconds(String value) {
-        double time;
+    // If the given string cannot be parsed to a number, zero is returned.
+    public @NotNull TimeValue asTimeFromString(@NotNull String value) {
+        double d;
+        
+        try {
+            d = Double.parseDouble(value);
+        } catch (Exception e) {
+            return TimeValue.zero();
+        }
         
         switch (this) {
             case milliseconds:
-                return Long.parseLong(value);
+                return TimeValue.fromMilliseconds((long)d);
             case seconds:
-                time = Double.parseDouble(value);
-                time *= 1000.0;
-                return (long)time;
+                return TimeValue.fromSeconds(d);
             case minutes:
-                time = Double.parseDouble(value);
-                time *= 1000.0;
-                time *= 60.0;
-                return (long)time;
+                return TimeValue.fromMinutes(d);
             case hours:
-                time = Double.parseDouble(value);
-                time *= 1000.0;
-                time *= 60.0;
-                time *= 60.0;
-                return (long)time;
+                return TimeValue.fromHours(d);
             case days:
-                time = Double.parseDouble(value);
-                time *= 1000.0;
-                time *= 60.0;
-                time *= 60.0;
-                time *= 24.0;
-                return (long)time;
+                return TimeValue.fromDays(d);
             default:
-                throw new RuntimeException("Bad parameter");
+                return TimeValue.zero();
         }
     }
     
-    // Converts the given time value, using the instance time type, to sec.
-    public double asSeconds(String value) {
-        double ms = (double)asMilliseconds(value);
-        return ms / 1000.0;
-    }
-    
-    public String asStringFromMS(long ms) {
-        double time;
-        
+    public @NotNull String asStringFromTime(@NotNull TimeValue time) {
         switch (this) {
             case milliseconds:
-                return String.format("%d", ms);
-            default:
-                time = convertMSToValue(ms, this);
-                return String.format("%.3f", time);
-        }
-    }
-    
-    static public TimeType fromStringValue(String value) {
-        switch (value) {
-            case "ms":
-                return TimeType.milliseconds;
-            case "sec":
-                return TimeType.seconds;
-            case "min":
-                return TimeType.minutes;
-            case "hours":
-                return TimeType.hours;
-            case "days":
-                return TimeType.days;
-            default:
-                return TimeType.valueOf(value);
-        }
-    }
-    
-    // Returns the most appropriate type to display the given time value.
-    // For example, if the time value is over a day, the return type will be days.
-    static public TimeType appropriateTypeForMS(long ms) {
-        double inSeconds = ms;
-        inSeconds /= 1000.0;
-        
-        long minutesMinValue = 600;
-        long hoursMinValue = 3600;
-        long dayMinValue = 86400;
-        
-        if (inSeconds > dayMinValue) {
-            return TimeType.days;
-        }
-        
-        if (inSeconds > hoursMinValue) {
-            return TimeType.hours;
-        }
-        
-        if (inSeconds > minutesMinValue) {
-            return TimeType.minutes;
-        }
-        
-        if (inSeconds >= 1.0) {
-            return TimeType.seconds;
-        }
-        
-        return TimeType.milliseconds;
-    }
-    
-    static public double convertMSToValue(long ms, @NotNull TimeType destType) {
-        double time;
-        
-        switch (destType) {
-            case milliseconds:
-                return (double)ms;
+                return time.inMillisecondsAsString();
             case seconds:
-                time = (double)ms;
-                time /= 1000.0;
-                return time;
+                return String.format("%.2f", time.inSeconds());
             case minutes:
-                time = (double)ms;
-                time /= 1000.0;
-                time /= 60.0;
-                return time;
+                return String.format("%.2f", time.inMinutes());
             case hours:
-                time = (double)ms;
-                time /= 1000.0;
-                time /= 60.0;
-                time /= 60.0;
-                return time;
+                return String.format("%.3f", time.inHours());
             case days:
-                time = (double)ms;
-                time /= 1000.0;
-                time /= 60.0;
-                time /= 60.0;
-                time /= 24.0;
-                return time;
+                return String.format("%.3f", time.inDays());
             default:
-                throw new RuntimeException("Bad parameter");
+                return time.toString(false);
         }
     }
 }
