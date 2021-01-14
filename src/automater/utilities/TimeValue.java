@@ -71,7 +71,7 @@ public class TimeValue {
             return String.format("%.0f%s", days, showType ? " days" : "");
         }
         
-        double hours = inDays();
+        double hours = inHours();
         
         if (hours >= 1) {
             return String.format("%.1f%s", hours, showType ? " hours" : "");
