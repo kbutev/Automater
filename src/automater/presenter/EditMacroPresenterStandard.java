@@ -195,7 +195,8 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, RecorderH
         
         MacroStorage macroStorage = GeneralStorage.getDefault().getMacrosStorage();
         
-        Macro macro = new Macro(name, _macroActions, new Date(), _originalMacro.getLastTimePlayedDate(), _originalMacro.screenSize);
+        Macro macro = new Macro(name, _macroActions, _originalMacro.dateCreated, _originalMacro.getLastTimePlayedDate(), _originalMacro.screenSize);
+        macro.setNumberOfTimesPlayed(_originalMacro.getNumberOfTimesPlayed());
         macro.setDescription(description);
         
         boolean nameChanged = !_originalMacro.name.equals(name);

@@ -133,6 +133,11 @@ public class Macro implements Serializable, Description {
         return this.numberOfTimesPlayed;
     }
     
+    public void setNumberOfTimesPlayed(int value)
+    {
+        this.numberOfTimesPlayed = value;
+    }
+    
     public void incrementNumberOfTimesPlayed()
     {
         this.numberOfTimesPlayed++;
