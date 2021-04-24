@@ -57,9 +57,9 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
-        macroStateLabel.setText("Idle (Press F5 to RECORD/FINISH)");
+        macroStateLabel.setText("Idle (Press F4 to RECORD/FINISH)");
 
-        recordMacroButton.setText("RECORD");
+        recordMacroButton.setText("Record");
         recordMacroButton.setToolTipText("Begin recording actions for a macro");
         recordMacroButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -110,11 +110,9 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(macroStateLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(recordMacroButton)
+                        .addComponent(headerText)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(saveMacroButton, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(switchToOpenMacrosButton))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(macroActionsListName)
@@ -125,12 +123,14 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(macroDescriptionField)
-                                    .addComponent(macroNameField, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE))))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(headerText)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(switchToOpenMacrosButton)))
+                                    .addComponent(macroNameField, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(macroStateLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(recordMacroButton, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(saveMacroButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -310,6 +310,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
     public void beginRecording()
     {
         _isRecording = true;
+        _recordStartCount++;
         macroNameField.setEnabled(false);
         switchToOpenMacrosButton.setEnabled(false);
         saveMacroButton.setEnabled(false);
@@ -350,7 +351,12 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
     {
         if (!_isRecording)
         {
-            recordMacroButton.setText(TextValue.getText(TextValue.Record_BeginRecordingButtonTitle));
+            if (_recordStartCount == 0) {
+                recordMacroButton.setText(TextValue.getText(TextValue.Record_BeginRecordingButtonTitle));
+            } else {
+                recordMacroButton.setText(TextValue.getText(TextValue.Record_RedoRecordingButtonTitle));
+            }
+            
             recordMacroButton.setToolTipText(TextValue.getText(TextValue.Record_BeginRecordingButtonTip));
         }
         else
@@ -362,6 +368,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
     
     // Private properties
     private boolean _isRecording = false;
+    private int _recordStartCount = 0;
     private @NotNull String recordOrStopHotkey = Strings.DEFAULT_PLAY_OR_STOP_HOTKEY;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -37,7 +37,7 @@ public enum TextValue {
     Record_MacroActionListName,
     Record_IdleStatus,
     Record_MacroNameFieldDefaultText, Record_MacroNameFieldTip,
-    Record_BeginRecordingButtonTitle, Record_BeginRecordingButtonTip, Record_StopRecordingButtonTitle, Record_StopRecordingButtonTip,
+    Record_BeginRecordingButtonTitle, Record_BeginRecordingButtonTip, Record_StopRecordingButtonTitle, Record_StopRecordingButtonTip, Record_RedoRecordingButtonTitle,
     Record_SaveButton, Record_SaveButtonEnabledTip, Record_SaveButtonDisabledTip,
     Record_NotificationStartTitle, Record_NotificationStartMessage, Record_NotificationStartTooltip,
     Record_NotificationStopTitle, Record_NotificationStopMessage, Record_NotificationStopTooltip,
@@ -242,6 +242,7 @@ public enum TextValue {
         put(Record_BeginRecordingButtonTip, "Begin recording macro");
         put(Record_StopRecordingButtonTitle, "Stop");
         put(Record_StopRecordingButtonTip, "Stop recording macro");
+        put(Record_RedoRecordingButtonTitle, "Re-Record");
         put(Record_SaveButton, "Save");
         put(Record_SaveButtonEnabledTip, "Save macro with the recorded actions");
         put(Record_SaveButtonDisabledTip, "Record actions before saving");
