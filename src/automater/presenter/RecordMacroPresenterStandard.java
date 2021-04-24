@@ -349,7 +349,7 @@ public class RecordMacroPresenterStandard implements RecordMacroPresenter, BaseR
     
     private @NotNull List<Description> getActionStringsData()
     {
-        return CollectionUtilities.copyAsReversed(_macroActionDescriptionsList);
+        return CollectionUtilities.copy(_macroActionDescriptionsList);
     }
     
     private void displayRecordingStartedNotification()

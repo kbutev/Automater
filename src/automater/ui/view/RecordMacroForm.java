@@ -295,6 +295,8 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
     public void setListDataSource(@NotNull StandardDescriptionsDataSource dataSource)
     {
         macroActionsList.setModel(dataSource);
+        
+        scrollToBottom();
     }
     
     // # Public UI operations
@@ -343,6 +345,12 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
         recordOrStopHotkey = hotkey.toString();
         
         macroStateLabel.setText(TextValue.getText(TextValue.Record_IdleStatus, recordOrStopHotkey));
+    }
+    
+    public void scrollToBottom()
+    {
+        javax.swing.JScrollBar sb = jScrollPane1.getVerticalScrollBar();
+        sb.setValue(sb.getMaximum());
     }
     
     // # Private
