@@ -8,6 +8,8 @@ import automater.utilities.Logger;
 import automater.work.model.ExecutorState;
 import automater.work.model.Macro;
 import automater.work.model.MacroParameters;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.awt.Robot;
@@ -96,7 +98,8 @@ public class Executor {
     {
         if (_robot == null)
         {
-            _robot = new Robot();
+            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+            _robot = new Robot(gd);
         }
     }
 }

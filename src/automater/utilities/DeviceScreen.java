@@ -6,6 +6,8 @@ package automater.utilities;
 
 import org.jetbrains.annotations.NotNull;
 import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 
 /**
@@ -16,7 +18,9 @@ import java.awt.Toolkit;
 public class DeviceScreen {
     public static @NotNull Dimension getPrimaryScreenSize()
     {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        return screenSize;
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        int width = gd.getDisplayMode().getWidth();
+        int height = gd.getDisplayMode().getHeight();
+        return new Dimension(width, height);
     }
 }

@@ -33,6 +33,7 @@ import automater.utilities.FileSystem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.awt.Dimension;
+import java.awt.MouseInfo;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -517,8 +518,8 @@ class ActionMouseMove extends Action implements InputMouseMove {
         float screenScaleY = context.getCurrentScreenSize().height;
         screenScaleY /= context.getRecordedScreenSize().height;
         
-        int resultX = (int)(x * screenScaleX);
-        int resultY = (int)(y * screenScaleY);
+        int resultX = (int)(x / screenScaleX);
+        int resultY = (int)(y / screenScaleY);
         
         context.getRobot().mouseMove(resultX, resultY);
     }
