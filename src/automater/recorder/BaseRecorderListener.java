@@ -1,6 +1,6 @@
 /*
  * Created by Kristiyan Butev.
- * Copyright © 2019 Kristiyan Butev. All rights reserved.
+ * Copyright Â© 2019 Kristiyan Butev. All rights reserved.
  */
 package automater.recorder;
 
