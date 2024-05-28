@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Toolkit;
 
 /**
  * Defines some useful methods for retrieving the device screen.
