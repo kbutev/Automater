@@ -6,7 +6,6 @@ package automater.presenter;
 
 import automater.mvp.BasePresenter.OpenMacroPresenter;
 import automater.mvp.BasePresenterDelegate.OpenMacroPresenterDelegate;
-import automater.storage.GeneralStorage;
 import automater.storage.MacroStorage;
 import automater.ui.viewcontroller.RootViewController;
 import automater.utilities.Description;
@@ -19,6 +18,8 @@ import automater.work.model.Macro;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import automater.di.DI;
+import automater.storage.GeneralStorageProtocol;
 
 /**
  * Presenter for the open macro screen.
@@ -29,7 +30,8 @@ public class OpenMacroPresenterStandard implements OpenMacroPresenter {
     @NotNull private final RootViewController _rootViewController;
     @NotNull private OpenMacroPresenterDelegate _delegate;
     
-    @NotNull private final MacroStorage _macrosStorage = GeneralStorage.getDefault().getMacrosStorage();
+    GeneralStorageProtocol storage = DI.get(GeneralStorageProtocol.class);
+    @NotNull private final MacroStorage _macrosStorage;
     
     @NotNull private List<Macro> _macros = new ArrayList<>();
     @NotNull private final List<Description> _macrosAsDescriptions = new ArrayList<>();
@@ -37,6 +39,7 @@ public class OpenMacroPresenterStandard implements OpenMacroPresenter {
     public OpenMacroPresenterStandard(@NotNull RootViewController rootViewController)
     {
         _rootViewController = rootViewController;
+        _macrosStorage = storage.getMacrosStorage();
     }
     
     // # BasePresenter

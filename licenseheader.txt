@@ -2,7 +2,7 @@
 ${licenseFirst}
 </#if>
 ${licensePrefix} Created by Kristiyan Butev.
-${licensePrefix} Copyright © 2020 Kristiyan Butev. All rights reserved.
+${licensePrefix} Copyright Â© 2024 Kristiyan Butev. All rights reserved.
 <#if licenseLast??>
 ${licenseLast}
 </#if>

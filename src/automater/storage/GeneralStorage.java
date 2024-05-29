@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
  * 
  * @author Bytevi
  */
-public class GeneralStorage {
+public class GeneralStorage implements GeneralStorageProtocol {
     private static GeneralStorage singleton;
     
     @NotNull private final MacroStorage _macrosStorage = new MacroStorage();
@@ -27,6 +27,7 @@ public class GeneralStorage {
         return singleton;
     }
     
+    @Override
     public @NotNull MacroStorage getMacrosStorage()
     {
         return _macrosStorage;

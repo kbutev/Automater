@@ -4,6 +4,7 @@
  */
 package automater;
 
+import automater.di.DI;
 import automater.recorder.Recorder;
 import automater.ui.viewcontroller.PrimaryViewContoller;
 import automater.utilities.DeviceNotifications;
@@ -12,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import org.int4.dirk.api.Injector;
 import org.jnativehook.GlobalScreen;
 
 /**
@@ -26,9 +28,6 @@ public class Automater {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // Start first screen
-        primaryViewContoller.start();
-        
         // Disable jnativehook logging
         LogManager.getLogManager().reset();
         Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
@@ -51,11 +50,23 @@ public class Automater {
             }
         }));
         
+        
+        // Dependency injection
+        setupDependencyInjection();
+        
         // Recorder preload
         Recorder.getDefault().preload();
         
         // Show tray icon
         DeviceNotifications.getShared().showTrayIcon();
         DeviceNotifications.getShared().setTrayIconTooltip(TextValue.getText(TextValue.SystemTray_Tooltip));
+        
+        // Start first screen
+        primaryViewContoller.start();
+    }
+    
+    static void setupDependencyInjection() {
+        Injector injector = DI.internalInjector;
+        injector.registerInstance(automater.storage.GeneralStorage.getDefault());
     }
 }
