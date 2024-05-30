@@ -23,17 +23,7 @@ public class PreferencesStorageValues implements Serializable {
     public boolean displayStartNotification = false;
     public boolean displayStopNotification = false;
     public boolean displayRepeatNotification = false;
-    public MacroParameters macroParameters = MacroParameters.defaultValues();
-    
-    public static @NotNull PreferencesStorageValues defaultValues()
-    {
-        return new PreferencesStorageValues();
-    }
-    
-    private PreferencesStorageValues()
-    {
-        
-    }
+    public MacroParameters macroParameters = new MacroParameters();
     
     public @NotNull PreferencesStorageValues copy()
     {

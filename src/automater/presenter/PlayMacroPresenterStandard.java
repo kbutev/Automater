@@ -6,12 +6,11 @@ package automater.presenter;
 
 import automater.mvp.BasePresenter.PlayMacroPresenter;
 import automater.TextValue;
+import automater.di.DI;
 import automater.mvp.BasePresenterDelegate.PlayMacroPresenterDelegate;
 import automater.recorder.Recorder;
-import automater.recorder.RecorderHotkeyListener;
 import automater.settings.Hotkey;
 import automater.storage.GeneralStorage;
-import automater.storage.MacroStorage;
 import automater.storage.PreferencesStorageValues;
 import automater.ui.viewcontroller.RootViewController;
 import automater.utilities.Description;
@@ -19,11 +18,10 @@ import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.DeviceNotifications;
 import automater.work.BaseAction;
-import automater.work.BaseExecutorProcess;
 import automater.work.Executor;
+import automater.work.ExecutorProcess;
 import automater.work.model.Macro;
 import java.util.List;
-import automater.work.ExecutorListener;
 import automater.work.model.ExecutorProgress;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,23 +32,24 @@ import java.util.Date;
  *
  * @author Bytevi
  */
-public class PlayMacroPresenterStandard implements PlayMacroPresenter, ExecutorListener, RecorderHotkeyListener {
+public class PlayMacroPresenterStandard implements PlayMacroPresenter, Executor.Listener, Recorder.HotkeyListener {
+    
+    private final GeneralStorage.Protocol storage = DI.get(GeneralStorage.Protocol.class);
+    private final Recorder.Protocol recorder = DI.get(Recorder.Protocol.class);
+    private final Executor.Protocol _executor = DI.get(Executor.Protocol.class);
+    
     @NotNull private final RootViewController _rootViewController;
     @Nullable private PlayMacroPresenterDelegate _delegate;
-    
-    @NotNull private final Executor _executor = Executor.getDefault();
-    @NotNull private final MacroStorage _macrosStorage = GeneralStorage.getDefault().getMacrosStorage();
     
     private boolean _started = false;
     
     @NotNull private final Macro _macro;
     @NotNull private final List<Description> _macroActionDescriptions;
-    @Nullable private BaseExecutorProcess _ongoingExecution;
+    @Nullable private ExecutorProcess.Protocol _ongoingExecution;
     
-    @NotNull private final Recorder _recorder = Recorder.getDefault();
     @Nullable private Hotkey _playOrStopHotkey;
     
-    @NotNull private PreferencesStorageValues _options = PreferencesStorageValues.defaultValues();
+    @NotNull private PreferencesStorageValues _options = new PreferencesStorageValues();
     
     public PlayMacroPresenterStandard(@NotNull RootViewController rootViewController, @NotNull Macro macro)
     {
@@ -72,7 +71,7 @@ public class PlayMacroPresenterStandard implements PlayMacroPresenter, ExecutorL
             Errors.throwInternalLogicError("PlayMacroPresenter delegate is not set before starting");
         }
         
-        _recorder.registerHotkeyListener(this);
+        recorder.registerHotkeyListener(this);
         
         if (_started)
         {
@@ -85,7 +84,7 @@ public class PlayMacroPresenterStandard implements PlayMacroPresenter, ExecutorL
         
         _delegate.onLoadedMacroFromStorage(_macro.name, _macro.getDescription(), _macroActionDescriptions);
         
-        _options = GeneralStorage.getDefault().getPreferencesStorage().getValues();
+        _options = storage.getPreferencesStorage().getValues();
         _playOrStopHotkey = _options.playOrStopHotkey;
         _delegate.onLoadedPreferencesFromStorage(_options);
     }
@@ -201,7 +200,7 @@ public class PlayMacroPresenterStandard implements PlayMacroPresenter, ExecutorL
     {
         Logger.messageEvent(this, "Navigate back.");
         
-        _recorder.unregisterHotkeyListener(this);
+        recorder.unregisterHotkeyListener(this);
         
         _rootViewController.navigateToOpenScreen();
     }
@@ -224,7 +223,7 @@ public class PlayMacroPresenterStandard implements PlayMacroPresenter, ExecutorL
         _macro.setLastTimePlayedDate(new Date());
         
         try {
-            _macrosStorage.updateMacroInStorage(_macro);
+            storage.getMacrosStorage().updateMacroInStorage(_macro);
         } catch (Exception e) {
             Logger.error(this, "Failed to update macro in storage: " + e.toString());
         }
@@ -263,7 +262,7 @@ public class PlayMacroPresenterStandard implements PlayMacroPresenter, ExecutorL
         _options = values;
         
         // Save the option values to storage
-        GeneralStorage.getDefault().getPreferencesStorage().saveValues(values);
+        storage.getPreferencesStorage().saveValues(values);
     }
     
     // # Private

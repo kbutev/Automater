@@ -19,7 +19,7 @@ import java.io.Serializable;
  * @author Bytevi
  */
 public class InputDescriptions {
-    private static TimeType TIMESTAMP_TIME_TYPE = TimeType.seconds;
+    private static final TimeType TIMESTAMP_TIME_TYPE = TimeType.seconds;
     
     public static Description getDoNothingDescription(long timestamp)
     {

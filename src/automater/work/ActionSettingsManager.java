@@ -13,50 +13,43 @@ import org.jetbrains.annotations.NotNull;
  * 
  * @author Bytevi
  */
-public class ActionSettingsManager {
-    private static ActionSettingsManager singleton;
+public interface ActionSettingsManager {
     
-    // 1 = no change, 2 = mouse motion looks sluggish
-    // 3 and up = looks good, but bad performance
-    public static final int MAX_SUBMOVEMENTS = 3;
-    
-    // Private
-    @NotNull private final Object _lock = new Object();
-    private int _maxNumberOfSubmovements = MAX_SUBMOVEMENTS;
-    
-    private ActionSettingsManager()
-    {
-        
+    interface Protocol {
+        int getMaxNumberOfSubmovements();
+        void setMaxNumberOfSubmovements(int value);
     }
     
-    synchronized public static @NotNull ActionSettingsManager getDefault()
-    {
-        if (singleton == null)
+    class Impl implements Protocol {
+        // 1 = no change, 2 = mouse motion looks sluggish
+        // 3 and up = looks good, but bad performance
+        public static final int MAX_SUBMOVEMENTS = 3;
+
+        // Private
+        @NotNull private final Object _lock = new Object();
+        private int _maxNumberOfSubmovements = MAX_SUBMOVEMENTS;
+
+        @Override
+        public int getMaxNumberOfSubmovements()
         {
-            singleton = new ActionSettingsManager();
+            synchronized (_lock)
+            {
+                return _maxNumberOfSubmovements;
+            }
         }
-        
-        return singleton;
-    }
-    
-    public int getMaxNumberOfSubmovements()
-    {
-        synchronized (_lock)
+
+        @Override
+        public void setMaxNumberOfSubmovements(int value)
         {
-            return _maxNumberOfSubmovements;
-        }
-    }
-    
-    public void setMaxNumberOfSubmovements(int value)
-    {
-        if (value < 1)
-        {
-            value = 1;
-        }
-        
-        synchronized (_lock)
-        {
-            _maxNumberOfSubmovements = value;
+            if (value < 1)
+            {
+                value = 1;
+            }
+
+            synchronized (_lock)
+            {
+                _maxNumberOfSubmovements = value;
+            }
         }
     }
 }

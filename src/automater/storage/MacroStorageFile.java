@@ -33,7 +33,7 @@ public class MacroStorageFile {
     
     @NotNull private Macro _macro;
     
-    public static @Nullable MacroStorageFile createFromMacro(@NotNull Macro macro)
+    public static @NotNull MacroStorageFile createFromMacro(@NotNull Macro macro)
     {
         return new MacroStorageFile(macro);
     }

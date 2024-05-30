@@ -18,11 +18,6 @@ public class MacroParameters implements Serializable {
     public final int repeatTimes;
     public final boolean repeatForever;
     
-    public static @NotNull MacroParameters defaultValues()
-    {
-        return new MacroParameters();
-    }
-    
     public MacroParameters()
     {
         this.playSpeed = 1;

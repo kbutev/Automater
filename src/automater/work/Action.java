@@ -5,6 +5,7 @@
 package automater.work;
 
 import automater.TextValue;
+import automater.di.DI;
 import automater.input.InputDescriptions;
 import automater.input.InputDoNothing;
 import automater.utilities.CollectionUtilities;
@@ -14,7 +15,6 @@ import automater.utilities.Logger;
 import automater.work.model.ActionSystemKey;
 import automater.work.model.ActionSystemKeyModifierValue;
 import automater.work.model.ActionSystemKeyModifiers;
-import automater.work.model.BaseActionContext;
 import automater.work.parser.ActionKeyTranslator;
 import java.awt.Robot;
 import java.util.ArrayList;
@@ -30,10 +30,10 @@ import automater.input.InputScreenshot;
 import automater.input.InputSystemCommand;
 import automater.utilities.DeviceNotifications;
 import automater.utilities.FileSystem;
+import automater.work.model.ActionContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.awt.Dimension;
-import java.awt.MouseInfo;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -98,7 +98,9 @@ public class Action extends BaseAction {
     
     public static @NotNull Action createMouseMovement(long timestamp, @NotNull List<InputMouseMove> mouseMovements, @Nullable Description description) throws Exception
     {
-        int maxNumberOfSubmovements = ActionSettingsManager.getDefault().getMaxNumberOfSubmovements();
+        var service = DI.get(ActionSettingsManager.Protocol.class);
+        
+        int maxNumberOfSubmovements = service.getMaxNumberOfSubmovements();
         
         return new ActionMouseMovement(timestamp, mouseMovements, maxNumberOfSubmovements, description);
     }
@@ -150,7 +152,7 @@ public class Action extends BaseAction {
     }
     
     @Override
-    public void perform(@NotNull BaseActionContext context)
+    public void perform(@NotNull ActionContext.Protocol context)
     {
         Errors.throwNotImplemented("Action perform method has not been implemented!");
     }
@@ -203,7 +205,7 @@ class ActionDoNothing extends Action implements InputDoNothing {
     }
     
     @Override
-    public void perform(BaseActionContext context)
+    public void perform(ActionContext.Protocol context)
     {
         
     }
@@ -254,7 +256,7 @@ class ActionWait extends Action implements InputDoNothing {
     }
     
     @Override
-    public void perform(@NotNull BaseActionContext context)
+    public void perform(@NotNull ActionContext.Protocol context)
     {
         double waitTime = wait;
         waitTime /= context.getTimer().getTimeScale();
@@ -319,7 +321,7 @@ class ActionKeyPress extends Action implements InputKeyClick {
     }
     
     @Override
-    public void perform(@NotNull BaseActionContext context)
+    public void perform(@NotNull ActionContext.Protocol context)
     {
         Robot robot = context.getRobot();
         
@@ -406,7 +408,7 @@ class ActionKeyRelease extends Action implements InputKeyClick {
     }
     
     @Override
-    public void perform(@NotNull BaseActionContext context)
+    public void perform(@NotNull ActionContext.Protocol context)
     {
         Robot robot = context.getRobot();
         
@@ -511,7 +513,7 @@ class ActionMouseMove extends Action implements InputMouseMove {
     }
     
     @Override
-    public void perform(@NotNull BaseActionContext context)
+    public void perform(@NotNull ActionContext.Protocol context)
     {
         float screenScaleX = context.getCurrentScreenSize().width;
         screenScaleX /= context.getRecordedScreenSize().width;
@@ -601,11 +603,11 @@ class ActionMouseMovement extends Action implements InputMouseMotion {
     }
     
     @Override
-    public void perform(@NotNull BaseActionContext context)
+    public void perform(@NotNull ActionContext.Protocol context)
     {
         Logger.messageEvent(this, "Performing mouse motion action with " + String.valueOf(actions.size()) + " movements...");
         
-        BaseExecutorTimer timer = context.getTimer();
+        ExecutorTimer.Protocol timer = context.getTimer();
         
         for (int e = 0; e < actions.size(); )
         {
@@ -787,7 +789,7 @@ class ActionMouseWheel extends Action implements InputMouseWheel {
     }
     
     @Override
-    public void perform(@NotNull BaseActionContext context)
+    public void perform(@NotNull ActionContext.Protocol context)
     {
         int amount = convertScrollWheelValueToRobotWheelValue(scrollValue);
         context.getRobot().mouseWheel(amount);
@@ -854,7 +856,7 @@ class ActionSystemCommand extends Action implements InputSystemCommand {
     }
     
     @Override
-    public void perform(@NotNull BaseActionContext context)
+    public void perform(@NotNull ActionContext.Protocol context)
     {
         try {
             Runtime.getRuntime().exec(value);
@@ -935,7 +937,7 @@ class ActionScreenshot extends Action implements InputScreenshot {
     }
     
     @Override
-    public void perform(@NotNull BaseActionContext context)
+    public void perform(@NotNull ActionContext.Protocol context)
     {
         Dimension screen = context.getCurrentScreenSize();
         Rectangle fullScreenArea = new Rectangle(0, 0, screen.width, screen.height);
@@ -977,7 +979,7 @@ class ActionScreenshot extends Action implements InputScreenshot {
         return new Rectangle();
     }
     
-    private String evaluatePath(@NotNull String path, @NotNull BaseActionContext context) {
+    private String evaluatePath(@NotNull String path, @NotNull ActionContext.Protocol context) {
         // Make sure that the path is OK
         path = FileSystem.createFilePathEndingWithExtension(path, ".jpg");
         

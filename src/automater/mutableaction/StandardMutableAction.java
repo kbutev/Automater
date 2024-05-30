@@ -55,7 +55,6 @@ public class StandardMutableAction implements BaseMutableAction {
         long timestamp = action.getPerformTime();
         
         StandardMutableAction a;
-        BaseMutableActionProperty property;
         
         boolean isInputKeyClick = action instanceof InputKeyClick;
         boolean isInputKeyboardClick = !(action instanceof InputMouse);

@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import automater.di.DI;
-import automater.storage.GeneralStorageProtocol;
+import automater.storage.GeneralStorage;
 
 /**
  * Presenter for the open macro screen.
@@ -30,7 +30,7 @@ public class OpenMacroPresenterStandard implements OpenMacroPresenter {
     @NotNull private final RootViewController _rootViewController;
     @NotNull private OpenMacroPresenterDelegate _delegate;
     
-    GeneralStorageProtocol storage = DI.get(GeneralStorageProtocol.class);
+    private final GeneralStorage.Protocol storage = DI.get(GeneralStorage.Protocol.class);
     @NotNull private final MacroStorage _macrosStorage;
     
     @NotNull private List<Macro> _macros = new ArrayList<>();

@@ -24,7 +24,7 @@ public class PreferencesStorage {
     
     @NotNull private final Object _lock = new Object();
     
-    @NotNull private PreferencesStorageValues _values = PreferencesStorageValues.defaultValues();
+    @NotNull private PreferencesStorageValues _values = new PreferencesStorageValues();
     
     public PreferencesStorage()
     {

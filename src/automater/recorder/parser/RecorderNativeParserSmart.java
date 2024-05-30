@@ -23,13 +23,8 @@ import org.jetbrains.annotations.Nullable;
  * 
  * @author Bytevi
  */
-public class RecorderNativeParserSmart extends RecorderNativeParser {
+public class RecorderNativeParserSmart extends RecorderNativeParser.Impl {
     @Nullable private RecorderUserInputMouseMotion _currentMouseMotion;
-    
-    public RecorderNativeParserSmart(@NotNull List<RecorderParserFlag> flags)
-    {
-        super(flags);
-    }
     
     @Override
     public @Nullable RecorderUserInput evaluatePress(@NotNull NativeKeyEvent keyboardEvent)

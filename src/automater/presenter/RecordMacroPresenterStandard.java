@@ -6,19 +6,16 @@ package automater.presenter;
 
 import automater.mvp.BasePresenter.RecordMacroPresenter;
 import automater.TextValue;
+import automater.di.DI;
 import automater.mvp.BasePresenterDelegate.RecordMacroPresenterDelegate;
-import automater.recorder.BaseRecorderListener;
 import automater.recorder.Recorder;
-import automater.recorder.RecorderHotkeyListener;
 import automater.recorder.model.RecorderModelStandard;
 import automater.recorder.model.RecorderResult;
 import automater.recorder.model.RecorderUserInput;
 import automater.recorder.parser.RecorderNativeParser;
 import automater.recorder.parser.RecorderNativeParserSmart;
-import automater.recorder.parser.RecorderParserFlag;
 import automater.settings.Hotkey;
 import automater.storage.GeneralStorage;
-import automater.storage.MacroStorage;
 import automater.storage.PreferencesStorageValues;
 import automater.ui.viewcontroller.RootViewController;
 import automater.utilities.CollectionUtilities;
@@ -30,7 +27,6 @@ import automater.utilities.DeviceNotifications;
 import automater.work.BaseAction;
 import automater.work.model.Macro;
 import automater.work.parser.ActionsFromMacroInputsParser;
-import automater.work.parser.BaseActionsParser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.awt.Dimension;
@@ -45,20 +41,19 @@ import java.util.List;
  *
  * @author Bytevi
  */
-public class RecordMacroPresenterStandard implements RecordMacroPresenter, BaseRecorderListener, RecorderHotkeyListener {
+public class RecordMacroPresenterStandard implements RecordMacroPresenter, Recorder.Listener, Recorder.HotkeyListener {
+    
+    private final GeneralStorage.Protocol storage = DI.get(GeneralStorage.Protocol.class);
+    private final Recorder.Protocol recorder = DI.get(Recorder.Protocol.class);
+    private final ActionsFromMacroInputsParser.Protocol _parser = DI.get(ActionsFromMacroInputsParser.Protocol.class);
+    
     @NotNull private final RootViewController _rootViewController;
     @Nullable private RecordMacroPresenterDelegate _delegate;
     
-    @NotNull private final MacroStorage _storage = GeneralStorage.getDefault().getMacrosStorage();
-    
-    @NotNull private final Recorder _recorder = Recorder.getDefault();
-    @NotNull private final List<RecorderParserFlag> _recordFlags = _recorder.defaults.getDefaultRecordFlags();
-    @NotNull private RecorderModelStandard _recorderModel = new RecorderModelStandard();
-    @Nullable private RecorderNativeParser _recorderMacroParser;
+    @NotNull private Recorder.Model _recorderModel = new RecorderModelStandard();
+    @Nullable private RecorderNativeParser.Impl _recorderMacroParser;
     private boolean _hasStartedMacroRecording = false;
     @Nullable private RecorderResult _recordedResult;
-    
-    @NotNull private final BaseActionsParser _parser = new ActionsFromMacroInputsParser();
     
     @NotNull private final ArrayList<Description> _macroActionDescriptionsList = new ArrayList<>();
     
@@ -69,7 +64,7 @@ public class RecordMacroPresenterStandard implements RecordMacroPresenter, BaseR
     public RecordMacroPresenterStandard(@NotNull RootViewController rootViewController)
     {
         _rootViewController = rootViewController;
-        _recordOrStopHotkey = GeneralStorage.getDefault().getPreferencesStorage().getValues().recordOrStopHotkey;
+        _recordOrStopHotkey = storage.getPreferencesStorage().getValues().recordOrStopHotkey;
     }
     
     // # BasePresenter
@@ -84,7 +79,7 @@ public class RecordMacroPresenterStandard implements RecordMacroPresenter, BaseR
         
         Logger.message(this, "Start.");
         
-        _recorder.registerPlayStopHotkeyListener(this);
+        recorder.registerPlayStopHotkeyListener(this);
         
         // Always start with one "do nothing" action, so user can save the macro even
         // without recording a single action
@@ -92,7 +87,7 @@ public class RecordMacroPresenterStandard implements RecordMacroPresenter, BaseR
         updateDelegateActionsData();
         
         // Load preferences, just once, for the hotkey
-        PreferencesStorageValues preferences = GeneralStorage.getDefault().getPreferencesStorage().getValues();
+        PreferencesStorageValues preferences = storage.getPreferencesStorage().getValues();
         _recordOrStopHotkey = preferences.recordOrStopHotkey;
         _delegate.onLoadedPreferencesFromStorage(preferences);
     }
@@ -186,7 +181,7 @@ public class RecordMacroPresenterStandard implements RecordMacroPresenter, BaseR
     @Override
     public void onSwitchToPlayScreen()
     {
-        _recorder.unregisterPlayStopHotkeyListener();
+        recorder.unregisterPlayStopHotkeyListener();
         
         _rootViewController.navigateToOpenScreen();
     }
@@ -204,8 +199,8 @@ public class RecordMacroPresenterStandard implements RecordMacroPresenter, BaseR
         updateDelegateActionsData();
         
         try {
-            _recorderMacroParser = new RecorderNativeParserSmart(_recordFlags);
-            _recorder.start(_recorderMacroParser, _recorderModel, this);
+            _recorderMacroParser = new RecorderNativeParserSmart();
+            recorder.start(_recorderMacroParser, _recorderModel, this);
         } catch (Exception e) {
             _delegate.onErrorEncountered(e);
             return;
@@ -232,7 +227,7 @@ public class RecordMacroPresenterStandard implements RecordMacroPresenter, BaseR
         Logger.messageEvent(this, "Stopping recording...");
         
         try {
-            _recorder.stop();
+            recorder.stop();
             _delegate.stopRecording();
             Logger.messageEvent(this, "Recording has ended!");
         } catch (Exception e) {
@@ -277,7 +272,7 @@ public class RecordMacroPresenterStandard implements RecordMacroPresenter, BaseR
         macro.setDescription(description);
         
         // Simple error checking - for name taken, actions empty etc...
-        Exception canSaveRec = _storage.getSaveMacroError(macro);
+        Exception canSaveRec = storage.getMacrosStorage().getSaveMacroError(macro);
         
         if (canSaveRec != null)
         {
@@ -290,7 +285,7 @@ public class RecordMacroPresenterStandard implements RecordMacroPresenter, BaseR
         
         // Save to storage
         try {
-            _storage.saveMacroToStorage(macro);
+            storage.getMacrosStorage().saveMacroToStorage(macro);
         } catch (Exception e) {
             Logger.error(this, "Failed to save macro to storage! Reason: " + e.getMessage());
             _delegate.onRecordingSaved(name, false);
@@ -374,7 +369,7 @@ public class RecordMacroPresenterStandard implements RecordMacroPresenter, BaseR
     
     // Parsing
     class ActionsParsing {
-        public List<BaseAction> parseUserInputs(@NotNull Collection<RecorderUserInput> userInputs, @NotNull BaseActionsParser actionParser) throws Exception
+        public List<BaseAction> parseUserInputs(@NotNull Collection<RecorderUserInput> userInputs, @NotNull ActionsFromMacroInputsParser.Protocol actionParser) throws Exception
         {
             actionParser.onBeginParsing();
             

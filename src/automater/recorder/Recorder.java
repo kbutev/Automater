@@ -4,255 +4,306 @@
  */
 package automater.recorder;
 
+import automater.di.DI;
 import automater.recorder.model.RecorderResult;
-import automater.recorder.parser.RecorderJHookListenerDelegate;
 import automater.recorder.parser.RecorderJHookListener;
 import automater.recorder.model.RecorderUserInput;
-import automater.input.InputKey;
-import automater.recorder.parser.BaseRecorderNativeParser;
+import automater.recorder.parser.RecorderMasterNativeParser;
+import automater.recorder.parser.RecorderNativeParser;
 import automater.recorder.parser.RecorderParserFlag;
-import automater.recorder.parser.RecorderSystemKeyboardTranslator;
 import automater.settings.Hotkey;
-import automater.utilities.CollectionUtilities;
 import automater.utilities.DeviceScreen;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.awt.Dimension;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import org.jnativehook.keyboard.NativeKeyEvent;
-import org.jnativehook.mouse.NativeMouseEvent;
-import org.jnativehook.mouse.NativeMouseWheelEvent;
 
-/**
- * A service that listens to system user input and records it as RecorderResult.
- * 
- * The BaseRecorderListener delegate methods are always called on the java AWT queue.
- * 
- * @author Bytevi
- */
-public class Recorder implements RecorderJHookListenerDelegate {
-    private static Recorder singleton;
-    @NotNull private final Object _lock = new Object();
-    
-    @NotNull public final Defaults defaults = new Defaults();
-    
-    @NotNull private final RecorderMasterNativeParser _masterParser;
-    @Nullable private RecorderJHookListener _nativeListener;
-    
-    private boolean _recording = false;
-    @Nullable private BaseRecorderListener _listener;
-    @Nullable private BaseRecorderNativeParser _inputParser;
-    @Nullable private BaseRecorderModel _recorderModel;
-    
-    private Recorder()
-    {
-        _masterParser = new RecorderMasterNativeParser();
+public interface Recorder {
+    interface Protocol {
+        void preload();
+        
+        void start(@NotNull RecorderNativeParser.Protocol parser, @NotNull Model model, @NotNull Listener listener) throws Exception;
+        void start(@NotNull RecorderNativeParser.Protocol parser, @NotNull Model model, @NotNull Listener listener, @Nullable Hotkey stopHotkey) throws Exception;
+        void stop() throws Exception;
+        void registerHotkeyListener(@NotNull HotkeyListener listener);
+        void unregisterHotkeyListener(@NotNull HotkeyListener listener);
+        void registerPlayStopHotkeyListener(@NotNull HotkeyListener listener);
+        void unregisterPlayStopHotkeyListener();
     }
     
-    // # Public
+    /**
+    * Describes a recorded user input model.
+    * 
+    * The receiver is to process and store given objects so
+    * they can later be retrieved by retrieveRecordedData().
+    * 
+    * The method addInput() takes an input object and adds it to the data.
+    * Method is capable of throwing exceptions indicating that parsing should stop.
+    * 
+    * The method retrieveRecordedData() gets the processed data by the parser.
+    */
+    interface Model {
+        int getSize();
+        
+        public @Nullable RecorderUserInput getFirstAddedInput();
+        public @Nullable RecorderUserInput getLastAddedInput();
+
+        public void addInput(@NotNull RecorderUserInput input) throws Exception;
+
+        public @Nullable RecorderResult retrieveRecordedData();
+    }
     
-    synchronized public static @NotNull Recorder getDefault()
-    {
-        if (singleton == null)
+    /**
+    * A listener for recorded user input actions.
+    * 
+    * onRecordedUserInput() indicates new input has been recorded.
+    * 
+    * onRecordedUserInputChanged() indicates that the recorder model has changed,
+    * even when no new input object has been added. This may happen due to optimizations,
+    * such as grouping multiple input objects into one.
+    * 
+    * onFailedRecordedUserInput() indicates failure.
+    */
+    interface Listener {
+        void onRecordedUserInput(@NotNull RecorderUserInput input);
+        void onRecordedUserInputChanged();
+        void onFailedRecordedUserInput(@NotNull RecorderUserInput input);
+
+        void onFinishedRecording(@Nullable RecorderResult result, boolean success, @Nullable Exception exception);
+    }
+    
+    /**
+    * Receives requests about a pressed keyboard key.
+    * 
+    * The listener may listen for a specific key or any key.
+    */
+    interface HotkeyListener {
+        boolean isListeningForAnyHotkey();
+
+        @Nullable Hotkey getHotkey();
+
+        void onHotkeyPressed(@NotNull Hotkey hotkey);
+    }
+    
+    /**
+    * A service that listens to system user input and records it as RecorderResult.
+    * 
+    * The BaseRecorderListener delegate methods are always called on the java AWT queue.
+    * 
+    * @author Bytevi
+    */
+    class Impl implements Protocol, RecorderJHookListener.Delegate {
+        private final RecorderMasterNativeParser.Protocol _masterParser = DI.get(RecorderMasterNativeParser.Protocol.class);
+    
+        @NotNull private final Object _lock = new Object();
+
+        @Nullable private RecorderJHookListener.Service _nativeListener;
+
+        private boolean _recording = false;
+        @Nullable private Listener _listener;
+        @Nullable private Model _recorderModel;
+
+        // # Public
+
+        @Override
+        public void preload()
         {
-            singleton = new Recorder();
+            // Setup the Recorder, to make sure its up and running so when starting
+            // the recording, no delay will be experienced
+            startIfNotStarted();
         }
-        
-        return singleton;
-    }
-    
-    public void preload()
-    {
-        // Setup the Recorder, to make sure its up and running so when starting
-        // the recording, no delay will be experienced
-        startIfNotStarted();
-    }
-    
-    public void start(@NotNull BaseRecorderNativeParser parser, @NotNull BaseRecorderModel model, @NotNull BaseRecorderListener listener) throws Exception
-    {
-        start(parser, model, listener, null);
-    }
-    
-    public void start(@NotNull BaseRecorderNativeParser parser, @NotNull BaseRecorderModel model, @NotNull BaseRecorderListener listener, @Nullable Hotkey stopHotkey) throws Exception
-    {
-        startIfNotStarted();
-        
-        Dimension size = DeviceScreen.getPrimaryScreenSize();
-        
-        Logger.messageEvent(this, "Start recording on screen size " + size.width + "x" + size.height + "...");
-        
-        synchronized (_lock)
+
+        @Override
+        public void start(@NotNull RecorderNativeParser.Protocol parser, @NotNull Model model, @NotNull Listener listener) throws Exception
         {
-            if (_recording)
+            start(parser, model, listener, null);
+        }
+
+        @Override
+        public void start(@NotNull RecorderNativeParser.Protocol parser, @NotNull Model model, @NotNull Listener listener, @Nullable Hotkey stopHotkey) throws Exception
+        {
+            startIfNotStarted();
+
+            Dimension size = DeviceScreen.getPrimaryScreenSize();
+
+            Logger.messageEvent(this, "Start recording on screen size " + size.width + "x" + size.height + "...");
+
+            synchronized (_lock)
             {
-                Errors.throwIllegalStateError("Cannot start Recorder, already started");
+                if (_recording)
+                {
+                    Errors.throwIllegalStateError("Cannot start Recorder, already started");
+                }
             }
-        }
-        
-        synchronized (_lock)
-        {
-            _recording = true;
-            _inputParser = parser;
-            _recorderModel = model;
-            _listener = listener;
-            
-            _masterParser.setSubparser(_inputParser);
-        }
-    }
-    
-    public void stop() throws Exception
-    {
-        Logger.messageEvent(this, "Stop!");
-        
-        boolean isRecording;
-        
-        synchronized (_lock)
-        {
-            if (!_recording)
+
+            synchronized (_lock)
             {
-                Errors.throwIllegalStateError("Cannot stop Recorder, must be recording first");
+                _recording = true;
+                _recorderModel = model;
+                _listener = listener;
             }
-            
-            isRecording = _recording;
         }
-        
-        if (isRecording)
+
+        @Override
+        public void stop() throws Exception
         {
-            cancel(false, null);
-        }
-    }
-    
-    public void registerHotkeyListener(@NotNull RecorderHotkeyListener listener)
-    {
-        startIfNotStarted();
-        
-        _masterParser.registerHotkeyListener(listener);
-    }
-    
-    public void unregisterHotkeyListener(@NotNull RecorderHotkeyListener listener)
-    {
-        _masterParser.unregisterHotkeyListener(listener);
-    }
-    
-    public void registerPlayStopHotkeyListener(@NotNull RecorderHotkeyListener listener)
-    {
-        startIfNotStarted();
-        
-        Logger.messageEvent(this, "Registering a play/stop hotkey listener for client " + listener.toString());
-        _masterParser.setPlayStopHotkeyListener(listener);
-    }
-    
-    public void unregisterPlayStopHotkeyListener()
-    {
-        RecorderHotkeyListener l = _masterParser.getPlayStopHotkeyListener();
-        
-        if (l != null)
-        {
-            Logger.messageEvent(this, "Unregistering a play/stop hotkey listener for client " + l.toString());
-        }
-        
-        _masterParser.setPlayStopHotkeyListener(null);
-    }
-    
-    // # RecorderJHookListenerDelegate
-    
-    @Override
-    public void onParseInput(@NotNull RecorderUserInput input)
-    {
-        // If not recording, do nothing
-        if (!_recording)
-        {
-            return;
-        }
-        
-        // Add the parsed input to the model
-        try {
-            _recorderModel.addInput(input);
-        } catch (Exception e) {
-            try {
-                Logger.messageEvent(this, "Cancel! Exception encountered: " + e.toString());
-                e.printStackTrace(System.out);
-                _listener.onFailedRecordedUserInput(input);
-                cancel(false, e);
-            } catch (Exception e2) {
-                
+            Logger.messageEvent(this, "Stop!");
+
+            boolean isRecording;
+
+            synchronized (_lock)
+            {
+                if (!_recording)
+                {
+                    Errors.throwIllegalStateError("Cannot stop Recorder, must be recording first");
+                }
+
+                isRecording = _recording;
             }
-            
-            return;
+
+            if (isRecording)
+            {
+                cancel(false, null);
+            }
         }
-        
-        // Alert listener
-        if (_listener != null)
+
+        @Override
+        public void registerHotkeyListener(@NotNull HotkeyListener listener)
         {
-            _listener.onRecordedUserInput(input);
+            startIfNotStarted();
+
+            _masterParser.registerHotkeyListener(listener);
         }
-    }
-    
-    @Override
-    public void onInputDataChange()
-    {
-        // If not recording, do nothing
-        if (!_recording)
+
+        @Override
+        public void unregisterHotkeyListener(@NotNull HotkeyListener listener)
         {
-            return;
+            _masterParser.unregisterHotkeyListener(listener);
         }
-        
-        // Alert listener
-        if (_listener != null)
+
+        @Override
+        public void registerPlayStopHotkeyListener(@NotNull HotkeyListener listener)
         {
-            _listener.onRecordedUserInputChanged();
+            startIfNotStarted();
+
+            Logger.messageEvent(this, "Registering a play/stop hotkey listener for client " + listener.toString());
+            _masterParser.setPlayStopHotkeyListener(listener);
         }
-    }
-    
-    // # Private
-    
-    private void startIfNotStarted()
-    {
-        if (_nativeListener != null)
+
+        @Override
+        public void unregisterPlayStopHotkeyListener()
         {
-            return;
+            var l = _masterParser.getPlayStopHotkeyListener();
+
+            if (l != null)
+            {
+                Logger.messageEvent(this, "Unregistering a play/stop hotkey listener for client " + l.toString());
+            }
+
+            _masterParser.setPlayStopHotkeyListener(null);
         }
-        
-        _nativeListener = new RecorderJHookListener(_masterParser, this);
-        
-        try {
-            _nativeListener.start();
-        } catch (Exception e) {
-            
-        }
-    }
-    
-    private void cancel(boolean success, @Nullable Exception exception) throws Exception
-    {
-        synchronized (_lock)
+
+        // # RecorderJHookListenerDelegate
+
+        @Override
+        public void onParseInput(@NotNull RecorderUserInput input)
         {
+            // If not recording, do nothing
             if (!_recording)
             {
                 return;
             }
-            
-            _recording = false;
-            
-            _masterParser.setSubparser(null);
-            
-            BaseRecorderListener listener = _listener;
-            
-            _inputParser = null;
-            _listener = null;
-            
-            RecorderResult result = _recorderModel.retrieveRecordedData();
-            
-            listener.onFinishedRecording(result, success, exception);
+
+            // Add the parsed input to the model
+            try {
+                _recorderModel.addInput(input);
+            } catch (Exception e) {
+                try {
+                    Logger.messageEvent(this, "Cancel! Exception encountered: " + e.toString());
+                    e.printStackTrace(System.out);
+                    _listener.onFailedRecordedUserInput(input);
+                    cancel(false, e);
+                } catch (Exception e2) {
+
+                }
+
+                return;
+            }
+
+            // Alert listener
+            if (_listener != null)
+            {
+                _listener.onRecordedUserInput(input);
+            }
+        }
+
+        @Override
+        public void onInputDataChange()
+        {
+            // If not recording, do nothing
+            if (!_recording)
+            {
+                return;
+            }
+
+            // Alert listener
+            if (_listener != null)
+            {
+                _listener.onRecordedUserInputChanged();
+            }
+        }
+
+        // # Private
+        
+        private ArrayList<RecorderParserFlag> getDefaultFlags()
+        {
+            return DI.get(Recorder.Defaults.class).getDefaultRecordFlags();
+        }
+
+        private void startIfNotStarted()
+        {
+            if (_nativeListener != null)
+            {
+                return;
+            }
+
+            var parser = _masterParser.getSubparser();
+            parser.setFlags(getDefaultFlags());
+            _nativeListener = new RecorderJHookListener.Service(_masterParser.getSubparser(), this);
+
+            try {
+                _nativeListener.start();
+            } catch (Exception e) {
+
+            }
+        }
+
+        private void cancel(boolean success, @Nullable Exception exception) throws Exception
+        {
+            synchronized (_lock)
+            {
+                if (!_recording)
+                {
+                    return;
+                }
+
+                _recording = false;
+
+                Listener listener = _listener;
+
+                _listener = null;
+
+                RecorderResult result = _recorderModel.retrieveRecordedData();
+
+                listener.onFinishedRecording(result, success, exception);
+            }
         }
     }
     
     // Default values
-    public class Defaults
+    class Defaults
     {
         public @NotNull ArrayList<RecorderParserFlag> getDefaultRecordFlags()
         {
@@ -263,10 +314,10 @@ public class Recorder implements RecorderJHookListenerDelegate {
             settings.add(RecorderParserFlag.RECORD_MOUSE_MOTION);
             settings.add(RecorderParserFlag.RECORD_MOUSE_WHEEL);
             settings.add(RecorderParserFlag.RECORD_WINDOW_EVENTS);
-            settings.add(RecorderParserFlag.LOG_EVENTS);
+            //settings.add(RecorderParserFlag.LOG_EVENTS);
             return settings;
         }
-        
+
         public @NotNull ArrayList<RecorderParserFlag> getRecordOnlyKeyClicksAndMouseMotionFlags()
         {
             ArrayList<RecorderParserFlag> settings;
@@ -277,7 +328,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
             settings.add(RecorderParserFlag.LOG_EVENTS);
             return settings;
         }
-        
+
         public @NotNull ArrayList<RecorderParserFlag> getRecordOnlyKeyClicksFlags()
         {
             ArrayList<RecorderParserFlag> settings;
@@ -287,7 +338,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
             settings.add(RecorderParserFlag.LOG_EVENTS);
             return settings;
         }
-        
+
         public @NotNull ArrayList<RecorderParserFlag> getRecordOnlyKeyClicksAndMouseMotionSilentlyFlags()
         {
             ArrayList<RecorderParserFlag> settings;
@@ -297,7 +348,7 @@ public class Recorder implements RecorderJHookListenerDelegate {
             settings.add(RecorderParserFlag.RECORD_MOUSE_MOTION);
             return settings;
         }
-        
+
         public @NotNull ArrayList<RecorderParserFlag> getRecordOnlyKeyClicksSilentlyFlags()
         {
             ArrayList<RecorderParserFlag> settings;
@@ -308,230 +359,3 @@ public class Recorder implements RecorderJHookListenerDelegate {
         }
     }
 }
-
-class RecorderMasterNativeParser implements BaseRecorderNativeParser 
-{
-    @NotNull private final Object _lock = new Object();
-    
-    @Nullable private BaseRecorderNativeParser _subParser;
-    
-    @NotNull private final RecorderSystemKeyboardTranslator _keyboardTranslator = new RecorderSystemKeyboardTranslator();
-    @NotNull private final HashSet<RecorderHotkeyListener> _hotkeyListeners = new HashSet<>();
-    @Nullable private RecorderHotkeyListener _playStopHotkeyListener;
-    
-    public RecorderMasterNativeParser()
-    {
-        
-    }
-    
-    public BaseRecorderNativeParser getSubparser()
-    {
-        synchronized (_lock)
-        {
-            return _subParser;
-        }
-    }
-    
-    public void setSubparser(@Nullable BaseRecorderNativeParser parser)
-    {
-        synchronized (_lock)
-        {
-            _subParser = parser;
-        }
-    }
-    
-    public void registerHotkeyListener(@NotNull RecorderHotkeyListener listener)
-    {
-        synchronized (_lock)
-        {
-            _hotkeyListeners.add(listener);
-        }
-    }
-    
-    public void unregisterHotkeyListener(@NotNull RecorderHotkeyListener listener)
-    {
-        synchronized (_lock)
-        {
-            _hotkeyListeners.remove(listener);
-        }
-    }
-    
-    public @Nullable RecorderHotkeyListener getPlayStopHotkeyListener()
-    {
-        synchronized (_lock)
-        {
-            return _playStopHotkeyListener;
-        }
-    }
-    
-    public void setPlayStopHotkeyListener(@Nullable RecorderHotkeyListener listener)
-    {
-        synchronized (_lock)
-        {
-            if (listener != null)
-            {
-                _playStopHotkeyListener = listener;
-                _hotkeyListeners.add(listener);
-            }
-            else if (_playStopHotkeyListener != null)
-            {
-                _hotkeyListeners.remove(_playStopHotkeyListener);
-                _playStopHotkeyListener = null;
-            }
-        }
-    }
-    
-    @Override
-    public @Nullable RecorderUserInput evaluatePress(@NotNull NativeKeyEvent keyboardEvent) {
-        // Hotkey listeners update & alert
-        InputKey translatedKey = _keyboardTranslator.recordAndTranslate(keyboardEvent, true);
-        
-        if (translatedKey != null)
-        {
-            // Never parse the play/stop keystroke
-            if (isPlayStopHotkeyMatchingInputKey(translatedKey))
-            {
-                return null;
-            }
-        }
-        
-        // Subparser delegation
-        BaseRecorderNativeParser subparser = getSubparser();
-        
-        if (subparser == null)
-        {
-            return null;
-        }
-        
-        return subparser.evaluatePress(keyboardEvent);
-    }
-
-    @Override
-    public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeKeyEvent keyboardEvent) {
-        // Hotkey listeners update
-        InputKey translatedKey = _keyboardTranslator.recordAndTranslate(keyboardEvent, false);
-        
-        if (translatedKey != null)
-        {
-            // Play/stop hotkey and the other hotkey listeners are alerted only when
-            // releasing the keyboard key
-            updateHotkeyListeners(translatedKey);
-            
-            // Never parse the play/stop keystroke
-            if (isPlayStopHotkeyMatchingInputKey(translatedKey))
-            {
-                return null;
-            }
-        }
-        
-        // Subparser delegation
-        BaseRecorderNativeParser subparser = getSubparser();
-        
-        if (subparser == null)
-        {
-            return null;
-        }
-        
-        return subparser.evaluateRelease(keyboardEvent);
-    }
-
-    @Override
-    public @Nullable RecorderUserInput evaluatePress(@NotNull NativeMouseEvent mouseEvent) {
-        BaseRecorderNativeParser subparser = getSubparser();
-        
-        if (subparser == null)
-        {
-            return null;
-        }
-        
-        return subparser.evaluatePress(mouseEvent);
-    }
-
-    @Override
-    public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeMouseEvent mouseEvent) {
-        BaseRecorderNativeParser subparser = getSubparser();
-        
-        if (subparser == null)
-        {
-            return null;
-        }
-        
-        return subparser.evaluateRelease(mouseEvent);
-    }
-
-    @Override
-    public @Nullable RecorderUserInput evaluateMouseMove(@NotNull NativeMouseEvent mouseMoveEvent) {
-        BaseRecorderNativeParser subparser = getSubparser();
-        
-        if (subparser == null)
-        {
-            return null;
-        }
-        
-        return subparser.evaluateMouseMove(mouseMoveEvent);
-    }
-
-    @Override
-    public @Nullable RecorderUserInput evaluateMouseWheel(@NotNull NativeMouseWheelEvent mouseWheelEvent) {
-        BaseRecorderNativeParser subparser = getSubparser();
-        
-        if (subparser == null)
-        {
-            return null;
-        }
-        
-        return subparser.evaluateMouseWheel(mouseWheelEvent);
-    }
-
-    @Override
-    public @Nullable RecorderUserInput evaluateWindowEvent(@NotNull WindowEvent windowEvent) {
-        BaseRecorderNativeParser subparser = getSubparser();
-        
-        if (subparser == null)
-        {
-            return null;
-        }
-        
-        return subparser.evaluateWindowEvent(windowEvent);
-    }
-    
-    private void updateHotkeyListeners(@NotNull InputKey translatedKey)
-    {
-        Collection<RecorderHotkeyListener> listeners;
-        
-        synchronized (_lock)
-        {
-            listeners = CollectionUtilities.copyAsImmutable(_hotkeyListeners);
-        }
-        
-        for (RecorderHotkeyListener l : listeners)
-        {
-            if (hotkeyListenerIsListeningForKeystroke(l, translatedKey))
-            {
-                Hotkey hotkey = new Hotkey(translatedKey);
-                l.onHotkeyPressed(hotkey);
-            }
-        }
-    }
-    
-    private boolean hotkeyListenerIsListeningForKeystroke(@NotNull RecorderHotkeyListener l, @NotNull InputKey translatedKey)
-    {
-        return l.isListeningForAnyHotkey() || isHotkeyMatchingInputKey(l.getHotkey(), translatedKey);
-    }
-    
-    private boolean isHotkeyMatchingInputKey(@Nullable Hotkey hotkey, @NotNull InputKey translatedKey)
-    {
-        if (hotkey == null)
-        {
-            return false;
-        }
-        
-        return hotkey.isEqualTo(translatedKey);
-    }
-    
-    private boolean isPlayStopHotkeyMatchingInputKey(@NotNull InputKey translatedKey)
-    {
-        return _playStopHotkeyListener != null && isHotkeyMatchingInputKey(_playStopHotkeyListener.getHotkey(), translatedKey);
-    }
-}
-

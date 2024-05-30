@@ -8,7 +8,7 @@ import automater.utilities.CollectionUtilities;
 import automater.utilities.Logger;
 import automater.utilities.Looper;
 import automater.utilities.LooperClient;
-import automater.work.BaseExecutorProcess;
+import automater.work.ExecutorProcess;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.List;
 public class ExecutorState implements LooperClient {
     @NotNull private final Object _lock = new Object();
     
-    @NotNull private ArrayList<BaseExecutorProcess> _processes = new ArrayList<>();
+    @NotNull private ArrayList<ExecutorProcess.Protocol> _processes = new ArrayList<>();
     
     public boolean isIdle()
     {
@@ -31,7 +31,7 @@ public class ExecutorState implements LooperClient {
         }
     }
     
-    public void startProcess(@NotNull BaseExecutorProcess process, @NotNull Macro macro, @NotNull MacroParameters parameters) throws Exception
+    public void startProcess(@NotNull ExecutorProcess.Protocol process, @NotNull Macro macro, @NotNull MacroParameters parameters) throws Exception
     {
         boolean isIdle = isIdle();
         
@@ -57,7 +57,7 @@ public class ExecutorState implements LooperClient {
         {
             Logger.messageEvent(this, "Stopping all processes");
             
-            for (BaseExecutorProcess process : _processes)
+            for (ExecutorProcess.Protocol process : _processes)
             {
                 try {
                     process.stop();
@@ -86,23 +86,23 @@ public class ExecutorState implements LooperClient {
     
     // # Private
     
-    private boolean isProcessEligibleForRemoval(@NotNull BaseExecutorProcess process)
+    private boolean isProcessEligibleForRemoval(@NotNull ExecutorProcess.Protocol process)
     {
         return process.isFinished();
     }
     
     private void update()
     {
-        ArrayList<BaseExecutorProcess> processesToRemove = new ArrayList<>();
+        ArrayList<ExecutorProcess.Protocol> processesToRemove = new ArrayList<>();
         
-        List<BaseExecutorProcess> processes;
+        List<ExecutorProcess.Protocol> processes;
         
         synchronized (_lock)
         {
             processes = CollectionUtilities.copyAsImmutable(_processes);
         }
         
-        for (BaseExecutorProcess p : processes)
+        for (ExecutorProcess.Protocol p : processes)
         {
             if (isProcessEligibleForRemoval(p))
             {
@@ -112,7 +112,7 @@ public class ExecutorState implements LooperClient {
         
         synchronized (_lock)
         {
-            for (BaseExecutorProcess p : processesToRemove)
+            for (ExecutorProcess.Protocol p : processesToRemove)
             {
                 _processes.remove(p);
             }

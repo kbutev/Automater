@@ -25,7 +25,7 @@ public class ActionProcess implements BaseActionProcess {
     
     @NotNull private final BaseAction _action;
     private final boolean _isComplexAction;
-    @Nullable private ActionContext _context;
+    @Nullable private ActionContext.Protocol _context;
     
     public ActionProcess(@NotNull BaseAction action)
     {
@@ -51,7 +51,7 @@ public class ActionProcess implements BaseActionProcess {
     }
     
     @Override
-    public void perform(@NotNull ActionContext context) throws Exception
+    public void perform(@NotNull ActionContext.Protocol context) throws Exception
     {
         if (!_isComplexAction)
         {

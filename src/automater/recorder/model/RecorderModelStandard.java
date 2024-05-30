@@ -4,7 +4,7 @@
  */
 package automater.recorder.model;
 
-import automater.recorder.BaseRecorderModel;
+import automater.recorder.Recorder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * 
  * @author Bytevi
  */
-public class RecorderModelStandard implements BaseRecorderModel {
+public class RecorderModelStandard implements Recorder.Model {
     @NotNull private final ArrayList<RecorderUserInput> _recordedInput = new ArrayList<>();
     @Nullable private RecorderUserInput _firstInput;
     @Nullable private RecorderUserInput _lastInput;

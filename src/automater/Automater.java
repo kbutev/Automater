@@ -5,10 +5,13 @@
 package automater;
 
 import automater.di.DI;
-import automater.recorder.Recorder;
+import automater.recorder.parser.RecorderSystemKeyboardTranslator;
+import automater.recorder.parser.RecorderSystemMouseTranslator;
 import automater.ui.viewcontroller.PrimaryViewContoller;
 import automater.utilities.DeviceNotifications;
+import automater.work.ActionSettingsManager;
 import automater.work.Executor;
+import automater.work.parser.ActionsFromMacroInputsParser;
 import org.jetbrains.annotations.NotNull;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -34,28 +37,25 @@ public class Automater {
         logger.setLevel(Level.OFF);
         
         // Shutdown cleanup
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            public void run() {
-                automater.utilities.Logger.message("Automater", "Automater shutdown hook");
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            automater.utilities.Logger.message("Automater", "Automater shutdown hook");
+            
+            // Make sure Recorder is no longer operating
+            try {
+                DI.get(automater.recorder.Recorder.Protocol.class).stop();
+            } catch (Exception e) {
                 
-                // Make sure Recorder is no longer operating
-                try {
-                    Recorder.getDefault().stop();
-                } catch (Exception e) {
-                    
-                }
-                
-                // Make sure Executor is no longer operating
-                Executor.getDefault().stopAll();
             }
+            
+            // Make sure Executor is no longer operating
+            DI.get(automater.work.Executor.Protocol.class).stopAll();
         }));
-        
         
         // Dependency injection
         setupDependencyInjection();
         
         // Recorder preload
-        Recorder.getDefault().preload();
+        DI.get(automater.recorder.Recorder.Protocol.class).preload();
         
         // Show tray icon
         DeviceNotifications.getShared().showTrayIcon();
@@ -67,6 +67,21 @@ public class Automater {
     
     static void setupDependencyInjection() {
         Injector injector = DI.internalInjector;
-        injector.registerInstance(automater.storage.GeneralStorage.getDefault());
+        
+        injector.registerInstance(new automater.work.ActionSettingsManager.Impl());
+        
+        injector.registerInstance(new automater.storage.GeneralStorage.Impl());
+        
+        injector.registerInstance(new RecorderSystemKeyboardTranslator.Impl());
+        injector.registerInstance(new RecorderSystemMouseTranslator.Impl());
+        
+        injector.registerInstance(new automater.recorder.parser.RecorderNativeParser.Impl());
+        injector.registerInstance(new automater.work.parser.ActionsFromMacroInputsParser.Impl());
+        injector.registerInstance(new automater.recorder.parser.RecorderMasterNativeParser.Impl());
+        
+        injector.registerInstance(new automater.recorder.Recorder.Defaults());
+        injector.registerInstance(new automater.recorder.Recorder.Impl());
+        
+        injector.registerInstance(new automater.work.Executor.Impl());
     }
 }

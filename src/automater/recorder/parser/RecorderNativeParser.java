@@ -4,6 +4,7 @@
  */
 package automater.recorder.parser;
 
+import automater.di.DI;
 import automater.recorder.model.RecorderUserInput;
 import automater.input.InputKey;
 import automater.utilities.CollectionUtilities;
@@ -11,6 +12,7 @@ import automater.utilities.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.jnativehook.keyboard.NativeKeyEvent;
@@ -22,220 +24,238 @@ import org.jnativehook.mouse.NativeMouseWheelEvent;
  * 
  * @author Bytevi
  */
-public class RecorderNativeParser implements BaseRecorderNativeParser {
-    @NotNull public final List<RecorderParserFlag> flags;
+public interface RecorderNativeParser {
     
-    @NotNull private final BaseRecorderKeyboardTranslator _keyboardTranslator;
-    @NotNull private final RecorderSystemMouseTranslator _mouseTranslator;
-    @NotNull private final EventLogger _eventLogger = new EventLogger();
-    
-    private Date _firstDate;
-    
-    public RecorderNativeParser(@NotNull List<RecorderParserFlag> flags)
-    {
-        this.flags = CollectionUtilities.copyAsImmutable(flags);
-        this._keyboardTranslator = new RecorderSystemKeyboardTranslator();
-        this._mouseTranslator = new RecorderSystemMouseTranslator(_keyboardTranslator);
+    interface Protocol {
+        @NotNull List<RecorderParserFlag> getFlags();
+        void setFlags(@NotNull List<RecorderParserFlag> flags);
+        
+        @Nullable RecorderUserInput evaluatePress(@NotNull NativeKeyEvent keyboardEvent);
+        @Nullable RecorderUserInput evaluateRelease(@NotNull NativeKeyEvent keyboardEvent);
+
+        @Nullable RecorderUserInput evaluatePress(@NotNull NativeMouseEvent mouseEvent);
+        @Nullable RecorderUserInput evaluateRelease(@NotNull NativeMouseEvent mouseEvent);
+
+        @Nullable RecorderUserInput evaluateMouseMove(@NotNull NativeMouseEvent mouseMoveEvent);
+        @Nullable RecorderUserInput evaluateMouseWheel(@NotNull NativeMouseWheelEvent mouseWheelEvent);
+
+        @Nullable RecorderUserInput evaluateWindowEvent(@NotNull WindowEvent windowEvent);
     }
     
-    public RecorderNativeParser(@NotNull List<RecorderParserFlag> flags, BaseRecorderKeyboardTranslator keyboardTranslator)
-    {
-        this.flags = CollectionUtilities.copyAsImmutable(flags);
-        this._keyboardTranslator = keyboardTranslator;
-        this._mouseTranslator = new RecorderSystemMouseTranslator(_keyboardTranslator);
-    }
-    
-    @Override
-    public @Nullable RecorderUserInput evaluatePress(@NotNull NativeKeyEvent keyboardEvent)
-    {
-        return evaluateKeyboard(keyboardEvent, true);
-    }
-    
-    @Override
-    public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeKeyEvent keyboardEvent)
-    {
-        return evaluateKeyboard(keyboardEvent, false);
-    }
-    
-    private @Nullable RecorderUserInput evaluateKeyboard(@NotNull NativeKeyEvent keyboardEvent, boolean press)
-    {
-        if (!flags.contains(RecorderParserFlag.RECORD_KEYBOARD_EVENTS))
+    class Impl implements Protocol {
+        private final RecorderSystemKeyboardTranslator.Protocol _keyboardTranslator = DI.get(RecorderSystemKeyboardTranslator.Protocol.class);
+        private final RecorderSystemMouseTranslator.Protocol _mouseTranslator = DI.get(RecorderSystemMouseTranslator.Protocol.class);
+        
+        @NotNull private List<RecorderParserFlag> flags = new ArrayList<>();
+
+        @NotNull private final EventLogger _eventLogger = new EventLogger();
+
+        private Date _firstDate;
+
+        @Override
+        public @NotNull List<RecorderParserFlag> getFlags()
         {
-            return null;
+            return CollectionUtilities.copyAsImmutable(flags);
         }
         
-        long timestamp = evaluteTimeForNextEvent();
-        InputKey translatedKey = _keyboardTranslator.recordAndTranslate(keyboardEvent, press);
-        
-        if (translatedKey == null)
+        @Override
+        public void setFlags(@NotNull List<RecorderParserFlag> flags)
         {
-            return null;
+            this.flags = CollectionUtilities.copyAsImmutable(flags);
         }
         
-        _eventLogger.logKeyboardClickEvent(keyboardEvent, translatedKey);
-        
-        RecorderUserInput userInput;
-        
-        // Press
-        if (press)
+        @Override
+        public @Nullable RecorderUserInput evaluatePress(@NotNull NativeKeyEvent keyboardEvent)
         {
-            userInput = RecorderUserInput.createKeyboardPress(timestamp, translatedKey);
+            return evaluateKeyboard(keyboardEvent, true);
         }
-        // Release
-        else
+
+        @Override
+        public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeKeyEvent keyboardEvent)
         {
-            userInput = RecorderUserInput.createKeyboardRelease(timestamp, translatedKey);
+            return evaluateKeyboard(keyboardEvent, false);
         }
-        
-        return userInput;
-    }
-    
-    @Override
-    public @Nullable RecorderUserInput evaluatePress(@NotNull NativeMouseEvent mouseEvent)
-    {
-        return evaluateMouse(mouseEvent, true);
-    }
-    
-    @Override
-    public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeMouseEvent mouseEvent)
-    {
-        return evaluateMouse(mouseEvent, false);
-    }
-    
-    private @Nullable RecorderUserInput evaluateMouse(@NotNull NativeMouseEvent mouseEvent, boolean press)
-    {
-        if (!flags.contains(RecorderParserFlag.RECORD_MOUSE_CLICKS))
+
+        private @Nullable RecorderUserInput evaluateKeyboard(@NotNull NativeKeyEvent keyboardEvent, boolean press)
         {
-            return null;
-        }
-        
-        long timestamp = evaluteTimeForNextEvent();
-        InputKey mouseKey = _mouseTranslator.translate(mouseEvent);
-        
-        _eventLogger.logMouseClickEvent(mouseEvent, mouseKey);
-        
-        RecorderUserInput userInput;
-        
-        // Press
-        if (press)
-        {
-            userInput = RecorderUserInput.createMousePress(timestamp, mouseKey);
-        }
-        // Release
-        else
-        {
-            userInput = RecorderUserInput.createMouseRelease(timestamp, mouseKey);
-        }
-        
-        return userInput;
-    }
-    
-    @Override
-    public @Nullable RecorderUserInput evaluateMouseMove(@NotNull NativeMouseEvent mouseMoveEvent)
-    {
-        if (!flags.contains(RecorderParserFlag.RECORD_MOUSE_MOTION))
-        {
-            return null;
-        }
-        
-        long timestamp = evaluteTimeForNextEvent();
-        int x, y;
-        
-        x = mouseMoveEvent.getX();
-        y = mouseMoveEvent.getY();
-        
-        _eventLogger.logMouseMovementEvent(mouseMoveEvent, x, y);
-        
-        RecorderUserInput userInput;
-        userInput = RecorderUserInput.createMouseMove(timestamp, x, y);
-        
-        return userInput;
-    }
-    
-    @Override
-    public @Nullable RecorderUserInput evaluateMouseWheel(@NotNull NativeMouseWheelEvent mouseWheelEvent)
-    {
-        if (!flags.contains(RecorderParserFlag.RECORD_MOUSE_WHEEL))
-        {
-            return null;
-        }
-        
-        long timestamp = evaluteTimeForNextEvent();
-        int value = mouseWheelEvent.getScrollAmount();
-        
-        if (mouseWheelEvent.getWheelRotation() == 1)
-        {
-            value *= -1;
-        }
-        
-        _eventLogger.logMouseWheelEvent(mouseWheelEvent);
-        
-        RecorderUserInput userInput;
-        userInput = RecorderUserInput.createMouseWheel(timestamp, value);
-        
-        return userInput;
-    }
-    
-    @Override
-    public @Nullable RecorderUserInput evaluateWindowEvent(@NotNull WindowEvent windowEvent)
-    {
-        return null;
-    }
-    
-    // # Private
-    
-    public long evaluteTimeForNextEvent()
-    {
-        if (_firstDate == null)
-        {
-            _firstDate = new Date();
-        }
-        
-        Date now = new Date();
-        
-        return now.getTime() - _firstDate.getTime();
-    }
-    
-    // Private logger
-    private class EventLogger
-    {
-        void logKeyboardClickEvent(@NotNull NativeKeyEvent keyboardEvent, @NotNull InputKey translatedKey)
-        {
-            if (flags.contains(RecorderParserFlag.LOG_EVENTS))
+            if (!flags.contains(RecorderParserFlag.RECORD_KEYBOARD_EVENTS))
             {
-                Logger.messageEvent(this, "RecorderInputParser: keyboard click event '" + translatedKey.toString() + "'");
+                return null;
             }
-        }
-        
-        void logMouseClickEvent(@NotNull NativeMouseEvent keyboardEvent, @NotNull InputKey translatedKey)
-        {
-            if (flags.contains(RecorderParserFlag.LOG_EVENTS))
+
+            long timestamp = evaluteTimeForNextEvent();
+            InputKey translatedKey = _keyboardTranslator.recordAndTranslate(keyboardEvent, press);
+
+            if (translatedKey == null)
             {
-                Logger.messageEvent(this, "RecorderInputParser: mouse click event '" + translatedKey.toString() + "'");
+                return null;
             }
-        }
-        
-        void logMouseMovementEvent(@NotNull NativeMouseEvent keyboardEvent, int x, int y)
-        {
-            if (flags.contains(RecorderParserFlag.LOG_EVENTS))
+
+            _eventLogger.logKeyboardClickEvent(keyboardEvent, translatedKey);
+
+            RecorderUserInput userInput;
+
+            // Press
+            if (press)
             {
-                Logger.messageEvent(this, "RecorderInputParser: mouse movement event (" + x + "," + y + ")");
+                userInput = RecorderUserInput.createKeyboardPress(timestamp, translatedKey);
             }
-        }
-        
-        void logMouseWheelEvent(@NotNull NativeMouseWheelEvent keyboardEvent)
-        {
-            if (flags.contains(RecorderParserFlag.LOG_EVENTS))
+            // Release
+            else
             {
-                Logger.messageEvent(this, "RecorderInputParser: mouse wheel event");
+                userInput = RecorderUserInput.createKeyboardRelease(timestamp, translatedKey);
             }
+
+            return userInput;
         }
-        
-        void logWindowEvent(@NotNull WindowEvent keyboardEvent)
+
+        @Override
+        public @Nullable RecorderUserInput evaluatePress(@NotNull NativeMouseEvent mouseEvent)
         {
-            if (flags.contains(RecorderParserFlag.LOG_EVENTS))
+            return evaluateMouse(mouseEvent, true);
+        }
+
+        @Override
+        public @Nullable RecorderUserInput evaluateRelease(@NotNull NativeMouseEvent mouseEvent)
+        {
+            return evaluateMouse(mouseEvent, false);
+        }
+
+        private @Nullable RecorderUserInput evaluateMouse(@NotNull NativeMouseEvent mouseEvent, boolean press)
+        {
+            if (!flags.contains(RecorderParserFlag.RECORD_MOUSE_CLICKS))
             {
-                Logger.messageEvent(this, "RecorderInputParser: window event");
+                return null;
+            }
+
+            long timestamp = evaluteTimeForNextEvent();
+            InputKey mouseKey = _mouseTranslator.translate(mouseEvent);
+
+            _eventLogger.logMouseClickEvent(mouseEvent, mouseKey);
+
+            RecorderUserInput userInput;
+
+            // Press
+            if (press)
+            {
+                userInput = RecorderUserInput.createMousePress(timestamp, mouseKey);
+            }
+            // Release
+            else
+            {
+                userInput = RecorderUserInput.createMouseRelease(timestamp, mouseKey);
+            }
+
+            return userInput;
+        }
+
+        @Override
+        public @Nullable RecorderUserInput evaluateMouseMove(@NotNull NativeMouseEvent mouseMoveEvent)
+        {
+            if (!flags.contains(RecorderParserFlag.RECORD_MOUSE_MOTION))
+            {
+                return null;
+            }
+
+            long timestamp = evaluteTimeForNextEvent();
+            int x, y;
+
+            x = mouseMoveEvent.getX();
+            y = mouseMoveEvent.getY();
+
+            _eventLogger.logMouseMovementEvent(mouseMoveEvent, x, y);
+
+            RecorderUserInput userInput;
+            userInput = RecorderUserInput.createMouseMove(timestamp, x, y);
+
+            return userInput;
+        }
+
+        @Override
+        public @Nullable RecorderUserInput evaluateMouseWheel(@NotNull NativeMouseWheelEvent mouseWheelEvent)
+        {
+            if (!flags.contains(RecorderParserFlag.RECORD_MOUSE_WHEEL))
+            {
+                return null;
+            }
+
+            long timestamp = evaluteTimeForNextEvent();
+            int value = mouseWheelEvent.getScrollAmount();
+
+            if (mouseWheelEvent.getWheelRotation() == 1)
+            {
+                value *= -1;
+            }
+
+            _eventLogger.logMouseWheelEvent(mouseWheelEvent);
+
+            RecorderUserInput userInput;
+            userInput = RecorderUserInput.createMouseWheel(timestamp, value);
+
+            return userInput;
+        }
+
+        @Override
+        public @Nullable RecorderUserInput evaluateWindowEvent(@NotNull WindowEvent windowEvent)
+        {
+            return null;
+        }
+
+        // # Private
+
+        public long evaluteTimeForNextEvent()
+        {
+            if (_firstDate == null)
+            {
+                _firstDate = new Date();
+            }
+
+            Date now = new Date();
+
+            return now.getTime() - _firstDate.getTime();
+        }
+
+        // Private logger
+        private class EventLogger
+        {
+            void logKeyboardClickEvent(@NotNull NativeKeyEvent keyboardEvent, @NotNull InputKey translatedKey)
+            {
+                if (flags.contains(RecorderParserFlag.LOG_EVENTS))
+                {
+                    Logger.messageEvent(this, "RecorderInputParser: keyboard click event '" + translatedKey.toString() + "'");
+                }
+            }
+
+            void logMouseClickEvent(@NotNull NativeMouseEvent keyboardEvent, @NotNull InputKey translatedKey)
+            {
+                if (flags.contains(RecorderParserFlag.LOG_EVENTS))
+                {
+                    Logger.messageEvent(this, "RecorderInputParser: mouse click event '" + translatedKey.toString() + "'");
+                }
+            }
+
+            void logMouseMovementEvent(@NotNull NativeMouseEvent keyboardEvent, int x, int y)
+            {
+                if (flags.contains(RecorderParserFlag.LOG_EVENTS))
+                {
+                    Logger.messageEvent(this, "RecorderInputParser: mouse movement event (" + x + "," + y + ")");
+                }
+            }
+
+            void logMouseWheelEvent(@NotNull NativeMouseWheelEvent keyboardEvent)
+            {
+                if (flags.contains(RecorderParserFlag.LOG_EVENTS))
+                {
+                    Logger.messageEvent(this, "RecorderInputParser: mouse wheel event");
+                }
+            }
+
+            void logWindowEvent(@NotNull WindowEvent keyboardEvent)
+            {
+                if (flags.contains(RecorderParserFlag.LOG_EVENTS))
+                {
+                    Logger.messageEvent(this, "RecorderInputParser: window event");
+                }
             }
         }
     }

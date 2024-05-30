@@ -35,7 +35,7 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
     
     @Nullable private StandardDescriptionsDataSource _dataSource;
     
-    @NotNull private PreferencesStorageValues _currentPreferences = PreferencesStorageValues.defaultValues();
+    @NotNull private PreferencesStorageValues _currentPreferences = new PreferencesStorageValues();
     
     public PlayMacroViewController(PlayMacroPresenter presenter)
     {
@@ -223,7 +223,7 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
     
     private @NotNull PreferencesStorageValues getPreferenceValuesFromOptionsDialog()
     {
-        PreferencesStorageValues values = PreferencesStorageValues.defaultValues();
+        PreferencesStorageValues values = new PreferencesStorageValues();
         
         values.displayStartNotification = _optionsDialog.isNotificationStartChecked();
         values.displayStopNotification = _optionsDialog.isNotificationStopChecked();

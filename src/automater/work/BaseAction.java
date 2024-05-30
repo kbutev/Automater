@@ -5,7 +5,7 @@
 package automater.work;
 
 import automater.utilities.Description;
-import automater.work.model.BaseActionContext;
+import automater.work.model.ActionContext;
 import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 
@@ -27,5 +27,5 @@ public abstract class BaseAction implements Serializable, Description {
     public abstract long getPerformDuration();
     public abstract long getPerformEndTime();
     
-    public abstract void perform(@NotNull BaseActionContext context);
+    public abstract void perform(@NotNull ActionContext.Protocol context);
 }

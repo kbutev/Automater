@@ -4,9 +4,9 @@
  */
 package automater.presenter;
 
+import automater.di.DI;
 import automater.mvp.BasePresenter.EditMacroPresenter;
 import automater.recorder.Recorder;
-import automater.recorder.RecorderHotkeyListener;
 import automater.settings.Hotkey;
 import automater.storage.GeneralStorage;
 import automater.storage.MacroStorage;
@@ -24,7 +24,6 @@ import automater.mutableaction.StandardMutableActionConstants;
 import automater.mvp.BasePresenterDelegate.EditMacroPresenterDelegate;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import automater.work.Action;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,9 +33,12 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Bytevi
  */
-public class EditMacroPresenterStandard implements EditMacroPresenter, RecorderHotkeyListener {
+public class EditMacroPresenterStandard implements EditMacroPresenter, Recorder.HotkeyListener {
     public final static int CREATE_ACTION_DEFAULT_TYPE = 0;
     public final static int CREATE_NEW_ACTION_TIMESTAMP_OFFSET = 1;
+    
+    private final GeneralStorage.Protocol storage = DI.get(GeneralStorage.Protocol.class);
+    private final Recorder.Protocol recorder = DI.get(Recorder.Protocol.class);
     
     @NotNull private final RootViewController _rootViewController;
     @Nullable private EditMacroPresenterDelegate _delegate;
@@ -59,7 +61,6 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, RecorderH
     
     // Hotkey recording
     private boolean _recording = false;
-    @NotNull private final Recorder _recorder = Recorder.getDefault();
     @NotNull private Callback _onKeystrokeEnteredCallback = Callback.createDoNothing();
     @Nullable private Hotkey _hotkeyRecorded;
     
@@ -193,7 +194,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, RecorderH
         String name = _name;
         String description = _description;
         
-        MacroStorage macroStorage = GeneralStorage.getDefault().getMacrosStorage();
+        MacroStorage macroStorage = storage.getMacrosStorage();
         
         Macro macro = new Macro(name, _macroActions, _originalMacro.dateCreated, _originalMacro.getLastTimePlayedDate(), _originalMacro.screenSize);
         macro.setNumberOfTimesPlayed(_originalMacro.getNumberOfTimesPlayed());
@@ -506,7 +507,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, RecorderH
         
         _onKeystrokeEnteredCallback = onKeystrokeEnteredCallback;
         
-        _recorder.registerHotkeyListener(this);
+        recorder.registerHotkeyListener(this);
     }
     
     @Override
@@ -523,7 +524,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, RecorderH
         
         _onKeystrokeEnteredCallback.perform(_hotkeyRecorded);
         
-        _recorder.unregisterHotkeyListener(this);
+        recorder.unregisterHotkeyListener(this);
     }
     
     // # Private
@@ -578,12 +579,10 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, RecorderH
     
     private void sortActions()
     {
-        Comparator comparator = new Comparator<BaseAction>() {
-            @Override
-            public int compare(BaseAction a, BaseAction b) {
-                int result = (int)(a.getPerformTime() - b.getPerformTime());
-                return result;
-        }};
+        Comparator comparator = (Comparator<BaseAction>) (BaseAction a, BaseAction b) -> {
+            int result = (int)(a.getPerformTime() - b.getPerformTime());
+            return result;
+        };
         
         _macroActions.sort(comparator);
         _macroActionDescriptions.sort(comparator);

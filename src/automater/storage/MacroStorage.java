@@ -90,7 +90,7 @@ public class MacroStorage {
     
     public @Nullable Exception getSaveMacroNameError(@NotNull String name, boolean checkIfNameIsTaken)
     {
-        if (checkIfNameIsTaken && GeneralStorage.getDefault().getMacrosStorage().macroExistsWithName(name))
+        if (checkIfNameIsTaken && macroExistsWithName(name))
         {
             return new Exception(TextValue.getText(TextValue.Error_NameIsTaken));
         }

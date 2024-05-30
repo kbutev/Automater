@@ -32,30 +32,15 @@ public enum InputKeyModifierValue {
     {
         String value;
         
-        switch(this)
-        {
-            case NONE:
-                value = "";
-                break;
-            case CTRL:
-                value = "CTRL";
-                break;
-            case ALT:
-                value = "ALT";
-                break;
-            case SHIFT:
-                value = "SHIFT";
-                break;
-            case WINDOWS_OR_COMMAND:
-                value = isOnWindowsPlatform() ? "WIN" : "CMD";
-                break;
-            case FUNCTION:
-                value = "FN";
-                break;
-            default:
-                value = "";
-                break;
-        }
+        value = switch (this) {
+            case NONE -> "";
+            case CTRL -> "CTRL";
+            case ALT -> "ALT";
+            case SHIFT -> "SHIFT";
+            case WINDOWS_OR_COMMAND -> isOnWindowsPlatform() ? "WIN" : "CMD";
+            case FUNCTION -> "FN";
+            default -> "";
+        };
         
         if (value.length() > 0)
         {

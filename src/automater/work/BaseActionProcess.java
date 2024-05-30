@@ -23,5 +23,5 @@ public interface BaseActionProcess {
     public boolean isActive();
     public @NotNull BaseAction getAction();
     
-    public void perform(@NotNull ActionContext context) throws Exception;
+    public void perform(@NotNull ActionContext.Protocol context) throws Exception;
 }
