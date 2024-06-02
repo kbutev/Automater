@@ -25,18 +25,25 @@ import org.jetbrains.annotations.NotNull;
 public interface ScriptActionsParser {
     
     interface Protocol {
-        @NotNull List<ScriptActionDescription> parseToDescription(@NotNull List<ScriptAction> action) throws Exception;
+        @NotNull List<ScriptActionDescription> parseToDescription(@NotNull List<ScriptAction> actions) throws Exception;
         
         @NotNull List<ScriptAction> parseFromJSON(@NotNull JsonElement json) throws Exception;
-        @NotNull JsonElement parseToJSON(@NotNull List<ScriptAction> events) throws Exception;
+        @NotNull JsonElement parseToJSON(@NotNull List<ScriptAction> actions) throws Exception;
     }
     
     class Impl implements Protocol {
         final Gson gson = DI.get(Gson.class);
+        final ScriptActionParser.Impl internal = new ScriptActionParser.Impl();
         
         @Override
-        public @NotNull List<ScriptActionDescription> parseToDescription(@NotNull List<ScriptAction> action) throws Exception {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        public @NotNull List<ScriptActionDescription> parseToDescription(@NotNull List<ScriptAction> actions) throws Exception {
+            var result = new ArrayList<ScriptActionDescription>();
+            
+            for (var action : actions) {
+                result.add(internal.parseToDescription(action));
+            }
+            
+            return result;
         }
         
         @Override
@@ -69,13 +76,13 @@ public interface ScriptActionsParser {
         }
         
         @Override
-        public @NotNull JsonElement parseToJSON(@NotNull List<ScriptAction> events) throws Exception {
-            if (events.isEmpty()) {
+        public @NotNull JsonElement parseToJSON(@NotNull List<ScriptAction> actions) throws Exception {
+            if (actions.isEmpty()) {
                 return new JsonObject();
             }
             
-            var result = gson.toJsonTree(events);
-            var first = events.get(0);
+            var result = gson.toJsonTree(actions);
+            var first = actions.get(0);
             
             if (result instanceof JsonArray array) {
                 array.get(0).getAsJsonObject().addProperty(ScriptActionParser.Keys.TYPE, first.getActionType());

@@ -46,7 +46,7 @@ public interface ScriptActionParser {
         @Override
         public @NotNull ScriptAction parseFromCapturedEvent(@NotNull CapturedEvent event) throws Exception {
             if (event instanceof CapturedHardwareEvent.Click eventObject) {
-                return new ScriptHardwareAction.Click(eventObject.timestamp, eventObject.kind, eventObject.value);
+                return new ScriptHardwareAction.Click(eventObject.timestamp, eventObject.kind, eventObject.keystroke);
             }
             
             throw new UnsupportedOperationException("Unrecognizable event");
@@ -54,7 +54,17 @@ public interface ScriptActionParser {
         
         @Override
         public @NotNull ScriptActionDescription parseToDescription(@NotNull ScriptAction action) throws Exception {
-            throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            var timestamp = String.format("%.1f", action.getTimestamp());
+            
+            if (action instanceof ScriptHardwareAction.Click click) {
+                return new ScriptActionDescription(timestamp, "click", click.keystroke.toString());
+            } else if (action instanceof ScriptHardwareAction.MouseMove mmove) {
+                return new ScriptActionDescription(timestamp, "mouse move", mmove.point.toString());
+            } else if (action instanceof ScriptHardwareAction.MouseScroll scroll) {
+                return new ScriptActionDescription(timestamp, "mouse scroll", scroll.scroll.toString());
+            }
+            
+            throw new UnsupportedOperationException("Unrecognizable native event");
         }
         
         @Override

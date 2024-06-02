@@ -7,7 +7,7 @@ package automater.model;
 import com.google.gson.annotations.SerializedName;
 
 /**
- *
+ * XY point.
  * @author Kristiyan Butev
  */
 public class Point {
@@ -22,11 +22,16 @@ public class Point {
         y = 0;
     }
     
-    public Point(float x, float y) {
+    public Point(double x, double y) {
         this.x = x;
         this.y = y;
     }
     
     public static Point zero() { return new Point(); }
-    public static Point make(float x, float y) { return new Point(x, y); }
+    public static Point make(double x, double y) { return new Point(x, y); }
+    
+    @Override
+    public String toString() {
+        return String.format("%.0f, %.0f", x, y);
+    }
 }
