@@ -5,18 +5,18 @@
 package automater;
 
 import automater.di.DI;
-import automater.recorder.parser.RecorderSystemKeyboardTranslator;
-import automater.recorder.parser.RecorderSystemMouseTranslator;
+import automater.di.DISetup;
+import automater.model.KeyEventKind;
+import automater.model.KeyValue;
+import automater.model.action.ScriptHardwareAction;
+import automater.model.event.CapturedHardwareEvent;
 import automater.ui.viewcontroller.PrimaryViewContoller;
 import automater.utilities.DeviceNotifications;
-import automater.work.ActionSettingsManager;
-import automater.work.Executor;
-import automater.work.parser.ActionsFromMacroInputsParser;
+import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-import org.int4.dirk.api.Injector;
 import org.jnativehook.GlobalScreen;
 
 /**
@@ -52,7 +52,7 @@ public class Automater {
         }));
         
         // Dependency injection
-        setupDependencyInjection();
+        DISetup.setup();
         
         // Recorder preload
         DI.get(automater.recorder.Recorder.Protocol.class).preload();
@@ -63,25 +63,5 @@ public class Automater {
         
         // Start first screen
         primaryViewContoller.start();
-    }
-    
-    static void setupDependencyInjection() {
-        Injector injector = DI.internalInjector;
-        
-        injector.registerInstance(new automater.work.ActionSettingsManager.Impl());
-        
-        injector.registerInstance(new automater.storage.GeneralStorage.Impl());
-        
-        injector.registerInstance(new RecorderSystemKeyboardTranslator.Impl());
-        injector.registerInstance(new RecorderSystemMouseTranslator.Impl());
-        
-        injector.registerInstance(new automater.recorder.parser.RecorderNativeParser.Impl());
-        injector.registerInstance(new automater.work.parser.ActionsFromMacroInputsParser.Impl());
-        injector.registerInstance(new automater.recorder.parser.RecorderMasterNativeParser.Impl());
-        
-        injector.registerInstance(new automater.recorder.Recorder.Defaults());
-        injector.registerInstance(new automater.recorder.Recorder.Impl());
-        
-        injector.registerInstance(new automater.work.Executor.Impl());
     }
 }

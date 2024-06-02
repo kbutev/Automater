@@ -149,7 +149,7 @@ public interface Recorder {
         @Override
         public void stop() throws Exception
         {
-            Logger.messageEvent(this, "Stop!");
+            Logger.messageEvent("Recorder", "Stop!");
 
             boolean isRecording;
 

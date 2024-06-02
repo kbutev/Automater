@@ -99,7 +99,7 @@ public interface Executor {
         @Override
         public void stopAll()
         {
-            Logger.messageEvent(this, "Stop all processes");
+            Logger.messageEvent("Executor", "Stop all processes");
 
             synchronized (_lock)
             {
