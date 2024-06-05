@@ -5,8 +5,7 @@
 package automater.ui.viewcontroller;
 
 import automater.TextValue;
-import automater.mvp.BasePresenter.RecordMacroPresenter;
-import automater.mvp.BasePresenterDelegate.RecordMacroPresenterDelegate;
+import automater.presenter.RecordMacroPresenter;
 import automater.ui.view.RecordMacroForm;
 import automater.ui.view.StandardDescriptionsDataSource;
 import automater.utilities.AlertWindows;
@@ -14,8 +13,6 @@ import automater.utilities.Callback;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
 import java.awt.event.WindowEvent;
-import java.util.List;
-import automater.utilities.Description;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,14 +21,14 @@ import org.jetbrains.annotations.Nullable;
  * 
  * @author Bytevi
  */
-public class RecordMacroViewController implements BaseViewController, RecordMacroPresenterDelegate {
-    @NotNull private final RecordMacroPresenter _presenter;
+public class RecordMacroViewController implements BaseViewController, RecordMacroPresenter.Delegate {
+    private final @NotNull RecordMacroPresenter.Protocol _presenter;
     
-    @NotNull private final RecordMacroForm _form;
+    private final @NotNull RecordMacroForm _form;
     
-    @Nullable private StandardDescriptionsDataSource _dataSource;
+    private @Nullable StandardDescriptionsDataSource _dataSource;
     
-    public RecordMacroViewController(RecordMacroPresenter presenter)
+    public RecordMacroViewController(@NotNull RecordMacroPresenter.Protocol presenter)
     {
         _presenter = presenter;
         _form = new RecordMacroForm();
@@ -39,31 +36,33 @@ public class RecordMacroViewController implements BaseViewController, RecordMacr
     
     private void setupViewCallbacks()
     {
+        var self = this;
+        
         _form.onSwitchToPlayButtonCallback = new SimpleCallback() {
             @Override
             public void perform() {
-                _presenter.onSwitchToPlayScreen();
+                _presenter.stop();
             }
         };
         
         _form.onRecordMacroButtonCallback = new SimpleCallback() {
             @Override
             public void perform() {
-                _presenter.onStartRecording();
+                _presenter.beginRecording(self);
             }
         };
         
         _form.onStopRecordMacroButtonCallback = new SimpleCallback() {
             @Override
             public void perform() {
-                _presenter.onStopRecording();
+                _presenter.endRecording(self);
             }
         };
         
         _form.onSaveMacroButtonCallback = new Callback<String>() {
             @Override
             public void perform(String argument) {
-                _presenter.onSaveRecording(argument, _form.getMacroDescription());
+                _presenter.saveRecording(argument, _form.getMacroDescription());
             }
         };
     }
@@ -100,10 +99,10 @@ public class RecordMacroViewController implements BaseViewController, RecordMacr
         _form.dispatchEvent(new WindowEvent(_form, WindowEvent.WINDOW_CLOSING));
     }
     
-    // # RecordMacroPresenterDelegate
+    // # RecordMacroPresenter.Delegate
     
     @Override
-    public void onErrorEncountered(@NotNull Exception e)
+    public void onError(@NotNull Exception e)
     {
         Logger.error(this, "Error encountered: " + e.toString());
         
@@ -122,26 +121,19 @@ public class RecordMacroViewController implements BaseViewController, RecordMacr
     }
     
     @Override
-    public void startRecording()
+    public void onStartRecording(@Nullable Object sender)
     {
-        _form.beginRecording();
+        _form.beginRecording(sender);
     }
     
     @Override
-    public void stopRecording()
+    public void onEndRecording(@Nullable Object sender)
     {
-        _form.endRecording();
+        _form.endRecording(sender);
     }
     
     @Override
-    public void onActionsRecordedChange(@NotNull List<Description> actions)
-    {
-        _dataSource = StandardDescriptionsDataSource.createDataSourceForStandartText(actions);
-        _form.setListDataSource(_dataSource);
-    }
-    
-    @Override
-    public void onRecordingSaved(@NotNull String name, boolean success)
+    public void onRecordingSaved(boolean success)
     {
         if (!success) {
             return;
@@ -155,7 +147,7 @@ public class RecordMacroViewController implements BaseViewController, RecordMacr
         AlertWindows.showMessage(_form, textTitle, textMessage, ok, new SimpleCallback() {
             @Override
             public void perform() {
-                _presenter.onRecordingSavedSuccessufllyClosed();
+                //_presenter.onRecordingSavedSuccessufllyClosed();
             }
         });
     }

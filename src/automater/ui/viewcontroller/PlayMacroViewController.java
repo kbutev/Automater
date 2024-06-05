@@ -5,8 +5,7 @@
 package automater.ui.viewcontroller;
 
 import automater.TextValue;
-import automater.mvp.BasePresenter.PlayMacroPresenter;
-import automater.mvp.BasePresenterDelegate.PlayMacroPresenterDelegate;
+import automater.presenter.PlayMacroPresenter;
 import automater.storage.PreferencesStorageValues;
 import automater.ui.view.PlayMacroForm;
 import automater.ui.view.PlayMacroOptionsDialog;
@@ -27,17 +26,17 @@ import java.util.List;
  *
  * @author Bytevi
  */
-public class PlayMacroViewController implements BaseViewController, PlayMacroPresenterDelegate {
-    @NotNull private final PlayMacroPresenter _presenter;
+public class PlayMacroViewController implements BaseViewController, PlayMacroPresenter.Delegate {
+    private final @NotNull PlayMacroPresenter.Protocol _presenter;
     
-    @NotNull private final PlayMacroForm _form;
-    @Nullable private PlayMacroOptionsDialog _optionsDialog;
+    private final @NotNull PlayMacroForm _form;
+    private @Nullable PlayMacroOptionsDialog _optionsDialog;
     
-    @Nullable private StandardDescriptionsDataSource _dataSource;
+    private @Nullable StandardDescriptionsDataSource _dataSource;
     
-    @NotNull private PreferencesStorageValues _currentPreferences = new PreferencesStorageValues();
+    private @NotNull PreferencesStorageValues _currentPreferences = new PreferencesStorageValues();
     
-    public PlayMacroViewController(PlayMacroPresenter presenter)
+    public PlayMacroViewController(PlayMacroPresenter.Protocol presenter)
     {
         _presenter = presenter;
         _form = new PlayMacroForm();
@@ -45,6 +44,8 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
     
     private void setupViewCallbacks()
     {
+        var self = this;
+        
         _form.onBackButtonCallback = new SimpleCallback() {
             @Override
             public void perform() {
@@ -55,14 +56,14 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
         _form.onPlayButtonCallback = new SimpleCallback() {
             @Override
             public void perform() {
-                _presenter.play();
+                _presenter.playMacro(self);
             }
         };
         
         _form.onStopButtonCallback = new SimpleCallback() {
             @Override
             public void perform() {
-                _presenter.stop();
+                _presenter.stopMacro(self);
             }
         };
         
@@ -91,7 +92,7 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
         _form.setVisible(true);
         _form.onViewResume();
         
-        _presenter.requestDataUpdate();
+        _presenter.reloadData();
     }
 
     @Override
@@ -111,7 +112,7 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
     // # PlayMacroPresenterDelegate
 
     @Override
-    public void onErrorEncountered(@NotNull Exception e)
+    public void onError(@NotNull Exception e)
     {
         Logger.error(this, "Error encountered: " + e.toString());
         

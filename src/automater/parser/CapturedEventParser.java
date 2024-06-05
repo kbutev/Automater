@@ -26,19 +26,16 @@ import org.jnativehook.mouse.NativeMouseWheelEvent;
 public interface CapturedEventParser {
     
     interface Protocol {
-        @NotNull CapturedEvent parseNativeEvent(@NotNull NativeInputEvent event, double time, @NotNull KeyEventKind kind) throws Exception;
+        @NotNull CapturedEvent parseNativeEvent(@NotNull NativeInputEvent event, double time) throws Exception;
+        @NotNull CapturedEvent parseNativeKeyboardEvent(@NotNull NativeKeyEvent event, double time, @NotNull KeyEventKind kind) throws Exception;
+        @NotNull CapturedEvent parseNativeMouseKeyEvent(@NotNull NativeMouseEvent event, double time, @NotNull KeyEventKind kind) throws Exception;
         @NotNull EventDescription parseToDescription(@NotNull CapturedEvent event) throws Exception;
     }
     
     class Impl implements Protocol {
         @Override
-        public @NotNull CapturedEvent parseNativeEvent(@NotNull NativeInputEvent event, double time, @NotNull KeyEventKind kind) throws Exception {
-            if (event instanceof NativeKeyEvent key) {
-                var code = key.getKeyCode();
-                var keyValue = value_mappings.get(code);
-                var keystroke = new Keystroke(keyValue);
-                return new CapturedHardwareEvent.Click(time, kind, keystroke);
-            } else if (event instanceof NativeMouseEvent mmove) {
+        public @NotNull CapturedEvent parseNativeEvent(@NotNull NativeInputEvent event, double time) throws Exception {
+            if (event instanceof NativeMouseEvent mmove) {
                 var point = Point.make(mmove.getX(), mmove.getY());
                 return new CapturedHardwareEvent.MouseMove(time, point);
             } else if (event instanceof NativeMouseWheelEvent scroll) {
@@ -53,6 +50,35 @@ public interface CapturedEventParser {
             }
             
             throw new UnsupportedOperationException("Unrecognizable native event");
+        }
+        
+        @Override
+        public @NotNull CapturedEvent parseNativeKeyboardEvent(@NotNull NativeKeyEvent event, double time, @NotNull KeyEventKind kind) throws Exception {
+            if (event instanceof NativeKeyEvent key) {
+                var code = key.getKeyCode();
+                var keyValue = keyboardMappings.get(code);
+                
+                if (keyValue == null) {
+                    throw new UnsupportedOperationException("Unrecognizable keyboard key value");
+                }
+                
+                var keystroke = new Keystroke(keyValue);
+                return new CapturedHardwareEvent.Click(time, kind, keystroke);
+            }
+            
+            throw new UnsupportedOperationException("Unrecognizable native event");
+        }
+        
+        @Override
+        public @NotNull CapturedEvent parseNativeMouseKeyEvent(@NotNull NativeMouseEvent event, double time, @NotNull KeyEventKind kind) throws Exception {
+            var keyValue = mouseKeyMappings.get(event.getButton());
+            
+            if (keyValue == null) {
+                throw new UnsupportedOperationException("Unrecognizable mouse key value");
+            }
+            
+            var keystroke = new Keystroke(keyValue);
+            return new CapturedHardwareEvent.Click(time, kind, keystroke);
         }
         
         @Override
@@ -71,7 +97,15 @@ public interface CapturedEventParser {
         }
     }
     
-    final static Map<Integer, KeyValue> value_mappings = Map.ofEntries(
+    final static Map<Integer, KeyValue> mouseKeyMappings = Map.ofEntries(
+        entry(NativeMouseEvent.BUTTON1, KeyValue._MOUSE_LEFT_CLICK),
+        entry(NativeMouseEvent.BUTTON2, KeyValue._MOUSE_RIGHT_CLICK),
+        entry(NativeMouseEvent.BUTTON3, KeyValue._MOUSE_MIDDLE_CLICK),
+        entry(NativeMouseEvent.BUTTON4, KeyValue._MOUSE_4_CLICK),
+        entry(NativeMouseEvent.BUTTON5, KeyValue._MOUSE_5_CLICK)
+    );
+    
+    final static Map<Integer, KeyValue> keyboardMappings = Map.ofEntries(
         entry(NativeKeyEvent.VC_1, KeyValue._1),
         entry(NativeKeyEvent.VC_2, KeyValue._2),
         entry(NativeKeyEvent.VC_3, KeyValue._3),

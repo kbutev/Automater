@@ -12,6 +12,7 @@ import automater.utilities.Callback;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  *
@@ -309,7 +310,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
         }
     }
     
-    public void beginRecording()
+    public void beginRecording(@Nullable Object sender)
     {
         _isRecording = true;
         _recordStartCount++;
@@ -320,7 +321,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
         updateRecordState();
     }
     
-    public void endRecording()
+    public void endRecording(@Nullable Object sender)
     {
         _isRecording = false;
         macroNameField.setEnabled(true);

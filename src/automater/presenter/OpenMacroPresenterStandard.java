@@ -49,7 +49,7 @@ public class OpenMacroPresenterStandard implements OpenMacroPresenter {
     {
         if (_delegate == null)
         {
-            Errors.throwInternalLogicError("OpenMacroPresenter delegate is not set before starting");
+            throw Errors.internalLogicError();
         }
         
         Logger.message(this, "Start.");
@@ -62,7 +62,7 @@ public class OpenMacroPresenterStandard implements OpenMacroPresenter {
     {
         if (_delegate != null)
         {
-            Errors.throwInternalLogicError("OpenMacroPresenter delegate is already set");
+            throw Errors.internalLogicError();
         }
         
         _delegate = delegate;

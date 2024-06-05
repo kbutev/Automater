@@ -17,12 +17,12 @@ import java.util.Set;
  * @author Bytevi
  */
 public class CollectionUtilities {
-    public static <T> @NotNull List<T> copy(@NotNull List<T> data)
+    public static <T> @NotNull ArrayList<T> copy(@NotNull List<T> data)
     {
         return new ArrayList<>(data);
     }
     
-    public static <T> @NotNull Set<T> copy(@NotNull Set<T> data)
+    public static <T> @NotNull HashSet<T> copy(@NotNull Set<T> data)
     {
         return new HashSet<>(data);
     }

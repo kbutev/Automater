@@ -104,7 +104,7 @@ public interface ExecutorProcess {
         {
             if (actions.isEmpty())
             {
-                Errors.throwInvalidArgument("Process cannot be initialized with zero actions");
+                throw Errors.invalidArgument("actions");
             }
 
             this._robot = robot;
@@ -200,8 +200,7 @@ public interface ExecutorProcess {
             {
                 if (_started)
                 {
-                    Errors.throwCannotStartTwice("Executor process already started.");
-                    return;
+                    throw Errors.alreadyStarted();
                 }
 
                 // Save macro
@@ -241,14 +240,12 @@ public interface ExecutorProcess {
             {
                 if (!_started)
                 {
-                    Errors.throwInternalLogicError("Executor process cannot stop, never has been started");
-                    return;
+                    throw Errors.internalLogicError();
                 }
 
                 if (_finished)
                 {
-                    Errors.throwInternalLogicError("Executor process cannot stop, already stopped");
-                    return;
+                    throw Errors.internalLogicError();
                 }
 
                 _cancelled = true;
@@ -838,7 +835,7 @@ public interface ExecutorProcess {
         {
             if (_next == null)
             {
-                Errors.throwIllegalStateError("ShouldPerformNextResult has no next action");
+                throw Errors.illegalStateError();
             }
 
             return _next;

@@ -5,6 +5,7 @@
 package automater.utilities;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Defines commonly used errors.
@@ -14,53 +15,63 @@ import org.jetbrains.annotations.NotNull;
  * @author Bytevi
  */
 public class Errors {
-    public static void throwUnknownError(@NotNull String description) throws Exception
+    public static @NotNull Exception unknownError()
     {
-        throw new Exception(description);
+        return new Exception("Unknown error");
     }
     
-    public static void throwInvalidArgument(@NotNull String description)
+    public static @NotNull RuntimeException invalidArgument(@Nullable String description)
     {
-        throw new IllegalArgumentException(description);
+        return new IllegalArgumentException(description != null ? description : "");
     }
     
-    public static void throwIndexOutOfBounds(@NotNull String description)
+    public static @NotNull RuntimeException indexOutOfBounds(@Nullable String description)
     {
-        throw new IndexOutOfBoundsException(description);
+        return new IndexOutOfBoundsException(description != null ? description : "");
     }
     
-    public static void throwIllegalMathOperation(@NotNull String description)
+    public static @NotNull RuntimeException illegalMathOperation(@Nullable String description)
     {
-        throw new ArithmeticException(description);
+        return new ArithmeticException(description != null ? description : "");
     }
     
-    public static void throwNotImplemented(@NotNull String description) throws RuntimeException
+    public static @NotNull RuntimeException notImplemented()
     {
-        throw new UnsupportedOperationException(description);
+        return new UnsupportedOperationException("Not implemented");
     }
     
-    public static void throwIllegalStateError(@NotNull String description) throws RuntimeException
+    public static @NotNull RuntimeException illegalStateError()
     {
-        throw new IllegalStateException(description);
+        return new IllegalStateException();
     }
     
-    public static void throwInternalLogicError(@NotNull String description) throws RuntimeException
+    public static @NotNull RuntimeException internalLogicError()
     {
-        throw new RuntimeException(description);
+        return new IllegalStateException("Internal logic");
     }
     
-    public static void throwCannotStartTwice(@NotNull String description) throws RuntimeException
+    public static @NotNull RuntimeException alreadyStarted()
     {
-        throw new RuntimeException(description);
+        return new IllegalStateException("Already started");
     }
     
-    public static void throwSerializationFailed(@NotNull String description) throws RuntimeException
+    public static @NotNull RuntimeException alreadyStopped()
     {
-        throw new RuntimeException(description);
+        return new IllegalStateException("Already stopped");
     }
     
-    public static void throwClassNotFound(@NotNull String description) throws ClassNotFoundException
+    public static @NotNull RuntimeException delegateNotSet()
     {
-        throw new ClassNotFoundException(description);
+        return new IllegalStateException("Delegate not set");
+    }
+    
+    public static @NotNull RuntimeException serializationFailed()
+    {
+        return new RuntimeException("Serialization failed");
+    }
+    
+    public static @NotNull ClassNotFoundException classNotFound(@NotNull String description)
+    {
+        return new ClassNotFoundException(description);
     }
 }

@@ -30,18 +30,6 @@ public interface BasePresenterDelegate {
         public void onLoadedMacrosFromStorage(@NotNull List<Description> macros);
     }
     
-    public interface PlayMacroPresenterDelegate extends BasePresenterDelegate {
-        public void onLoadedPreferencesFromStorage(@NotNull automater.storage.PreferencesStorageValues values);
-        public void onLoadedMacroFromStorage(@NotNull String macroName, @NotNull String macroDescription, @NotNull List<Description> macroActions);
-        
-        // Play lifecycle
-        public void startPlaying();
-        public void stopPlaying(boolean wasCancelled);
-        
-        // Update status
-        public void updatePlayStatus(@NotNull automater.work.model.ExecutorProgress progress);
-    }
-    
     public interface RecordMacroPresenterDelegate extends BasePresenterDelegate {
         public void onLoadedPreferencesFromStorage(@NotNull automater.storage.PreferencesStorageValues values);
         

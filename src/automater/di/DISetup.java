@@ -4,8 +4,6 @@
  */
 package automater.di;
 
-import automater.recorder.parser.RecorderSystemKeyboardTranslator;
-import automater.recorder.parser.RecorderSystemMouseTranslator;
 import org.int4.dirk.api.Injector;
 
 /**
@@ -31,17 +29,8 @@ public class DISetup {
         
         injector.registerInstance(new automater.storage.GeneralStorage.Impl());
         
-        injector.registerInstance(new RecorderSystemKeyboardTranslator.Impl());
-        injector.registerInstance(new RecorderSystemMouseTranslator.Impl());
-        
         injector.registerInstance(new automater.parser.ScriptActionParser.Impl());
         injector.registerInstance(new automater.parser.ScriptActionsParser.Impl());
-        injector.registerInstance(new automater.recorder.parser.RecorderNativeParser.Impl());
-        injector.registerInstance(new automater.work.parser.ActionsFromMacroInputsParser.Impl());
-        injector.registerInstance(new automater.recorder.parser.RecorderMasterNativeParser.Impl());
-        
-        injector.registerInstance(new automater.recorder.Recorder.Defaults());
-        injector.registerInstance(new automater.recorder.Recorder.Impl());
         
         injector.registerInstance(new automater.work.Executor.Impl());
     }

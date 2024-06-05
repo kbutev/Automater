@@ -172,8 +172,7 @@ public enum KeyValue {
    _SUN_INSERT,
    _SUN_CUT;
    
-   public boolean isModifier()
-   {
+   public boolean isModifier() {
        switch(this)
        {
            case _CONTROL:
@@ -188,20 +187,12 @@ public enum KeyValue {
    }
    
    @Override
-   public String toString()
-   {
+   public String toString() {
        String value = name();
        
        value = value.replaceFirst("_", "");
        
        return value;
-   }
-   
-   public static KeyValue fromString(@NotNull String value)
-   {
-       value = "_" + value;
-       
-       return KeyValue.valueOf(value);
    }
 }
 

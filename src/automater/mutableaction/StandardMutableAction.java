@@ -251,7 +251,7 @@ class StandartMutableActionWait extends StandardMutableAction implements InputDo
         
         if (!StringFormatting.isStringANonNegativeInt(timeInMS))
         {
-            Errors.throwInvalidArgument("Enter a non-negative wait int");
+            throw Errors.invalidArgument("negative wait value");
         }
         
         return Action.createWait(timestamp, Long.parseLong(timeInMS));
@@ -440,7 +440,7 @@ class StandartMutableActionMouseMove extends StandardMutableAction {
         
         if (!StringFormatting.isStringAnInt(sX) || !StringFormatting.isStringAnInt(sY))
         {
-            Errors.throwInvalidArgument("Enter non-negative x,y values");
+            throw Errors.invalidArgument("x,y");
         }
         
         int x = Integer.parseInt(sX);
@@ -448,7 +448,7 @@ class StandartMutableActionMouseMove extends StandardMutableAction {
         
         if (x < 0 || y < 0)
         {
-            Errors.throwInvalidArgument("Enter non-negative x,y values");
+            throw Errors.invalidArgument("Enter non-negative x,y values");
         }
         
         return Action.createMouseMovement(timestamp, x, y, getDescription());
@@ -504,7 +504,7 @@ class StandartMutableActionMouseMotion extends StandardMutableAction {
         
         if (!StringFormatting.isStringAnInt(sX) || !StringFormatting.isStringAnInt(sY))
         {
-            Errors.throwInvalidArgument("Enter non-negative x,y values");
+            throw Errors.invalidArgument("x,y");
         }
         
         int x = Integer.parseInt(sX);
@@ -512,7 +512,7 @@ class StandartMutableActionMouseMotion extends StandardMutableAction {
         
         if (x < 0 || y < 0)
         {
-            Errors.throwInvalidArgument("Enter non-negative x,y values");
+            throw Errors.invalidArgument("x,y");
         }
         
         // Create new moves based on the difference if the new timestamp (may be 0)
@@ -523,7 +523,7 @@ class StandartMutableActionMouseMotion extends StandardMutableAction {
         
         if (last == null)
         {
-            Errors.throwInvalidArgument("Enter valid x,y values");
+            throw Errors.invalidArgument("x,y");
         }
         
         ArrayList<InputMouseMove> newMoves = getNewMovesWithTimestampOffset(timestampOffset);

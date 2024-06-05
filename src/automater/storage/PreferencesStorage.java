@@ -136,8 +136,7 @@ public class PreferencesStorage {
         if (data == null)
         {
             Logger.error(this, "Failed to serialize the storage values");
-            Errors.throwSerializationFailed("Failed to serialize the storage values");
-            return;
+            throw Errors.serializationFailed();
         }
         
         PreferencesStorage.writeToFile(file, data);

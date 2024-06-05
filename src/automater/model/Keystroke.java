@@ -26,6 +26,10 @@ public class Keystroke {
         return new Keystroke(KeyValue._X);
     }
     
+    public static @NotNull Keystroke build(@NotNull KeyValue value) {
+        return new Keystroke(value);
+    }
+    
     public Keystroke(@NotNull KeyValue value)
     {
         this.value = value;
@@ -36,13 +40,6 @@ public class Keystroke {
     {
         this.value = value;
         this.modifier = modifier != null ? modifier.copy() : null;
-    }
-    
-    public Keystroke(@NotNull String string)
-    {
-        this.value = KeyValue.fromString(extractKeyValueFromKeyString(string));
-        var m = new KeyModifier(extractKeyModifiersFromKeyString(string));
-        this.modifier = m.isEmpty() ? m : null;
     }
     
     public @NotNull KeyModifier getModifier() {
@@ -75,12 +72,12 @@ public class Keystroke {
         return getModifier().toString() + value.toString();
     }
     
-    public boolean isKeyboardKey()
+    public boolean isKeyboard()
     {
-        return !isMouseKey();
+        return !isMouse();
     }
     
-    public boolean isMouseKey()
+    public boolean isMouse()
     {
         return value == KeyValue._MOUSE_LEFT_CLICK ||
                 value == KeyValue._MOUSE_RIGHT_CLICK ||

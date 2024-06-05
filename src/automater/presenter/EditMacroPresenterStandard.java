@@ -5,8 +5,10 @@
 package automater.presenter;
 
 import automater.di.DI;
+import automater.model.KeyEventKind;
+import automater.model.KeyValue;
+import automater.model.Keystroke;
 import automater.mvp.BasePresenter.EditMacroPresenter;
-import automater.recorder.Recorder;
 import automater.settings.Hotkey;
 import automater.storage.GeneralStorage;
 import automater.storage.MacroStorage;
@@ -22,6 +24,7 @@ import automater.mutableaction.StandardMutableAction;
 import automater.mutableaction.StandardMutableActionTemplates;
 import automater.mutableaction.StandardMutableActionConstants;
 import automater.mvp.BasePresenterDelegate.EditMacroPresenterDelegate;
+import automater.service.HotkeyMonitor;
 import java.util.ArrayList;
 import java.util.Comparator;
 import automater.work.Action;
@@ -33,15 +36,16 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Bytevi
  */
-public class EditMacroPresenterStandard implements EditMacroPresenter, Recorder.HotkeyListener {
+public class EditMacroPresenterStandard implements EditMacroPresenter, HotkeyMonitor.Listener {
     public final static int CREATE_ACTION_DEFAULT_TYPE = 0;
     public final static int CREATE_NEW_ACTION_TIMESTAMP_OFFSET = 1;
     
     private final GeneralStorage.Protocol storage = DI.get(GeneralStorage.Protocol.class);
-    private final Recorder.Protocol recorder = DI.get(Recorder.Protocol.class);
     
     @NotNull private final RootViewController _rootViewController;
     @Nullable private EditMacroPresenterDelegate _delegate;
+    
+    private final HotkeyMonitor.Protocol hotkeyMonitor;
     
     @NotNull private final Macro _originalMacro;
     
@@ -80,6 +84,8 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, Recorder.
         _macroActions.addAll(macro.actions);
         _macroActionDescriptions = new ArrayList<>();
         _macroActionDescriptions.addAll(macro.actionDescriptions);
+        
+        hotkeyMonitor = HotkeyMonitor.build(Keystroke.build(KeyValue._F4));
     }
     
     // # BasePresenter
@@ -89,7 +95,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, Recorder.
     {
         if (_delegate == null)
         {
-            Errors.throwInternalLogicError("EditMacroPresenter delegate is not set before starting");
+            throw Errors.internalLogicError();
         }
         
         Logger.message(this, "Start.");
@@ -104,7 +110,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, Recorder.
     {
         if (_delegate != null)
         {
-            Errors.throwInternalLogicError("EditMacroPresenter delegate is already set");
+            throw Errors.internalLogicError();
         }
         
         _delegate = delegate;
@@ -116,33 +122,11 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, Recorder.
         
     }
     
-    // # RecorderHotkeyListener
+    // # HotkeyMonitor.Listener
     
     @Override
-    public boolean isListeningForAnyHotkey()
-    {
-        return true;
-    }
-    
-    @Override
-    public @Nullable Hotkey getHotkey()
-    {
-        return null;
-    }
-    
-    @Override
-    public void onHotkeyPressed(@NotNull Hotkey hotkey)
-    {
-        if (!_recording)
-        {
-            return;
-        }
+    public void onHotkeyEvent(@NotNull KeyEventKind kind) {
         
-        Logger.message(this, "Hotkey pressed while listening for key strokes - " + hotkey.key.toString());
-        
-        _hotkeyRecorded = hotkey;
-        
-        endListeningForKeystrokes();
     }
     
     // # EditMacroPresenter
@@ -258,14 +242,12 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, Recorder.
     {
         if (index < 0 || index >= _macroActions.size())
         {
-            Errors.throwInvalidArgument("Invalid index given to Edit macro presenter to create a new action");
-            return;
+            throw Errors.invalidArgument("index");
         }
         
         if (_isEditingOrCreatingAction)
         {
-            Errors.throwIllegalStateError("Already creating/editing a macro.");
-            return;
+            throw Errors.illegalStateError();
         }
         
         long timestamp;
@@ -310,14 +292,12 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, Recorder.
     {
         if (index < 0 || index >= _macroActions.size())
         {
-            Errors.throwInvalidArgument("Invalid index given to Edit macro presenter to edit action");
-            return;
+            throw Errors.invalidArgument("index");
         }
         
         if (_isEditingOrCreatingAction)
         {
-            Errors.throwIllegalStateError("Already creating/editing a macro.");
-            return;
+            throw Errors.illegalStateError();
         }
         
         _isEditingOrCreatingAction = true;
@@ -418,8 +398,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, Recorder.
         
         if (_isEditingOrCreatingAction)
         {
-            Errors.throwIllegalStateError("Cannot delete macro while creating/editing a macro.");
-            return;
+            throw Errors.illegalStateError();
         }
         
         _wasEdited = true;
@@ -449,8 +428,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, Recorder.
     {
         if (!_isEditingOrCreatingAction)
         {
-            Errors.throwIllegalStateError("Cannot change macro type without already creating/editing a macro.");
-            return null;
+            throw Errors.illegalStateError();
         }
         
         long timestamp = _actionBeingEdited.getTimestamp();
@@ -460,13 +438,12 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, Recorder.
         
         if (a == null)
         {
-            Errors.throwInvalidArgument("Failed to change edit macro action, invalid type index " + index);
-            return null;
+            throw Errors.invalidArgument("index");
         }
         
         Description description = a.getDescription();
         
-         Logger.messageEvent(this, "Change macro action type to " + description.getName());
+        Logger.messageEvent(this, "Change macro action type to " + description.getName());
         
         _actionTypeSelectedIndex = index;
         
@@ -507,7 +484,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, Recorder.
         
         _onKeystrokeEnteredCallback = onKeystrokeEnteredCallback;
         
-        recorder.registerHotkeyListener(this);
+        // TODO
     }
     
     @Override
@@ -524,7 +501,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, Recorder.
         
         _onKeystrokeEnteredCallback.perform(_hotkeyRecorded);
         
-        recorder.unregisterHotkeyListener(this);
+        // TODO
     }
     
     // # Private

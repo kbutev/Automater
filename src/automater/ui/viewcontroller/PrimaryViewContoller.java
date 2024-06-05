@@ -12,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 import automater.mvp.BasePresenter.*;
 import automater.presenter.EditMacroPresenterStandard;
 import automater.presenter.OpenMacroPresenterStandard;
-import automater.presenter.PlayMacroPresenterStandard;
-import automater.presenter.RecordMacroPresenterStandard;
+import automater.presenter.PlayMacroPresenter;
+import automater.presenter.RecordMacroPresenter;
 
 /**
  * Root view controller responsible for picking which view controller will be
@@ -29,7 +29,7 @@ public class PrimaryViewContoller implements RootViewController {
     @Nullable private OpenMacroViewController _openMacroViewController;
     @Nullable private OpenMacroPresenter _openMacroPresenter;
     @Nullable private RecordMacroViewController _recordMacroViewController;
-    @Nullable private RecordMacroPresenterStandard _recordMacroPresenter;
+    @Nullable private RecordMacroPresenter.Protocol _recordMacroPresenter;
     
     public PrimaryViewContoller()
     {
@@ -40,7 +40,7 @@ public class PrimaryViewContoller implements RootViewController {
     {
         if (_currentViewController != null)
         {
-            Errors.throwInternalLogicError("PrimaryViewController already started");
+            throw Errors.internalLogicError();
         }
         
         switchScreenToDefault();
@@ -130,7 +130,7 @@ public class PrimaryViewContoller implements RootViewController {
         
         if (recordViewControllerStart)
         {
-            _recordMacroPresenter = new RecordMacroPresenterStandard(this);
+            _recordMacroPresenter = new RecordMacroPresenter.Impl();
             RecordMacroViewController vc = new RecordMacroViewController(_recordMacroPresenter);
             _recordMacroViewController = vc;
             _recordMacroPresenter.setDelegate(vc);
@@ -157,8 +157,8 @@ public class PrimaryViewContoller implements RootViewController {
     
     private void switchScreenToPlay(@NotNull Macro macro)
     {
-        PlayMacroPresenterStandard presenter = new PlayMacroPresenterStandard(this, macro);
-        PlayMacroViewController vc = new PlayMacroViewController(presenter);
+        var presenter = new PlayMacroPresenter.Impl(macro);
+        var vc = new PlayMacroViewController(presenter);
         presenter.setDelegate(vc);
         
         if (_currentViewController != null)

@@ -59,31 +59,4 @@ public interface BasePresenter {
         public void editMacroAt(int index);
         public void deleteMacroAt(int index);
     }
-    
-    public interface PlayMacroPresenter extends BasePresenter {
-        // Properties
-        public void setDelegate(@NotNull PlayMacroPresenterDelegate delegate);
-        
-        // Navigation
-        public void navigateBack();
-    
-        // Play macro operations
-        public void play();
-        public void stop();
-        public void setOptionValues(@NotNull automater.storage.PreferencesStorageValues values);
-    }
-    
-    public interface RecordMacroPresenter extends BasePresenter {
-        // Properties
-        public void setDelegate(@NotNull RecordMacroPresenterDelegate delegate);
-        
-        // Navigation
-        public void onSwitchToPlayScreen();
-    
-        // Recording operations
-        public void onStartRecording();
-        public void onStopRecording();
-        public void onSaveRecording(@NotNull String name, @NotNull String description);
-        public void onRecordingSavedSuccessufllyClosed();
-    }
 }

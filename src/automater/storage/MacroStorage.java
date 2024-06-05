@@ -137,7 +137,7 @@ public class MacroStorage {
             } catch (Exception e) {
                 String message = "Failed to save '" + macroFile.name() + "' macro to storage: " + e.getMessage();
                 Logger.error(this, message);
-                Errors.throwSerializationFailed(message);
+                throw Errors.serializationFailed();
             }
         }
     }
@@ -177,8 +177,7 @@ public class MacroStorage {
         if (fileToUpdate == null)
         {
             Logger.error(this, "Failed to update macro '" + macro.name + "' in storage, macro does not exist.");
-            Errors.throwInternalLogicError("Failed to update macro, macro does not exist.");
-            return;
+            throw Errors.internalLogicError();
         }
         
         // Replace old macro with new macro
@@ -196,7 +195,7 @@ public class MacroStorage {
         
         if (!macroExistsWithName(macro.name))
         {
-            Errors.throwInvalidArgument("Macro does not exist in storage");
+            throw Errors.invalidArgument("macro");
         }
         
         MacroStorageFile fileToDelete = null;

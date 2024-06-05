@@ -86,8 +86,7 @@ public class ActionProcess implements BaseActionProcess {
         {
             if (_context != null)
             {
-                Errors.throwCannotStartTwice("Action process is already active");
-                return;
+                throw Errors.alreadyStarted();
             }
             
             _context = context;

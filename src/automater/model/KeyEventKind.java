@@ -9,5 +9,9 @@ package automater.model;
  * @author Kristiyan Butev
  */
 public enum KeyEventKind {
-    press, release, tap
+    press, release, tap;
+    
+    public boolean isReleaseOrTap() {
+        return this == release || this == tap;
+    }
 }

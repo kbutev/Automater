@@ -15,7 +15,6 @@ import automater.utilities.Logger;
 import automater.work.model.ActionSystemKey;
 import automater.work.model.ActionSystemKeyModifierValue;
 import automater.work.model.ActionSystemKeyModifiers;
-import automater.work.parser.ActionKeyTranslator;
 import java.awt.Robot;
 import java.util.ArrayList;
 import java.util.List;
@@ -135,8 +134,7 @@ public class Action extends BaseAction {
     @Override
     public long getPerformTime()
     {
-        Errors.throwNotImplemented("Action getPerformTime method has not been implemented!");
-        return 0;
+        throw Errors.notImplemented();
     }
     
     @Override
@@ -154,7 +152,7 @@ public class Action extends BaseAction {
     @Override
     public void perform(@NotNull ActionContext.Protocol context)
     {
-        Errors.throwNotImplemented("Action perform method has not been implemented!");
+        throw Errors.notImplemented();
     }
 
     @Override
@@ -304,8 +302,8 @@ class ActionKeyPress extends Action implements InputKeyClick {
     {
         this.time = time;
         this.inputKey = keyClick.getKeyValue();
-        this.key = ActionKeyTranslator.translateKeystroke(keyClick.getKeyValue());
-        this.modifiers = ActionKeyTranslator.translateModifiers(keyClick.getKeyValue());
+        //this.key = ActionKeyTranslator.translateKeystroke(keyClick.getKeyValue());
+        //this.modifiers = ActionKeyTranslator.translateModifiers(keyClick.getKeyValue());
         
         if (description != null)
         {
@@ -391,8 +389,8 @@ class ActionKeyRelease extends Action implements InputKeyClick {
     {
         this.time = time;
         this.inputKey = keyClick.getKeyValue();
-        this.key = ActionKeyTranslator.translateKeystroke(keyClick.getKeyValue());
-        this.modifiers = ActionKeyTranslator.translateModifiers(keyClick.getKeyValue());
+        //this.key = ActionKeyTranslator.translateKeystroke(keyClick.getKeyValue());
+        //this.modifiers = ActionKeyTranslator.translateModifiers(keyClick.getKeyValue());
         
         if (description != null)
         {

@@ -168,16 +168,14 @@ public class MacroStorageFile {
         
         if (data == null)
         {
-            Errors.throwSerializationFailed("Failed to serialize macro '" + macro.name + "'");
-            return;
+            throw Errors.serializationFailed();
         }
         
         File file = getFile();
         
         if (file.exists())
         {
-            Errors.throwSerializationFailed("Failed to create macro '" + macro.name + "', already exists");
-            return;
+            throw Errors.serializationFailed();
         }
         
         // Update file
@@ -193,8 +191,7 @@ public class MacroStorageFile {
         
         if (!file.exists())
         {
-            Errors.throwIllegalStateError("Failed to update macro '" + macro.name + "', macro file doesn't exists");
-            return;
+            throw Errors.illegalStateError();
         }
         
         // Override the contents of this macro
@@ -202,8 +199,7 @@ public class MacroStorageFile {
         
         if (data == null)
         {
-            Errors.throwSerializationFailed("Failed to serialize macro '" + macro.name + "'");
-            return;
+            throw Errors.serializationFailed();
         }
         
         // Update local variable
