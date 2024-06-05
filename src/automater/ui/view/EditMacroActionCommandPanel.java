@@ -84,8 +84,7 @@ public class EditMacroActionCommandPanel extends javax.swing.JPanel {
         onReportErrorChanged.perform(reportErrorCheck.isSelected());
     }//GEN-LAST:event_reportErrorCheckActionPerformed
 
-    private void setup()
-    {
+    private void setup() {
         DocumentListener listener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {

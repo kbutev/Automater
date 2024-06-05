@@ -18,17 +18,18 @@ import org.jetbrains.annotations.NotNull;
  * @author Byti
  */
 public class EditMacroActionWaitPanel extends javax.swing.JPanel {
+
     // UI callbacks
     public Callback<String> onWaitTimeCallback = Callback.createDoNothing();
     public Callback<TimeType> onTimeTypeCallback = Callback.createDoNothing();
-    
+
     public void setTime(@NotNull TimeValue time, @NotNull String timeTypeString) {
         timeValue = time;
         timeTypeCombo.setSelectedItem(TimeType.fromStringValue(timeTypeString).stringValue());
         String text = currentSelectedTimeType().asStringFromTime(time);
         waitField.setText(text);
     }
-    
+
     public TimeType currentSelectedTimeType() {
         try {
             String item = (String) timeTypeCombo.getSelectedItem();
@@ -37,7 +38,7 @@ public class EditMacroActionWaitPanel extends javax.swing.JPanel {
             throw new RuntimeException("Invalid time type");
         }
     }
-    
+
     /**
      * Creates new form EditMacroActionWaitPanel
      */
@@ -88,8 +89,7 @@ public class EditMacroActionWaitPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void setup()
-    {
+    private void setup() {
         DocumentListener listener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -106,29 +106,29 @@ public class EditMacroActionWaitPanel extends javax.swing.JPanel {
                 onWaitTimeCallback.perform(waitField.getText());
             }
         };
-        
+
         waitField.getDocument().addDocumentListener(listener);
-        
+
         for (TimeType t : TimeType.listOfSimpleTypes()) {
             timeTypeCombo.addItem(t.stringValue());
         }
-        
+
         timeTypeCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
                     String selectedType = (String) timeTypeCombo.getSelectedItem();
                     setTime(timeValue, selectedType);
-                    
+
                     TimeType timeType = TimeType.fromStringValue(selectedType);
                     onTimeTypeCallback.perform(timeType);
                 } catch (Exception exc) {
-                    
+
                 }
             }
         });
     }
-    
+
     private @NotNull TimeValue timeValue = TimeValue.zero();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

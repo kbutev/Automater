@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
  * @author Bytevi
  */
 public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
+
     // UI callbacks
     public SimpleCallback onSwitchToPlayButtonCallback = SimpleCallback.createDoNothing();
     public Callback<Integer> onSelectItem = Callback.createDoNothing();
@@ -27,7 +28,7 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
     public Callback<Integer> onOpenItem = Callback.createDoNothing();
     public Callback<Integer> onEditItem = Callback.createDoNothing();
     public Callback<Integer> onDeleteItem = Callback.createDoNothing();
-    
+
     /**
      * Creates new form PlayForm
      */
@@ -187,18 +188,16 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
 
     private void macrosListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_macrosListMouseClicked
         int selectedIndex = macrosList.getSelectedIndex();
-        
+
         selectedMacroAt(selectedIndex);
-        
+
         // Click event
-        if (evt.getClickCount() == 1)
-        {
+        if (evt.getClickCount() == 1) {
             onClickItem.perform(_selectedIndex);
         }
-        
+
         // Double click event
-        if (evt.getClickCount() == 2)
-        {
+        if (evt.getClickCount() == 2) {
             onDoubleClickItem.perform(_selectedIndex);
         }
     }//GEN-LAST:event_macrosListMouseClicked
@@ -241,134 +240,114 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
 
     private void setup() {
         ViewUtilities.setAppIconForFrame(this);
-        
+
         this.setTitle(TextValue.getText(TextValue.Open_FormTitle));
-        
+
         headerText.setText(TextValue.getText(TextValue.Open_HeaderText));
-        
+
         switchToRecordMacrosButton.setText(TextValue.getText(TextValue.Open_SwitchToRecordButtonTitle));
         switchToRecordMacrosButton.setToolTipText(TextValue.getText(TextValue.Open_SwitchToRecordButtonTip));
     }
-    
+
     // # GenericView
-    
     @Override
-    public void onViewStart()
-    {
+    public void onViewStart() {
         macrosList.setModel(StandardDescriptionsDataSource.createGeneric());
     }
-    
+
     @Override
-    public void onViewSuspended()
-    {
-        
+    public void onViewSuspended() {
+
     }
-    
+
     @Override
-    public void onViewResume()
-    {
-        
+    public void onViewResume() {
+
     }
-    
+
     @Override
-    public void onViewTerminate()
-    {
-        
+    public void onViewTerminate() {
+
     }
-    
+
     @Override
-    public void reloadData()
-    {
-        
+    public void reloadData() {
+
     }
-    
+
     // # Public
-    
-    public void setListDataSource(@NotNull StandardDescriptionsDataSource dataSource)
-    {
+    public void setListDataSource(@NotNull StandardDescriptionsDataSource dataSource) {
         _dataSource = dataSource;
-        
+
         macrosList.setModel(_dataSource);
-        
+
         macrosList.clearSelection();
         disableMacroFunctionality();
     }
-    
-    public int getSelectionIndex()
-    {
+
+    public int getSelectionIndex() {
         return _selectedIndex;
     }
-    
+
     // # Private
-    
-    private void selectedMacroAt(int index)
-    {
-        if (_selectedIndex == index)
-        {
+    private void selectedMacroAt(int index) {
+        if (_selectedIndex == index) {
             return;
         }
-        
+
         _selectedIndex = index;
-        
-        if (index != -1)
-        {
+
+        if (index != -1) {
             enableMacroFunctionality();
             updateSelectedMacroInfo(index);
-        }
-        else
-        {
+        } else {
             disableMacroFunctionality();
         }
-        
+
         onSelectItem.perform(_selectedIndex);
     }
-    
-    private void enableMacroFunctionality()
-    {
+
+    private void enableMacroFunctionality() {
         openMacroButton.setEnabled(true);
         editMacroButton.setEnabled(true);
         deleteMacroButton.setEnabled(true);
     }
-    
-    private void disableMacroFunctionality()
-    {
+
+    private void disableMacroFunctionality() {
         openMacroButton.setEnabled(false);
         editMacroButton.setEnabled(false);
         deleteMacroButton.setEnabled(false);
-        
+
         macroNameLabel.setText(TextValue.getText(Open_DefaultMacroNameText));
         macroDescriptionLabel.setText("");
     }
-    
-    private void updateSelectedMacroInfo(int index)
-    {
-        if (_dataSource == null)
-        {
+
+    private void updateSelectedMacroInfo(int index) {
+        if (_dataSource == null) {
             return;
         }
-        
+
         List<Description> data = _dataSource.data;
-        
-        if (index < 0 || index >= data.size())
-        {
+
+        if (index < 0 || index >= data.size()) {
             return;
         }
-        
+
         Description macro = data.get(index);
-        
+
         macroNameLabel.setText(macro.getName());
         macroDescriptionLabel.setText(macro.getVerbose());
         macroDescriptionLabel.setToolTipText(macro.getVerbose());
-        
+
         Rectangle b = macroDescriptionLabel.getBounds();
-        Rectangle descriptionBoundsNew = new Rectangle(b.x, b.y,macroNameLabel.getBounds().width, b.height);
+        Rectangle descriptionBoundsNew = new Rectangle(b.x, b.y, macroNameLabel.getBounds().width, b.height);
         macroDescriptionLabel.setBounds(descriptionBoundsNew);
     }
-    
+
     // Private
     private int _selectedIndex = -1;
     private @Nullable StandardDescriptionsDataSource _dataSource;
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton deleteMacroButton;
     private javax.swing.JButton editMacroButton;

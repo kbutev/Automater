@@ -15,8 +15,13 @@ public enum ActionSystemKeyModifierValue {
     CTRL(KeyEvent.VK_CONTROL),
     ALT(KeyEvent.VK_ALT),
     SHIFT(KeyEvent.VK_SHIFT);
-    
+
     private final int value;
-    ActionSystemKeyModifierValue(int value) { this.value = value; }
-    public int getValue() { return value; }
+    
+    ActionSystemKeyModifierValue(int value) {
+        this.value = value;
+    }
+    public int getValue() {
+        return value;
+    }
 }

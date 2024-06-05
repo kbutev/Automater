@@ -7,30 +7,31 @@ package automater.storage;
 import org.jetbrains.annotations.NotNull;
 
 /**
-  * Holds and maintains the storage of the application.
-  * 
-  * @author Bytevi
-*/
+ * Holds and maintains the storage of the application.
+ *
+ * @author Bytevi
+ */
 public interface GeneralStorage {
+
     interface Protocol {
-        public @NotNull MacroStorage getMacrosStorage();
-        public @NotNull PreferencesStorage getPreferencesStorage();
+
+        @NotNull MacroStorage getMacrosStorage();
+        @NotNull PreferencesStorage getPreferencesStorage();
     }
-    
+
     class Impl implements Protocol {
+
         private final MacroStorage _macrosStorage = new MacroStorage();
         private final PreferencesStorage _preferencesStorage = new PreferencesStorage();
 
         @Override
-        public @NotNull MacroStorage getMacrosStorage()
-        {
+        public @NotNull MacroStorage getMacrosStorage() {
             return _macrosStorage;
         }
 
         @Override
-        public @NotNull PreferencesStorage getPreferencesStorage()
-        {
+        public @NotNull PreferencesStorage getPreferencesStorage() {
             return _preferencesStorage;
         }
-   }
+    }
 }

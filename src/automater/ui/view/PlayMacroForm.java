@@ -16,12 +16,13 @@ import javax.swing.DefaultListSelectionModel;
  * @author Bytevi
  */
 public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
+
     // UI callbacks
     public SimpleCallback onBackButtonCallback = SimpleCallback.createDoNothing();
     public SimpleCallback onPlayButtonCallback = SimpleCallback.createDoNothing();
     public SimpleCallback onStopButtonCallback = SimpleCallback.createDoNothing();
     public SimpleCallback onOptionsButtonCallback = SimpleCallback.createDoNothing();
-    
+
     /**
      * Creates new form PlayMacroForm
      */
@@ -152,12 +153,9 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
     }//GEN-LAST:event_backButtonActionPerformed
 
     private void playAndStopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playAndStopButtonActionPerformed
-        if (!isPlaying)
-        {
+        if (!isPlaying) {
             onPlayButtonCallback.perform();
-        }
-        else
-        {
+        } else {
             onStopButtonCallback.perform();
         }
     }//GEN-LAST:event_playAndStopButtonActionPerformed
@@ -200,139 +198,117 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
             }
         });
     }
-    
+
     private void setup() {
         ViewUtilities.setAppIconForFrame(this);
-        
+
         this.setTitle(TextValue.getText(TextValue.Play_FormTitle));
-        
+
         backButton.setText(TextValue.getText(TextValue.Play_BackButtonTitle));
         playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, playOrStopHotkey));
-        
+
         // Set model from start
         macroActionsList.setSelectionModel(selectionModel);
     }
-    
+
     // # GenericView
-    
     @Override
-    public void onViewStart()
-    {
+    public void onViewStart() {
         macroActionsList.setModel(StandardDescriptionsDataSource.createGeneric());
     }
-    
+
     @Override
-    public void onViewSuspended()
-    {
-        
+    public void onViewSuspended() {
+
     }
-    
+
     @Override
-    public void onViewResume()
-    {
-        
+    public void onViewResume() {
+
     }
-    
+
     @Override
-    public void onViewTerminate()
-    {
-        
+    public void onViewTerminate() {
+
     }
-    
+
     @Override
-    public void reloadData()
-    {
-        
+    public void reloadData() {
+
     }
-    
+
     // # Public
-    
-    public void playRecording()
-    {
-        if (isPlaying)
-        {
+    public void playRecording() {
+        if (isPlaying) {
             return;
         }
-        
+
         isPlaying = true;
-        
+
         playAndStopButton.setText(TextValue.getText(TextValue.Play_StopButtonTitle, playOrStopHotkey));
         backButton.setEnabled(false);
         optionsButton.setEnabled(false);
         setProgressBarValue(0);
-        
+
         ViewUtilities.setAppRedIconForFrame(this);
     }
-    
-    public void cancelRecording()
-    {
-        if (!isPlaying)
-        {
+
+    public void cancelRecording() {
+        if (!isPlaying) {
             return;
         }
-        
+
         isPlaying = false;
-        
+
         playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, playOrStopHotkey));
         backButton.setEnabled(true);
         optionsButton.setEnabled(true);
-        
+
         ViewUtilities.setAppIconForFrame(this);
     }
-    
-    public void finishRecording()
-    {
+
+    public void finishRecording() {
         cancelRecording();
     }
-    
-    public void setMacroInfo(@NotNull String macroName, @NotNull String macroDescription, @NotNull StandardDescriptionsDataSource macroActionsDataSource)
-    {
+
+    public void setMacroInfo(@NotNull String macroName, @NotNull String macroDescription, @NotNull StandardDescriptionsDataSource macroActionsDataSource) {
         macroNameLabel.setText(macroName);
         macroDescriptionLabel.setText(macroDescription);
         macroActionsList.setModel(macroActionsDataSource);
     }
-    
-    public void setMacroParametersDescription(@NotNull String value)
-    {
+
+    public void setMacroParametersDescription(@NotNull String value) {
         optionsLabel.setText(value);
     }
-    
-    public void setProgressBarValue(double value)
-    {
+
+    public void setProgressBarValue(double value) {
         value *= 100;
-        
-        int progress = (int)value;
+
+        int progress = (int) value;
         progressBar.setValue(progress);
     }
-    
-    public void setStatus(String value)
-    {
+
+    public void setStatus(String value) {
         statusLabel.setText(value);
     }
-    
-    public void setSelectedIndex(int index)
-    {
-        if (index >= 0 && index < macroActionsList.getModel().getSize())
-        {
+
+    public void setSelectedIndex(int index) {
+        if (index >= 0 && index < macroActionsList.getModel().getSize()) {
             selectionModel.manualySelectIndex(index);
             macroActionsList.ensureIndexIsVisible(index);
         }
     }
-    
-    public void setPlayOrStopHotkeyText(@NotNull Hotkey hotkey)
-    {
+
+    public void setPlayOrStopHotkeyText(@NotNull Hotkey hotkey) {
         playOrStopHotkey = hotkey.toString();
-        
-        if (!isPlaying)
-        {
+
+        if (!isPlaying) {
             playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, playOrStopHotkey));
-        }
-        else
-        {
+        } else {
             playAndStopButton.setText(TextValue.getText(TextValue.Play_StopButtonTitle, playOrStopHotkey));
         }
     }
-    
+
     // # Private properties
     private boolean isPlaying = false;
     private @NotNull final DisabledItemSelectionModel selectionModel = new DisabledItemSelectionModel();
@@ -353,11 +329,12 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
 }
 
 class DisabledItemSelectionModel extends DefaultListSelectionModel {
+
     @Override
     public void setSelectionInterval(int index0, int index1) {
         super.setSelectionInterval(-1, -1);
     }
-    
+
     public void manualySelectIndex(int index) {
         super.setSelectionInterval(index, index);
     }

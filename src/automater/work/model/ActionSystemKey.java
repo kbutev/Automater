@@ -11,61 +11,56 @@ import java.io.Serializable;
 
 /**
  * An action's keyboard or mouse key.
- * 
+ *
  * @author Bytevi
  */
 public class ActionSystemKey implements Serializable, Description {
-    public static @NotNull ActionSystemKey createKeyboardKey(int value)
-    {
+
+    public static @NotNull ActionSystemKey createKeyboardKey(int value) {
         return new ActionSystemKeyKeyboard(value);
     }
-    
-    public static @NotNull ActionSystemKey createMouseKey(int value)
-    {
+
+    public static @NotNull ActionSystemKey createMouseKey(int value) {
         return new ActionSystemKeyMouse(value);
     }
-    
-    public int getValue()
-    {
+
+    public int getValue() {
         return 0;
     }
-    
-    public boolean isKeyboardKey()
-    {
+
+    public boolean isKeyboardKey() {
         return false;
     }
-    
-    public boolean isMouseKey()
-    {
+
+    public boolean isMouseKey() {
         return false;
     }
-    
+
     @Override
-    public boolean equals(Object o) 
-    {
-        if (o instanceof ActionSystemKey)
-        {
-            ActionSystemKey other = (ActionSystemKey)o;
+    public boolean equals(Object o) {
+        if (o instanceof ActionSystemKey) {
+            ActionSystemKey other = (ActionSystemKey) o;
             return getValue() == other.getValue();
         }
-        
+
         return false;
     }
-    
+
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int hash = 7;
         return hash;
     }
 
     @Override
-    public @Nullable String getStandart() {
+    public @Nullable
+    String getStandart() {
         return "unknown";
     }
 
     @Override
-    public @Nullable String getVerbose() {
+    public @Nullable
+    String getVerbose() {
         return getStandart();
     }
 
@@ -75,41 +70,42 @@ public class ActionSystemKey implements Serializable, Description {
     }
 
     @Override
-    public @Nullable String getVerboseTooltip() {
+    public @Nullable
+    String getVerboseTooltip() {
         return getStandart();
     }
 
     @Override
-    public @Nullable String getName() {
+    public @Nullable
+    String getName() {
         return getStandart();
     }
 
     @Override
-    public @Nullable String getDebug() {
+    public @Nullable
+    String getDebug() {
         return getStandart();
     }
 }
 
 class ActionSystemKeyKeyboard extends ActionSystemKey {
+
     public final int value;
-    
-    ActionSystemKeyKeyboard(int value)
-    {
+
+    ActionSystemKeyKeyboard(int value) {
         this.value = value;
     }
-    
+
     @Override
-    public int getValue()
-    {
+    public int getValue() {
         return value;
     }
-    
+
     @Override
-    public boolean isKeyboardKey()
-    {
+    public boolean isKeyboardKey() {
         return true;
     }
-    
+
     @Override
     public @Nullable String getStandart() {
         return String.valueOf(value);
@@ -117,25 +113,23 @@ class ActionSystemKeyKeyboard extends ActionSystemKey {
 }
 
 class ActionSystemKeyMouse extends ActionSystemKey {
+
     public final int value;
-    
-    ActionSystemKeyMouse(int value)
-    {
+
+    ActionSystemKeyMouse(int value) {
         this.value = value;
     }
-    
+
     @Override
-    public int getValue()
-    {
+    public int getValue() {
         return value;
     }
-    
+
     @Override
-    public boolean isMouseKey()
-    {
+    public boolean isMouseKey() {
         return true;
     }
-    
+
     @Override
     public @Nullable String getStandart() {
         return String.valueOf(value);

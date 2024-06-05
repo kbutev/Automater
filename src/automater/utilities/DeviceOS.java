@@ -6,12 +6,13 @@ package automater.utilities;
 
 /**
  * Retrieves info about the device operation system.
- * 
+ *
  * @author Bytevi
  */
 public class DeviceOS {
+
     private static String OS = System.getProperty("os.name").toLowerCase();
-    
+
     public static boolean isWindows() {
         return OS.contains("win");
     }
@@ -27,7 +28,7 @@ public class DeviceOS {
     public static boolean isSolaris() {
         return OS.contains("sunos");
     }
-    public static String getOS(){
+    public static String getOS() {
         if (isWindows()) {
             return "win";
         } else if (isMac()) {

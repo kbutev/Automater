@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
  * @author Bytevi
  */
 public class EditMacroForm extends javax.swing.JFrame implements BaseView {
+
     // UI callbacks
     public SimpleCallback onBackButtonCallback = SimpleCallback.createDoNothing();
     public SimpleCallback onSaveButtonCallback = SimpleCallback.createDoNothing();
@@ -212,18 +213,16 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
 
     private void macroActionsListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_macroActionsListMouseClicked
         int selectedIndex = macroActionsList.getSelectedIndex();
-        
+
         selectedMacroAt(selectedIndex);
-        
+
         // Click event
-        if (evt.getClickCount() == 1)
-        {
+        if (evt.getClickCount() == 1) {
             onClickItem.perform(_selectedIndex);
         }
-        
+
         // Double click event
-        if (evt.getClickCount() == 2)
-        {
+        if (evt.getClickCount() == 2) {
             onDoubleClickItem.perform(_selectedIndex);
         }
     }//GEN-LAST:event_macroActionsListMouseClicked
@@ -266,21 +265,21 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
             }
         });
     }
-    
+
     private void setup() {
         ViewUtilities.setAppIconForFrame(this);
-        
+
         this.setTitle(TextValue.getText(TextValue.Edit_FormTitle));
-        
+
         backButton.setText(TextValue.getText(TextValue.Edit_BackButtonTitle));
-        
+
         actionsLabel.setText(TextValue.getText(TextValue.Edit_Actions));
         descriptionLabel.setText(TextValue.getText(TextValue.Edit_Description));
-        
+
         deleteButton.setText(TextValue.getText(TextValue.Edit_Delete));
         editButton.setText(TextValue.getText(TextValue.Edit_Edit));
         createButton.setText(TextValue.getText(TextValue.Edit_Create));
-        
+
         DocumentListener listener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -300,9 +299,9 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
                 onNameChangedCallback.perform(name);
             }
         };
-        
+
         macroNameField.getDocument().addDocumentListener(listener);
-        
+
         listener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -322,118 +321,99 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
                 onDescriptionChangedCallback.perform(description);
             }
         };
-        
+
         macroDescriptionTextArea.getDocument().addDocumentListener(listener);
     }
-    
+
     @Override
-    public void onViewStart() 
-    {
-        
+    public void onViewStart() {
+
     }
 
     @Override
-    public void onViewSuspended() 
-    {
-        
+    public void onViewSuspended() {
+
     }
 
     @Override
-    public void onViewResume() 
-    {
-        
+    public void onViewResume() {
+
     }
 
     @Override
-    public void onViewTerminate() 
-    {
-        
+    public void onViewTerminate() {
+
     }
 
     @Override
-    public void reloadData() 
-    {
-        
+    public void reloadData() {
+
     }
-    
+
     // # Public
-    
-    public @NotNull String getMacroName()
-    {
+    public @NotNull
+    String getMacroName() {
         return macroNameField.getText();
     }
-    
-    public @NotNull String getMacroDescription()
-    {
+
+    public @NotNull
+    String getMacroDescription() {
         return macroDescriptionTextArea.getText();
     }
-    
-    public void setListDataSource(@NotNull StandardDescriptionsDataSource dataSource)
-    {
+
+    public void setListDataSource(@NotNull StandardDescriptionsDataSource dataSource) {
         _dataSource = dataSource;
-        
+
         macroActionsList.setModel(_dataSource);
-        
+
         macroActionsList.clearSelection();
     }
-    
-    public int getSelectedIndex()
-    {
+
+    public int getSelectedIndex() {
         return _selectedIndex;
     }
-    
-    public void setMacroInfo(@NotNull String macroName, @NotNull String macroDescription)
-    {
+
+    public void setMacroInfo(@NotNull String macroName, @NotNull String macroDescription) {
         macroNameLabel.setText(TextValue.getText(TextValue.Edit_Name));
         macroNameField.setText(macroName);
         macroDescriptionTextArea.setText(macroDescription);
     }
-    
-    public void setMacroDataSource(@NotNull StandardDescriptionsDataSource macroActionsDataSource)
-    {
+
+    public void setMacroDataSource(@NotNull StandardDescriptionsDataSource macroActionsDataSource) {
         macroActionsList.setModel(macroActionsDataSource);
     }
-    
-    public void deselectAll()
-    {
+
+    public void deselectAll() {
         macroActionsList.clearSelection();
     }
-    
+
     // # Private
-    
-    private void selectedMacroAt(int index)
-    {
-        if (_selectedIndex == index)
-        {
+    private void selectedMacroAt(int index) {
+        if (_selectedIndex == index) {
             return;
         }
-        
+
         _selectedIndex = index;
-        
-        if (_selectedIndex == -1)
-        {
+
+        if (_selectedIndex == -1) {
             disableEditing();
-        }
-        else
-        {
+        } else {
             enableEditing();
         }
-        
+
         onSelectItem.perform(_selectedIndex);
     }
-    
-    private void enableEditing()
-    {
+
+    private void enableEditing() {
         deleteButton.setEnabled(true);
         editButton.setEnabled(true);
     }
-    
-    private void disableEditing()
-    {
+
+    private void disableEditing() {
         deleteButton.setEnabled(false);
         editButton.setEnabled(false);
     }
-    
+
     private int _selectedIndex = -1;
     private @Nullable StandardDescriptionsDataSource _dataSource;
 

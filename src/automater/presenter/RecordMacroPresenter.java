@@ -25,24 +25,27 @@ import org.jetbrains.annotations.Nullable;
  * @author Bytevi
  */
 public interface RecordMacroPresenter {
-    
+
     interface Delegate {
+
         void onError(@NotNull Exception e);
-        
+
         void onLoadedPreferencesFromStorage(@NotNull automater.storage.PreferencesStorageValues values);
-        
+
         void onStartRecording(@Nullable Object sender);
         void onEndRecording(@Nullable Object sender);
         void onRecordingSaved(boolean success);
     }
-    
+
     interface Protocol extends Presenter<Delegate> {
+
         void beginRecording(@Nullable Object sender);
         void endRecording(@Nullable Object sender);
         void saveRecording(@NotNull String name, @NotNull String description);
     }
-    
+
     class Impl implements Protocol, EventMonitor.Listener, HotkeyMonitor.Listener {
+
         private final GeneralStorage.Protocol storage = DI.get(GeneralStorage.Protocol.class);
         private final CapturedEventParser.Protocol parser = DI.get(CapturedEventParser.Protocol.class);
 
@@ -50,7 +53,7 @@ public interface RecordMacroPresenter {
 
         private final EventMonitor.Protocol recorder = new EventMonitor.Impl();
         private final HotkeyMonitor.Protocol actionHotkeyMonitor;
-        
+
         private final @NotNull ArrayList<EventDescription> events = new ArrayList<>();
 
         public Impl() {
@@ -58,7 +61,6 @@ public interface RecordMacroPresenter {
         }
 
         // # BasePresenter
-
         @Override
         public void start() {
             if (delegate == null) {
@@ -73,7 +75,7 @@ public interface RecordMacroPresenter {
                 delegate.onError(e);
             }
         }
-        
+
         @Override
         public void stop() {
             Logger.message(this, "Stop");
@@ -84,7 +86,7 @@ public interface RecordMacroPresenter {
                 delegate.onError(e);
             }
         }
-        
+
         @Override
         public @Nullable Delegate getDelegate() {
             return delegate;
@@ -97,14 +99,12 @@ public interface RecordMacroPresenter {
         }
 
         @Override
-        public void reloadData()
-        {
+        public void reloadData() {
 
         }
-        
+
         @Override
-        public void beginRecording(@Nullable Object sender)
-        {
+        public void beginRecording(@Nullable Object sender) {
             Logger.messageEvent(this, "Starting recording...");
 
             if (delegate != null) {
@@ -113,35 +113,31 @@ public interface RecordMacroPresenter {
         }
 
         @Override
-        public void endRecording(@Nullable Object sender)
-        {
+        public void endRecording(@Nullable Object sender) {
             if (delegate != null) {
                 delegate.onEndRecording(sender);
             }
         }
 
         @Override
-        public void saveRecording(@NotNull String name, @NotNull String description)
-        {
+        public void saveRecording(@NotNull String name, @NotNull String description) {
             if (delegate != null) {
                 delegate.onRecordingSaved(true);
             }
         }
 
         // # EventMonitor.Listener
-
         @Override
         public void onEventEmitted(@NotNull CapturedEvent event) {
             try {
                 var description = parser.parseToDescription(event);
                 events.add(description);
             } catch (Exception e) {
-                
+
             }
         }
 
         // # HotkeyMonitor.Listener
-
         @Override
         public void onHotkeyEvent(KeyEventKind kind) {
             if (recorder.isRecording()) {

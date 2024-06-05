@@ -5,8 +5,7 @@
 package automater.parser;
 
 import automater.di.DI;
-import automater.model.action.ScriptAction;
-import automater.model.action.ScriptActionDescription;
+import automater.model.action.MacroActionDescription;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -17,27 +16,30 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
+import automater.model.action.MacroAction;
 
 /**
- * Parsers script actions and other related data.
+ * Parsers macro actions and other related data.
  * @author Kristiyan Butev
  */
-public interface ScriptActionsParser {
+public interface MacroActionsParser {
     
     interface Protocol {
-        @NotNull List<ScriptActionDescription> parseToDescription(@NotNull List<ScriptAction> actions) throws Exception;
         
-        @NotNull List<ScriptAction> parseFromJSON(@NotNull JsonElement json) throws Exception;
-        @NotNull JsonElement parseToJSON(@NotNull List<ScriptAction> actions) throws Exception;
+        @NotNull List<MacroActionDescription> parseToDescription(@NotNull List<MacroAction> actions) throws Exception;
+        
+        @NotNull List<MacroAction> parseFromJSON(@NotNull JsonElement json) throws Exception;
+        @NotNull JsonElement parseToJSON(@NotNull List<MacroAction> actions) throws Exception;
     }
     
     class Impl implements Protocol {
+        
         final Gson gson = DI.get(Gson.class);
-        final ScriptActionParser.Impl internal = new ScriptActionParser.Impl();
+        final MacroActionParser.Impl internal = new MacroActionParser.Impl();
         
         @Override
-        public @NotNull List<ScriptActionDescription> parseToDescription(@NotNull List<ScriptAction> actions) throws Exception {
-            var result = new ArrayList<ScriptActionDescription>();
+        public @NotNull List<MacroActionDescription> parseToDescription(@NotNull List<MacroAction> actions) throws Exception {
+            var result = new ArrayList<MacroActionDescription>();
             
             for (var action : actions) {
                 result.add(internal.parseToDescription(action));
@@ -47,7 +49,7 @@ public interface ScriptActionsParser {
         }
         
         @Override
-        public @NotNull List<ScriptAction> parseFromJSON(@NotNull JsonElement json) throws Exception {
+        public @NotNull List<MacroAction> parseFromJSON(@NotNull JsonElement json) throws Exception {
             if (!(json instanceof JsonArray array)) {
                 throw new JsonSyntaxException("Invalid json");
             }
@@ -56,13 +58,13 @@ public interface ScriptActionsParser {
                 return new ArrayList();
             }
             
-            var type = array.get(0).getAsJsonObject().get(ScriptActionParser.Keys.TYPE).getAsString();
+            var type = array.get(0).getAsJsonObject().get(MacroActionParser.Keys.TYPE).getAsString();
             
             if (type == null) {
                 throw new JsonSyntaxException("Invalid action");
             }
             
-            var match = ScriptActionParser.type_mappings.get(type);
+            var match = MacroActionParser.type_mappings.get(type);
             
             if (match != null) {
                 var jsonString = array.toString();
@@ -76,7 +78,7 @@ public interface ScriptActionsParser {
         }
         
         @Override
-        public @NotNull JsonElement parseToJSON(@NotNull List<ScriptAction> actions) throws Exception {
+        public @NotNull JsonElement parseToJSON(@NotNull List<MacroAction> actions) throws Exception {
             if (actions.isEmpty()) {
                 return new JsonObject();
             }
@@ -85,7 +87,7 @@ public interface ScriptActionsParser {
             var first = actions.get(0);
             
             if (result instanceof JsonArray array) {
-                array.get(0).getAsJsonObject().addProperty(ScriptActionParser.Keys.TYPE, first.getActionType());
+                array.get(0).getAsJsonObject().addProperty(MacroActionParser.Keys.TYPE, first.getActionType());
                 return array;
             }
             

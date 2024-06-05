@@ -10,8 +10,8 @@ package automater.ui.viewcontroller;
  * @author Bytevi
  */
 public interface BaseViewController {
-    public void start();
-    public void resume();
-    public void suspend();
-    public void terminate();
+    void start();
+    void resume();
+    void suspend();
+    void terminate();
 }

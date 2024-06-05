@@ -19,12 +19,13 @@ import org.jetbrains.annotations.Nullable;
  * @author Bytevi
  */
 public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
+
     // UI callbacks
     public SimpleCallback onSwitchToPlayButtonCallback = SimpleCallback.createDoNothing();
     public SimpleCallback onRecordMacroButtonCallback = SimpleCallback.createDoNothing();
     public SimpleCallback onStopRecordMacroButtonCallback = SimpleCallback.createDoNothing();
     public Callback<String> onSaveMacroButtonCallback = Callback.createDoNothing();
-    
+
     /**
      * Creates new form RecordForm
      */
@@ -215,166 +216,141 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
             }
         });
     }
-    
+
     private void setup() {
         ViewUtilities.setAppIconForFrame(this);
-        
+
         this.setTitle(TextValue.getText(TextValue.Record_FormTitle));
-        
+
         headerText.setText(TextValue.getText(TextValue.Record_HeaderText));
-        
+
         switchToOpenMacrosButton.setText(TextValue.getText(TextValue.Record_SwitchToOpenButtonTitle));
         switchToOpenMacrosButton.setToolTipText(TextValue.getText(TextValue.Record_SwitchToOpenButtonTip));
-        
+
         macroActionsListName.setText(TextValue.getText(TextValue.Record_MacroActionListName));
-        
+
         macroNameField.setText(TextValue.getText(TextValue.Record_MacroNameFieldDefaultText));
         macroNameField.setToolTipText(TextValue.getText(TextValue.Record_MacroNameFieldTip));
-        
+
         macroStateLabel.setText(TextValue.getText(TextValue.Record_IdleStatus, recordOrStopHotkey));
-        
+
         saveMacroButton.setText(TextValue.getText(TextValue.Record_SaveButton));
         saveMacroButton.setToolTipText(TextValue.getText(TextValue.Record_SaveButtonDisabledTip));
-        
+
         updateRecordState();
     }
-    
+
     // # GenericView
-    
     @Override
-    public void onViewStart()
-    {
+    public void onViewStart() {
         macroActionsList.setModel(StandardDescriptionsDataSource.createGeneric());
     }
-    
+
     @Override
-    public void onViewSuspended()
-    {
-        
+    public void onViewSuspended() {
+
     }
-    
+
     @Override
-    public void onViewResume()
-    {
+    public void onViewResume() {
         macroActionsList.setModel(StandardDescriptionsDataSource.createGeneric());
-        
+
         switchToOpenMacrosButton.setSelected(false);
-        
+
         macroNameField.setText(TextValue.getText(TextValue.Record_MacroNameFieldDefaultText));
         macroDescriptionField.setText("");
     }
-    
+
     @Override
-    public void onViewTerminate()
-    {
-        
+    public void onViewTerminate() {
+
     }
-    
+
     @Override
-    public void reloadData()
-    {
-        
+    public void reloadData() {
+
     }
-    
+
     // # Public properties getters/setters
-    
-    public boolean isRecording()
-    {
+    public boolean isRecording() {
         return _isRecording;
     }
-    
-    public String getMacroName()
-    {
+
+    public String getMacroName() {
         return macroNameField.getText();
     }
-    
-    public String getMacroDescription()
-    {
+
+    public String getMacroDescription() {
         return macroDescriptionField.getText();
     }
-    
-    public void setListDataSource(@NotNull StandardDescriptionsDataSource dataSource)
-    {
+
+    public void setListDataSource(@NotNull StandardDescriptionsDataSource dataSource) {
         macroActionsList.setModel(dataSource);
-        
+
         scrollToBottom();
     }
-    
+
     // # Public UI operations
-    
-    public void willSwitchToPlayWindow()
-    {
-        if (_isRecording)
-        {
+    public void willSwitchToPlayWindow() {
+        if (_isRecording) {
             Logger.warning(this, "Switching to play screen while recording is not allowed.");
         }
     }
-    
-    public void beginRecording(@Nullable Object sender)
-    {
+
+    public void beginRecording(@Nullable Object sender) {
         _isRecording = true;
         _recordStartCount++;
         macroNameField.setEnabled(false);
         switchToOpenMacrosButton.setEnabled(false);
         saveMacroButton.setEnabled(false);
-        
+
         updateRecordState();
     }
-    
-    public void endRecording(@Nullable Object sender)
-    {
+
+    public void endRecording(@Nullable Object sender) {
         _isRecording = false;
         macroNameField.setEnabled(true);
         switchToOpenMacrosButton.setEnabled(true);
         saveMacroButton.setEnabled(true);
-        
+
         updateRecordState();
     }
-    
-    public void willSaveRecording()
-    {
-        
+
+    public void willSaveRecording() {
+
     }
-    
-    public void displayError(@NotNull String title, @NotNull String message)
-    {
+
+    public void displayError(@NotNull String title, @NotNull String message) {
         AlertWindows.showErrorMessage(getParent(), title, message, "Ok");
     }
-    
-    public void setRecordOrStopHotkeyText(@NotNull Hotkey hotkey)
-    {
+
+    public void setRecordOrStopHotkeyText(@NotNull Hotkey hotkey) {
         recordOrStopHotkey = hotkey.toString();
-        
+
         macroStateLabel.setText(TextValue.getText(TextValue.Record_IdleStatus, recordOrStopHotkey));
     }
-    
-    public void scrollToBottom()
-    {
+
+    public void scrollToBottom() {
         javax.swing.JScrollBar sb = jScrollPane1.getVerticalScrollBar();
         sb.setValue(sb.getMaximum());
     }
-    
+
     // # Private
-    
-    private void updateRecordState()
-    {
-        if (!_isRecording)
-        {
+    private void updateRecordState() {
+        if (!_isRecording) {
             if (_recordStartCount == 0) {
                 recordMacroButton.setText(TextValue.getText(TextValue.Record_BeginRecordingButtonTitle));
             } else {
                 recordMacroButton.setText(TextValue.getText(TextValue.Record_RedoRecordingButtonTitle));
             }
-            
+
             recordMacroButton.setToolTipText(TextValue.getText(TextValue.Record_BeginRecordingButtonTip));
-        }
-        else
-        {
+        } else {
             recordMacroButton.setText(TextValue.getText(TextValue.Record_StopRecordingButtonTitle));
             recordMacroButton.setToolTipText(TextValue.getText(TextValue.Record_StopRecordingButtonTip));
         }
     }
-    
+
     // Private properties
     private boolean _isRecording = false;
     private int _recordStartCount = 0;

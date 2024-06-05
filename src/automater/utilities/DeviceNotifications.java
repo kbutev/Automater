@@ -11,101 +11,87 @@ import java.awt.TrayIcon.MessageType;
 
 /**
  * Contains functionality for the operating system notifications system.
- * 
+ *
  * OS have different types of notifications, but in this case the notifications
  * the "global" ones, the ones the are displayed usually in a form of a bubble
  * and almost always have some sort of history.
- * 
+ *
  * Should NOT be confused with temporary notifications that are visible for a
  * few seconds and are always "attached" to a specific app.
- * 
+ *
  * @author Bytevi
  */
 public class DeviceNotifications {
+
     public static final String NOTIFICATION_IMAGE_FILE = "notification_icon";
-    
+
     private static DeviceNotifications _singleton;
-    
+
     private final boolean _active;
-    @Nullable private final SystemTray _tray;
-    @Nullable private TrayIcon _icon;
-    
-    private DeviceNotifications()
-    {
+    private final @Nullable SystemTray _tray;
+    private @Nullable TrayIcon _icon;
+
+    private DeviceNotifications() {
         _active = SystemTray.isSupported();
-        
-        if (_active)
-        {
+
+        if (_active) {
             _tray = SystemTray.getSystemTray();
             createIconIfNecessary();
-        }
-        else
-        {
+        } else {
             _tray = null;
         }
     }
 
-    synchronized public static @NotNull DeviceNotifications getShared()
-    {
-        if (_singleton == null)
-        {
+    synchronized public static @NotNull DeviceNotifications getShared() {
+        if (_singleton == null) {
             _singleton = new DeviceNotifications();
         }
 
         return _singleton;
     }
-    
-    public void showTrayIcon()
-    {
-        if (!_active)
-        {
+
+    public void showTrayIcon() {
+        if (!_active) {
             return;
         }
-        
+
         createIconIfNecessary();
     }
-    
-    public void setTrayIconTooltip(String tooltip)
-    {
-        if (!_active)
-        {
+
+    public void setTrayIconTooltip(String tooltip) {
+        if (!_active) {
             return;
         }
-        
+
         _icon.setToolTip(tooltip);
     }
-    
-    public void displayGlobalNotification(String title, String message)
-    {
+
+    public void displayGlobalNotification(String title, String message) {
         displayGlobalNotification(title, message, MessageType.NONE);
     }
-    
-    public void displayGlobalNotification(String title, String message, MessageType type)
-    {
-        if (!_active)
-        {
+
+    public void displayGlobalNotification(String title, String message, MessageType type) {
+        if (!_active) {
             return;
         }
-        
+
         _icon.displayMessage(title, message, type);
     }
-    
-    private void createIconIfNecessary()
-    {
-        if (_icon != null)
-        {
+
+    private void createIconIfNecessary() {
+        if (_icon != null) {
             return;
         }
-        
+
         Image image = Toolkit.getDefaultToolkit().createImage(Resources.getImagePath(NOTIFICATION_IMAGE_FILE));
 
         _icon = new TrayIcon(image, "Automater");
         _icon.setImageAutoSize(true);
-        
+
         try {
             _tray.add(_icon);
         } catch (Exception e) {
-            
+
         }
     }
 }

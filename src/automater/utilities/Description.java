@@ -13,21 +13,22 @@ import org.jetbrains.annotations.Nullable;
  * @author Bytevi
  */
 public interface Description {
-    public @Nullable String getStandart();
-    public @Nullable String getVerbose();
-    public @Nullable String getStandartTooltip();
-    public @Nullable String getVerboseTooltip();
-    public @Nullable String getName();
-    public @Nullable String getDebug();
-    
-    public static @NotNull Description createFromString(@NotNull final String value)
+    @Nullable String getStandart();
+    @Nullable String getVerbose();
+    @Nullable String getStandartTooltip();
+    @Nullable String getVerboseTooltip();
+    @Nullable String getName();
+    @Nullable String getDebug();
+
+    public static @NotNull Description createFromString(@NotNull String value)
     {
         return new DescriptionString(value);
     }
 }
 
 class DescriptionString implements Description {
-    @NotNull private final String value;
+    
+    private final @NotNull String value;
     
     DescriptionString(@NotNull String value)
     {

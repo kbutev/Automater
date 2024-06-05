@@ -32,28 +32,27 @@ import java.util.Date;
  * @author Bytevi
  */
 public interface PlayMacroPresenter {
-    
+
     interface Delegate {
+
         void onError(@NotNull Exception e);
-        
         void onLoadedPreferencesFromStorage(@NotNull automater.storage.PreferencesStorageValues values);
         void onLoadedMacroFromStorage(@NotNull String macroName, @NotNull String macroDescription, @NotNull List<Description> macroActions);
-        
         void startPlaying();
         void stopPlaying(boolean wasCancelled);
-        
         void updatePlayStatus(@NotNull automater.work.model.ExecutorProgress progress);
     }
-    
+
     interface Protocol extends Presenter<Delegate> {
+
         void playMacro(@Nullable Object sender);
         void stopMacro(@Nullable Object sender);
         void setOptionValues(@NotNull automater.storage.PreferencesStorageValues values);
-        
         void navigateBack();
     }
-    
+
     class Impl implements Protocol, Executor.Listener, HotkeyMonitor.Listener {
+
         private final GeneralStorage.Protocol storage = DI.get(GeneralStorage.Protocol.class);
         private final Executor.Protocol executor = DI.get(Executor.Protocol.class);
 
@@ -67,8 +66,7 @@ public interface PlayMacroPresenter {
 
         private @NotNull PreferencesStorageValues options = new PreferencesStorageValues();
 
-        public Impl(@NotNull Macro macro)
-        {
+        public Impl(@NotNull Macro macro) {
             this.macro = macro;
             macroActionDescriptions = macro.actionDescriptions;
 
@@ -76,12 +74,9 @@ public interface PlayMacroPresenter {
         }
 
         // # BasePresenter
-
         @Override
-        public void start()
-        {
-            if (delegate == null)
-            {
+        public void start() {
+            if (delegate == null) {
                 throw Errors.delegateNotSet();
             }
 
@@ -94,15 +89,15 @@ public interface PlayMacroPresenter {
             options = storage.getPreferencesStorage().getValues();
             delegate.onLoadedPreferencesFromStorage(options);
         }
-        
+
         @Override
-        public void stop()
-        {
-            
+        public void stop() {
+
         }
 
         @Override
-        public @Nullable Delegate getDelegate() {
+        public @Nullable
+        Delegate getDelegate() {
             return delegate;
         }
 
@@ -113,60 +108,50 @@ public interface PlayMacroPresenter {
         }
 
         @Override
-        public void reloadData()
-        {
+        public void reloadData() {
 
         }
 
         // # BaseExecutorListener
-
         @Override
-        public void onStart(int numberOfActions)
-        {
+        public void onStart(int numberOfActions) {
             displayPlayingStartedNotification();
         }
 
         @Override
-        public void onActionExecute(@NotNull BaseAction action)
-        {
+        public void onActionExecute(@NotNull BaseAction action) {
             updatePlayStatus();
         }
 
         @Override
-        public void onActionUpdate(@NotNull BaseAction action)
-        {
+        public void onActionUpdate(@NotNull BaseAction action) {
             updatePlayStatus();
         }
 
         @Override
-        public void onActionFinish(@NotNull BaseAction action)
-        {
+        public void onActionFinish(@NotNull BaseAction action) {
             updatePlayStatus();
         }
 
         @Override
-        public void onWait()
-        {
+        public void onWait() {
             updatePlayStatus();
         }
 
         @Override
-        public void onRepeat(int numberOfTimesPlayed, int numberOfTimesToPlay)
-        {
+        public void onRepeat(int numberOfTimesPlayed, int numberOfTimesToPlay) {
             displayPlayingRepeatNotification(numberOfTimesPlayed, numberOfTimesToPlay);
         }
 
         @Override
-        public void onCancel()
-        {
+        public void onCancel() {
             Logger.message(this, "Playing was cancelled!");
 
             delegate.stopPlaying(true);
         }
 
         @Override
-        public void onFinish()
-        {
+        public void onFinish() {
             Logger.message(this, "Successfully finished playing!");
 
             displayPlayingFinishedNotification();
@@ -177,27 +162,24 @@ public interface PlayMacroPresenter {
         }
 
         // # HotkeyMonitor.Listener
-
         @Override
         public void onHotkeyEvent(@NotNull KeyEventKind kind) {
 
         }
 
         // # PlayMacroPresenter
-
         @Override
-        public void navigateBack()
-        {
+        public void navigateBack() {
             Logger.messageEvent(this, "Navigate back.");
-            
+
             try {
                 actionHotkeyMonitor.stop();
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
 
         @Override
-        public void playMacro(@Nullable Object sender)
-        {
+        public void playMacro(@Nullable Object sender) {
             Logger.messageEvent(this, "Play.");
 
             try {
@@ -222,10 +204,8 @@ public interface PlayMacroPresenter {
         }
 
         @Override
-        public void stopMacro(@Nullable Object sender)
-        {
-            if (ongoingExecution == null)
-            {
+        public void stopMacro(@Nullable Object sender) {
+            if (ongoingExecution == null) {
                 Logger.messageEvent(this, "No need to stop, already idle.");
                 return;
             }
@@ -245,8 +225,7 @@ public interface PlayMacroPresenter {
         }
 
         @Override
-        public void setOptionValues(@NotNull PreferencesStorageValues values)
-        {
+        public void setOptionValues(@NotNull PreferencesStorageValues values) {
             Logger.messageEvent(this, "Play parameters changed: " + values.macroParameters.toString());
 
             options = values;
@@ -256,11 +235,8 @@ public interface PlayMacroPresenter {
         }
 
         // # Private
-
-        private void updatePlayStatus()
-        {
-            if (ongoingExecution == null)
-            {
+        private void updatePlayStatus() {
+            if (ongoingExecution == null) {
                 return;
             }
 
@@ -269,10 +245,8 @@ public interface PlayMacroPresenter {
             delegate.updatePlayStatus(progress);
         }
 
-        private void displayPlayingStartedNotification()
-        {
-            if (!options.displayStartNotification)
-            {
+        private void displayPlayingStartedNotification() {
+            if (!options.displayStartNotification) {
                 return;
             }
 
@@ -285,10 +259,8 @@ public interface PlayMacroPresenter {
             DeviceNotifications.getShared().displayGlobalNotification(title, message);
         }
 
-        private void displayPlayingFinishedNotification()
-        {
-            if (!options.displayStopNotification)
-            {
+        private void displayPlayingFinishedNotification() {
+            if (!options.displayStopNotification) {
                 return;
             }
 
@@ -300,18 +272,15 @@ public interface PlayMacroPresenter {
             DeviceNotifications.getShared().displayGlobalNotification(title, message);
         }
 
-        private void displayPlayingRepeatNotification(int numberOfTimesPlayed, int numberOfTimesToPlay)
-        {
-            if (!options.displayRepeatNotification)
-            {
+        private void displayPlayingRepeatNotification(int numberOfTimesPlayed, int numberOfTimesToPlay) {
+            if (!options.displayRepeatNotification) {
                 return;
             }
 
             String macroName = macro.name;
             String timesPlayed = String.valueOf(numberOfTimesPlayed) + "/" + String.valueOf(numberOfTimesToPlay);
 
-            if (options.macroParameters.repeatForever)
-            {
+            if (options.macroParameters.repeatForever) {
                 timesPlayed = TextValue.getText(TextValue.Play_NotificationRepeatForever);
             }
 

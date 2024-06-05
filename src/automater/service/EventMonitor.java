@@ -15,35 +15,38 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public interface EventMonitor {
-    
+
     interface Protocol {
+
         @Nullable Listener getListener();
         void setListener(@NotNull Listener listener);
         @Nullable EventFilter getFilter();
         void setFilter(@NotNull EventFilter filter);
-        
+
         boolean isRecording();
         @NotNull List<CapturedEvent> getCapturedEvents();
-        
+
         void start() throws Exception;
         void stop() throws Exception;
     }
-    
+
     interface Listener {
+
         void onEventEmitted(@NotNull CapturedEvent event);
     }
-    
+
     class Impl implements Protocol, NativeEventMonitor.Listener {
+
         private final NativeEventMonitor.Protocol nativeMonitor;
         private @Nullable Listener listener;
         private final ArrayList<CapturedEvent> capturedEvents = new ArrayList<>();
-        
+
         private final RunState state = new RunState();
-        
+
         public Impl() {
             nativeMonitor = NativeEventMonitor.build();
         }
-        
+
         @Override
         public Listener getListener() {
             return listener;
@@ -53,46 +56,45 @@ public interface EventMonitor {
         public void setListener(@NotNull Listener listener) {
             this.listener = listener;
         }
-        
+
         @Override
-        public @Nullable EventFilter getFilter() {
+        public @Nullable
+        EventFilter getFilter() {
             return nativeMonitor.getFilter();
         }
-        
+
         @Override
         public void setFilter(@NotNull EventFilter filter) {
             this.nativeMonitor.setFilter(filter);
         }
-        
+
         @Override
         public boolean isRecording() {
             return state.isStarted();
         }
 
         @Override
-        public @NotNull List<CapturedEvent> getCapturedEvents() {
+        public @NotNull
+        List<CapturedEvent> getCapturedEvents() {
             return CollectionUtilities.copy(capturedEvents);
         }
-        
+
         @Override
-        public void start() throws Exception
-        {
+        public void start() throws Exception {
             capturedEvents.clear();
             nativeMonitor.start();
         }
 
         @Override
-        public void stop() throws Exception
-        {
+        public void stop() throws Exception {
             nativeMonitor.stop();
         }
-        
-        // # NativeEventMonitor.Listener
 
+        // # NativeEventMonitor.Listener
         @Override
         public void onParseEvent(@NotNull CapturedEvent event) {
             capturedEvents.add(event);
-            
+
             if (listener != null) {
                 listener.onEventEmitted(event);
             }
@@ -100,7 +102,7 @@ public interface EventMonitor {
 
         @Override
         public void onInputDataChange() {
-            
+
         }
 
         @Override

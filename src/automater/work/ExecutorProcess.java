@@ -26,45 +26,49 @@ import java.util.List;
 
 /**
  * Performs a given number of actions, one by one, when the time is right.
- * 
- * Has a state. When created, the process is idle.
- * Once started, the process can never be restarted, it is a one time execution.
- * 
- * The state can be read by using these methods:
- * isIdle() - waiting to start
+ *
+ * Has a state. When created, the process is idle. Once started, the process can
+ * never be restarted, it is a one time execution.
+ *
+ * The state can be read by using these methods: isIdle() - waiting to start
  * isWaiting() - is waiting for specific time to perform next actions
  * isFinished() - performed all actions or was stopped manually
- * 
- * The Executor.Listener delegate methods are always called on the java AWT queue.
- * 
+ *
+ * The Executor.Listener delegate methods are always called on the java AWT
+ * queue.
+ *
  * Note for subclasses: Only the public and protected methods are thread safe.
- * 
+ *
  * @author Bytevi
  */
 public interface ExecutorProcess {
-    
-    static ExecutorProcess.Protocol create(@NotNull Robot robot, @NotNull List<BaseAction> actions, @NotNull ExecutorTimer.Protocol timer)
-    {
+
+    static ExecutorProcess.Protocol create(@NotNull Robot robot, @NotNull List<BaseAction> actions, @NotNull ExecutorTimer.Protocol timer) {
         try {
             return new ExecutorProcess.Impl(robot, actions, timer);
         } catch (Exception e) {
 
         }
-        
+
         return null;
     }
-    
+
     interface Protocol {
+
         boolean isIdle();
         boolean isWaiting();
         boolean isFinished();
 
-        @Nullable Macro getMacro();
+        @Nullable
+        Macro getMacro();
 
-        @Nullable BaseActionProcess getCurrentActionProcess();
-        @Nullable BaseActionProcess getPreviousActionProcess();
+        @Nullable
+        BaseActionProcess getCurrentActionProcess();
+        @Nullable
+        BaseActionProcess getPreviousActionProcess();
 
-        @NotNull ExecutorProgress getProgress();
+        @NotNull
+        ExecutorProgress getProgress();
 
         void setExecutorTimer(@NotNull ExecutorTimer.Protocol timer);
         void setListener(@NotNull Executor.Listener listener);
@@ -72,8 +76,9 @@ public interface ExecutorProcess {
         void start(@NotNull Macro macro, @NotNull MacroParameters parameters) throws Exception;
         void stop() throws Exception;
     }
-    
+
     class Impl implements Protocol, LooperClient, ExecutorProgress {
+
         @NotNull private final Object _lock = new Object();
 
         // Basic
@@ -100,10 +105,8 @@ public interface ExecutorProcess {
         // Timer
         @Nullable private Date _previousDate;
 
-        protected Impl(@NotNull Robot robot, @NotNull List<BaseAction> actions, @NotNull ExecutorTimer.Protocol timer) throws Exception
-        {
-            if (actions.isEmpty())
-            {
+        protected Impl(@NotNull Robot robot, @NotNull List<BaseAction> actions, @NotNull ExecutorTimer.Protocol timer) throws Exception {
+            if (actions.isEmpty()) {
                 throw Errors.invalidArgument("actions");
             }
 
@@ -115,91 +118,71 @@ public interface ExecutorProcess {
         }
 
         // # BaseExecutorProcess
-
         @Override
-        public boolean isIdle()
-        {
-            synchronized (_lock)
-            {
+        public boolean isIdle() {
+            synchronized (_lock) {
                 return _currentActionProcess == null;
             }
         }
 
         @Override
-        public boolean isWaiting()
-        {
-            synchronized (_lock)
-            {
+        public boolean isWaiting() {
+            synchronized (_lock) {
                 return _currentActionProcess == null && !isFinished();
             }
         }
 
         @Override
-        public boolean isFinished()
-        {
-            synchronized (_lock)
-            {
+        public boolean isFinished() {
+            synchronized (_lock) {
                 return _finished;
             }
         }
 
         @Override
-        public @Nullable Macro getMacro()
-        {
+        public @Nullable Macro getMacro() {
             return _macro;
         }
 
         @Override
-        public @Nullable BaseActionProcess getCurrentActionProcess()
-        {
-            synchronized (_lock)
-            {
+        public @Nullable BaseActionProcess getCurrentActionProcess() {
+            synchronized (_lock) {
                 return _currentActionProcess;
             }
         }
 
         @Override
-        public @Nullable BaseActionProcess getPreviousActionProcess()
-        {
-            synchronized (_lock)
-            {
+        public @Nullable BaseActionProcess getPreviousActionProcess() {
+            synchronized (_lock) {
                 return _previousActionProcess;
             }
         }
 
         @Override
-        public @NotNull ExecutorProgress getProgress()
-        {
+        public @NotNull ExecutorProgress getProgress() {
             return this;
         }
 
         @Override
-        public void setExecutorTimer(@NotNull ExecutorTimer.Protocol timer)
-        {
-            synchronized (_lock)
-            {
+        public void setExecutorTimer(@NotNull ExecutorTimer.Protocol timer) {
+            synchronized (_lock) {
                 _timer = timer;
             }
         }
 
         @Override
-        public void setListener(@NotNull Executor.Listener listener)
-        {
-            synchronized (_lock)
-            {
+        public void setListener(@NotNull Executor.Listener listener) {
+            synchronized (_lock) {
                 _listener = new ListenerDelegate(listener);
             }
         }
 
         @Override
-        public void start(@NotNull Macro macro, @NotNull MacroParameters parameters) throws Exception
-        {
+        public void start(@NotNull Macro macro, @NotNull MacroParameters parameters) throws Exception {
             Logger.messageEvent(this, "Start.");
 
-            synchronized (_lock)
-            {
-                if (_started)
-                {
+            synchronized (_lock) {
+                if (_started) {
                     throw Errors.alreadyStarted();
                 }
 
@@ -232,19 +215,15 @@ public interface ExecutorProcess {
         }
 
         @Override
-        public void stop() throws Exception
-        {
+        public void stop() throws Exception {
             Logger.messageEvent(this, "Stopping executor process...");
 
-            synchronized (_lock)
-            {
-                if (!_started)
-                {
+            synchronized (_lock) {
+                if (!_started) {
                     throw Errors.internalLogicError();
                 }
 
-                if (_finished)
-                {
+                if (_finished) {
                     throw Errors.internalLogicError();
                 }
 
@@ -253,20 +232,16 @@ public interface ExecutorProcess {
         }
 
         // # LooperClient
-
         @Override
-        public void loop()
-        {
+        public void loop() {
             // Cancel check first
             boolean shouldCancel;
 
-            synchronized (_lock)
-            {
+            synchronized (_lock) {
                 shouldCancel = shouldCancel();
             }
 
-            if (shouldCancel)
-            {
+            if (shouldCancel) {
                 cancel();
                 return;
             }
@@ -279,28 +254,23 @@ public interface ExecutorProcess {
                 e.printStackTrace(System.out);
 
                 // Cancel immediately upon catching update error
-                synchronized (_lock)
-                {
+                synchronized (_lock) {
                     _cancelled = true;
                 }
             }
         }
 
         // # ExecutorProgress
-
         @Override
         public @NotNull String getCurrentStatus() {
-            if (isFinished())
-            {
+            if (isFinished()) {
                 return TextValue.getText(TextValue.Play_StatusFinished);
             }
 
-            if (isWaiting())
-            {
+            if (isWaiting()) {
                 BaseActionProcess previous = getPreviousActionProcess();
 
-                if (previous == null)
-                {
+                if (previous == null) {
                     return TextValue.getText(TextValue.Play_StatusWaiting);
                 }
 
@@ -309,15 +279,13 @@ public interface ExecutorProcess {
 
             BaseActionProcess current = getCurrentActionProcess();
 
-            if (current == null)
-            {
+            if (current == null) {
                 return TextValue.getText(TextValue.Play_StatusIdle);
             }
 
             String actionDescription = current.getAction().getStandart();
 
-            if (getTimesWillPlay() > 1 && !isRepeatForever())
-            {
+            if (getTimesWillPlay() > 1 && !isRepeatForever()) {
                 int timesPlayed = getPlayCount();
                 int timesWillPlay = getTimesWillPlay();
 
@@ -330,23 +298,20 @@ public interface ExecutorProcess {
 
         @Override
         public double getPercentageDone() {
-            if (isFinished())
-            {
+            if (isFinished()) {
                 return 1;
             }
 
             long durationPassed = _timer.getDurationPassed();
             long duration = _timer.getTotalDuration();
 
-            double result = (double)durationPassed / (double)duration;
+            double result = (double) durationPassed / (double) duration;
 
-            if (result > 1)
-            {
+            if (result > 1) {
                 result = 1;
             }
 
-            if (result < 0)
-            {
+            if (result < 0) {
                 result = 0;
             }
 
@@ -357,13 +322,11 @@ public interface ExecutorProcess {
         public int getCurrentActionIndex() {
             BaseActionProcess process = getCurrentActionProcess();
 
-            if (process == null)
-            {
+            if (process == null) {
                 process = getPreviousActionProcess();
             }
 
-            if (process == null)
-            {
+            if (process == null) {
                 return 0;
             }
 
@@ -371,43 +334,35 @@ public interface ExecutorProcess {
         }
 
         // # Private properties
-
-        private int getPlayCount()
-        {
-            synchronized (_lock)
-            {
+        private int getPlayCount() {
+            synchronized (_lock) {
                 return _playCount;
             }
         }
 
-        private int getTimesWillPlay()
-        {
+        private int getTimesWillPlay() {
             return _parameters.repeatTimes + 1;
         }
 
-        private boolean isRepeatForever()
-        {
+        private boolean isRepeatForever() {
             return _parameters.repeatForever;
         }
 
         private @NotNull List<BaseAction> getRemainingActions(@Nullable BaseActionProcess previousAction) {
-            if (previousAction == null)
-            {
+            if (previousAction == null) {
                 return _actions;
             }
 
             int index = _actions.indexOf(previousAction.getAction());
 
-            if (index < 0)
-            {
+            if (index < 0) {
                 Logger.error(this, "Internal logic error in getRemainingActions() for action " + previousAction.toString());
                 return new ArrayList<>();
             }
 
             ArrayList<BaseAction> remaining = new ArrayList<>();
 
-            for (int e = index + 1; e < _actions.size(); e++) 
-            {
+            for (int e = index + 1; e < _actions.size(); e++) {
                 remaining.add(_actions.get(e));
             }
 
@@ -415,7 +370,7 @@ public interface ExecutorProcess {
         }
 
         private @NotNull BaseAction getLastAction() {
-            return _actions.get(_actions.size()-1);
+            return _actions.get(_actions.size() - 1);
         }
 
         private boolean isLastAction(@NotNull BaseAction action) {
@@ -423,11 +378,8 @@ public interface ExecutorProcess {
         }
 
         // # Lifecycle
-
-        protected void update() throws Exception
-        {
-            if (isFinished())
-            {
+        protected void update() throws Exception {
+            if (isFinished()) {
                 return;
             }
 
@@ -444,8 +396,7 @@ public interface ExecutorProcess {
             // Get a copy of the listener
             ListenerDelegate listener;
 
-            synchronized (_lock)
-            {
+            synchronized (_lock) {
                 listener = _listener;
             }
 
@@ -455,14 +406,11 @@ public interface ExecutorProcess {
             // Evaluate current action process
             BaseActionProcess currentActionProcess = getCurrentActionProcess();
 
-            if (currentActionProcess != null)
-            {
+            if (currentActionProcess != null) {
                 EvaluateActionResult result = evaluateCurrentAction(currentActionProcess, listener);
 
-                if (result.isFinished())
-                {
-                    synchronized (_lock)
-                    {
+                if (result.isFinished()) {
+                    synchronized (_lock) {
                         cleanupFinishedCurrentAction();
                     }
                 }
@@ -471,42 +419,35 @@ public interface ExecutorProcess {
             // Should perform next action?
             ShouldPerformNextResult performNextResult;
 
-            synchronized (_lock)
-            {
+            synchronized (_lock) {
                 performNextResult = shouldPerformNextAction();
             }
 
-            while (performNextResult.isTrue())
-            {
+            while (performNextResult.isTrue()) {
                 BaseAction nextAction = performNextResult.getNextAction();
 
                 ActionProcess actionProcess;
 
-                synchronized (_lock)
-                {
+                synchronized (_lock) {
                     actionProcess = preparePerformNextAction(nextAction);
                 }
 
                 PerformNextResult result = performNextAction(actionProcess, listener);
 
-                if (!result.isFinished())
-                {
+                if (!result.isFinished()) {
                     break;
                 }
 
-                synchronized (_lock)
-                {
+                synchronized (_lock) {
                     cleanupFinishedCurrentAction();
                     performNextResult = shouldPerformNextAction();
                 }
             }
 
             // Should finish?
-            if (shouldFinish())
-            {
+            if (shouldFinish()) {
                 // Repeat
-                if (shouldRepeat())
-                {
+                if (shouldRepeat()) {
                     repeat(listener.listener);
                     return;
                 }
@@ -518,10 +459,8 @@ public interface ExecutorProcess {
             }
 
             // Waiting?
-            if (isWaiting())
-            {
-                if (!wasWaitingWhenUpdateStarted)
-                {
+            if (isWaiting()) {
+                if (!wasWaitingWhenUpdateStarted) {
                     Logger.messageEvent(this, "Waiting for next action...");
 
                     // Listener alert
@@ -530,15 +469,13 @@ public interface ExecutorProcess {
             }
         }
 
-        protected void repeat(@Nullable Executor.Listener listener)
-        {
+        protected void repeat(@Nullable Executor.Listener listener) {
             int timesPlayed = getPlayCount();
             int timesWillPlay = getTimesWillPlay();
 
             Logger.messageEvent(this, "Repeat execution (" + timesPlayed + "/" + String.valueOf(timesWillPlay) + ")");
 
-            synchronized (_lock)
-            {
+            synchronized (_lock) {
                 _playCount += 1;
 
                 _currentActionProcess = null;
@@ -548,19 +485,16 @@ public interface ExecutorProcess {
             }
 
             // Listener alert
-            if (listener != null)
-            {
+            if (listener != null) {
                 listener.onRepeat(timesPlayed, timesWillPlay);
             }
         }
 
-        protected void finish(@Nullable Executor.Listener listener)
-        {
+        protected void finish(@Nullable Executor.Listener listener) {
             Logger.messageEvent(this, "Finish...");
 
             // Stop
-            synchronized (_lock)
-            {
+            synchronized (_lock) {
                 _finished = true;
 
                 // Reset values to their defaults
@@ -570,18 +504,15 @@ public interface ExecutorProcess {
             Logger.messageEvent(this, "Finished");
 
             // Listener alert
-            if (listener != null)
-            {
+            if (listener != null) {
                 listener.onFinish();
             }
         }
 
-        protected void cancel()
-        {
+        protected void cancel() {
             ListenerDelegate listener;
 
-            synchronized (_lock)
-            {
+            synchronized (_lock) {
                 listener = _listener;
 
                 _finished = true;
@@ -597,17 +528,14 @@ public interface ExecutorProcess {
         }
 
         // # Perform
-
-        private @NotNull EvaluateActionResult evaluateCurrentAction(@NotNull BaseActionProcess actionProcess, @NotNull ListenerDelegate listener)
-        {
+        private @NotNull EvaluateActionResult evaluateCurrentAction(@NotNull BaseActionProcess actionProcess, @NotNull ListenerDelegate listener) {
             BaseAction action = actionProcess.getAction();
 
             // Listener alert
             listener.onActionUpdate(action);
 
             // If inactive, the the process is finished
-            if (!actionProcess.isActive())
-            {
+            if (!actionProcess.isActive()) {
                 String actionDescription = action.getStandart();
 
                 Logger.messageEvent(this, "Finished action: " + actionDescription + "!");
@@ -621,15 +549,13 @@ public interface ExecutorProcess {
             return EvaluateActionResult.createInProgress();
         }
 
-        private @NotNull ActionProcess preparePerformNextAction(@NotNull BaseAction nextAction)
-        {
+        private @NotNull ActionProcess preparePerformNextAction(@NotNull BaseAction nextAction) {
             ActionProcess process = new ActionProcess(nextAction);
             _currentActionProcess = process;
             return process;
         }
 
-        private @NotNull PerformNextResult performNextAction(@NotNull ActionProcess actionProcess, @NotNull ListenerDelegate listener)
-        {
+        private @NotNull PerformNextResult performNextAction(@NotNull ActionProcess actionProcess, @NotNull ListenerDelegate listener) {
             BaseAction nextAction = actionProcess.getAction();
 
             boolean isComplex = nextAction.isComplex();
@@ -637,18 +563,12 @@ public interface ExecutorProcess {
 
             String actionDescription = nextAction.getStandart();
 
-            if (!isComplex && !waits)
-            {
+            if (!isComplex && !waits) {
                 Logger.messageEvent(this, "Perform next action: " + actionDescription);
-            }
-            else
-            {
-                if (!waits)
-                {
+            } else {
+                if (!waits) {
                     Logger.messageEvent(this, "Perform next complex action: " + actionDescription);
-                }
-                else
-                {
+                } else {
                     Logger.messageEvent(this, "Perform next wait action: " + actionDescription);
                 }
             }
@@ -667,8 +587,7 @@ public interface ExecutorProcess {
                 e.printStackTrace(System.out);
             }
 
-            if (actionProcess.isActive())
-            {
+            if (actionProcess.isActive()) {
                 return PerformNextResult.createInProgress();
             }
 
@@ -678,40 +597,32 @@ public interface ExecutorProcess {
             return PerformNextResult.createFinished();
         }
 
-        private void cleanupFinishedCurrentAction()
-        {
+        private void cleanupFinishedCurrentAction() {
             _previousActionProcess = _currentActionProcess;
             _currentActionProcess = null;
         }
 
         // # Validators
-
-        private boolean shouldCancel()
-        {
-            if (_finished)
-            {
+        private boolean shouldCancel() {
+            if (_finished) {
                 return false;
             }
 
             return _cancelled;
         }
 
-        private ShouldPerformNextResult shouldPerformNextAction()
-        {
-            if (_finished)
-            {
+        private ShouldPerformNextResult shouldPerformNextAction() {
+            if (_finished) {
                 return ShouldPerformNextResult.createProcessFinished();
             }
 
-            if (_currentActionProcess != null)
-            {
+            if (_currentActionProcess != null) {
                 return ShouldPerformNextResult.createWaitingForCurrent();
             }
 
             List<BaseAction> remainingActions = getRemainingActions(_previousActionProcess);
 
-            if (remainingActions.isEmpty())
-            {
+            if (remainingActions.isEmpty()) {
                 // All actions were performed, time to finish the process
                 return ShouldPerformNextResult.createProcessFinished();
             }
@@ -719,122 +630,103 @@ public interface ExecutorProcess {
             BaseAction nextAction = remainingActions.get(0);
 
             // Returns true if its time to perform next action, otherwise wait
-            if (_timer.canPerformNextAction(nextAction))
-            {
+            if (_timer.canPerformNextAction(nextAction)) {
                 return ShouldPerformNextResult.createNext(nextAction);
             }
 
             return ShouldPerformNextResult.createWaitingForNext();
         }
 
-        private boolean shouldFinish()
-        {
-            if (_finished)
-            {
+        private boolean shouldFinish() {
+            if (_finished) {
                 return false;
             }
 
-            if (_previousActionProcess == null)
-            {
+            if (_previousActionProcess == null) {
                 return false;
             }
 
             return isLastAction(_previousActionProcess.getAction());
         }
 
-        private boolean shouldRepeat()
-        {
+        private boolean shouldRepeat() {
             return _parameters.repeatForever || _playCount <= _parameters.repeatTimes;
         }
 
         // # Cleanup
-
-        private void cleanup()
-        {
-           _previousActionProcess = new ActionProcess(getLastAction());
-           _context.cleanup();
+        private void cleanup() {
+            _previousActionProcess = new ActionProcess(getLastAction());
+            _context.cleanup();
             _context = null;
-           _currentActionProcess = null;
-           _listener = new ListenerDelegate(null);
+            _currentActionProcess = null;
+            _listener = new ListenerDelegate(null);
             Looper.getShared().unsubscribe(this);
         }
     }
-    
+
     class EvaluateActionResult {
+
         private final boolean _finished;
 
-        public static EvaluateActionResult createInProgress()
-        {
+        public static EvaluateActionResult createInProgress() {
             return new EvaluateActionResult(false);
         }
 
-        public static EvaluateActionResult createFinished()
-        {
+        public static EvaluateActionResult createFinished() {
             return new EvaluateActionResult(true);
         }
 
-        private EvaluateActionResult(boolean finished)
-        {
+        private EvaluateActionResult(boolean finished) {
             _finished = finished;
         }
 
-        public boolean isFinished()
-        {
+        public boolean isFinished() {
             return _finished;
         }
     }
 
     class ShouldPerformNextResult {
+
         private final boolean _waiting;
         private final boolean _finished;
         private final BaseAction _next;
 
-        public static ShouldPerformNextResult createNext(@NotNull BaseAction next)
-        {
+        public static ShouldPerformNextResult createNext(@NotNull BaseAction next) {
             return new ShouldPerformNextResult(false, false, next);
         }
 
-        public static ShouldPerformNextResult createWaitingForCurrent()
-        {
+        public static ShouldPerformNextResult createWaitingForCurrent() {
             return new ShouldPerformNextResult(true, false, null);
         }
 
-        public static ShouldPerformNextResult createWaitingForNext()
-        {
+        public static ShouldPerformNextResult createWaitingForNext() {
             return new ShouldPerformNextResult(true, false, null);
         }
 
-        public static ShouldPerformNextResult createProcessFinished()
-        {
+        public static ShouldPerformNextResult createProcessFinished() {
             return new ShouldPerformNextResult(false, true, null);
         }
 
-        private ShouldPerformNextResult(boolean waiting, boolean finished, @Nullable BaseAction next)
-        {
+        private ShouldPerformNextResult(boolean waiting, boolean finished, @Nullable BaseAction next) {
             _waiting = waiting;
             _finished = finished;
             _next = next;
         }
 
-        public boolean isTrue()
-        {
+        public boolean isTrue() {
             return _next != null;
         }
 
-        public boolean isWaiting()
-        {
+        public boolean isWaiting() {
             return _waiting;
         }
 
-        public boolean isFinished()
-        {
+        public boolean isFinished() {
             return _finished;
         }
 
-        public @NotNull BaseAction getNextAction() throws Exception
-        {
-            if (_next == null)
-            {
+        public @NotNull BaseAction getNextAction() throws Exception {
+            if (_next == null) {
                 throw Errors.illegalStateError();
             }
 
@@ -843,41 +735,36 @@ public interface ExecutorProcess {
     }
 
     class PerformNextResult {
+
         private final boolean _finished;
 
-        public static PerformNextResult createInProgress()
-        {
+        public static PerformNextResult createInProgress() {
             return new PerformNextResult(false);
         }
 
-        public static PerformNextResult createFinished()
-        {
+        public static PerformNextResult createFinished() {
             return new PerformNextResult(true);
         }
 
-        private PerformNextResult(boolean finished)
-        {
+        private PerformNextResult(boolean finished) {
             _finished = finished;
         }
 
-        public boolean isFinished()
-        {
+        public boolean isFinished() {
             return _finished;
         }
     }
 
     class ListenerDelegate {
-        public @Nullable final Executor.Listener listener;
 
-        ListenerDelegate(@Nullable Executor.Listener listener)
-        {
+        public final @Nullable Executor.Listener listener;
+
+        ListenerDelegate(@Nullable Executor.Listener listener) {
             this.listener = listener;
         }
 
-        public void onStart(int repeatTimes)
-        {
-            if (listener == null)
-            {
+        public void onStart(int repeatTimes) {
+            if (listener == null) {
                 return;
             }
 
@@ -889,10 +776,8 @@ public interface ExecutorProcess {
             });
         }
 
-        public void onActionExecute(@NotNull BaseAction action)
-        {
-            if (listener == null)
-            {
+        public void onActionExecute(@NotNull BaseAction action) {
+            if (listener == null) {
                 return;
             }
 
@@ -904,10 +789,8 @@ public interface ExecutorProcess {
             });
         }
 
-        public void onActionUpdate(@NotNull BaseAction action)
-        {
-            if (listener == null)
-            {
+        public void onActionUpdate(@NotNull BaseAction action) {
+            if (listener == null) {
                 return;
             }
 
@@ -919,10 +802,8 @@ public interface ExecutorProcess {
             });
         }
 
-        public void onActionFinish(BaseAction action)
-        {
-            if (listener == null)
-            {
+        public void onActionFinish(BaseAction action) {
+            if (listener == null) {
                 return;
             }
 
@@ -934,10 +815,8 @@ public interface ExecutorProcess {
             });
         }
 
-        public void onWait()
-        {
-            if (listener == null)
-            {
+        public void onWait() {
+            if (listener == null) {
                 return;
             }
 
@@ -949,10 +828,8 @@ public interface ExecutorProcess {
             });
         }
 
-        public void onCancel()
-        {
-            if (listener == null)
-            {
+        public void onCancel() {
+            if (listener == null) {
                 return;
             }
 
@@ -964,10 +841,8 @@ public interface ExecutorProcess {
             });
         }
 
-        public void onRepeat(int numberOfTimesPlayed, int numberOfTimesToPlay)
-        {
-            if (listener == null)
-            {
+        public void onRepeat(int numberOfTimesPlayed, int numberOfTimesToPlay) {
+            if (listener == null) {
                 return;
             }
 
@@ -979,10 +854,8 @@ public interface ExecutorProcess {
             });
         }
 
-        public void onFinish()
-        {
-            if (listener == null)
-            {
+        public void onFinish() {
+            if (listener == null) {
                 return;
             }
 

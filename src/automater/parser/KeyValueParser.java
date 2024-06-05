@@ -19,6 +19,7 @@ public interface KeyValueParser {
     }
     
     class Impl implements Protocol {
+        
         @Override
         public @NotNull KeyValue parseFromString(@NotNull String value) {
             if (!value.startsWith("_")) {

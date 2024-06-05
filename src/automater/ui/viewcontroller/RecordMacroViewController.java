@@ -18,47 +18,46 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Record macro screen.
- * 
+ *
  * @author Bytevi
  */
 public class RecordMacroViewController implements BaseViewController, RecordMacroPresenter.Delegate {
+
     private final @NotNull RecordMacroPresenter.Protocol _presenter;
-    
+
     private final @NotNull RecordMacroForm _form;
-    
+
     private @Nullable StandardDescriptionsDataSource _dataSource;
-    
-    public RecordMacroViewController(@NotNull RecordMacroPresenter.Protocol presenter)
-    {
+
+    public RecordMacroViewController(@NotNull RecordMacroPresenter.Protocol presenter) {
         _presenter = presenter;
         _form = new RecordMacroForm();
     }
-    
-    private void setupViewCallbacks()
-    {
+
+    private void setupViewCallbacks() {
         var self = this;
-        
+
         _form.onSwitchToPlayButtonCallback = new SimpleCallback() {
             @Override
             public void perform() {
                 _presenter.stop();
             }
         };
-        
+
         _form.onRecordMacroButtonCallback = new SimpleCallback() {
             @Override
             public void perform() {
                 _presenter.beginRecording(self);
             }
         };
-        
+
         _form.onStopRecordMacroButtonCallback = new SimpleCallback() {
             @Override
             public void perform() {
                 _presenter.endRecording(self);
             }
         };
-        
+
         _form.onSaveMacroButtonCallback = new Callback<String>() {
             @Override
             public void perform(String argument) {
@@ -66,84 +65,73 @@ public class RecordMacroViewController implements BaseViewController, RecordMacr
             }
         };
     }
-    
+
     // # BaseViewController
-    
     @Override
-    public void start()
-    {
+    public void start() {
         setupViewCallbacks();
-        
+
         _form.setVisible(true);
         _form.onViewStart();
     }
-    
+
     @Override
-    public void resume()
-    {
+    public void resume() {
         _form.setVisible(true);
         _form.onViewResume();
     }
-    
+
     @Override
-    public void suspend()
-    {
+    public void suspend() {
         _form.setVisible(false);
         _form.onViewSuspended();
     }
-    
+
     @Override
-    public void terminate()
-    {
+    public void terminate() {
         _form.onViewTerminate();
         _form.dispatchEvent(new WindowEvent(_form, WindowEvent.WINDOW_CLOSING));
     }
-    
+
     // # RecordMacroPresenter.Delegate
-    
     @Override
-    public void onError(@NotNull Exception e)
-    {
+    public void onError(@NotNull Exception e) {
         Logger.error(this, "Error encountered: " + e.toString());
-        
+
         // Show message alert
         String textTitle = TextValue.getText(TextValue.Dialog_SaveRecordingFailedTitle);
         String textMessage = TextValue.getText(TextValue.Dialog_SaveRecordingFailedMessage, e.getMessage());
         String ok = TextValue.getText(TextValue.Dialog_OK);
-        
+
         AlertWindows.showErrorMessage(_form, textTitle, textMessage, ok);
     }
-    
+
     @Override
-    public void onLoadedPreferencesFromStorage(@NotNull automater.storage.PreferencesStorageValues values)
-    {
+    public void onLoadedPreferencesFromStorage(@NotNull automater.storage.PreferencesStorageValues values) {
         _form.setRecordOrStopHotkeyText(values.recordOrStopHotkey);
     }
-    
+
     @Override
-    public void onStartRecording(@Nullable Object sender)
-    {
+    public void onStartRecording(@Nullable Object sender) {
         _form.beginRecording(sender);
     }
-    
+
     @Override
-    public void onEndRecording(@Nullable Object sender)
-    {
+    public void onEndRecording(@Nullable Object sender) {
         _form.endRecording(sender);
     }
-    
+
     @Override
-    public void onRecordingSaved(boolean success)
-    {
+    public void onRecordingSaved(boolean success) {
         if (!success) {
             return;
         }
-        
+
         // Show message alert
         String textTitle = TextValue.getText(TextValue.Dialog_SavedRecordingTitle);
         String textMessage = TextValue.getText(TextValue.Dialog_SavedRecordingMessage);
         String ok = TextValue.getText(TextValue.Dialog_OK);
-        
+
         AlertWindows.showMessage(_form, textTitle, textMessage, ok, new SimpleCallback() {
             @Override
             public void perform() {

@@ -13,6 +13,7 @@ import javax.swing.event.DocumentListener;
  * @author Byti
  */
 public class EditMacroActionMouseMovePanel extends javax.swing.JPanel {
+
     // UI callbacks
     public Callback<String> onXValueChangedCallback = Callback.createDoNothing();
     public Callback<String> onYValueChangedCallback = Callback.createDoNothing();
@@ -77,8 +78,7 @@ public class EditMacroActionMouseMovePanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void setup()
-    {
+    private void setup() {
         DocumentListener listener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -95,9 +95,9 @@ public class EditMacroActionMouseMovePanel extends javax.swing.JPanel {
                 onXValueChangedCallback.perform(xField.getText());
             }
         };
-        
+
         xField.getDocument().addDocumentListener(listener);
-        
+
         listener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -114,10 +114,10 @@ public class EditMacroActionMouseMovePanel extends javax.swing.JPanel {
                 onYValueChangedCallback.perform(yField.getText());
             }
         };
-        
+
         yField.getDocument().addDocumentListener(listener);
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JTextField xField;
     public javax.swing.JLabel xLabel;

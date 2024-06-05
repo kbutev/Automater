@@ -10,13 +10,13 @@ import automater.model.KeyEventKind;
 import automater.model.KeyValue;
 import automater.model.Keystroke;
 import automater.model.Point;
-import automater.model.action.ScriptAction;
-import automater.model.action.ScriptHardwareAction;
-import automater.parser.ScriptActionParser;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import automater.model.action.MacroAction;
+import automater.model.action.MacroHardwareAction;
+import automater.parser.MacroActionParser;
 
 /**
  *
@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ScriptActionParserTests implements Constants {
     
     // Immutable.
-    ScriptActionParser.Protocol parser;
+    MacroActionParser.Protocol parser;
     
     public ScriptActionParserTests() {
     }
@@ -41,7 +41,7 @@ public class ScriptActionParserTests implements Constants {
 
     @org.junit.jupiter.api.BeforeEach
     public void setUp() throws Exception {
-        parser = DI.get(ScriptActionParser.Protocol.class);
+        parser = DI.get(MacroActionParser.Protocol.class);
     }
 
     @org.junit.jupiter.api.AfterEach
@@ -61,7 +61,7 @@ public class ScriptActionParserTests implements Constants {
         
         var result = parser.parseFromJSON(rawJSON);
         
-        if (result instanceof ScriptHardwareAction.Click action) {
+        if (result instanceof MacroHardwareAction.Click action) {
             assertTrue(action.actionType.equals("hardware.c"));
             assertTrue(action.timestamp == 1.0);
             assertTrue(action.kind == KeyEventKind.release);
@@ -73,7 +73,7 @@ public class ScriptActionParserTests implements Constants {
     @Test
     public void testClickParsing() throws Exception {
         // From object to json and back
-        var action = new ScriptHardwareAction.Click(0, KeyEventKind.press, new Keystroke(KeyValue._X));
+        var action = new MacroHardwareAction.Click(0, KeyEventKind.press, new Keystroke(KeyValue._X));
         
         if (!(parser.parseToJSON(action) instanceof JsonObject parsedJSON)) {
             throw new Exception("Invalid json");
@@ -88,7 +88,7 @@ public class ScriptActionParserTests implements Constants {
         
         var result = parser.parseFromJSON(parsedJSON);
         
-        if (result instanceof ScriptHardwareAction.Click parsedAction) {
+        if (result instanceof MacroHardwareAction.Click parsedAction) {
             assertTrue(parsedAction.actionType.equals(action.actionType));
             assertTrue(parsedAction.timestamp == action.timestamp);
             assertTrue(parsedAction.kind == action.kind);
@@ -111,7 +111,7 @@ public class ScriptActionParserTests implements Constants {
         
         var result = parser.parseFromJSON(json);
         
-        if (result instanceof ScriptHardwareAction.MouseMove action) {
+        if (result instanceof MacroHardwareAction.MouseMove action) {
             assertTrue(action.actionType.equals("hardware.mm"));
             assertTrue(action.timestamp == 2.0);
             assertTrue(action.point.x == 100);
@@ -124,7 +124,7 @@ public class ScriptActionParserTests implements Constants {
     @Test
     public void testMouseMoveParsing() throws Exception {
         // From object to json and back
-        var action = new ScriptHardwareAction.MouseMove(0, Point.make(10, 15));
+        var action = new MacroHardwareAction.MouseMove(0, Point.make(10, 15));
         
         if (!(parser.parseToJSON(action) instanceof JsonObject parsedJSON)) {
             throw new Exception("Invalid json");
@@ -138,7 +138,7 @@ public class ScriptActionParserTests implements Constants {
         
         var result = parser.parseFromJSON(parsedJSON);
         
-        if (result instanceof ScriptHardwareAction.MouseMove parsedAction) {
+        if (result instanceof MacroHardwareAction.MouseMove parsedAction) {
             assertTrue(parsedAction.actionType.equals(action.actionType));
             assertTrue(parsedAction.timestamp == action.timestamp);
             assertTrue(parsedAction.point.x == action.point.x);
@@ -167,7 +167,7 @@ public class ScriptActionParserTests implements Constants {
         
         var result = parser.parseFromJSON(json);
         
-        if (result instanceof ScriptHardwareAction.MouseScroll action) {
+        if (result instanceof MacroHardwareAction.MouseScroll action) {
             assertTrue(action.actionType.equals(JSONValues.MOUSE_SCROLL_TYPE));
             assertTrue(action.timestamp == 3.0);
             assertTrue(action.point.x == 200);
@@ -182,7 +182,7 @@ public class ScriptActionParserTests implements Constants {
     @Test
     public void testMouseScrollParsing() throws Exception {
         // From object to json and back
-        var action = new ScriptHardwareAction.MouseScroll(0, Point.make(10, 15), Point.make(0, 0.5f));
+        var action = new MacroHardwareAction.MouseScroll(0, Point.make(10, 15), Point.make(0, 0.5f));
         
         if (!(parser.parseToJSON(action) instanceof JsonObject parsedJSON)) {
             throw new Exception("Invalid json");
@@ -199,7 +199,7 @@ public class ScriptActionParserTests implements Constants {
         
         var result = parser.parseFromJSON(parsedJSON);
         
-        if (result instanceof ScriptHardwareAction.MouseScroll parsedAction) {
+        if (result instanceof MacroHardwareAction.MouseScroll parsedAction) {
             assertTrue(parsedAction.actionType.equals(action.actionType));
             assertTrue(parsedAction.timestamp == action.timestamp);
             assertTrue(parsedAction.point.x == action.point.x);

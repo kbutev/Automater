@@ -12,6 +12,7 @@ import automater.utilities.SimpleCallback;
  * @author Byti
  */
 public class EditMacroActionHotkeyPanel extends javax.swing.JPanel {
+
     // UI callbacks
     public SimpleCallback onHotkeyButtonCallback = SimpleCallback.createDoNothing();
     public Callback<Boolean> onPressCheckCallback = Callback.createDoNothing();
@@ -90,9 +91,8 @@ public class EditMacroActionHotkeyPanel extends javax.swing.JPanel {
         onPressCheckCallback.perform(pressCheck.isSelected());
     }//GEN-LAST:event_pressCheckActionPerformed
 
-    private void setup()
-    {
-        
+    private void setup() {
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

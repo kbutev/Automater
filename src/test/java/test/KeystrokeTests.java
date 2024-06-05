@@ -11,14 +11,14 @@ import automater.model.KeyModifier;
 import automater.model.KeyModifierValue;
 import automater.model.KeyValue;
 import automater.model.Keystroke;
-import automater.model.action.ScriptHardwareAction;
-import automater.parser.ScriptActionParser;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import automater.model.action.MacroHardwareAction;
+import automater.parser.MacroActionParser;
 
 /**
  *
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class KeystrokeTests {
     
     // Immutable.
-    ScriptActionParser.Protocol parser;
+    MacroActionParser.Protocol parser;
     
     public KeystrokeTests() {
     }
@@ -43,7 +43,7 @@ public class KeystrokeTests {
     
     @BeforeEach
     public void setUp() {
-        parser = DI.get(ScriptActionParser.Protocol.class);
+        parser = DI.get(MacroActionParser.Protocol.class);
     }
     
     @AfterEach
@@ -62,11 +62,11 @@ public class KeystrokeTests {
     @Test
     public void testParsing() throws Exception {
         var keystroke = new Keystroke(KeyValue._X, new KeyModifier(KeyModifierValue.ALT));
-        var a = new ScriptHardwareAction.Click(1.25, KeyEventKind.press, keystroke);
+        var a = new MacroHardwareAction.Click(1.25, KeyEventKind.press, keystroke);
         
         var json = parser.parseToJSON(a);
         
-        if (parser.parseFromJSON(json) instanceof ScriptHardwareAction.Click result) {
+        if (parser.parseFromJSON(json) instanceof MacroHardwareAction.Click result) {
             assertTrue(result.keystroke.equals(keystroke));
             assertTrue(result.keystroke.value.equals(KeyValue._X));
             assertFalse(result.keystroke.equals(new Keystroke(KeyValue._Z)));

@@ -39,9 +39,8 @@ public class EditMacroActionDoNothingPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void setup()
-    {
-        
+    private void setup() {
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

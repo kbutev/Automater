@@ -15,6 +15,7 @@ import javax.swing.event.DocumentListener;
  * @author Byti
  */
 public class EditMacroActionScreenshot extends javax.swing.JPanel {
+
     // UI callbacks
     public Callback<String> onPathChanged = Callback.createDoNothing();
     /**
@@ -68,8 +69,7 @@ public class EditMacroActionScreenshot extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void setup()
-    {
+    private void setup() {
         DocumentListener listener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -89,9 +89,9 @@ public class EditMacroActionScreenshot extends javax.swing.JPanel {
                 onPathChanged.perform(result);
             }
         };
-        
+
         pathField.getDocument().addDocumentListener(listener);
-        
+
         tipLabel.setText(TextValue.getText(EditAction_ScreenshotTip));
     }
 

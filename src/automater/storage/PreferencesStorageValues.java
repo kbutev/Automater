@@ -17,16 +17,16 @@ import java.io.Serializable;
  * @author Bytevi
  */
 public class PreferencesStorageValues implements Serializable {
+
     public Hotkey recordOrStopHotkey = getDefaultRecordOrStopHotkey();
     public Hotkey playOrStopHotkey = getDefaultPlayOrStopHotkey();
-    
+
     public boolean displayStartNotification = false;
     public boolean displayStopNotification = false;
     public boolean displayRepeatNotification = false;
     public MacroParameters macroParameters = new MacroParameters();
-    
-    public @NotNull PreferencesStorageValues copy()
-    {
+
+    public @NotNull PreferencesStorageValues copy() {
         PreferencesStorageValues copied = new PreferencesStorageValues();
         copied.displayStartNotification = displayStartNotification;
         copied.displayStopNotification = displayStopNotification;
@@ -34,18 +34,16 @@ public class PreferencesStorageValues implements Serializable {
         copied.macroParameters = macroParameters;
         return copied;
     }
-    
-    public static Hotkey getDefaultRecordOrStopHotkey()
-    {
+
+    public static @NotNull Hotkey getDefaultRecordOrStopHotkey() {
         InputKeyValue key = InputKeyValue.fromString(Strings.DEFAULT_RECORD_OR_STOP_HOTKEY);
-        
+
         return new Hotkey(key);
     }
-    
-    public static Hotkey getDefaultPlayOrStopHotkey()
-    {
+
+    public static @NotNull Hotkey getDefaultPlayOrStopHotkey() {
         InputKeyValue key = InputKeyValue.fromString(Strings.DEFAULT_PLAY_OR_STOP_HOTKEY);
-        
+
         return new Hotkey(key);
     }
 }

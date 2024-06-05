@@ -10,5 +10,5 @@ package automater.utilities;
  * @author Bytevi
  */
 public interface LooperClient {
-    public void loop();
+    void loop();
 }

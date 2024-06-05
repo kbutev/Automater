@@ -15,14 +15,16 @@ import org.jetbrains.annotations.NotNull;
  * @author Kristiyan Butev
  */
 public class EventFilter {
+
     boolean keyboard = false;
     boolean mouseKeys = false;
     boolean mouseMove = false;
     boolean mouseScroll = false;
-    
+
     ArrayList<Keystroke> keystrokes = new ArrayList<>();
-    
-    public @NotNull EventFilter copy() {
+
+    public @NotNull
+    EventFilter copy() {
         var result = new EventFilter();
         result.keyboard = keyboard;
         result.keystrokes = CollectionUtilities.copy(keystrokes);
@@ -31,14 +33,14 @@ public class EventFilter {
         result.mouseScroll = mouseScroll;
         return result;
     }
-    
+
     public boolean filtersOut(@NotNull CapturedEvent event) {
         if (event instanceof CapturedHardwareEvent.Click key) {
-            if ((!keyboard && key.keystroke.isKeyboard()) || 
-                    (!mouseKeys && key.keystroke.isMouse())) {
+            if ((!keyboard && key.keystroke.isKeyboard())
+                    || (!mouseKeys && key.keystroke.isMouse())) {
                 return true;
             }
-            
+
             for (var keystroke : keystrokes) {
                 if (key.keystroke.equals(keystroke)) {
                     return true;
@@ -53,7 +55,7 @@ public class EventFilter {
                 return true;
             }
         }
-        
+
         return false;
     }
 }

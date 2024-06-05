@@ -17,10 +17,11 @@ import javax.swing.event.DocumentListener;
  * @author Bytevi
  */
 public class PlayMacroOptionsDialog extends javax.swing.JDialog {
+
     // UI callbacks
     public SimpleCallback onCancelButtonCallback = SimpleCallback.createDoNothing();
     public SimpleCallback onSaveButtonCallback = SimpleCallback.createDoNothing();
-    
+
     /**
      * Creates new form PlayMacroOptionsDialog
      */
@@ -199,21 +200,21 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
             }
         });
     }
-    
+
     private void setup() {
         this.setTitle(TextValue.getText(TextValue.PlayOptions_Title));
-        
+
         cancelButton.setText(TextValue.getText(TextValue.PlayOptions_CancelButtonTitle));
         saveButton.setText(TextValue.getText(TextValue.PlayOptions_SaveButtonTitle));
-        
+
         startNotificationCheck.setText(TextValue.getText(TextValue.PlayOptions_NotificationPlay));
         stopNotificationCheck.setText(TextValue.getText(TextValue.PlayOptions_NotificationStop));
         repeatNotificationCheck.setText(TextValue.getText(TextValue.PlayOptions_NotificationRepeat));
-        
+
         playSpeedLabel.setText(TextValue.getText(TextValue.PlayOptions_PlaySpeed));
         repeatLabel.setText(TextValue.getText(TextValue.PlayOptions_Repeat));
         repeatForeverCheck.setText(TextValue.getText(TextValue.PlayOptions_RepeatForever));
-        
+
         DocumentListener listener = new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -230,95 +231,77 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
                 updateOkButtonState();
             }
         };
-        
+
         playSpeedField.getDocument().addDocumentListener(listener);
         repeatField.getDocument().addDocumentListener(listener);
     }
-    
+
     // # Public
-    
-    public void setupWithStorageValues(@NotNull PreferencesStorageValues values)
-    {
+    public void setupWithStorageValues(@NotNull PreferencesStorageValues values) {
         startNotificationCheck.setSelected(values.displayStartNotification);
         stopNotificationCheck.setSelected(values.displayStopNotification);
         repeatNotificationCheck.setSelected(values.displayRepeatNotification);
-        
+
         playSpeedField.setText(String.valueOf(values.macroParameters.playSpeed));
         repeatField.setText(String.valueOf(values.macroParameters.repeatTimes));
         repeatForeverCheck.setSelected(values.macroParameters.repeatForever);
     }
-    
-    public boolean isNotificationStartChecked()
-    {
+
+    public boolean isNotificationStartChecked() {
         return startNotificationCheck.isSelected();
     }
-    
-    public boolean isNotificationStopChecked()
-    {
+
+    public boolean isNotificationStopChecked() {
         return stopNotificationCheck.isSelected();
     }
-    
-    public boolean isNotificationRepeatChecked()
-    {
+
+    public boolean isNotificationRepeatChecked() {
         return repeatNotificationCheck.isSelected();
     }
-    
-    public double getPlaySpeedValue()
-    {
-        if (optionsAreValid)
-        {
+
+    public double getPlaySpeedValue() {
+        if (optionsAreValid) {
             return Double.parseDouble(playSpeedField.getText());
         }
-        
+
         return 0;
     }
-    
-    public int getRepeatValue()
-    {
-        if (optionsAreValid)
-        {
+
+    public int getRepeatValue() {
+        if (optionsAreValid) {
             return Integer.parseInt(repeatField.getText());
         }
-        
+
         return 0;
     }
-    
-    public boolean isRepeatForeverChecked()
-    {
+
+    public boolean isRepeatForeverChecked() {
         return repeatForeverCheck.isSelected();
     }
-    
+
     // # Private
-    
-    private void updateOkButtonState()
-    {
+    private void updateOkButtonState() {
         optionsAreValid = true;
-        
-        if (!StringFormatting.isStringANumber(playSpeedField.getText()))
-        {
+
+        if (!StringFormatting.isStringANumber(playSpeedField.getText())) {
             optionsAreValid = false;
-        } 
-        else if (playSpeedField.getText().length() > 3)
-        {
+        } else if (playSpeedField.getText().length() > 3) {
             optionsAreValid = false;
-        } else 
-        {
+        } else {
             double playSpeedValue = getPlaySpeedValue();
-            
-            if (playSpeedValue <= 0.0)
-            {
+
+            if (playSpeedValue <= 0.0) {
                 optionsAreValid = false;
             }
         }
-        
-        if (!StringFormatting.isStringANonNegativeInt(repeatField.getText()))
-        {
+
+        if (!StringFormatting.isStringANonNegativeInt(repeatField.getText())) {
             optionsAreValid = false;
         }
-        
+
         saveButton.setEnabled(optionsAreValid);
     }
-    
+
     private boolean optionsAreValid = true;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

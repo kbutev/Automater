@@ -6,9 +6,7 @@ package automater.parser;
 
 import automater.di.DI;
 import automater.json.JSONDecoder;
-import automater.model.action.ScriptAction;
-import automater.model.action.ScriptActionDescription;
-import automater.model.action.ScriptHardwareAction;
+import automater.model.action.MacroActionDescription;
 import automater.model.event.CapturedEvent;
 import automater.model.event.CapturedHardwareEvent;
 import com.google.gson.Gson;
@@ -21,54 +19,58 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
+import automater.model.action.MacroAction;
+import automater.model.action.MacroHardwareAction;
 
 /**
- * Parsers script actions and other related data.
+ * Parsers macro actions and other related data.
  * @author Kristiyan Butev
  */
-public interface ScriptActionParser {
+public interface MacroActionParser {
     
     class Keys {
         static final String TYPE = "a";
     }
     
     interface Protocol {
-        @NotNull ScriptAction parseFromCapturedEvent(@NotNull CapturedEvent event) throws Exception;
-        @NotNull ScriptActionDescription parseToDescription(@NotNull ScriptAction action) throws Exception;
         
-        @NotNull ScriptAction parseFromJSON(@NotNull JsonElement json) throws Exception;
-        @NotNull JsonElement parseToJSON(@NotNull ScriptAction event) throws Exception;
+        @NotNull MacroAction parseFromCapturedEvent(@NotNull CapturedEvent event) throws Exception;
+        @NotNull MacroActionDescription parseToDescription(@NotNull MacroAction action) throws Exception;
+        
+        @NotNull MacroAction parseFromJSON(@NotNull JsonElement json) throws Exception;
+        @NotNull JsonElement parseToJSON(@NotNull MacroAction event) throws Exception;
     }
     
     class Impl implements Protocol {
+        
         final Gson gson = DI.get(Gson.class);
         
         @Override
-        public @NotNull ScriptAction parseFromCapturedEvent(@NotNull CapturedEvent event) throws Exception {
+        public @NotNull MacroAction parseFromCapturedEvent(@NotNull CapturedEvent event) throws Exception {
             if (event instanceof CapturedHardwareEvent.Click eventObject) {
-                return new ScriptHardwareAction.Click(eventObject.timestamp, eventObject.kind, eventObject.keystroke);
+                return new MacroHardwareAction.Click(eventObject.timestamp, eventObject.kind, eventObject.keystroke);
             }
             
             throw new UnsupportedOperationException("Unrecognizable event");
         }
         
         @Override
-        public @NotNull ScriptActionDescription parseToDescription(@NotNull ScriptAction action) throws Exception {
+        public @NotNull MacroActionDescription parseToDescription(@NotNull MacroAction action) throws Exception {
             var timestamp = String.format("%.1f", action.getTimestamp());
             
-            if (action instanceof ScriptHardwareAction.Click click) {
-                return new ScriptActionDescription(timestamp, "click", click.keystroke.toString());
-            } else if (action instanceof ScriptHardwareAction.MouseMove mmove) {
-                return new ScriptActionDescription(timestamp, "mouse move", mmove.point.toString());
-            } else if (action instanceof ScriptHardwareAction.MouseScroll scroll) {
-                return new ScriptActionDescription(timestamp, "mouse scroll", scroll.scroll.toString());
+            if (action instanceof MacroHardwareAction.Click click) {
+                return new MacroActionDescription(timestamp, "click", click.keystroke.toString());
+            } else if (action instanceof MacroHardwareAction.MouseMove mmove) {
+                return new MacroActionDescription(timestamp, "mouse move", mmove.point.toString());
+            } else if (action instanceof MacroHardwareAction.MouseScroll scroll) {
+                return new MacroActionDescription(timestamp, "mouse scroll", scroll.scroll.toString());
             }
             
             throw new UnsupportedOperationException("Unrecognizable native event");
         }
         
         @Override
-        public @NotNull ScriptAction parseFromJSON(@NotNull JsonElement json) throws Exception {
+        public @NotNull MacroAction parseFromJSON(@NotNull JsonElement json) throws Exception {
             if (!(json instanceof JsonObject jsonObject)) {
                 throw new JsonSyntaxException("Invalid json");
             }
@@ -93,7 +95,7 @@ public interface ScriptActionParser {
         }
         
         @Override
-        public @NotNull JsonObject parseToJSON(@NotNull ScriptAction event) throws Exception {
+        public @NotNull JsonObject parseToJSON(@NotNull MacroAction event) throws Exception {
             var result = gson.toJsonTree(event);
             
             if (result instanceof JsonObject jsonObject) {
@@ -106,6 +108,7 @@ public interface ScriptActionParser {
     }
     
     class ClassMapping {
+        
         Type type;
         Type listType;
         JSONDecoder decoder;
@@ -120,9 +123,8 @@ public interface ScriptActionParser {
     }
     
     // Action types mapped to their respective class types
-    final static Map<String, ClassMapping> type_mappings = Map.of(
-        ScriptHardwareAction.Click.TYPE, ClassMapping.make(ScriptHardwareAction.Click.class),
-        ScriptHardwareAction.MouseMove.TYPE, ClassMapping.make(ScriptHardwareAction.MouseMove.class),
-        ScriptHardwareAction.MouseScroll.TYPE, ClassMapping.make(ScriptHardwareAction.MouseScroll.class)
+    final static Map<String, ClassMapping> type_mappings = Map.of(MacroHardwareAction.Click.TYPE, ClassMapping.make(MacroHardwareAction.Click.class),
+        MacroHardwareAction.MouseMove.TYPE, ClassMapping.make(MacroHardwareAction.MouseMove.class),
+        MacroHardwareAction.MouseScroll.TYPE, ClassMapping.make(MacroHardwareAction.MouseScroll.class)
     );
 }

@@ -15,31 +15,27 @@ import org.jetbrains.annotations.NotNull;
  * @author Bytevi
  */
 public class Hotkey {
-    @NotNull public final InputKey key;
-    
-    public Hotkey(@NotNull InputKey key)
-    {
+
+    public final @NotNull InputKey key;
+
+    public Hotkey(@NotNull InputKey key) {
         this.key = key;
     }
-    
-    public Hotkey(@NotNull InputKeyValue keyValue)
-    {
+
+    public Hotkey(@NotNull InputKeyValue keyValue) {
         this.key = new InputKey(keyValue);
     }
-    
-    public boolean isEqualTo(@NotNull InputKey key)
-    {
-        if (!key.modifiers.equals(InputKeyModifiers.none()))
-        {
+
+    public boolean isEqualTo(@NotNull InputKey key) {
+        if (!key.modifiers.equals(InputKeyModifiers.none())) {
             return false;
         }
-        
+
         return this.key.equals(key);
     }
-    
+
     @Override
-    public String toString()
-    {
+    public String toString() {
         return key.toString();
     }
 }

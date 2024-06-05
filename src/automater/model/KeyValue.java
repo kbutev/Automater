@@ -4,8 +4,6 @@
  */
 package automater.model;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * Represents a keyboard or mouse key value.
  * 

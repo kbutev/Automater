@@ -12,6 +12,8 @@ import org.jetbrains.annotations.NotNull;
  * @author Bytevi
  */
 public interface InputKeyClick extends Input {
+
     public @NotNull InputKey getKeyValue();
+
     public boolean isPress();
 }

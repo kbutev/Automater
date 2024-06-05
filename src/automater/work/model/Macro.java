@@ -19,41 +19,39 @@ import java.util.List;
 
 /**
  * A collection of system actions such as user input and system operations.
- * 
+ *
  * @author Bytevi
  */
 public class Macro implements Serializable, Description {
-    @NotNull public final String name;
-    @NotNull public final List<BaseAction> actions;
-    @NotNull public final List<Description> actionDescriptions;
-    @NotNull private String description = "";
-    @NotNull public final Date dateCreated;
+
+    public final @NotNull String name;
+    public final @NotNull List<BaseAction> actions;
+    public final @NotNull List<Description> actionDescriptions;
+    private @NotNull String description = "";
+    public final @NotNull Date dateCreated;
     private int numberOfTimesPlayed = 0;
-    @NotNull private Date lastDatePlayed;
-    @NotNull public final Dimension screenSize;
-    
-    public Macro(@NotNull String name, @NotNull List<BaseAction> actions, @NotNull Date dateCreated, @NotNull Dimension screenSize)
-    {
+    private @NotNull Date lastDatePlayed;
+    public final @NotNull Dimension screenSize;
+
+    public Macro(@NotNull String name, @NotNull List<BaseAction> actions, @NotNull Date dateCreated, @NotNull Dimension screenSize) {
         this(name, actions, dateCreated, dateCreated, screenSize);
     }
-    
-    public Macro(@NotNull String name, @NotNull List<BaseAction> actions, @NotNull Date dateCreated, @NotNull Date lastDatePlayed, @NotNull Dimension screenSize)
-    {
+
+    public Macro(@NotNull String name, @NotNull List<BaseAction> actions, @NotNull Date dateCreated, @NotNull Date lastDatePlayed, @NotNull Dimension screenSize) {
         this.name = name;
         this.actions = CollectionUtilities.copyAsImmutable(actions);
-        
+
         ArrayList<Description> descriptions = new ArrayList<>();
         descriptions.addAll(actions);
         this.actionDescriptions = CollectionUtilities.copyAsImmutable(descriptions);
-        
+
         this.dateCreated = dateCreated;
         this.lastDatePlayed = lastDatePlayed;
-        
+
         this.screenSize = screenSize;
     }
-    
-    // # Description
 
+    // # Description
     @Override
     public @Nullable String getStandart() {
         return name;
@@ -66,28 +64,24 @@ public class Macro implements Serializable, Description {
         String stringLastPlayedOn = TextValue.getText(TextValue.Open_LastPlayedOn, DateUtilities.asStandartDate(lastDatePlayed));
         String stringNumTimesPlayed = TextValue.getText(TextValue.Open_NumTimesPlayed, String.valueOf(numberOfTimesPlayed));
         String stringHasNeverBeenPlayed = TextValue.getText(TextValue.Open_HasNeverBeenPlayed);
-        
+
         String string = "<html>";
-        
-        if (description.length() > 0)
-        {
+
+        if (description.length() > 0) {
             string += description;
             string += "<br>";
         }
-        
+
         string += stringNumOfActions + "<br>";
-        
+
         string += stringCreatedOn + "<br>";
-        
-        if (dateCreated.before(lastDatePlayed))
-        {
+
+        if (dateCreated.before(lastDatePlayed)) {
             string += stringLastPlayedOn + "; " + stringNumTimesPlayed;
-        }
-        else
-        {
+        } else {
             string += stringHasNeverBeenPlayed;
         }
-        
+
         return string;
     }
 
@@ -110,46 +104,38 @@ public class Macro implements Serializable, Description {
     public @Nullable String getDebug() {
         return getVerbose();
     }
-    
+
     // # Public
-    
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
-    
-    public void setDescription(@Nullable String description)
-    {
+
+    public void setDescription(@Nullable String description) {
         this.description = description != null ? description : "";
     }
-    
-    public int getNumberOfActions()
-    {
+
+    public int getNumberOfActions() {
         return actions.size();
     }
-    
-    public int getNumberOfTimesPlayed()
-    {
+
+    public int getNumberOfTimesPlayed() {
         return this.numberOfTimesPlayed;
     }
-    
-    public void setNumberOfTimesPlayed(int value)
-    {
+
+    public void setNumberOfTimesPlayed(int value) {
         this.numberOfTimesPlayed = value;
     }
-    
-    public void incrementNumberOfTimesPlayed()
-    {
+
+    public void incrementNumberOfTimesPlayed() {
         this.numberOfTimesPlayed++;
     }
-    
-    public @NotNull Date getLastTimePlayedDate()
-    {
+
+    public @NotNull
+    Date getLastTimePlayedDate() {
         return this.lastDatePlayed;
     }
-    
-    public void setLastTimePlayedDate(@NotNull Date date)
-    {
+
+    public void setLastTimePlayedDate(@NotNull Date date) {
         this.lastDatePlayed = date;
     }
 }

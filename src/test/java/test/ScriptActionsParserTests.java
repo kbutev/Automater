@@ -9,13 +9,13 @@ import automater.di.DISetup;
 import automater.model.KeyEventKind;
 import automater.model.KeyValue;
 import automater.model.Keystroke;
-import automater.model.action.ScriptAction;
-import automater.model.action.ScriptHardwareAction;
-import automater.parser.ScriptActionsParser;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import automater.model.action.MacroAction;
+import automater.model.action.MacroHardwareAction;
+import automater.parser.MacroActionsParser;
 
 /**
  *
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ScriptActionsParserTests implements Constants {
     
     // Immutable.
-    ScriptActionsParser.Protocol parser;
+    MacroActionsParser.Protocol parser;
     
     public ScriptActionsParserTests() {
     }
@@ -40,7 +40,7 @@ public class ScriptActionsParserTests implements Constants {
 
     @org.junit.jupiter.api.BeforeEach
     public void setUp() throws Exception {
-        parser = DI.get(ScriptActionsParser.Protocol.class);
+        parser = DI.get(MacroActionsParser.Protocol.class);
     }
 
     @org.junit.jupiter.api.AfterEach
@@ -50,34 +50,34 @@ public class ScriptActionsParserTests implements Constants {
     @Test
     public void testOfClicksParsing() throws Exception {
         // From object to json and back
-        var list = new ArrayList<ScriptAction>();
-        var first = new ScriptHardwareAction.Click(1.25, KeyEventKind.press, new Keystroke(KeyValue._X));
-        var second = new ScriptHardwareAction.Click(2.2, KeyEventKind.release, new Keystroke(KeyValue._X));
-        var third = new ScriptHardwareAction.Click(3, KeyEventKind.tap, new Keystroke(KeyValue._Z));
+        var list = new ArrayList<MacroAction>();
+        var first = new MacroHardwareAction.Click(1.25, KeyEventKind.press, new Keystroke(KeyValue._X));
+        var second = new MacroHardwareAction.Click(2.2, KeyEventKind.release, new Keystroke(KeyValue._X));
+        var third = new MacroHardwareAction.Click(3, KeyEventKind.tap, new Keystroke(KeyValue._Z));
         list.add(first);
         list.add(second);
         list.add(third);
         
         var json = parser.parseToJSON(list);
         
-        list = (ArrayList<ScriptAction>)new ArrayList(parser.parseFromJSON(json));
+        list = (ArrayList<MacroAction>)new ArrayList(parser.parseFromJSON(json));
         assertTrue(list.size() == 3);
         
-        if (list.get(0) instanceof ScriptHardwareAction.Click a1) {
+        if (list.get(0) instanceof MacroHardwareAction.Click a1) {
             assertTrue(a1.timestamp == first.timestamp);
             assertTrue(a1.keystroke.equals(first.keystroke));
         } else {
             assertTrue(false);
         }
         
-        if (list.get(1) instanceof ScriptHardwareAction.Click a2) {
+        if (list.get(1) instanceof MacroHardwareAction.Click a2) {
             assertTrue(a2.timestamp == second.timestamp);
             assertTrue(a2.keystroke.equals(second.keystroke));
         } else {
             assertTrue(false);
         }
         
-        if (list.get(2) instanceof ScriptHardwareAction.Click a3) {
+        if (list.get(2) instanceof MacroHardwareAction.Click a3) {
             assertTrue(a3.timestamp == third.timestamp);
             assertTrue(a3.keystroke.equals(third.keystroke));
         } else {

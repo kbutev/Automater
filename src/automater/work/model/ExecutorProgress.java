@@ -8,14 +8,15 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Holds information for how far an execution has made it.
- * 
+ *
  * This is for the UI mostly.
  *
  * @author Bytevi
  */
 public interface ExecutorProgress {
-    public @NotNull String getCurrentStatus();
-    
-    public double getPercentageDone();
-    public int getCurrentActionIndex();
+
+    @NotNull String getCurrentStatus();
+
+    double getPercentageDone();
+    int getCurrentActionIndex();
 }

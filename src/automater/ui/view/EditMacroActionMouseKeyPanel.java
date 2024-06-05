@@ -17,6 +17,7 @@ import javax.swing.event.ListDataListener;
  * @author Byti
  */
 public class EditMacroActionMouseKeyPanel extends javax.swing.JPanel {
+
     // UI callbacks
     public Callback<String> onSelectedValueCallback = Callback.createDoNothing();
     public Callback<Boolean> onPressCheckCallback = Callback.createDoNothing();
@@ -91,43 +92,37 @@ public class EditMacroActionMouseKeyPanel extends javax.swing.JPanel {
 
     private void mouseKeysDropActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mouseKeysDropActionPerformed
         int selectedIndex = mouseKeysDrop.getSelectedIndex();
-        
-        if (selectedIndex == -1)
-        {
+
+        if (selectedIndex == -1) {
             return;
         }
-        
+
         String value = _model.dataSource.getElementAt(selectedIndex);
         onSelectedValueCallback.perform(value);
     }//GEN-LAST:event_mouseKeysDropActionPerformed
 
-    private void setup()
-    {
-        
+    private void setup() {
+
     }
-    
-    public void setSpecificValues(@NotNull List<String> values)
-    {
+
+    public void setSpecificValues(@NotNull List<String> values) {
         _model = new EditMacroActionMouseKeyPressModel(values);
-        
+
         mouseKeysDrop.setModel(_model);
     }
-    
-    public void selectSpecificValue(@NotNull String value)
-    {
-        if (_model == null)
-        {
+
+    public void selectSpecificValue(@NotNull String value) {
+        if (_model == null) {
             return;
         }
-        
+
         int index = _model.dataSource.indexOf(value);
-            
-        if (index != -1)
-        {
+
+        if (index != -1) {
             mouseKeysDrop.setSelectedIndex(index);
         }
     }
-    
+
     // # Private
     private EditMacroActionMouseKeyPressModel _model;
 
@@ -139,67 +134,58 @@ public class EditMacroActionMouseKeyPanel extends javax.swing.JPanel {
 }
 
 class EditMacroActionMouseKeyPressModel implements ComboBoxModel {
+
     @NotNull public final StandardDescriptionsDataSource dataSource;
-    
+
     private int _selectedIndex = 0;
-    
-    public EditMacroActionMouseKeyPressModel(@NotNull List<String> values)
-    {
+
+    public EditMacroActionMouseKeyPressModel(@NotNull List<String> values) {
         this.dataSource = parseValues(values);
     }
-    
+
     @Override
-    public void setSelectedItem(Object anItem) 
-    {
-        int index = dataSource.indexOf((String)anItem);
+    public void setSelectedItem(Object anItem) {
+        int index = dataSource.indexOf((String) anItem);
         _selectedIndex = index;
     }
 
     @Override
-    public Object getSelectedItem() 
-    {
-        if (_selectedIndex == -1)
-        {
+    public Object getSelectedItem() {
+        if (_selectedIndex == -1) {
             return null;
         }
-        
+
         return dataSource.getElementAt(_selectedIndex);
     }
 
     @Override
-    public int getSize()
-    {
+    public int getSize() {
         return dataSource.getSize();
     }
 
     @Override
-    public Object getElementAt(int index)
-    {
+    public Object getElementAt(int index) {
         return dataSource.getElementAt(index);
     }
 
     @Override
-    public void addListDataListener(ListDataListener l)
-    {
-        
+    public void addListDataListener(ListDataListener l) {
+
     }
 
     @Override
-    public void removeListDataListener(ListDataListener l)
-    {
-        
+    public void removeListDataListener(ListDataListener l) {
+
     }
-    
-    public static @NotNull StandardDescriptionsDataSource parseValues(@NotNull List<String> values)
-    {
+
+    public static @NotNull
+    StandardDescriptionsDataSource parseValues(@NotNull List<String> values) {
         ArrayList<Description> actions = new ArrayList<>();
-        
-        for (int e = 0; e < values.size(); e++)
-        {
+
+        for (int e = 0; e < values.size(); e++) {
             actions.add(Description.createFromString(values.get(e)));
         }
-        
+
         return StandardDescriptionsDataSource.createDataSourceForStandartText(actions);
     }
 }
-

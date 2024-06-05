@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public enum TimeType {
     milliseconds, seconds, minutes, hours, days;
-    
+
     // Basic construction method.
     // Use this over the built-in valueOf() method.
     static public TimeType fromStringValue(String value) {
@@ -29,7 +29,7 @@ public enum TimeType {
                 return TimeType.valueOf(value);
         }
     }
-    
+
     // Returns list of ms, sec, minutes and hours.
     static public List<TimeType> listOfSimpleTypes() {
         ArrayList l = new ArrayList();
@@ -39,7 +39,7 @@ public enum TimeType {
         l.add(TimeType.hours);
         return l;
     }
-    
+
     public String stringValue() {
         switch (this) {
             case milliseconds:
@@ -56,20 +56,20 @@ public enum TimeType {
                 return "sec";
         }
     }
-    
+
     // If the given string cannot be parsed to a number, zero is returned.
     public @NotNull TimeValue asTimeFromString(@NotNull String value) {
         double d;
-        
+
         try {
             d = Double.parseDouble(value);
         } catch (Exception e) {
             return TimeValue.zero();
         }
-        
+
         switch (this) {
             case milliseconds:
-                return TimeValue.fromMilliseconds((long)d);
+                return TimeValue.fromMilliseconds((long) d);
             case seconds:
                 return TimeValue.fromSeconds(d);
             case minutes:
@@ -82,7 +82,7 @@ public enum TimeType {
                 return TimeValue.zero();
         }
     }
-    
+
     public @NotNull String asStringFromTime(@NotNull TimeValue time) {
         switch (this) {
             case milliseconds:

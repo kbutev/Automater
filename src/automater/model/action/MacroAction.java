@@ -10,10 +10,10 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author Kristiyan Butev
  */
-public interface ScriptAction {
+public interface MacroAction {
     
     @NotNull String getActionType();
     double getTimestamp();
     
-    @NotNull ScriptAction copy();
+    @NotNull MacroAction copy();
 }
