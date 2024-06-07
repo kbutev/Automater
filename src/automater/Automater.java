@@ -6,6 +6,7 @@ package automater;
 
 import automater.di.DI;
 import automater.di.DISetup;
+import automater.service.NativeEventMonitor;
 import automater.ui.viewcontroller.PrimaryViewContoller;
 import automater.utilities.DeviceNotifications;
 import org.jetbrains.annotations.NotNull;
@@ -33,16 +34,27 @@ public class Automater {
         Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
         logger.setLevel(Level.OFF);
 
+        // Dependency injection
+        DISetup.setup();
+        
+        // Recorder setup
+        var recorder = DI.get(NativeEventMonitor.Protocol.class);
+        
+        try {
+            recorder.start();
+        } catch(Exception e) {
+            return;
+        }
+        
         // Shutdown cleanup
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             automater.utilities.Logger.message("Automater", "Automater shutdown hook");
+            
+            try {
+                recorder.stop();
+            } catch(Exception e) {}
         }));
 
-        // Dependency injection
-        DISetup.setup();
-
-        // Recorder preload
-        //DI.get(automater.recorder.Recorder.Protocol.class).preload();
         // Show tray icon
         DeviceNotifications.getShared().showTrayIcon();
         DeviceNotifications.getShared().setTrayIconTooltip(TextValue.getText(TextValue.SystemTray_Tooltip));

@@ -25,7 +25,7 @@ public class RunState {
     }
 
     public void stop() throws Exception {
-        if (started) {
+        if (!started) {
             throw Errors.alreadyStopped();
         }
 

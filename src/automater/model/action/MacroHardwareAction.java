@@ -32,8 +32,7 @@ public interface MacroHardwareAction {
         }
 
         @Override
-        public @NotNull
-        String getActionType() {
+        public @NotNull String getActionType() {
             return actionType;
         }
 
@@ -70,8 +69,7 @@ public interface MacroHardwareAction {
         }
 
         @Override
-        public @NotNull
-        MacroAction copy() {
+        public @NotNull MacroAction copy() {
             return new Click(this);
         }
 
@@ -102,8 +100,7 @@ public interface MacroHardwareAction {
         }
 
         @Override
-        public @NotNull
-        MacroAction copy() {
+        public @NotNull MacroAction copy() {
             return new MouseMove(this);
         }
     }
@@ -135,8 +132,7 @@ public interface MacroHardwareAction {
         }
 
         @Override
-        public @NotNull
-        MacroAction copy() {
+        public @NotNull MacroAction copy() {
             return new MouseScroll(this);
         }
     }

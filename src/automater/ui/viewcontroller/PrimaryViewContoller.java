@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import automater.mvp.BasePresenter.*;
 import automater.presenter.EditMacroPresenterStandard;
-import automater.presenter.OpenMacroPresenterStandard;
+import automater.presenter.OpenMacroPresenter;
 import automater.presenter.PlayMacroPresenter;
 import automater.presenter.RecordMacroPresenter;
 
@@ -28,7 +28,7 @@ public class PrimaryViewContoller implements RootViewController {
     // Cached view controllers and their presenters
     // These view controllers are never initialized twice
     private @Nullable OpenMacroViewController _openMacroViewController;
-    private @Nullable OpenMacroPresenter _openMacroPresenter;
+    private @Nullable OpenMacroPresenter.Protocol _openMacroPresenter;
     private @Nullable RecordMacroViewController _recordMacroViewController;
     private @Nullable RecordMacroPresenter.Protocol _recordMacroPresenter;
 
@@ -88,7 +88,7 @@ public class PrimaryViewContoller implements RootViewController {
         boolean playViewControllerStart = _openMacroViewController == null;
 
         if (playViewControllerStart) {
-            _openMacroPresenter = new OpenMacroPresenterStandard(this);
+            _openMacroPresenter = new OpenMacroPresenter.Impl(this);
             OpenMacroViewController vc = new OpenMacroViewController(_openMacroPresenter);
             _openMacroViewController = vc;
             _openMacroPresenter.setDelegate(vc);

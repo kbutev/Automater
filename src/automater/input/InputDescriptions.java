@@ -127,7 +127,7 @@ public class InputDescriptions {
     }
 
     public static Description getScreenshot(long timestamp, @NotNull String path) {
-        String fileName = FileSystem.createFileNameFromFilePath(path);
+        String fileName = FileSystem.getLastComponentFromPath(path);
 
         String name = "Screenshot";
         String time = String.format("%s", TIMESTAMP_TIME_TYPE.asStringFromTime(TimeValue.fromMilliseconds(timestamp)));

@@ -62,7 +62,7 @@ public class PreferencesStorage {
     // # Private
     private @NotNull String filePath() {
         String path = FileSystem.getLocalFilePath();
-        return FileSystem.createFilePathWithBasePath(path, PREFERENCES_FILE);
+        return FileSystem.buildPath(path, PREFERENCES_FILE);
     }
 
     private @NotNull File getFile() throws Exception {

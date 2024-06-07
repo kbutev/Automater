@@ -9,7 +9,7 @@ import automater.presenter.PlayMacroPresenter;
 import automater.storage.PreferencesStorageValues;
 import automater.ui.view.PlayMacroForm;
 import automater.ui.view.PlayMacroOptionsDialog;
-import automater.ui.view.StandardDescriptionsDataSource;
+import automater.ui.view.StandardDescriptionDataSource;
 import automater.utilities.AlertWindows;
 import automater.utilities.Description;
 import automater.utilities.DeviceTaskBar;
@@ -33,7 +33,7 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
     private final @NotNull PlayMacroForm _form;
     private @Nullable PlayMacroOptionsDialog _optionsDialog;
 
-    private @Nullable StandardDescriptionsDataSource _dataSource;
+    private @Nullable StandardDescriptionDataSource _dataSource;
 
     private @NotNull PreferencesStorageValues _currentPreferences = new PreferencesStorageValues();
 
@@ -129,7 +129,7 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
 
     @Override
     public void onLoadedMacroFromStorage(@NotNull String macroName, @NotNull String macroDescription, @NotNull List<Description> macroActions) {
-        _dataSource = StandardDescriptionsDataSource.createDataSourceForStandartText(macroActions);
+        //_dataSource = StandardDescriptionsDataSource.createDataSourceForStandartText(macroActions);
         _form.setMacroInfo(macroName, macroDescription, _dataSource);
     }
 

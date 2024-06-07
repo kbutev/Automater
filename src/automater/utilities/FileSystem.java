@@ -4,10 +4,14 @@
  */
 package automater.utilities;
 
+import java.io.BufferedReader;
 import org.jetbrains.annotations.NotNull;
 import java.io.File;
+import java.io.FileReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Defines commonly used file system methods.
@@ -33,10 +37,12 @@ public class FileSystem {
 
         return absolutePath;
     }
+    
+    public static boolean validatePath(@NotNull String path) {
+        return true;
+    }
 
-    public static @NotNull String createFilePathRelativeToLocalPath(@NotNull String path) {
-        String base = getLocalFilePath();
-
+    public static @NotNull String buildPath(@NotNull String base, @NotNull String path) {
         if (base.isEmpty()) {
             return path;
         }
@@ -44,15 +50,7 @@ public class FileSystem {
         return base + getDirectorySeparator() + path;
     }
 
-    public static @NotNull String createFilePathWithBasePath(@NotNull String base, @NotNull String fileName) {
-        if (base.isEmpty()) {
-            return fileName;
-        }
-
-        return base + getDirectorySeparator() + fileName;
-    }
-
-    public static @NotNull String createFilePathWithoutTheFileName(@NotNull String path) {
+    public static @NotNull String buildPath(@NotNull String path) {
         String separator = getDirectorySeparator();
         int lastIndexOfSlash = path.lastIndexOf(separator);
 
@@ -63,7 +61,7 @@ public class FileSystem {
         return path;
     }
 
-    public static @NotNull String createFileNameFromFilePath(@NotNull String path) {
+    public static @NotNull String getLastComponentFromPath(@NotNull String path) {
         String separator = getDirectorySeparator();
         int lastIndexOfSlash = path.lastIndexOf(separator);
 
@@ -79,7 +77,11 @@ public class FileSystem {
         return "";
     }
 
-    public static @NotNull String createFilePathEndingWithExtension(@NotNull String path, @NotNull String extension) {
+    public static @NotNull String addFileExtension(@NotNull String path, @NotNull String extension) {
+        if (!extension.startsWith(".")) {
+            extension = "." + extension;
+        }
+        
         if (!path.endsWith(extension)) {
             path = path + extension;
         }
@@ -116,6 +118,20 @@ public class FileSystem {
         extensions.add(extension);
         return getAllFilesInDirectory(path, extensions);
     }
+    
+    public static @NotNull File getFile(@NotNull String base, @NotNull String name) {
+        return getFile(FileSystem.buildPath(base, name));
+    }
+    
+    public static @NotNull File getFile(@NotNull String path) {
+        File file = new File(path);
+
+        if (file.isDirectory()) {
+            throw new UnsupportedOperationException("Not a file");
+        }
+        
+        return file;
+    }
 
     public static @NotNull List<File> getAllFilesInDirectory(@NotNull String path, @NotNull List<String> extensions) {
         ArrayList<File> files = new ArrayList<>();
@@ -143,5 +159,65 @@ public class FileSystem {
         }
 
         return files;
+    }
+    
+    public static @NotNull String readFromFile(@NotNull File file) throws Exception {
+        String data = "";
+
+        BufferedReader reader = null;
+
+        try {
+            reader = new BufferedReader(new FileReader(file));
+
+            String line = reader.readLine();
+
+            while (line != null) {
+                data = data.concat(line);
+                line = reader.readLine();
+            }
+
+            reader.readLine();
+            reader.close();
+        } catch (Exception e) {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (Exception e2) {
+
+            }
+            
+            throw e;
+        }
+
+        return data;
+    }
+    
+    public static @Nullable Exception writeToFile(@NotNull File file, @NotNull String data) throws Exception {
+        PrintWriter writer = null;
+
+        try {
+            writer = new PrintWriter(file);
+            String[] lines = data.split("\n");
+
+            for (String line : lines) {
+                writer.println(line);
+            }
+
+            writer.println();
+            writer.close();
+        } catch (Exception e) {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (Exception e2) {
+
+            }
+            
+            return e;
+        }
+        
+        return null;
     }
 }

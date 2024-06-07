@@ -4,6 +4,7 @@
  */
 package automater.storage;
 
+import automater.di.DI;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,18 +16,18 @@ public interface GeneralStorage {
 
     interface Protocol {
 
-        @NotNull MacroStorage getMacrosStorage();
+        @NotNull MacroStorage.Protocol getMacrosStorage();
         @NotNull PreferencesStorage getPreferencesStorage();
     }
 
     class Impl implements Protocol {
 
-        private final MacroStorage _macrosStorage = new MacroStorage();
+        private final MacroStorage.Protocol storage = DI.get(MacroStorage.Protocol.class);
         private final PreferencesStorage _preferencesStorage = new PreferencesStorage();
 
         @Override
-        public @NotNull MacroStorage getMacrosStorage() {
-            return _macrosStorage;
+        public @NotNull MacroStorage.Protocol getMacrosStorage() {
+            return storage;
         }
 
         @Override

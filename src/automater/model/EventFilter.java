@@ -36,8 +36,8 @@ public class EventFilter {
 
     public boolean filtersOut(@NotNull CapturedEvent event) {
         if (event instanceof CapturedHardwareEvent.Click key) {
-            if ((!keyboard && key.keystroke.isKeyboard())
-                    || (!mouseKeys && key.keystroke.isMouse())) {
+            if ((keyboard && key.keystroke.isKeyboard())
+                    || (mouseKeys && key.keystroke.isMouse())) {
                 return true;
             }
 

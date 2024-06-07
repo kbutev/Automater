@@ -5,7 +5,6 @@
 package automater.parser;
 
 import automater.di.DI;
-import automater.model.action.MacroActionDescription;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -26,8 +25,6 @@ public interface MacroActionsParser {
     
     interface Protocol {
         
-        @NotNull List<MacroActionDescription> parseToDescription(@NotNull List<MacroAction> actions) throws Exception;
-        
         @NotNull List<MacroAction> parseFromJSON(@NotNull JsonElement json) throws Exception;
         @NotNull JsonElement parseToJSON(@NotNull List<MacroAction> actions) throws Exception;
     }
@@ -35,18 +32,6 @@ public interface MacroActionsParser {
     class Impl implements Protocol {
         
         final Gson gson = DI.get(Gson.class);
-        final MacroActionParser.Impl internal = new MacroActionParser.Impl();
-        
-        @Override
-        public @NotNull List<MacroActionDescription> parseToDescription(@NotNull List<MacroAction> actions) throws Exception {
-            var result = new ArrayList<MacroActionDescription>();
-            
-            for (var action : actions) {
-                result.add(internal.parseToDescription(action));
-            }
-            
-            return result;
-        }
         
         @Override
         public @NotNull List<MacroAction> parseFromJSON(@NotNull JsonElement json) throws Exception {
@@ -84,10 +69,8 @@ public interface MacroActionsParser {
             }
             
             var result = gson.toJsonTree(actions);
-            var first = actions.get(0);
             
             if (result instanceof JsonArray array) {
-                array.get(0).getAsJsonObject().addProperty(MacroActionParser.Keys.TYPE, first.getActionType());
                 return array;
             }
             

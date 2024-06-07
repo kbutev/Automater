@@ -9,7 +9,7 @@ import automater.mvp.BasePresenter.EditMacroPresenter;
 import automater.settings.Hotkey;
 import automater.ui.view.EditMacroActionDialog;
 import automater.ui.view.EditMacroForm;
-import automater.ui.view.StandardDescriptionsDataSource;
+import automater.ui.view.StandardDescriptionDataSource;
 import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import automater.utilities.Description;
@@ -34,7 +34,7 @@ public class EditMacroViewController implements BaseViewController, EditMacroPre
     @NotNull private final EditMacroForm _form;
     @Nullable private EditMacroActionDialog _editActionDialog;
 
-    @Nullable private StandardDescriptionsDataSource _dataSource;
+    @Nullable private StandardDescriptionDataSource _dataSource;
 
     private boolean _isHotkeyRecording;
 
@@ -157,7 +157,7 @@ public class EditMacroViewController implements BaseViewController, EditMacroPre
 
     @Override
     public void onLoadedMacroFromStorage(@NotNull String macroName, @NotNull String macroDescription, @NotNull List<Description> macroActions) {
-        _dataSource = StandardDescriptionsDataSource.createDataSourceForVerboseText(macroActions);
+        //_dataSource = StandardDescriptionsDataSource.createDataSource(macroActions);
         _form.setMacroInfo(macroName, macroDescription);
         _form.setMacroDataSource(_dataSource);
     }
@@ -174,7 +174,7 @@ public class EditMacroViewController implements BaseViewController, EditMacroPre
 
     @Override
     public void onEditedMacroActions(@NotNull List<Description> newMacroActions) {
-        _dataSource = StandardDescriptionsDataSource.createDataSourceForVerboseText(newMacroActions);
+        //_dataSource = StandardDescriptionsDataSource.createDataSourceForVerboseText(newMacroActions);
         _form.setMacroDataSource(_dataSource);
     }
 
@@ -259,10 +259,10 @@ public class EditMacroViewController implements BaseViewController, EditMacroPre
 
     private void setupEditingMacroActionDialog(@NotNull automater.mutableaction.BaseMutableAction action) {
         // Selectable types
-        StandardDescriptionsDataSource actionTypes;
-        actionTypes = StandardDescriptionsDataSource.createDataSourceForVerboseText(_presenter.getActionTypes());
+        StandardDescriptionDataSource actionTypes;
+        //actionTypes = StandardDescriptionsDataSource.createDataSourceForVerboseText(_presenter.getActionTypes());
 
-        _editActionDialog.setTypesDropdownModel(actionTypes);
+        //_editActionDialog.setTypesDropdownModel(actionTypes);
 
         // Action type
         _editActionDialog.selectDropdownType(_presenter.getActionTypeSelectedIndex());

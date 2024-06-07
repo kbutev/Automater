@@ -6,7 +6,6 @@ package automater.parser;
 
 import automater.di.DI;
 import automater.json.JSONDecoder;
-import automater.model.action.MacroActionDescription;
 import automater.model.event.CapturedEvent;
 import automater.model.event.CapturedHardwareEvent;
 import com.google.gson.Gson;
@@ -34,11 +33,9 @@ public interface MacroActionParser {
     
     interface Protocol {
         
-        @NotNull MacroAction parseFromCapturedEvent(@NotNull CapturedEvent event) throws Exception;
-        @NotNull MacroActionDescription parseToDescription(@NotNull MacroAction action) throws Exception;
-        
+        @NotNull MacroAction parseFromCapturedEvent(@NotNull CapturedEvent event, double timestamp) throws Exception;
         @NotNull MacroAction parseFromJSON(@NotNull JsonElement json) throws Exception;
-        @NotNull JsonElement parseToJSON(@NotNull MacroAction event) throws Exception;
+        @NotNull JsonElement parseToJSON(@NotNull MacroAction action) throws Exception;
     }
     
     class Impl implements Protocol {
@@ -46,27 +43,16 @@ public interface MacroActionParser {
         final Gson gson = DI.get(Gson.class);
         
         @Override
-        public @NotNull MacroAction parseFromCapturedEvent(@NotNull CapturedEvent event) throws Exception {
-            if (event instanceof CapturedHardwareEvent.Click eventObject) {
-                return new MacroHardwareAction.Click(eventObject.timestamp, eventObject.kind, eventObject.keystroke);
+        public @NotNull MacroAction parseFromCapturedEvent(@NotNull CapturedEvent event, double timestamp) throws Exception {
+            if (event instanceof CapturedHardwareEvent.Click click) {
+                return new MacroHardwareAction.Click(timestamp, click.kind, click.keystroke);
+            } else if (event instanceof CapturedHardwareEvent.MouseMove mm) {
+                return new MacroHardwareAction.MouseMove(timestamp, mm.point);
+            } else if (event instanceof CapturedHardwareEvent.MouseScroll ms) {
+                return new MacroHardwareAction.MouseScroll(timestamp, ms.point, ms.scroll);
             }
             
             throw new UnsupportedOperationException("Unrecognizable event");
-        }
-        
-        @Override
-        public @NotNull MacroActionDescription parseToDescription(@NotNull MacroAction action) throws Exception {
-            var timestamp = String.format("%.1f", action.getTimestamp());
-            
-            if (action instanceof MacroHardwareAction.Click click) {
-                return new MacroActionDescription(timestamp, "click", click.keystroke.toString());
-            } else if (action instanceof MacroHardwareAction.MouseMove mmove) {
-                return new MacroActionDescription(timestamp, "mouse move", mmove.point.toString());
-            } else if (action instanceof MacroHardwareAction.MouseScroll scroll) {
-                return new MacroActionDescription(timestamp, "mouse scroll", scroll.scroll.toString());
-            }
-            
-            throw new UnsupportedOperationException("Unrecognizable native event");
         }
         
         @Override
@@ -87,7 +73,7 @@ public interface MacroActionParser {
                 var jsonString = jsonObject.toString();
                 Type matchedType = match.type;
                 var decoder = match.decoder;
-                var parser = new GsonBuilder().registerTypeAdapter(matchedType, decoder).create();
+                var parser = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(matchedType, decoder).create();
                 return parser.fromJson(jsonString, matchedType);
             }
             
@@ -95,11 +81,10 @@ public interface MacroActionParser {
         }
         
         @Override
-        public @NotNull JsonObject parseToJSON(@NotNull MacroAction event) throws Exception {
-            var result = gson.toJsonTree(event);
+        public @NotNull JsonObject parseToJSON(@NotNull MacroAction action) throws Exception {
+            var result = gson.toJsonTree(action);
             
             if (result instanceof JsonObject jsonObject) {
-                jsonObject.addProperty(Keys.TYPE, event.getActionType());
                 return jsonObject;
             }
             

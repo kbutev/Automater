@@ -135,7 +135,7 @@ public class EditMacroActionMouseKeyPanel extends javax.swing.JPanel {
 
 class EditMacroActionMouseKeyPressModel implements ComboBoxModel {
 
-    @NotNull public final StandardDescriptionsDataSource dataSource;
+    @NotNull public final StandardDescriptionDataSource dataSource;
 
     private int _selectedIndex = 0;
 
@@ -178,14 +178,13 @@ class EditMacroActionMouseKeyPressModel implements ComboBoxModel {
 
     }
 
-    public static @NotNull
-    StandardDescriptionsDataSource parseValues(@NotNull List<String> values) {
+    public static @NotNull StandardDescriptionDataSource parseValues(@NotNull List<String> values) {
         ArrayList<Description> actions = new ArrayList<>();
 
         for (int e = 0; e < values.size(); e++) {
             actions.add(Description.createFromString(values.get(e)));
         }
 
-        return StandardDescriptionsDataSource.createDataSourceForStandartText(actions);
+        return StandardDescriptionDataSource.createDataSource(values);
     }
 }

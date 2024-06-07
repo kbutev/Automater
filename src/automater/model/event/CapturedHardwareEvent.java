@@ -15,20 +15,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface CapturedHardwareEvent {
     
-    abstract class Generic implements CapturedEvent {
-        public final double timestamp;
-        
-        Generic(double timestamp) {
-            this.timestamp = timestamp;
-        }
-        
-        @Override
-        public double getTimestamp() {
-            return timestamp;
-        }
-    }
-    
-    class Click extends Generic {
+    class Click implements CapturedEvent {
         @NotNull public final KeyEventKind kind;
         @NotNull public final Keystroke keystroke;
         
@@ -37,13 +24,12 @@ public interface CapturedHardwareEvent {
         }
         
         public Click(double timestamp, @NotNull KeyEventKind kind, @NotNull Keystroke keystroke) {
-            super(timestamp);
             this.kind = kind;
             this.keystroke = keystroke;
         }
     }
     
-    class MouseMove extends Generic {
+    class MouseMove implements CapturedEvent {
         @NotNull public final Point point;
         
         public MouseMove() {
@@ -51,12 +37,11 @@ public interface CapturedHardwareEvent {
         }
         
         public MouseMove(double timestamp, @NotNull Point point) {
-            super(timestamp);
             this.point = point;
         }
     }
     
-    class MouseScroll extends Generic {
+    class MouseScroll implements CapturedEvent {
         @NotNull public final Point point;
         @NotNull public final Point scroll;
         
@@ -65,7 +50,6 @@ public interface CapturedHardwareEvent {
         }
         
         public MouseScroll(double timestamp, @NotNull Point point, @NotNull Point scroll) {
-            super(timestamp);
             this.point = point;
             this.scroll = scroll;
         }

@@ -248,7 +248,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     }
 
     // # Public
-    public void setTypesDropdownModel(@NotNull StandardDescriptionsDataSource dataSource) {
+    public void setTypesDropdownModel(@NotNull StandardDescriptionDataSource dataSource) {
         _actionTypesModel = new EditMacroActionTypesModel(dataSource);
         typesDropdown.setModel(_actionTypesModel);
     }
@@ -775,11 +775,11 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
 
 class EditMacroActionTypesModel implements ComboBoxModel {
 
-    @NotNull public final StandardDescriptionsDataSource dataSource;
+    @NotNull public final StandardDescriptionDataSource dataSource;
 
     private int _selectedIndex = 0;
 
-    public EditMacroActionTypesModel(@NotNull StandardDescriptionsDataSource dataSource) {
+    public EditMacroActionTypesModel(@NotNull StandardDescriptionDataSource dataSource) {
         this.dataSource = dataSource;
     }
 

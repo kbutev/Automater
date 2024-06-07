@@ -881,7 +881,7 @@ class ActionScreenshot extends Action implements InputScreenshot {
         Dimension screen = context.getCurrentScreenSize();
         Rectangle fullScreenArea = new Rectangle(0, 0, screen.width, screen.height);
         String filePath = evaluatePath(screenshotPath, context);
-        String pathWithoutFileName = FileSystem.createFilePathWithoutTheFileName(filePath);
+        String pathWithoutFileName = FileSystem.buildPath(filePath);
 
         try {
             createFolderForScreenshot(pathWithoutFileName);
@@ -920,7 +920,7 @@ class ActionScreenshot extends Action implements InputScreenshot {
 
     private String evaluatePath(@NotNull String path, @NotNull ActionContext.Protocol context) {
         // Make sure that the path is OK
-        path = FileSystem.createFilePathEndingWithExtension(path, ".jpg");
+        path = FileSystem.addFileExtension(path, ".jpg");
 
         Date now = new Date();
         Calendar calendar = Calendar.getInstance(TimeZone.getDefault());

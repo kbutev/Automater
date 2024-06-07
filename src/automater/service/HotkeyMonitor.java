@@ -4,10 +4,13 @@
  */
 package automater.service;
 
+import automater.di.DI;
 import automater.model.KeyEventKind;
 import automater.model.Keystroke;
 import automater.model.event.CapturedEvent;
 import automater.model.event.CapturedHardwareEvent;
+import automater.utilities.Errors;
+import automater.utilities.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +23,12 @@ public interface HotkeyMonitor {
     public static @NotNull Protocol build(@NotNull Keystroke hotkey) {
         return new Impl(hotkey);
     }
+    
+    public static @NotNull Protocol build(@NotNull Keystroke hotkey, @NotNull String name) {
+        var result = new Impl(hotkey);
+        result.setName(name);
+        return result;
+    }
 
     interface Protocol {
 
@@ -27,6 +36,8 @@ public interface HotkeyMonitor {
         void setListener(@NotNull Listener listener);
         @Nullable Keystroke getHotkey();
         void setHotkey(@NotNull Keystroke hotkey);
+        @NotNull String getName();
+        void setName(@NotNull String name);
 
         void start() throws Exception;
         void stop() throws Exception;
@@ -39,9 +50,10 @@ public interface HotkeyMonitor {
 
     class Impl implements Protocol, NativeEventMonitor.Listener {
 
-        private final @NotNull NativeEventMonitor.Protocol monitor = NativeEventMonitor.build();
+        private final NativeEventMonitor.Protocol monitor = DI.get(NativeEventMonitor.Protocol.class);
         private @Nullable Listener listener;
         private @Nullable Keystroke hotkey;
+        private @NotNull String name = "";
 
         public Impl(@NotNull Keystroke hotkey) {
             this.hotkey = hotkey;
@@ -60,8 +72,7 @@ public interface HotkeyMonitor {
         }
 
         @Override
-        public @Nullable
-        Keystroke getHotkey() {
+        public @Nullable Keystroke getHotkey() {
             return hotkey;
         }
 
@@ -72,14 +83,31 @@ public interface HotkeyMonitor {
         }
 
         @Override
+        public @NotNull String getName() {
+            return name;
+        }
+        
+        @Override
+        public void setName(@NotNull String name) {
+            this.name = name;
+        }
+        
+        @Override
         public void start() throws Exception {
-            monitor.setListener(this);
-            monitor.start();
+            if (listener == null) {
+                throw Errors.delegateNotSet();
+            }
+            
+            monitor.addListener(this);
+            
+            Logger.message(this, "start '" + name + "'");
         }
 
         @Override
         public void stop() throws Exception {
-            monitor.stop();
+            monitor.removeListener(this);
+            
+            Logger.message(this, "stop '" + name + "'");
         }
 
         // # NativeEventMonitor.Listener

@@ -131,7 +131,7 @@ public class MacroStorageFile {
 
     public @NotNull String filePath() {
         String path = FileSystem.getLocalFilePath();
-        return FileSystem.createFilePathWithBasePath(path, fileName());
+        return FileSystem.buildPath(path, fileName());
     }
 
     // # Operations

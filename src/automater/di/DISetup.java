@@ -5,6 +5,7 @@
 package automater.di;
 
 import org.int4.dirk.api.Injector;
+import com.google.gson.GsonBuilder;
 
 /**
  *
@@ -23,15 +24,22 @@ public class DISetup {
 
         Injector injector = DI.internalInjector;
 
-        injector.registerInstance(new com.google.gson.Gson());
+        var gson = new GsonBuilder().setPrettyPrinting().create();
+        injector.registerInstance(gson);
 
         injector.registerInstance(new automater.work.ActionSettingsManager.Impl());
 
-        injector.registerInstance(new automater.storage.GeneralStorage.Impl());
-
         injector.registerInstance(new automater.parser.MacroActionParser.Impl());
         injector.registerInstance(new automater.parser.MacroActionsParser.Impl());
+        injector.registerInstance(new automater.parser.DescriptionParser.Impl());
+        injector.registerInstance(new automater.parser.CapturedEventParser.Impl());
+        injector.registerInstance(new automater.parser.MacroParser.Impl());
 
+        injector.registerInstance(new automater.storage.MacroStorage.Impl());
+        injector.registerInstance(new automater.storage.GeneralStorage.Impl());
+        
         injector.registerInstance(new automater.work.Executor.Impl());
+        
+        injector.registerInstance(new automater.service.NativeEventMonitor.Impl());
     }
 }

@@ -11,7 +11,7 @@ import automater.model.Keystroke;
 import automater.mvp.BasePresenter.EditMacroPresenter;
 import automater.settings.Hotkey;
 import automater.storage.GeneralStorage;
-import automater.storage.MacroStorage;
+import automater.storage.LegacyMacroStorage;
 import automater.ui.viewcontroller.RootViewController;
 import automater.utilities.Callback;
 import automater.utilities.Description;
@@ -86,6 +86,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, HotkeyMon
         _macroActionDescriptions.addAll(macro.actionDescriptions);
 
         hotkeyMonitor = HotkeyMonitor.build(Keystroke.build(KeyValue._F4));
+        hotkeyMonitor.setName("Play/stop");
     }
 
     // # BasePresenter
@@ -164,7 +165,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, HotkeyMon
         String name = _name;
         String description = _description;
 
-        MacroStorage macroStorage = storage.getMacrosStorage();
+        var macroStorage = new LegacyMacroStorage();
 
         Macro macro = new Macro(name, _macroActions, _originalMacro.dateCreated, _originalMacro.getLastTimePlayedDate(), _originalMacro.screenSize);
         macro.setNumberOfTimesPlayed(_originalMacro.getNumberOfTimesPlayed());

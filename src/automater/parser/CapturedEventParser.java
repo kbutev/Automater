@@ -10,7 +10,6 @@ import automater.model.Keystroke;
 import automater.model.Point;
 import automater.model.event.CapturedEvent;
 import automater.model.event.CapturedHardwareEvent;
-import automater.model.event.EventDescription;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jnativehook.NativeInputEvent;
@@ -31,7 +30,6 @@ public interface CapturedEventParser {
         @NotNull CapturedEvent parseNativeEvent(@NotNull NativeInputEvent event, double time) throws Exception;
         @NotNull CapturedEvent parseNativeKeyboardEvent(@NotNull NativeKeyEvent event, double time, @NotNull KeyEventKind kind) throws Exception;
         @NotNull CapturedEvent parseNativeMouseKeyEvent(@NotNull NativeMouseEvent event, double time, @NotNull KeyEventKind kind) throws Exception;
-        @NotNull EventDescription parseToDescription(@NotNull CapturedEvent event) throws Exception;
     }
 
     class Impl implements Protocol {
@@ -64,7 +62,11 @@ public interface CapturedEventParser {
                 if (keyValue == null) {
                     throw new UnsupportedOperationException("Unrecognizable keyboard key value");
                 }
-
+                
+                if (keyValue.isModifier()) {
+                    throw new UnsupportedOperationException("Unrecognizable keyboard key value");
+                }
+                
                 var keystroke = new Keystroke(keyValue);
                 return new CapturedHardwareEvent.Click(time, kind, keystroke);
             }
@@ -82,21 +84,6 @@ public interface CapturedEventParser {
 
             var keystroke = new Keystroke(keyValue);
             return new CapturedHardwareEvent.Click(time, kind, keystroke);
-        }
-
-        @Override
-        public @NotNull EventDescription parseToDescription(@NotNull CapturedEvent event) throws Exception {
-            var timestamp = String.format("%.1f", event.getTimestamp());
-
-            if (event instanceof CapturedHardwareEvent.Click click) {
-                return new EventDescription(timestamp, "click", click.keystroke.toString());
-            } else if (event instanceof CapturedHardwareEvent.MouseMove mmove) {
-                return new EventDescription(timestamp, "mouse move", mmove.point.toString());
-            } else if (event instanceof CapturedHardwareEvent.MouseScroll scroll) {
-                return new EventDescription(timestamp, "mouse scroll", scroll.scroll.toString());
-            }
-
-            throw new UnsupportedOperationException("Unrecognizable native event");
         }
     }
 

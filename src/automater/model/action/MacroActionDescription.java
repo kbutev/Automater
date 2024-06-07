@@ -16,16 +16,24 @@ public class MacroActionDescription {
     private final @NotNull String timestamp;
     private final @NotNull String type;
     private final @NotNull String value;
+    private final @NotNull String description;
 
     public MacroActionDescription() {
         timestamp = "0";
         type = "unknown";
         value = "";
+        description = timestamp + "|" + type + "|" + value;
     }
 
     public MacroActionDescription(@NotNull String timestamp, @NotNull String type, @NotNull String value) {
         this.timestamp = timestamp;
         this.type = type;
         this.value = value;
+        description = timestamp + "|" + type + "|" + value;
+    }
+    
+    @Override
+    public String toString() {
+        return description;
     }
 }

@@ -25,20 +25,4 @@ public interface BasePresenterDelegate {
         public void onEditedMacroActions(@NotNull List<Description> newMacroActions);
         public void onClosingMacroWithoutSavingChanges();
     }
-    
-    public interface OpenMacroPresenterDelegate extends BasePresenterDelegate {
-        public void onLoadedMacrosFromStorage(@NotNull List<Description> macros);
-    }
-    
-    public interface RecordMacroPresenterDelegate extends BasePresenterDelegate {
-        public void onLoadedPreferencesFromStorage(@NotNull automater.storage.PreferencesStorageValues values);
-        
-        // Recording lifecycle
-        public void startRecording();
-        public void stopRecording();
-        public void onRecordingSaved(@NotNull String name, boolean success);
-        
-        // Update status
-        public void onActionsRecordedChange(@NotNull List<Description> actions);
-    }
 }

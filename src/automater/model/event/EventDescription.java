@@ -13,19 +13,24 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EventDescription {
 
-    private final @NotNull String timestamp;
     private final @NotNull String type;
     private final @NotNull String value;
+    private final @NotNull String description;
 
     public EventDescription() {
-        timestamp = "0";
         type = "unknown";
         value = "";
+        description = type + "|" + value;
     }
 
-    public EventDescription(@NotNull String timestamp, @NotNull String type, @NotNull String value) {
-        this.timestamp = timestamp;
+    public EventDescription(@NotNull String type, @NotNull String value) {
         this.type = type;
         this.value = value;
+        description = type + "|" + value;
+    }
+    
+    @Override
+    public String toString() {
+        return description;
     }
 }

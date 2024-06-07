@@ -5,12 +5,11 @@
 package automater.ui.viewcontroller;
 
 import automater.TextValue;
-import automater.mvp.BasePresenter.OpenMacroPresenter;
-import automater.mvp.BasePresenterDelegate.OpenMacroPresenterDelegate;
+import automater.model.macro.MacroSummaryDescription;
+import automater.presenter.OpenMacroPresenter;
 import automater.ui.view.OpenMacroForm;
-import automater.ui.view.StandardDescriptionsDataSource;
+import automater.ui.view.StandardDescriptionDataSource;
 import automater.utilities.AlertWindows;
-import automater.utilities.Callback;
 import automater.utilities.Logger;
 import automater.utilities.SimpleCallback;
 import java.awt.event.WindowEvent;
@@ -24,15 +23,15 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Bytevi
  */
-public class OpenMacroViewController implements BaseViewController, OpenMacroPresenterDelegate {
+public class OpenMacroViewController implements BaseViewController, OpenMacroPresenter.Delegate {
 
-    @NotNull private final OpenMacroPresenter _presenter;
+    private final @NotNull OpenMacroPresenter.Protocol _presenter;
 
-    @NotNull private final OpenMacroForm _form;
+    private final @NotNull OpenMacroForm _form;
 
-    @Nullable private StandardDescriptionsDataSource _dataSource;
+    private @Nullable StandardDescriptionDataSource _dataSource;
 
-    public OpenMacroViewController(OpenMacroPresenter presenter) {
+    public OpenMacroViewController(OpenMacroPresenter.Protocol presenter) {
         _presenter = presenter;
         _form = new OpenMacroForm();
     }
@@ -45,39 +44,24 @@ public class OpenMacroViewController implements BaseViewController, OpenMacroPre
             }
         };
 
-        _form.onSelectItem = new Callback<Integer>() {
-            @Override
-            public void perform(Integer argument) {
-                onSelectItem(argument);
-            }
+        _form.onSelectItem = (Integer argument) -> {
+            onSelectItem(argument);
         };
 
-        _form.onDoubleClickItem = new Callback<Integer>() {
-            @Override
-            public void perform(Integer argument) {
-                onOpenItem(argument);
-            }
+        _form.onDoubleClickItem = (Integer argument) -> {
+            onOpenItem(argument);
         };
 
-        _form.onOpenItem = new Callback<Integer>() {
-            @Override
-            public void perform(Integer argument) {
-                onOpenItem(argument);
-            }
+        _form.onOpenItem = (Integer argument) -> {
+            onOpenItem(argument);
         };
 
-        _form.onEditItem = new Callback<Integer>() {
-            @Override
-            public void perform(Integer argument) {
-                onEditItem(argument);
-            }
+        _form.onEditItem = (Integer argument) -> {
+            onEditItem(argument);
         };
 
-        _form.onDeleteItem = new Callback<Integer>() {
-            @Override
-            public void perform(Integer argument) {
-                onDeleteItem(argument);
-            }
+        _form.onDeleteItem = (Integer argument) -> {
+            onDeleteItem(argument);
         };
     }
 
@@ -95,7 +79,7 @@ public class OpenMacroViewController implements BaseViewController, OpenMacroPre
         _form.setVisible(true);
         _form.onViewResume();
 
-        _presenter.requestDataUpdate();
+        _presenter.reloadData();
     }
 
     @Override
@@ -112,13 +96,13 @@ public class OpenMacroViewController implements BaseViewController, OpenMacroPre
 
     // # OpenMacroPresenterDelegate
     @Override
-    public void onErrorEncountered(@NotNull Exception e) {
+    public void onError(@NotNull Exception e) {
         Logger.error(this, "Error encountered: " + e.toString());
     }
 
     @Override
-    public void onLoadedMacrosFromStorage(@NotNull List<Description> macros) {
-        _dataSource = StandardDescriptionsDataSource.createDataSourceForStandartText(macros);
+    public void onLoadedMacrosFromStorage(@NotNull List<String> macros) {
+        _dataSource = StandardDescriptionDataSource.createDataSource(macros);
         _form.setListDataSource(_dataSource);
     }
 
@@ -140,23 +124,23 @@ public class OpenMacroViewController implements BaseViewController, OpenMacroPre
             return;
         }
 
-        List<Description> macroDescriptions = _dataSource.data;
+        var macroDescriptions = _dataSource.data;
 
         if (index < 0 || index >= macroDescriptions.size()) {
             return;
         }
 
-        Description macro = macroDescriptions.get(index);
+        var macro = macroDescriptions.get(index);
 
-        SimpleCallback confirm = new SimpleCallback() {
+        var confirm = new SimpleCallback() {
             @Override
             public void perform() {
                 _presenter.deleteMacroAt(index);
             }
         };
 
-        String textTitle = TextValue.getText(TextValue.Dialog_ConfirmDeleteMacroTitle);
-        String textMessage = TextValue.getText(TextValue.Dialog_ConfirmDeleteMacroMessage, macro.getName());
+        var textTitle = TextValue.getText(TextValue.Dialog_ConfirmDeleteMacroTitle);
+        var textMessage = TextValue.getText(TextValue.Dialog_ConfirmDeleteMacroMessage, "macro name");
 
         AlertWindows.showConfirmationMessage(_form, textTitle, textMessage, confirm, null);
     }

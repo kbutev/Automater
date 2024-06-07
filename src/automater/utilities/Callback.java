@@ -11,14 +11,15 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Bytevi
  */
-public abstract class Callback<T> {
+@FunctionalInterface
+public interface Callback<Input> {
 
-    abstract public void perform(T argument);
+    public void perform(Input argument);
 
-    public static <C> @Nullable Callback createDoNothing() {
-        return new Callback<C>() {
+    public static <Input> @Nullable Callback createDoNothing() {
+        return new Callback<Input>() {
             @Override
-            public void perform(C argument) {
+            public void perform(Input argument) {
                 // Do nothing
             }
         };

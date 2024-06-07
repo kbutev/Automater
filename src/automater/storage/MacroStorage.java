@@ -1,254 +1,168 @@
 /*
- * Created by Kristiyan Butev.
- * Copyright © 2019 Kristiyan Butev. All rights reserved.
+ *  Created by Kristiyan Butev.
+ *  Copyright © 2024 Kristiyan Butev. All rights reserved.
  */
 package automater.storage;
 
 import automater.TextValue;
+import automater.di.DI;
+import automater.model.macro.Macro;
+import automater.model.macro.MacroSummary;
+import automater.parser.MacroParser;
 import automater.utilities.Errors;
 import automater.utilities.FileSystem;
 import automater.utilities.Logger;
-import automater.work.model.Macro;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * Holds the macros storage.
  *
- * Macro files can be created, updated and deleted from here.
- *
- * @author Bytevi
+ * @author Kristiyan Butev
  */
-public class MacroStorage {
-
-    private final @NotNull Object _lock = new Object();
-
-    private final @NotNull ArrayList<MacroStorageFile> _macros = new ArrayList<>();
-
-    public MacroStorage() {
-        loadMacrosFromDevice();
+public interface MacroStorage {
+    
+    public static final String MACRO_EXTENSION = "macro";
+    
+    interface Protocol {
+        
+        @NotNull List<MacroSummary> getMacroSummaryList() throws Exception;
+        @NotNull MacroSummary getMacroSummary(@NotNull String name) throws Exception;
+        @NotNull Macro.Protocol getMacro(@NotNull String name) throws Exception;
+        @NotNull void saveMacro(@NotNull Macro.Protocol macro) throws Exception;
+        void deleteMacro(@NotNull String name);
     }
-
-    public @NotNull List<Macro> getMacros() {
-        ArrayList<MacroStorageFile> currentMacros = macros();
-        ArrayList<Macro> macros = new ArrayList<>();
-
-        for (MacroStorageFile macroFile : currentMacros) {
-            macros.add(macroFile.getMacro());
+    
+    class Impl implements Protocol {
+        
+        private final Gson gson = DI.get(Gson.class);
+        
+        private final MacroParser.Protocol macroParser = DI.get(MacroParser.Protocol.class);
+        
+        private @NotNull String storagePath;
+        
+        public Impl() {
+            storagePath = FileSystem.getLocalFilePath();
         }
 
-        return macros;
-    }
-
-    public void reloadMacrosFromStorage() {
-        synchronized (_lock) {
-            loadMacrosFromDevice();
-        }
-    }
-
-    // # Validators
-    public boolean macroExistsWithName(@NotNull String name) {
-        synchronized (_lock) {
-            ArrayList<MacroStorageFile> currentMacros = macros();
-
-            for (MacroStorageFile macro : currentMacros) {
-                if (macro.name().equals(name)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-    }
-
-    public boolean isMacroNameAvailable(@NotNull String name) {
-        return MacroStorageFile.getMacroNameIsUnavailableError(name) == null;
-    }
-
-    public @Nullable Exception getSaveMacroError(@NotNull Macro macro) {
-        if (macro.actions.isEmpty()) {
-            return new Exception("Macro requires at least one action.");
-        }
-
-        return null;
-    }
-
-    public @Nullable Exception getSaveMacroNameError(@NotNull String name, boolean checkIfNameIsTaken) {
-        if (checkIfNameIsTaken && macroExistsWithName(name)) {
-            return new Exception(TextValue.getText(TextValue.Error_NameIsTaken));
-        }
-
-        return MacroStorageFile.getMacroNameIsUnavailableError(name);
-    }
-
-    // # Operations
-    public void saveMacroToStorage(@NotNull Macro macro) throws Exception {
-        Logger.message(this, "Saving new macro '" + macro.name + "' to storage...");
-
-        Exception saveMacroError = getSaveMacroError(macro);
-
-        if (saveMacroError != null) {
-            Logger.error(this, "Failed to save macro '" + macro.name + "' to storage: " + saveMacroError.getMessage());
-            throw saveMacroError;
-        }
-
-        Exception saveMacroNameError = getSaveMacroNameError(macro.name, true);
-
-        if (saveMacroNameError != null) {
-            Logger.error(this, "Failed to save macro '" + macro.name + "' to storage: " + saveMacroNameError.getMessage());
-            throw saveMacroNameError;
-        }
-
-        ArrayList<MacroStorageFile> currentMacros = macros();
-
-        MacroStorageFile macroFile = MacroStorageFile.createFromMacro(macro);
-
-        synchronized (_lock) {
-            try {
-                // Try to create
-                macroFile.create();
-
-                // Add to macros collection
-                currentMacros.add(macroFile);
-
-                Logger.messageEvent(this, "Succesfully saved macro '" + macroFile.name() + "' to storage!");
-            } catch (Exception e) {
-                String message = "Failed to save '" + macroFile.name() + "' macro to storage: " + e.getMessage();
-                Logger.error(this, message);
-                throw Errors.serializationFailed();
-            }
-        }
-    }
-
-    public void updateMacroInStorage(@NotNull Macro macro) throws Exception {
-        Logger.message(this, "Updating macro " + macro.toString() + ".");
-
-        Exception saveMacroError = getSaveMacroError(macro);
-
-        if (saveMacroError != null) {
-            Logger.error(this, "Failed to save macro '" + macro.name + "' to storage: " + saveMacroError.toString());
-            throw saveMacroError;
-        }
-
-        Exception saveMacroNameError = getSaveMacroNameError(macro.name, false);
-
-        if (saveMacroNameError != null) {
-            Logger.error(this, "Failed to save macro '" + macro.name + "' to storage: " + saveMacroNameError.toString());
-            throw saveMacroNameError;
-        }
-
-        ArrayList<MacroStorageFile> currentMacros = macros();
-        MacroStorageFile fileToUpdate = null;
-
-        for (MacroStorageFile m : currentMacros) {
-            if (m.name().equals(macro.name)) {
-                fileToUpdate = m;
-                break;
-            }
-        }
-
-        if (fileToUpdate == null) {
-            Logger.error(this, "Failed to update macro '" + macro.name + "' in storage, macro does not exist.");
-            throw Errors.internalLogicError();
-        }
-
-        // Replace old macro with new macro
-        fileToUpdate.update(macro);
-
-        // Success
-        Logger.messageEvent(this, "Succesfully updated macro '" + macro.name + "' in storage!");
-    }
-
-    public void deleteMacro(@NotNull Macro macro) throws Exception {
-        Logger.message(this, "Deleting macro " + macro.toString() + " from storage.");
-
-        ArrayList<MacroStorageFile> currentMacros = macros();
-
-        if (!macroExistsWithName(macro.name)) {
-            throw Errors.invalidArgument("macro");
-        }
-
-        MacroStorageFile fileToDelete = null;
-
-        for (MacroStorageFile file : currentMacros) {
-            if (file.name().equals(macro.name)) {
-                fileToDelete = file;
-                break;
-            }
-        }
-
-        if (fileToDelete == null) {
-            Logger.error(this, "Failed to delete macro '" + macro.name + "' from storage");
-            return;
-        }
-
-        // Try to delete
-        fileToDelete.delete();
-
-        // Remove from macros collection
-        synchronized (_lock) {
-            currentMacros.remove(fileToDelete);
-        }
-    }
-
-    public void clearMacros() {
-        Logger.message(this, "Deleting out all macros from storage...");
-
-        clearFileData();
-    }
-
-    // # Private
-    private @NotNull ArrayList<MacroStorageFile> macros() {
-        synchronized (_lock) {
-            // Load macros
-            if (_macros.isEmpty()) {
-                loadMacrosFromDevice();
-            }
-
-            return _macros;
-        }
-    }
-
-    private void loadMacrosFromDevice() {
-        // None of this is thread safe
-        // Call this method from synchronized context
-
-        ArrayList<MacroStorageFile> currentMacros = _macros;
-
-        String localPath = FileSystem.getLocalFilePath();
-
-        List<File> files = FileSystem.getAllFilesInDirectory(localPath, MacroStorageFile.FILE_NAME_EXTENSION);
-
-        Logger.messageEvent(this, "Loading macros from storage from '" + localPath + "'...");
-        Logger.messageEvent(this, "Found " + String.valueOf(files.size()) + " macro files");
-
-        currentMacros.clear();
-
-        for (File file : files) {
-            MacroStorageFile macroFile = MacroStorageFile.createFromFile(file);
-
-            if (macroFile != null) {
-                currentMacros.add(macroFile);
-            }
-        }
-    }
-
-    private void clearFileData() {
-        ArrayList<MacroStorageFile> currentMacros = macros();
-
-        synchronized (_lock) {
-            for (MacroStorageFile file : currentMacros) {
+        @Override
+        public List<MacroSummary> getMacroSummaryList() throws Exception {
+            ArrayList<MacroSummary> result = new ArrayList<>();
+            List<File> files = FileSystem.getAllFilesInDirectory(storagePath, MACRO_EXTENSION);
+            
+            for (var file : files) {
                 try {
-                    file.delete();
+                    var summary = getMacroSummaryFromFile(file);
+                    result.add(summary);
                 } catch (Exception e) {
-
+                    Logger.error(this, "Failed to read macro summary, error: " + e);
+                    throw e;
                 }
             }
+            
+            return result;
+        }
+        
+        @Override
+        public MacroSummary getMacroSummary(@NotNull String name) throws Exception {
+            File file = FileSystem.getFile(storagePath, name);
+            return getMacroSummaryFromFile(file);
+        }
+        
+        private @NotNull MacroSummary getMacroSummaryFromFile(@NotNull File file) throws Exception {
+            var json = FileSystem.readFromFile(file);
+            
+            var macroJSON = gson.fromJson(json, JsonObject.class);
 
-            currentMacros.clear();
+            if (macroJSON == null) {
+                throw new JsonParseException("Invalid json");
+            }
+
+            var macroSummaryJSON = macroJSON.get(Macro.KEY_SUMMARY);
+
+            if (macroSummaryJSON == null) {
+                throw new JsonParseException("Invalid json");
+            }
+
+            return gson.fromJson(macroSummaryJSON, MacroSummary.class);
+        }
+        
+        @Override
+        public Macro.Protocol getMacro(@NotNull String name) throws Exception {
+            List<File> files = FileSystem.getAllFilesInDirectory(storagePath, MACRO_EXTENSION);
+            
+            for (var file : files) {
+                try {
+                    var json = FileSystem.readFromFile(file);
+                    return gson.fromJson(json, Macro.Impl.class);
+                } catch (Exception e) {
+                    Logger.error(this, "Failed to read macro, error: " + e);
+                    throw e;
+                }
+            }
+            
+            return null;
+        }
+        
+        @Override
+        public void saveMacro(@NotNull Macro.Protocol macro) throws Exception {
+            Logger.message(this, "Saving new macro '" + macro.getSummary().name + "' to storage...");
+            
+            var fileName = macro.getSummary().name;
+            var filePath = FileSystem.buildPath(storagePath, fileName);
+            filePath = FileSystem.addFileExtension(filePath, MACRO_EXTENSION);
+            
+            var fileError = validateMacroPath(filePath);
+            
+            if (fileError != null) {
+                throw fileError;
+            }
+            
+            try {
+                var json = gson.toJson(macroParser.parseToJSON(macro));
+                
+                File file = new File(filePath);
+
+                if (file.exists()) {
+                    file.delete();
+                }
+                
+                var result = FileSystem.writeToFile(file, json);
+                
+                if (result != null) {
+                    throw result;
+                }
+            } catch (Exception e) {
+                Logger.error(this, "Failed to save macro, error: " + e);
+                throw e;
+            }
+            
+            Logger.message(this, "Saved to '" + filePath + "'");
+        }
+        
+        @Override
+        public void deleteMacro(@NotNull String name) {
+            File file = FileSystem.getFile(storagePath, name);
+            file.delete();
+        }
+        
+        private @Nullable Exception validateMacroPath(@NotNull String path) {
+            if (!FileSystem.validatePath(path)) {
+                return Errors.invalidArgument("name");
+            }
+            
+            var name = FileSystem.getLastComponentFromPath(path);
+            
+            if (name.isEmpty()) {
+                return new Exception(TextValue.getText(TextValue.Error_NameIsEmpty));
+            }
+            
+            return null;
         }
     }
 }

@@ -4,9 +4,11 @@
  */
 package automater.service;
 
+import automater.di.DI;
 import automater.model.EventFilter;
 import automater.model.event.CapturedEvent;
 import automater.utilities.CollectionUtilities;
+import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.RunState;
 import java.util.ArrayList;
@@ -37,15 +39,11 @@ public interface EventMonitor {
 
     class Impl implements Protocol, NativeEventMonitor.Listener {
 
-        private final NativeEventMonitor.Protocol nativeMonitor;
+        private final NativeEventMonitor.Protocol nativeMonitor = DI.get(NativeEventMonitor.Protocol.class);
         private @Nullable Listener listener;
         private final ArrayList<CapturedEvent> capturedEvents = new ArrayList<>();
 
         private final RunState state = new RunState();
-
-        public Impl() {
-            nativeMonitor = NativeEventMonitor.build();
-        }
 
         @Override
         public Listener getListener() {
@@ -81,13 +79,19 @@ public interface EventMonitor {
 
         @Override
         public void start() throws Exception {
+            if (listener == null) {
+                throw Errors.delegateNotSet();
+            }
+            
+            state.start();
             capturedEvents.clear();
-            nativeMonitor.start();
+            nativeMonitor.addListener(this);
         }
 
         @Override
         public void stop() throws Exception {
-            nativeMonitor.stop();
+            state.stop();
+            nativeMonitor.removeListener(this);
         }
 
         // # NativeEventMonitor.Listener

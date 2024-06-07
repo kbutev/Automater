@@ -92,8 +92,13 @@ public class Logger {
     }
 
     private static <T> @NotNull String generateText(T origin, @Nullable String prefix, @Nullable String text) {
-        String reportingClass = origin != null ? origin.getClass().getSimpleName() : "Static";
-
+        String reportingClass = "Automater";
+        
+        if (origin.getClass() != null) {
+            var name = origin.getClass().getSimpleName();
+            reportingClass = name != null ? origin.getClass().getName() : reportingClass;
+        }
+        
         return generateText(reportingClass, text);
     }
 
@@ -131,7 +136,7 @@ class LoggerFile {
 
     public static @NotNull String getFilePath() {
         String path = FileSystem.getLocalFilePath();
-        return FileSystem.createFilePathWithBasePath(path, Logger.LOG_FILE_NAME);
+        return FileSystem.buildPath(path, Logger.LOG_FILE_NAME);
     }
 
     public static @NotNull String getLogFilePath() {
@@ -140,7 +145,7 @@ class LoggerFile {
         }
 
         String path = FileSystem.getLocalFilePath();
-        return FileSystem.createFilePathWithBasePath(path, Logger.LOG_BACKUP_FILE_NAME);
+        return FileSystem.buildPath(path, Logger.LOG_BACKUP_FILE_NAME);
     }
 
     public static @NotNull File getFile() {

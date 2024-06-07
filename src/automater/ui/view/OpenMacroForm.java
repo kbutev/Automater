@@ -11,6 +11,7 @@ import automater.utilities.Description;
 import automater.utilities.SimpleCallback;
 import org.jetbrains.annotations.NotNull;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
@@ -252,7 +253,7 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
     // # GenericView
     @Override
     public void onViewStart() {
-        macrosList.setModel(StandardDescriptionsDataSource.createGeneric());
+        macrosList.setModel(StandardDescriptionDataSource.createGeneric());
     }
 
     @Override
@@ -276,7 +277,7 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
     }
 
     // # Public
-    public void setListDataSource(@NotNull StandardDescriptionsDataSource dataSource) {
+    public void setListDataSource(@NotNull StandardDescriptionDataSource dataSource) {
         _dataSource = dataSource;
 
         macrosList.setModel(_dataSource);
@@ -327,7 +328,7 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
             return;
         }
 
-        List<Description> data = _dataSource.data;
+        List<Description> data = new ArrayList<>();
 
         if (index < 0 || index >= data.size()) {
             return;
@@ -346,7 +347,7 @@ public class OpenMacroForm extends javax.swing.JFrame implements BaseView {
 
     // Private
     private int _selectedIndex = -1;
-    private @Nullable StandardDescriptionsDataSource _dataSource;
+    private @Nullable StandardDescriptionDataSource _dataSource;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton deleteMacroButton;

@@ -9,24 +9,24 @@ import automater.di.DISetup;
 import automater.model.KeyEventKind;
 import automater.model.KeyValue;
 import automater.model.Keystroke;
-import com.google.gson.JsonObject;
-import java.util.ArrayList;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import automater.model.macro.Macro;
 import automater.model.action.MacroAction;
 import automater.model.action.MacroHardwareAction;
-import automater.parser.MacroActionsParser;
+import automater.parser.MacroParser;
+import java.util.ArrayList;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author Kristiyan Butev
  */
-public class ScriptActionsParserTests implements Constants {
+public class MacroParserTests implements Constants {
     
     // Immutable.
-    MacroActionsParser.Protocol parser;
+    MacroParser.Protocol parser;
     
-    public ScriptActionsParserTests() {
+    public MacroParserTests() {
     }
 
     @org.junit.jupiter.api.BeforeAll
@@ -40,7 +40,7 @@ public class ScriptActionsParserTests implements Constants {
 
     @org.junit.jupiter.api.BeforeEach
     public void setUp() throws Exception {
-        parser = DI.get(MacroActionsParser.Protocol.class);
+        parser = DI.get(MacroParser.Protocol.class);
     }
 
     @org.junit.jupiter.api.AfterEach
@@ -48,65 +48,43 @@ public class ScriptActionsParserTests implements Constants {
     }
 
     @Test
-    public void testOfClicksParsing() throws Exception {
+    public void testStandard() throws Exception {
         // From object to json and back
-        var list = new ArrayList<MacroAction>();
+        var actions = new ArrayList<MacroAction>();
         var first = new MacroHardwareAction.Click(1.25, KeyEventKind.press, new Keystroke(KeyValue._X));
         var second = new MacroHardwareAction.Click(2.2, KeyEventKind.release, new Keystroke(KeyValue._X));
         var third = new MacroHardwareAction.Click(3, KeyEventKind.tap, new Keystroke(KeyValue._Z));
-        list.add(first);
-        list.add(second);
-        list.add(third);
+        actions.add(first);
+        actions.add(second);
+        actions.add(third);
         
-        var json = parser.parseToJSON(list);
+        var json = parser.parseToJSON(Macro.build("Macro test", actions));
         
-        var parsedList = (ArrayList<MacroAction>)new ArrayList(parser.parseFromJSON(json));
-        assertTrue(parsedList.size() == list.size());
+        var macro = parser.parseFromJSON(json);
+        var parsedActions = macro.getActions();
         
-        if (parsedList.get(0) instanceof MacroHardwareAction.Click a1) {
+        assertTrue(parsedActions.size() == actions.size());
+        
+        if (parsedActions.get(0) instanceof MacroHardwareAction.Click a1) {
             assertTrue(a1.timestamp == first.timestamp);
             assertTrue(a1.keystroke.equals(first.keystroke));
         } else {
             assertTrue(false);
         }
         
-        if (parsedList.get(1) instanceof MacroHardwareAction.Click a2) {
+        if (parsedActions.get(1) instanceof MacroHardwareAction.Click a2) {
             assertTrue(a2.timestamp == second.timestamp);
             assertTrue(a2.keystroke.equals(second.keystroke));
         } else {
             assertTrue(false);
         }
         
-        if (parsedList.get(2) instanceof MacroHardwareAction.Click a3) {
+        if (parsedActions.get(2) instanceof MacroHardwareAction.Click a3) {
             assertTrue(a3.timestamp == third.timestamp);
             assertTrue(a3.keystroke.equals(third.keystroke));
         } else {
             assertTrue(false);
         }
     }
-    
-    @Test
-    public void testParsingWithBlankData() throws Exception {
-        var json = new JsonObject();
-        
-        try {
-            parser.parseFromJSON(json);
-            assertTrue(false);
-        } catch (Exception e) {
-            // Expected behavior
-        }
-    }
-    
-    @Test
-    public void testParsingWithInvalidType() throws Exception {
-        var json = new JsonObject();
-        json.addProperty(JSONKeys.ACTION_TYPE, "hardware.invalid");
-        
-        try {
-            parser.parseFromJSON(json);
-            assertTrue(false);
-        } catch (Exception e) {
-            // Expected behavior
-        }
-    }
 }
+

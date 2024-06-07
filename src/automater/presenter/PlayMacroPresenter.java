@@ -195,7 +195,7 @@ public interface PlayMacroPresenter {
             macro.setLastTimePlayedDate(new Date());
 
             try {
-                storage.getMacrosStorage().updateMacroInStorage(macro);
+                //storage.getMacrosStorage().updateMacroInStorage(macro);
             } catch (Exception e) {
                 Logger.error(this, "Failed to update macro in storage: " + e.toString());
             }

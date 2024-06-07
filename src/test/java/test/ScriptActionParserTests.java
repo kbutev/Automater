@@ -11,10 +11,8 @@ import automater.model.KeyValue;
 import automater.model.Keystroke;
 import automater.model.Point;
 import com.google.gson.JsonObject;
-import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import automater.model.action.MacroAction;
 import automater.model.action.MacroHardwareAction;
 import automater.parser.MacroActionParser;
 

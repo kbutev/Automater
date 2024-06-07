@@ -10,5 +10,4 @@ package automater.model.event;
  */
 public interface CapturedEvent {
     
-    double getTimestamp();
 }

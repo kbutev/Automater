@@ -23,7 +23,7 @@ public class Resources {
     public static @NotNull String getImagePath(@NotNull String key) {
         String file = addImageExtensionIfNecessary(key);
 
-        return FileSystem.createFilePathWithBasePath(RESOURCES_DIRECTORY_PATH, file);
+        return FileSystem.buildPath(RESOURCES_DIRECTORY_PATH, file);
     }
 
     private static @NotNull String addImageExtensionIfNecessary(@NotNull String key) {

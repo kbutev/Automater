@@ -46,17 +46,4 @@ public interface BasePresenter {
         public void startListeningForKeystrokes(@NotNull Callback<automater.settings.Hotkey> onKeystrokeEnteredCallback);
         public void endListeningForKeystrokes();
     }
-    
-    public interface OpenMacroPresenter extends BasePresenter {
-        // Properties
-        public void setDelegate(@NotNull OpenMacroPresenterDelegate delegate);
-        
-        // Navigation
-        public void onSwitchToRecordScreen();
-    
-        // Macro operations
-        public void openMacroAt(int index);
-        public void editMacroAt(int index);
-        public void deleteMacroAt(int index);
-    }
 }

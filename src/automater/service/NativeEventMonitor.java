@@ -9,6 +9,8 @@ import automater.model.EventFilter;
 import automater.model.KeyEventKind;
 import automater.model.event.CapturedEvent;
 import automater.parser.CapturedEventParser;
+import automater.utilities.Callback;
+import automater.utilities.Logger;
 import automater.utilities.RunState;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +18,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jnativehook.GlobalScreen;
@@ -28,7 +31,8 @@ import org.jnativehook.mouse.NativeMouseWheelEvent;
 import org.jnativehook.mouse.NativeMouseWheelListener;
 
 /**
- * Wrapper of NativeHookListener.
+ * A global monitor of mouse and keyboard events.
+ * Never initialize more than one monitor at a time.
  *
  * Requires a parser to translate the jnativehook events to Automater friendly
  * objects: RecorderUserInput.
@@ -43,8 +47,9 @@ public interface NativeEventMonitor {
 
     interface Protocol {
 
-        @Nullable Listener getListener();
-        void setListener(@NotNull Listener listener);
+        void addListener(@NotNull Listener listener);
+        void removeListener(@NotNull Listener listener);
+        
         @Nullable EventFilter getFilter();
         void setFilter(@NotNull EventFilter filter);
 
@@ -68,24 +73,26 @@ public interface NativeEventMonitor {
         private static final Object registerLock = new Object();
         private static SwingDispatchService swingDispatchService = null;
 
-        private NativeHookListener nativeHookListener;
-        private Listener listener;
+        private final NativeHookListener nativeHookListener = new NativeHookListener();
 
         private EventFilter filter = new EventFilter();
 
         private final RunState state = new RunState();
 
         @Override
-        public @Nullable Listener getListener() {
-            return this.listener;
+        public void addListener(@NotNull Listener listener) {
+            if (!nativeHookListener.listeners.contains(listener)) {
+                nativeHookListener.listeners.add(listener);
+            }
         }
-
+        
         @Override
-        public void setListener(@NotNull Listener listener) {
-            assert listener != null;
-            this.listener = listener;
+        public void removeListener(@NotNull Listener listener) {
+            if (nativeHookListener.listeners.contains(listener)) {
+                nativeHookListener.listeners.remove(listener);
+            }
         }
-
+        
         @Override
         public @Nullable
         EventFilter getFilter() {
@@ -104,10 +111,10 @@ public interface NativeEventMonitor {
 
         @Override
         public void start() throws Exception {
+            Logger.message(this, "start");
+            
             state.start();
-            nativeHookListener = new NativeHookListener();
             nativeHookListener.parser = parser;
-            nativeHookListener.listener = listener;
             nativeHookListener.filter = filter;
 
             registerEventDispatcherOnce();
@@ -120,14 +127,13 @@ public interface NativeEventMonitor {
 
         @Override
         public void stop() throws Exception {
+            Logger.message(this, "stop");
+            
             state.stop();
-            GlobalScreen.unregisterNativeHook();
             GlobalScreen.removeNativeMouseListener(nativeHookListener);
             GlobalScreen.removeNativeMouseListener(nativeHookListener);
             GlobalScreen.removeNativeMouseListener(nativeHookListener);
             GlobalScreen.removeNativeMouseListener(nativeHookListener);
-
-            nativeHookListener = null;
         }
 
         // # Private
@@ -145,9 +151,9 @@ public interface NativeEventMonitor {
     class NativeHookListener implements ActionListener, ItemListener, NativeKeyListener, NativeMouseInputListener, NativeMouseWheelListener, WindowListener {
 
         private CapturedEventParser.Protocol parser;
-        private Listener listener;
+        private ArrayList<Listener> listeners = new ArrayList<>();
         private EventFilter filter = new EventFilter();
-
+        
         @Override
         public void actionPerformed(ActionEvent e) {
 
@@ -171,11 +177,15 @@ public interface NativeEventMonitor {
                 if (filter.filtersOut(result)) {
                     return;
                 }
-
-                listener.onParseEvent(result);
-                listener.onInputDataChange();
+                
+                forEachListener((var listener) -> {
+                    listener.onParseEvent(result);
+                    listener.onInputDataChange();
+                });
             } catch (Exception e) {
-                listener.onParseError(e);
+                forEachListener((var listener) -> {
+                    listener.onParseError(e);
+                });
             }
         }
 
@@ -187,11 +197,15 @@ public interface NativeEventMonitor {
                 if (filter.filtersOut(result)) {
                     return;
                 }
-
-                listener.onParseEvent(result);
-                listener.onInputDataChange();
+                
+                forEachListener((var listener) -> {
+                    listener.onParseEvent(result);
+                    listener.onInputDataChange();
+                });
             } catch (Exception e) {
-                listener.onParseError(e);
+                forEachListener((var listener) -> {
+                    listener.onParseError(e);
+                });
             }
         }
 
@@ -209,10 +223,14 @@ public interface NativeEventMonitor {
                     return;
                 }
 
-                listener.onParseEvent(result);
-                listener.onInputDataChange();
+                forEachListener((var listener) -> {
+                    listener.onParseEvent(result);
+                    listener.onInputDataChange();
+                });
             } catch (Exception e) {
-                listener.onParseError(e);
+                forEachListener((var listener) -> {
+                    listener.onParseError(e);
+                });
             }
         }
 
@@ -225,10 +243,14 @@ public interface NativeEventMonitor {
                     return;
                 }
 
-                listener.onParseEvent(result);
-                listener.onInputDataChange();
+                forEachListener((var listener) -> {
+                    listener.onParseEvent(result);
+                    listener.onInputDataChange();
+                });
             } catch (Exception e) {
-                listener.onParseError(e);
+                forEachListener((var listener) -> {
+                    listener.onParseError(e);
+                });
             }
         }
 
@@ -241,10 +263,14 @@ public interface NativeEventMonitor {
                     return;
                 }
 
-                listener.onParseEvent(result);
-                listener.onInputDataChange();
+                forEachListener((var listener) -> {
+                    listener.onParseEvent(result);
+                    listener.onInputDataChange();
+                });
             } catch (Exception e) {
-                listener.onParseError(e);
+                forEachListener((var listener) -> {
+                    listener.onParseError(e);
+                });
             }
         }
 
@@ -257,10 +283,14 @@ public interface NativeEventMonitor {
                     return;
                 }
 
-                listener.onParseEvent(result);
-                listener.onInputDataChange();
+                forEachListener((var listener) -> {
+                    listener.onParseEvent(result);
+                    listener.onInputDataChange();
+                });
             } catch (Exception e) {
-                listener.onParseError(e);
+                forEachListener((var listener) -> {
+                    listener.onParseError(e);
+                });
             }
         }
 
@@ -273,10 +303,14 @@ public interface NativeEventMonitor {
                     return;
                 }
 
-                listener.onParseEvent(result);
-                listener.onInputDataChange();
+                forEachListener((var listener) -> {
+                    listener.onParseEvent(result);
+                    listener.onInputDataChange();
+                });
             } catch (Exception e) {
-                listener.onParseError(e);
+                forEachListener((var listener) -> {
+                    listener.onParseError(e);
+                });
             }
         }
 
@@ -313,6 +347,12 @@ public interface NativeEventMonitor {
         @Override
         public void windowDeactivated(WindowEvent e) {
 
+        }
+        
+        private void forEachListener(Callback<Listener> callback) {
+            for (var listener : listeners) {
+                callback.perform(listener);
+            }
         }
     }
 }

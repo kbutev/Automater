@@ -155,7 +155,8 @@ public class StandardMutableActionTemplates {
     {
         BaseAction action;
         
-        String defaultPath = FileSystem.createFilePathRelativeToLocalPath("screenshot.jpg");
+        String relativeLocalPath = FileSystem.getLocalFilePath();
+        String defaultPath = FileSystem.buildPath(relativeLocalPath, "screenshot.jpg");
         
         try {
             Description description = InputDescriptions.getScreenshot(timestamp, defaultPath);

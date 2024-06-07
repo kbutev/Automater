@@ -22,7 +22,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
 
     // UI callbacks
     public SimpleCallback onSwitchToPlayButtonCallback = SimpleCallback.createDoNothing();
-    public SimpleCallback onRecordMacroButtonCallback = SimpleCallback.createDoNothing();
+    public SimpleCallback onBeginRecordMacroButtonCallback = SimpleCallback.createDoNothing();
     public SimpleCallback onStopRecordMacroButtonCallback = SimpleCallback.createDoNothing();
     public Callback<String> onSaveMacroButtonCallback = Callback.createDoNothing();
 
@@ -171,8 +171,10 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
 
     private void recordMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordMacroButtonActionPerformed
         if (!isRecording()) {
-            onRecordMacroButtonCallback.perform();
+            beginRecording();
+            onBeginRecordMacroButtonCallback.perform();
         } else {
+            endRecording();
             onStopRecordMacroButtonCallback.perform();
         }
     }//GEN-LAST:event_recordMacroButtonActionPerformed
@@ -210,10 +212,8 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new RecordMacroForm().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new RecordMacroForm().setVisible(true);
         });
     }
 
@@ -243,7 +243,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
     // # GenericView
     @Override
     public void onViewStart() {
-        macroActionsList.setModel(StandardDescriptionsDataSource.createGeneric());
+        macroActionsList.setModel(StandardDescriptionDataSource.createGeneric());
     }
 
     @Override
@@ -253,7 +253,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
 
     @Override
     public void onViewResume() {
-        macroActionsList.setModel(StandardDescriptionsDataSource.createGeneric());
+        macroActionsList.setModel(StandardDescriptionDataSource.createGeneric());
 
         switchToOpenMacrosButton.setSelected(false);
 
@@ -284,7 +284,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
         return macroDescriptionField.getText();
     }
 
-    public void setListDataSource(@NotNull StandardDescriptionsDataSource dataSource) {
+    public void setListDataSource(@NotNull StandardDescriptionDataSource dataSource) {
         macroActionsList.setModel(dataSource);
 
         scrollToBottom();
@@ -297,7 +297,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
         }
     }
 
-    public void beginRecording(@Nullable Object sender) {
+    public void beginRecording() {
         _isRecording = true;
         _recordStartCount++;
         macroNameField.setEnabled(false);
@@ -307,7 +307,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
         updateRecordState();
     }
 
-    public void endRecording(@Nullable Object sender) {
+    public void endRecording() {
         _isRecording = false;
         macroNameField.setEnabled(true);
         switchToOpenMacrosButton.setEnabled(true);
