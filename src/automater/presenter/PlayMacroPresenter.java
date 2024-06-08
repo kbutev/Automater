@@ -70,7 +70,7 @@ public interface PlayMacroPresenter {
             this.macro = macro;
             macroActionDescriptions = macro.actionDescriptions;
 
-            actionHotkeyMonitor = HotkeyMonitor.build(Keystroke.build(KeyValue._F4));
+            actionHotkeyMonitor = HotkeyMonitor.build(Keystroke.build(KeyValue.F4));
         }
 
         // # BasePresenter

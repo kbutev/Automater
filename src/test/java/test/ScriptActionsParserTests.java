@@ -51,9 +51,9 @@ public class ScriptActionsParserTests implements Constants {
     public void testOfClicksParsing() throws Exception {
         // From object to json and back
         var list = new ArrayList<MacroAction>();
-        var first = new MacroHardwareAction.Click(1.25, KeyEventKind.press, new Keystroke(KeyValue._X));
-        var second = new MacroHardwareAction.Click(2.2, KeyEventKind.release, new Keystroke(KeyValue._X));
-        var third = new MacroHardwareAction.Click(3, KeyEventKind.tap, new Keystroke(KeyValue._Z));
+        var first = new MacroHardwareAction.Click(1.25, KeyEventKind.press, new Keystroke(KeyValue.X));
+        var second = new MacroHardwareAction.Click(2.2, KeyEventKind.release, new Keystroke(KeyValue.X));
+        var third = new MacroHardwareAction.Click(3, KeyEventKind.tap, new Keystroke(KeyValue.Z));
         list.add(first);
         list.add(second);
         list.add(third);

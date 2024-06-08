@@ -25,7 +25,7 @@ public class Keystroke {
 
     public static @NotNull
     Keystroke anyKey() {
-        return new Keystroke(KeyValue._X);
+        return new Keystroke(KeyValue.X);
     }
 
     public static @NotNull
@@ -75,11 +75,11 @@ public class Keystroke {
     }
 
     public boolean isMouse() {
-        return value == KeyValue._MOUSE_LEFT_CLICK
-                || value == KeyValue._MOUSE_RIGHT_CLICK
-                || value == KeyValue._MOUSE_MIDDLE_CLICK
-                || value == KeyValue._MOUSE_4_CLICK
-                || value == KeyValue._MOUSE_5_CLICK;
+        return value == KeyValue.MOUSE_LEFT_CLICK
+                || value == KeyValue.MOUSE_RIGHT_CLICK
+                || value == KeyValue.MOUSE_MIDDLE_CLICK
+                || value == KeyValue.MOUSE_4_CLICK
+                || value == KeyValue.MOUSE_5_CLICK;
     }
 
     public static String extractKeyValueFromKeyString(@NotNull String value) {

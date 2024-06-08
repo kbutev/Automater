@@ -54,7 +54,7 @@ public class ScriptActionParserTests implements Constants {
         rawJSON.addProperty(JSONKeys.ACTION_TIME, "1.0");
         rawJSON.addProperty(JSONKeys.ACTION_KEY, "release");
         var keystrokeJSON = new JsonObject();
-        keystrokeJSON.addProperty(JSONKeys.KEYSTROKE_V, KeyValue._X.name());
+        keystrokeJSON.addProperty(JSONKeys.KEYSTROKE_V, KeyValue.X.name());
         rawJSON.add(JSONKeys.ACTION_VALUE, keystrokeJSON);
         
         var result = parser.parseFromJSON(rawJSON);
@@ -71,7 +71,7 @@ public class ScriptActionParserTests implements Constants {
     @Test
     public void testClickParsing() throws Exception {
         // From object to json and back
-        var action = new MacroHardwareAction.Click(0, KeyEventKind.press, new Keystroke(KeyValue._X));
+        var action = new MacroHardwareAction.Click(0, KeyEventKind.press, new Keystroke(KeyValue.X));
         
         if (!(parser.parseToJSON(action) instanceof JsonObject parsedJSON)) {
             throw new Exception("Invalid json");
@@ -241,7 +241,7 @@ public class ScriptActionParserTests implements Constants {
         json.addProperty(JSONKeys.ACTION_TIME, "1.0");
         // KEY_KEY enum is missing
         var keystrokeJSON = new JsonObject();
-        keystrokeJSON.addProperty(JSONKeys.KEYSTROKE_V, KeyValue._X.name());
+        keystrokeJSON.addProperty(JSONKeys.KEYSTROKE_V, KeyValue.X.name());
         json.add(JSONKeys.ACTION_VALUE, keystrokeJSON);
         
         try {
@@ -259,7 +259,7 @@ public class ScriptActionParserTests implements Constants {
         json.addProperty(JSONKeys.ACTION_TIME, "1.0");
         json.addProperty(JSONKeys.ACTION_KEY, "zzzz"); // Invalid enum value
         var keystrokeJSON = new JsonObject();
-        keystrokeJSON.addProperty(JSONKeys.KEYSTROKE_V, KeyValue._X.name());
+        keystrokeJSON.addProperty(JSONKeys.KEYSTROKE_V, KeyValue.X.name());
         json.add(JSONKeys.ACTION_VALUE, keystrokeJSON);
         
         try {
@@ -277,7 +277,7 @@ public class ScriptActionParserTests implements Constants {
         // KEY_TIME is missing
         json.addProperty(JSONKeys.ACTION_KEY, "click");
         var keystrokeJSON = new JsonObject();
-        keystrokeJSON.addProperty(JSONKeys.KEYSTROKE_V, KeyValue._X.name());
+        keystrokeJSON.addProperty(JSONKeys.KEYSTROKE_V, KeyValue.X.name());
         json.add(JSONKeys.ACTION_VALUE, keystrokeJSON);
         
         try {

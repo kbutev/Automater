@@ -69,7 +69,7 @@ public interface RecordMacroPresenter {
         private final @NotNull StopWatch timer = new StopWatch();
 
         public Impl() {
-            actionHotkeyMonitor = HotkeyMonitor.build(Keystroke.build(KeyValue._F4));
+            actionHotkeyMonitor = HotkeyMonitor.build(Keystroke.build(KeyValue.F4));
         }
 
         // # BasePresenter

@@ -53,7 +53,7 @@ public class KeystrokeTests {
     @Test
     public void testConstruction() throws Exception {
         try {
-            var t1 = new Keystroke(KeyValue._X);
+            var t1 = new Keystroke(KeyValue.X);
         } catch (Exception e) {
             assertTrue(false);
         }
@@ -61,15 +61,15 @@ public class KeystrokeTests {
     
     @Test
     public void testParsing() throws Exception {
-        var keystroke = new Keystroke(KeyValue._X, new KeyModifier(KeyModifierValue.ALT));
+        var keystroke = new Keystroke(KeyValue.X, new KeyModifier(KeyModifierValue.ALT));
         var a = new MacroHardwareAction.Click(1.25, KeyEventKind.press, keystroke);
         
         var json = parser.parseToJSON(a);
         
         if (parser.parseFromJSON(json) instanceof MacroHardwareAction.Click result) {
             assertTrue(result.keystroke.equals(keystroke));
-            assertTrue(result.keystroke.value.equals(KeyValue._X));
-            assertFalse(result.keystroke.equals(new Keystroke(KeyValue._Z)));
+            assertTrue(result.keystroke.value.equals(KeyValue.X));
+            assertFalse(result.keystroke.equals(new Keystroke(KeyValue.Z)));
             assertTrue(result.keystroke.getModifier().contains(KeyModifierValue.ALT));
             assertFalse(result.keystroke.getModifier().contains(KeyModifierValue.CTRL));
         } else {

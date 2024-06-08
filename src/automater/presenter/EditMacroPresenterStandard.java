@@ -85,7 +85,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, HotkeyMon
         _macroActionDescriptions = new ArrayList<>();
         _macroActionDescriptions.addAll(macro.actionDescriptions);
 
-        hotkeyMonitor = HotkeyMonitor.build(Keystroke.build(KeyValue._F4));
+        hotkeyMonitor = HotkeyMonitor.build(Keystroke.build(KeyValue.F4));
         hotkeyMonitor.setName("Play/stop");
     }
 
