@@ -10,8 +10,6 @@ import automater.model.KeyValue;
 import automater.model.Keystroke;
 import automater.mvp.BasePresenter.EditMacroPresenter;
 import automater.settings.Hotkey;
-import automater.storage.GeneralStorage;
-import automater.storage.LegacyMacroStorage;
 import automater.ui.viewcontroller.RootViewController;
 import automater.utilities.Callback;
 import automater.utilities.Description;
@@ -25,6 +23,7 @@ import automater.mutableaction.StandardMutableActionTemplates;
 import automater.mutableaction.StandardMutableActionConstants;
 import automater.mvp.BasePresenterDelegate.EditMacroPresenterDelegate;
 import automater.service.HotkeyMonitor;
+import automater.storage.MacroStorage;
 import java.util.ArrayList;
 import java.util.Comparator;
 import automater.work.Action;
@@ -41,7 +40,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, HotkeyMon
     public final static int CREATE_ACTION_DEFAULT_TYPE = 0;
     public final static int CREATE_NEW_ACTION_TIMESTAMP_OFFSET = 1;
 
-    private final GeneralStorage.Protocol storage = DI.get(GeneralStorage.Protocol.class);
+    private final MacroStorage.Protocol storage = DI.get(MacroStorage.Protocol.class);
 
     @NotNull private final RootViewController _rootViewController;
     @Nullable private EditMacroPresenterDelegate _delegate;
@@ -162,59 +161,59 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, HotkeyMon
     public void onSaveMacro() {
         Logger.messageEvent(this, "Save macro and go back.");
 
-        String name = _name;
-        String description = _description;
-
-        var macroStorage = new LegacyMacroStorage();
-
-        Macro macro = new Macro(name, _macroActions, _originalMacro.dateCreated, _originalMacro.getLastTimePlayedDate(), _originalMacro.screenSize);
-        macro.setNumberOfTimesPlayed(_originalMacro.getNumberOfTimesPlayed());
-        macro.setDescription(description);
-
-        boolean nameChanged = !_originalMacro.name.equals(name);
-
-        if (nameChanged) {
-            Exception exception = macroStorage.getSaveMacroNameError(name, nameChanged);
-
-            if (exception != null) {
-                Logger.error(this, "Failed to save macro: " + exception.toString());
-                _delegate.onErrorEncountered(exception);
-                return;
-            }
-        }
-
-        Exception exception = macroStorage.getSaveMacroError(macro);
-
-        if (exception != null) {
-            Logger.error(this, "Failed to save macro: " + exception.toString());
-            _delegate.onErrorEncountered(exception);
-            return;
-        }
-
-        try {
-            if (!nameChanged) {
-                macroStorage.updateMacroInStorage(macro);
-                Logger.messageEvent(this, "Successfully updated macro '" + macro.name + "'!");
-            } else {
-                macroStorage.saveMacroToStorage(macro);
-                Logger.messageEvent(this, "Successfully saved new macro '" + macro.name + "'! Old macro will be deleted.");
-            }
-        } catch (Exception e) {
-            Logger.error(this, "Failed to save macro: " + e.toString());
-            _delegate.onErrorEncountered(e);
-            return;
-        }
-
-        // Delete old macro
-        if (nameChanged) {
-            try {
-                macroStorage.deleteMacro(_originalMacro);
-            } catch (Exception e) {
-
-            }
-        }
-
-        navigateBack();
+//        String name = _name;
+//        String description = _description;
+//
+//        var macroStorage = new LegacyMacroStorage();
+//
+//        Macro macro = new Macro(name, _macroActions, _originalMacro.dateCreated, _originalMacro.getLastTimePlayedDate(), _originalMacro.screenSize);
+//        macro.setNumberOfTimesPlayed(_originalMacro.getNumberOfTimesPlayed());
+//        macro.setDescription(description);
+//
+//        boolean nameChanged = !_originalMacro.name.equals(name);
+//
+//        if (nameChanged) {
+//            Exception exception = macroStorage.getSaveMacroNameError(name, nameChanged);
+//
+//            if (exception != null) {
+//                Logger.error(this, "Failed to save macro: " + exception.toString());
+//                _delegate.onErrorEncountered(exception);
+//                return;
+//            }
+//        }
+//
+//        Exception exception = macroStorage.getSaveMacroError(macro);
+//
+//        if (exception != null) {
+//            Logger.error(this, "Failed to save macro: " + exception.toString());
+//            _delegate.onErrorEncountered(exception);
+//            return;
+//        }
+//
+//        try {
+//            if (!nameChanged) {
+//                macroStorage.updateMacroInStorage(macro);
+//                Logger.messageEvent(this, "Successfully updated macro '" + macro.name + "'!");
+//            } else {
+//                macroStorage.saveMacroToStorage(macro);
+//                Logger.messageEvent(this, "Successfully saved new macro '" + macro.name + "'! Old macro will be deleted.");
+//            }
+//        } catch (Exception e) {
+//            Logger.error(this, "Failed to save macro: " + e.toString());
+//            _delegate.onErrorEncountered(e);
+//            return;
+//        }
+//
+//        // Delete old macro
+//        if (nameChanged) {
+//            try {
+//                macroStorage.deleteMacro(_originalMacro);
+//            } catch (Exception e) {
+//
+//            }
+//        }
+//
+//        navigateBack();
     }
 
     @Override

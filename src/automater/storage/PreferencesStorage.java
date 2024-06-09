@@ -4,177 +4,101 @@
  */
 package automater.storage;
 
-import automater.utilities.Archiver;
-import automater.utilities.Errors;
+import automater.di.DI;
+import automater.model.KeyValue;
+import automater.model.Keystroke;
 import automater.utilities.FileSystem;
-import automater.utilities.Logger;
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.PrintWriter;
 
 /**
  * Holds the application general preference settings, such as UI preferences.
  *
  * @author Bytevi
  */
-public class PreferencesStorage {
-
-    public static final String PREFERENCES_FILE = "preferences";
-
-    private final @NotNull Object _lock = new Object();
-
-    private @NotNull PreferencesStorageValues _values = new PreferencesStorageValues();
-
-    public PreferencesStorage() {
-        loadPrefrencesFromDevice();
-    }
-
-    // # Properties
-    public @NotNull PreferencesStorageValues getValues() {
-        synchronized (_lock) {
-            return _values.copy();
+public interface PreferencesStorage {
+    
+    public static final String PREFERENCES_FILE_NAME = "preferences.json";
+    
+    class Values {
+        @SerializedName("recordHotkey")
+        public @NotNull Keystroke recordHotkey = Keystroke.build(KeyValue.F4); // Record and stop
+        
+        @SerializedName("playHotkey")
+        public @NotNull Keystroke playHotkey = Keystroke.build(KeyValue.F4); // Play and stop
+        
+        @SerializedName("startNotification")
+        public boolean startNotification = false;
+        
+        @SerializedName("stopNotification")
+        public boolean stopNotification = false;
+        
+        public @NotNull Values copy() {
+            var result = new Values();
+            result.recordHotkey = recordHotkey;
+            result.playHotkey = playHotkey;
+            result.recordHotkey = recordHotkey;
+            result.stopNotification = stopNotification;
+            return result;
         }
     }
-
-    public void saveValues(@NotNull PreferencesStorageValues values) {
-        Logger.messageEvent(this, "Save new preference values");
-
-        synchronized (_lock) {
-            _values = values;
-        }
-
-        try {
-            writeToFile(getFile());
-        } catch (Exception e) {
-
-        }
+    
+    interface Protocol {
+        @NotNull Values getValues();
+        
+        void load();
+        void save();
+        void resetToDefaults();
     }
-
-    // # Public
-    public void reloadPrefrencesFromStorage() {
-        synchronized (_lock) {
-            loadPrefrencesFromDevice();
+    
+    class Impl implements Protocol {
+        
+        private final Gson gson = DI.get(Gson.class);
+        
+        @NotNull Values values = new Values();
+        
+        public Impl() {
+            
         }
-    }
-
-    // # Private
-    private @NotNull String filePath() {
-        String path = FileSystem.getLocalFilePath();
-        return FileSystem.buildPath(path, PREFERENCES_FILE);
-    }
-
-    private @NotNull File getFile() throws Exception {
-        File file = new File(filePath());
-        return file;
-    }
-
-    private void loadPrefrencesFromDevice() {
-        Logger.messageEvent(this, "Reload preference values from storage");
-
-        String data;
-
-        try {
-            data = readFromFile(getFile());
-        } catch (Exception e) {
-            // Silent return, if file does not exist, use default preferences
-            return;
+        
+        @Override
+        public @NotNull Values getValues() {
+            return values;
         }
+        
+        @Override
+        public void load() {
+            var file = FileSystem.getFile(PREFERENCES_FILE_NAME);
+            
+            if (file.exists()) {
+                try {
+                    var contents = FileSystem.readFromFile(file);
+                    this.values = gson.fromJson(contents, Values.class);
+                } catch (Exception e) {
 
-        // No file exists, return without logging anything
-        if (data.isEmpty()) {
-            return;
-        }
-
-        PreferencesStorageValues values;
-
-        try {
-            values = Archiver.deserializeObject(PreferencesStorageValues.class, data);
-        } catch (Exception e) {
-            Logger.error(this, "Failed to deserialize the storage values: " + e.getMessage());
-            return;
-        }
-
-        if (values == null) {
-            Logger.error(this, "Failed to deserialize the storage values");
-            return;
-        }
-
-        // Update values
-        synchronized (_lock) {
-            _values = values;
-        }
-    }
-
-    private void writeToFile(@NotNull File file) throws Exception {
-        PreferencesStorageValues values;
-
-        synchronized (_lock) {
-            values = _values;
-        }
-
-        String data = Archiver.serializeObject(values);
-
-        if (data == null) {
-            Logger.error(this, "Failed to serialize the storage values");
-            throw Errors.serializationFailed();
-        }
-
-        PreferencesStorage.writeToFile(file, data);
-    }
-
-    private static void writeToFile(@NotNull File file, @NotNull String data) throws Exception {
-        PrintWriter writer = null;
-
-        try {
-            writer = new PrintWriter(file);
-            String[] lines = data.split("\n");
-
-            for (String line : lines) {
-                writer.println(line);
-            }
-
-            writer.println();
-            writer.close();
-        } catch (Exception e) {
-            try {
-                if (writer != null) {
-                    writer.close();
                 }
-            } catch (Exception e2) {
-
+            } else {
+                save();
             }
         }
-    }
-
-    private static @NotNull String readFromFile(@NotNull File file) {
-        String data = "";
-
-        BufferedReader reader = null;
-
-        try {
-            reader = new BufferedReader(new FileReader(file));
-
-            String line = reader.readLine();
-
-            while (line != null) {
-                data = data.concat(line);
-                line = reader.readLine();
-            }
-
-            reader.readLine();
-            reader.close();
-        } catch (Exception e) {
+        
+        @Override
+        public void save() {
+            var file = FileSystem.getFile(PREFERENCES_FILE_NAME);
+            var json = gson.toJson(values);
+            
             try {
-                if (reader != null) {
-                    reader.close();
-                }
-            } catch (Exception e2) {
-
+                FileSystem.writeToFile(file, json);
+            } catch (Exception e) {
+                
             }
         }
-
-        return data;
+        
+        @Override
+        public void resetToDefaults() {
+            values = new Values();
+            save();
+        }
     }
 }

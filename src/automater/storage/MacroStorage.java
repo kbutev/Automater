@@ -132,11 +132,7 @@ public interface MacroStorage {
                     file.delete();
                 }
                 
-                var result = FileSystem.writeToFile(file, json);
-                
-                if (result != null) {
-                    throw result;
-                }
+                FileSystem.writeToFile(file, json);
             } catch (Exception e) {
                 Logger.error(this, "Failed to save macro, error: " + e);
                 throw e;

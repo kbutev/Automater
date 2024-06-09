@@ -6,6 +6,7 @@ package automater.ui.view;
 
 import automater.Strings;
 import automater.TextValue;
+import automater.model.Keystroke;
 import automater.settings.Hotkey;
 import automater.utilities.SimpleCallback;
 import org.jetbrains.annotations.NotNull;
@@ -299,7 +300,7 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         }
     }
 
-    public void setPlayOrStopHotkeyText(@NotNull Hotkey hotkey) {
+    public void setPlayOrStopHotkeyText(@NotNull Keystroke hotkey) {
         playOrStopHotkey = hotkey.toString();
 
         if (!isPlaying) {

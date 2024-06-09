@@ -6,7 +6,7 @@ package automater.ui.viewcontroller;
 
 import automater.TextValue;
 import automater.presenter.PlayMacroPresenter;
-import automater.storage.PreferencesStorageValues;
+import automater.storage.PreferencesStorage;
 import automater.ui.view.PlayMacroForm;
 import automater.ui.view.PlayMacroOptionsDialog;
 import automater.ui.view.StandardDescriptionDataSource;
@@ -35,7 +35,7 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
 
     private @Nullable StandardDescriptionDataSource _dataSource;
 
-    private @NotNull PreferencesStorageValues _currentPreferences = new PreferencesStorageValues();
+    private @NotNull PreferencesStorage.Values _currentPreferences = new PreferencesStorage.Values();
 
     public PlayMacroViewController(PlayMacroPresenter.Protocol presenter) {
         _presenter = presenter;
@@ -119,12 +119,12 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
     }
 
     @Override
-    public void onLoadedPreferencesFromStorage(@NotNull automater.storage.PreferencesStorageValues values) {
+    public void onLoadedPreferencesFromStorage(@NotNull automater.storage.PreferencesStorage.Values values) {
         _currentPreferences = values;
 
-        setMacroParametersDescription(values.macroParameters);
+        setMacroParametersDescription(new MacroParameters());
 
-        _form.setPlayOrStopHotkeyText(values.playOrStopHotkey);
+        _form.setPlayOrStopHotkeyText(values.playHotkey);
     }
 
     @Override
@@ -184,7 +184,7 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
         _optionsDialog.onSaveButtonCallback = new SimpleCallback() {
             @Override
             public void perform() {
-                PreferencesStorageValues values = getPreferenceValuesFromOptionsDialog();
+                PreferencesStorage.Values values = getPreferenceValuesFromOptionsDialog();
                 saveOptionValues(values);
                 _optionsDialog.setVisible(false);
             }
@@ -202,12 +202,11 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
     }
 
     private @NotNull
-    PreferencesStorageValues getPreferenceValuesFromOptionsDialog() {
-        PreferencesStorageValues values = new PreferencesStorageValues();
+    PreferencesStorage.Values getPreferenceValuesFromOptionsDialog() {
+        PreferencesStorage.Values values = new PreferencesStorage.Values();
 
-        values.displayStartNotification = _optionsDialog.isNotificationStartChecked();
-        values.displayStopNotification = _optionsDialog.isNotificationStopChecked();
-        values.displayRepeatNotification = _optionsDialog.isNotificationRepeatChecked();
+        values.startNotification = _optionsDialog.isNotificationStartChecked();
+        values.stopNotification = _optionsDialog.isNotificationStopChecked();
 
         double playSpeed = _optionsDialog.getPlaySpeedValue();
 
@@ -219,20 +218,18 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
         boolean repeatForever = _optionsDialog.isRepeatForeverChecked();
 
         MacroParameters parameters = new MacroParameters(playSpeed, repeatTimes, repeatForever);
-        values.macroParameters = parameters;
+        //values.macroParameters = parameters;
 
         return values;
     }
 
-    private void saveOptionValues(@NotNull PreferencesStorageValues values) {
+    private void saveOptionValues(@NotNull PreferencesStorage.Values values) {
         if (_optionsDialog != null) {
             _optionsDialog.setupWithStorageValues(values);
         }
 
         _currentPreferences = values;
 
-        _presenter.setOptionValues(values);
-
-        setMacroParametersDescription(values.macroParameters);
+        setMacroParametersDescription(new MacroParameters());
     }
 }

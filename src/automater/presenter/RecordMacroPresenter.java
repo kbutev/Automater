@@ -35,7 +35,7 @@ public interface RecordMacroPresenter {
         
         void onError(@NotNull Exception e);
 
-        void onLoadedPreferencesFromStorage(@NotNull automater.storage.PreferencesStorageValues values);
+        void onLoadedPreferencesFromStorage(@NotNull automater.storage.PreferencesStorage.Values values);
 
         void onStartRecording(@Nullable Object sender);
         void onEndRecording(@Nullable Object sender);

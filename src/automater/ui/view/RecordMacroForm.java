@@ -6,6 +6,7 @@ package automater.ui.view;
 
 import automater.Strings;
 import automater.TextValue;
+import automater.model.Keystroke;
 import automater.settings.Hotkey;
 import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
@@ -324,7 +325,7 @@ public class RecordMacroForm extends javax.swing.JFrame implements BaseView {
         AlertWindows.showErrorMessage(getParent(), title, message, "Ok");
     }
 
-    public void setRecordOrStopHotkeyText(@NotNull Hotkey hotkey) {
+    public void setRecordOrStopHotkeyText(@NotNull Keystroke hotkey) {
         recordOrStopHotkey = hotkey.toString();
 
         macroStateLabel.setText(TextValue.getText(TextValue.Record_IdleStatus, recordOrStopHotkey));

@@ -5,9 +5,10 @@
 package automater.ui.view;
 
 import automater.TextValue;
-import automater.storage.PreferencesStorageValues;
+import automater.storage.PreferencesStorage;
 import automater.utilities.SimpleCallback;
 import automater.utilities.StringFormatting;
+import automater.work.model.MacroParameters;
 import org.jetbrains.annotations.NotNull;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -237,14 +238,14 @@ public class PlayMacroOptionsDialog extends javax.swing.JDialog {
     }
 
     // # Public
-    public void setupWithStorageValues(@NotNull PreferencesStorageValues values) {
-        startNotificationCheck.setSelected(values.displayStartNotification);
-        stopNotificationCheck.setSelected(values.displayStopNotification);
-        repeatNotificationCheck.setSelected(values.displayRepeatNotification);
+    public void setupWithStorageValues(@NotNull PreferencesStorage.Values values) {
+        startNotificationCheck.setSelected(values.startNotification);
+        stopNotificationCheck.setSelected(values.stopNotification);
 
-        playSpeedField.setText(String.valueOf(values.macroParameters.playSpeed));
-        repeatField.setText(String.valueOf(values.macroParameters.repeatTimes));
-        repeatForeverCheck.setSelected(values.macroParameters.repeatForever);
+        var macroParameters = new MacroParameters();
+        playSpeedField.setText(String.valueOf(macroParameters.playSpeed));
+        repeatField.setText(String.valueOf(macroParameters.repeatTimes));
+        repeatForeverCheck.setSelected(macroParameters.repeatForever);
     }
 
     public boolean isNotificationStartChecked() {

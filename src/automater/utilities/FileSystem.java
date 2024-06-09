@@ -193,7 +193,7 @@ public class FileSystem {
         return data;
     }
     
-    public static @Nullable Exception writeToFile(@NotNull File file, @NotNull String data) throws Exception {
+    public static void writeToFile(@NotNull File file, @NotNull String data) throws Exception {
         PrintWriter writer = null;
 
         try {
@@ -215,9 +215,7 @@ public class FileSystem {
 
             }
             
-            return e;
+            throw e;
         }
-        
-        return null;
     }
 }

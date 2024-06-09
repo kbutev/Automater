@@ -10,8 +10,8 @@ import automater.model.KeyEventKind;
 import automater.model.KeyValue;
 import automater.model.Keystroke;
 import automater.service.HotkeyMonitor;
-import automater.storage.GeneralStorage;
-import automater.storage.PreferencesStorageValues;
+import automater.storage.MacroStorage;
+import automater.storage.PreferencesStorage;
 import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
@@ -22,6 +22,7 @@ import automater.work.ExecutorProcess;
 import automater.work.model.Macro;
 import java.util.List;
 import automater.work.model.ExecutorProgress;
+import automater.work.model.MacroParameters;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import java.util.Date;
@@ -36,7 +37,7 @@ public interface PlayMacroPresenter {
     interface Delegate {
 
         void onError(@NotNull Exception e);
-        void onLoadedPreferencesFromStorage(@NotNull automater.storage.PreferencesStorageValues values);
+        void onLoadedPreferencesFromStorage(@NotNull PreferencesStorage.Values values);
         void onLoadedMacroFromStorage(@NotNull String macroName, @NotNull String macroDescription, @NotNull List<Description> macroActions);
         void startPlaying();
         void stopPlaying(boolean wasCancelled);
@@ -47,13 +48,13 @@ public interface PlayMacroPresenter {
 
         void playMacro(@Nullable Object sender);
         void stopMacro(@Nullable Object sender);
-        void setOptionValues(@NotNull automater.storage.PreferencesStorageValues values);
         void navigateBack();
     }
 
     class Impl implements Protocol, Executor.Listener, HotkeyMonitor.Listener {
 
-        private final GeneralStorage.Protocol storage = DI.get(GeneralStorage.Protocol.class);
+        private final MacroStorage.Protocol storage = DI.get(MacroStorage.Protocol.class);
+        private final PreferencesStorage.Protocol preferences = DI.get(PreferencesStorage.Protocol.class);
         private final Executor.Protocol executor = DI.get(Executor.Protocol.class);
 
         private @Nullable Delegate delegate;
@@ -63,8 +64,6 @@ public interface PlayMacroPresenter {
         private final @NotNull Macro macro;
         private final @NotNull List<Description> macroActionDescriptions;
         private @Nullable ExecutorProcess.Protocol ongoingExecution;
-
-        private @NotNull PreferencesStorageValues options = new PreferencesStorageValues();
 
         public Impl(@NotNull Macro macro) {
             this.macro = macro;
@@ -86,8 +85,7 @@ public interface PlayMacroPresenter {
 
             delegate.onLoadedMacroFromStorage(macro.name, macro.getDescription(), macroActionDescriptions);
 
-            options = storage.getPreferencesStorage().getValues();
-            delegate.onLoadedPreferencesFromStorage(options);
+            delegate.onLoadedPreferencesFromStorage(preferences.getValues());
         }
 
         @Override
@@ -140,7 +138,7 @@ public interface PlayMacroPresenter {
 
         @Override
         public void onRepeat(int numberOfTimesPlayed, int numberOfTimesToPlay) {
-            displayPlayingRepeatNotification(numberOfTimesPlayed, numberOfTimesToPlay);
+            
         }
 
         @Override
@@ -181,9 +179,11 @@ public interface PlayMacroPresenter {
         @Override
         public void playMacro(@Nullable Object sender) {
             Logger.messageEvent(this, "Play.");
+            
+            var macroParameters = new MacroParameters();
 
             try {
-                ongoingExecution = executor.performMacro(macro, options.macroParameters, this);
+                ongoingExecution = executor.performMacro(macro, macroParameters, this);
             } catch (Exception e) {
                 Logger.error(this, "Failed to start executor: " + e.toString());
                 e.printStackTrace(System.out);
@@ -224,16 +224,6 @@ public interface PlayMacroPresenter {
             // be alerted by the execution that the process stopped
         }
 
-        @Override
-        public void setOptionValues(@NotNull PreferencesStorageValues values) {
-            Logger.messageEvent(this, "Play parameters changed: " + values.macroParameters.toString());
-
-            options = values;
-
-            // Save the option values to storage
-            storage.getPreferencesStorage().saveValues(values);
-        }
-
         // # Private
         private void updatePlayStatus() {
             if (ongoingExecution == null) {
@@ -246,7 +236,7 @@ public interface PlayMacroPresenter {
         }
 
         private void displayPlayingStartedNotification() {
-            if (!options.displayStartNotification) {
+            if (!preferences.getValues().startNotification) {
                 return;
             }
 
@@ -260,7 +250,7 @@ public interface PlayMacroPresenter {
         }
 
         private void displayPlayingFinishedNotification() {
-            if (!options.displayStopNotification) {
+            if (!preferences.getValues().stopNotification) {
                 return;
             }
 
@@ -268,24 +258,6 @@ public interface PlayMacroPresenter {
 
             String title = TextValue.getText(TextValue.Play_NotificationFinishTitle);
             String message = TextValue.getText(TextValue.Play_NotificationFinishMessage, macroName);
-
-            DeviceNotifications.getShared().displayGlobalNotification(title, message);
-        }
-
-        private void displayPlayingRepeatNotification(int numberOfTimesPlayed, int numberOfTimesToPlay) {
-            if (!options.displayRepeatNotification) {
-                return;
-            }
-
-            String macroName = macro.name;
-            String timesPlayed = String.valueOf(numberOfTimesPlayed) + "/" + String.valueOf(numberOfTimesToPlay);
-
-            if (options.macroParameters.repeatForever) {
-                timesPlayed = TextValue.getText(TextValue.Play_NotificationRepeatForever);
-            }
-
-            String title = TextValue.getText(TextValue.Play_NotificationRepeatTitle);
-            String message = TextValue.getText(TextValue.Play_NotificationRepeatMessage, macroName, timesPlayed);
 
             DeviceNotifications.getShared().displayGlobalNotification(title, message);
         }
