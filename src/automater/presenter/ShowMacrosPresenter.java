@@ -4,7 +4,7 @@
  */
 package automater.presenter;
 
-import automater.ui.viewcontroller.RootViewController;
+import automater.TextValue;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.Looper;
@@ -14,38 +14,30 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import automater.di.DI;
+import automater.model.macro.MacroFileSummary;
 import automater.model.macro.MacroSummary;
 import automater.model.macro.MacroSummaryDescription;
 import automater.parser.DescriptionParser;
 import automater.storage.MacroStorage;
+import automater.ui.view.ShowMacrosPanel;
+import automater.ui.view.StandardDescriptionDataSource;
+import automater.utilities.AlertWindows;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Presenter for the open macro screen.
+ * Presenter for the show macros screen.
  *
  * @author Bytevi
  */
-public interface OpenMacroPresenter {
+public interface ShowMacrosPresenter {
 
     interface Delegate {
         
-        void onError(@NotNull Exception e);
-        
-        void onLoadedMacrosFromStorage(@NotNull List<String> macros);
     }
     
-    interface Protocol {
+    interface Protocol extends PresenterWithDelegate<Delegate> {
         
-        @Nullable Delegate getDelegate();
-        void setDelegate(@NotNull Delegate delegate);
-        
-        void start();
-        void stop();
-        void reloadData();
-        
-        void onSwitchToRecordScreen();
-    
         void openMacroAt(int index);
         void editMacroAt(int index);
         void deleteMacroAt(int index);
@@ -56,14 +48,38 @@ public interface OpenMacroPresenter {
         private final MacroStorage.Protocol storage = DI.get(MacroStorage.Protocol.class);
         private final DescriptionParser.Protocol descriptionParser = DI.get(DescriptionParser.Protocol.class);
         
-        private @NotNull final RootViewController rootViewController;
+        private final @NotNull ShowMacrosPanel view;
         private @Nullable Delegate delegate;
-
-        private @NotNull List<MacroSummary> macros = new ArrayList<>();
+        private @Nullable StandardDescriptionDataSource dataSource;
+        
+        private @NotNull List<MacroFileSummary> macros = new ArrayList<>();
         private final @NotNull List<MacroSummaryDescription> macrosAsDescriptions = new ArrayList<>();
 
-        public Impl(@NotNull RootViewController rootViewController) {
-            this.rootViewController = rootViewController;
+        public Impl(@NotNull ShowMacrosPanel view) {
+            this.view = view;
+            setup();
+        }
+        
+        private void setup() {
+            view.onSelectItem = (Integer index) -> {
+                openMacroAt(index);
+            };
+
+            view.onDoubleClickItem = (Integer index) -> {
+                editMacroAt(index);
+            };
+
+            view.onOpenItem = (Integer index) -> {
+                editMacroAt(index);
+            };
+
+            view.onEditItem = (Integer index) -> {
+                editMacroAt(index);
+            };
+
+            view.onDeleteItem = (Integer index) -> {
+                deleteItem(index);
+            };
         }
 
         @Override
@@ -74,6 +90,7 @@ public interface OpenMacroPresenter {
 
             Logger.message(this, "Start.");
 
+            view.onViewStart();
             updateMacroData();
         }
         
@@ -89,10 +106,6 @@ public interface OpenMacroPresenter {
 
         @Override
         public void setDelegate(@NotNull Delegate delegate) {
-            if (this.delegate != null) {
-                throw Errors.internalLogicError();
-            }
-
             this.delegate = delegate;
         }
 
@@ -101,12 +114,6 @@ public interface OpenMacroPresenter {
             Logger.message(this, "Data update requested.");
 
             updateMacroData();
-        }
-
-        // # OpenMacroPresenter
-        @Override
-        public void onSwitchToRecordScreen() {
-            rootViewController.navigateToRecordScreen();
         }
 
         @Override
@@ -147,17 +154,44 @@ public interface OpenMacroPresenter {
             }
 
             var macro = macros.get(index);
+            
+            Logger.message(this, "Delete macro '" + macro.filePath + "'");
 
             try {
-                //macrosStorage.deleteMacro(macro);
+                storage.deleteMacro(macro);
             } catch (Exception e) {
-
+                Logger.error(this, "Failed to delete macro, error: " + e);
             }
 
             updateMacroData();
         }
+        
+        public void deleteItem(int index) {
+            if (dataSource == null) {
+                return;
+            }
 
-        // # Private
+            var macroDescriptions = dataSource.data;
+
+            if (index < 0 || index >= macroDescriptions.size()) {
+                return;
+            }
+
+            var macro = macroDescriptions.get(index);
+
+            var confirm = new SimpleCallback() {
+                @Override
+                public void perform() {
+                    deleteMacroAt(index);
+                }
+            };
+
+            var textTitle = TextValue.getText(TextValue.Dialog_ConfirmDeleteMacroTitle);
+            var textMessage = TextValue.getText(TextValue.Dialog_ConfirmDeleteMacroMessage, "macro name");
+
+            AlertWindows.showConfirmationMessage(view, textTitle, textMessage, confirm, null);
+        }
+
         private void updateMacroData() {
             var presenter = this;
 
@@ -182,19 +216,21 @@ public interface OpenMacroPresenter {
             });
         }
 
-        private void setMacroData(@NotNull List<MacroSummary> data) {
+        private void setMacroData(@NotNull List<MacroFileSummary> data) {
             macros = data;
 
             macrosAsDescriptions.clear();
             
             for (var macro : macros) {
                 try {
-                    macrosAsDescriptions.add(descriptionParser.parseMacroSummary(macro));
+                    macrosAsDescriptions.add(descriptionParser.parseMacroSummary(macro.summary));
                 } catch (Exception e) {}
             }
             
             var descriptions = macrosAsDescriptions.stream().map(Object::toString).collect(Collectors.toList());
-            delegate.onLoadedMacrosFromStorage(descriptions);
+            
+            this.dataSource = StandardDescriptionDataSource.createDataSource(descriptions);
+            view.setListDataSource(dataSource);
         }
     }
 }

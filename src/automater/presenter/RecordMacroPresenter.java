@@ -17,9 +17,11 @@ import automater.parser.MacroActionParser;
 import automater.service.EventMonitor;
 import automater.service.HotkeyMonitor;
 import automater.storage.MacroStorage;
+import automater.ui.view.RecordMacroPanel;
+import automater.ui.view.StandardDescriptionDataSource;
 import automater.utilities.Logger;
+import automater.utilities.SimpleCallback;
 import java.util.ArrayList;
-import java.util.List;
 import org.apache.commons.lang3.time.StopWatch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,16 +36,12 @@ public interface RecordMacroPresenter {
     interface Delegate {
         
         void onError(@NotNull Exception e);
-
-        void onLoadedPreferencesFromStorage(@NotNull automater.storage.PreferencesStorage.Values values);
-
         void onStartRecording(@Nullable Object sender);
         void onEndRecording(@Nullable Object sender);
-        void onUpdateEvents(@NotNull List<String> events);
-        void onRecordingSaved(boolean success);
+        void onRecordingSave(boolean success);
     }
 
-    interface Protocol extends Presenter<Delegate> {
+    interface Protocol extends PresenterWithDelegate<Delegate> {
         
         double getCurrentRecordTime();
 
@@ -58,6 +56,7 @@ public interface RecordMacroPresenter {
         private final MacroActionParser.Protocol actionParser = DI.get(MacroActionParser.Protocol.class);
         private final DescriptionParser.Protocol descriptionParser = DI.get(DescriptionParser.Protocol.class);
 
+        private final @NotNull RecordMacroPanel view;
         private @Nullable Delegate delegate;
 
         private final EventMonitor.Protocol recorder = new EventMonitor.Impl();
@@ -68,11 +67,41 @@ public interface RecordMacroPresenter {
         
         private final @NotNull StopWatch timer = new StopWatch();
 
-        public Impl() {
+        public Impl(@NotNull RecordMacroPanel view) {
+            this.view = view;
             actionHotkeyMonitor = HotkeyMonitor.build(Keystroke.build(KeyValue.F4));
+            setup();
+        }
+        
+        private void setup() {
+            var self = this;
+
+            view.onSwitchToPlayButtonCallback = new SimpleCallback() {
+                @Override
+                public void perform() {
+                    self.stop();
+                }
+            };
+
+            view.onBeginRecordMacroButtonCallback = new SimpleCallback() {
+                @Override
+                public void perform() {
+                    self.beginRecording(self.view);
+                }
+            };
+
+            view.onStopRecordMacroButtonCallback = new SimpleCallback() {
+                @Override
+                public void perform() {
+                    self.endRecording(self.view);
+                }
+            };
+
+            view.onSaveMacroButtonCallback = (String argument) -> {
+                self.saveRecording(argument, view.getMacroDescription());
+            };
         }
 
-        // # BasePresenter
         @Override
         public void start() {
             if (delegate == null) {
@@ -88,6 +117,8 @@ public interface RecordMacroPresenter {
             } catch (Exception e) {
                 delegate.onError(e);
             }
+            
+            reloadData();
         }
 
         @Override
@@ -96,8 +127,11 @@ public interface RecordMacroPresenter {
 
             try {
                 timer.stop();
+                timer.reset();
                 actionHotkeyMonitor.stop();
             } catch (Exception e) {}
+            
+            reloadData();
         }
 
         @Override
@@ -113,7 +147,8 @@ public interface RecordMacroPresenter {
 
         @Override
         public void reloadData() {
-
+            var result = StandardDescriptionDataSource.createDataSource(descriptions);
+            view.setListDataSource(result);
         }
         
         @Override
@@ -137,12 +172,14 @@ public interface RecordMacroPresenter {
                 }
             }
             
+            reloadData();
+            
             if (delegate != null) {
-                delegate.onUpdateEvents(descriptions);
-                
-                if (sender != delegate) {
-                    delegate.onStartRecording(sender);
-                }
+                delegate.onStartRecording(sender);
+            }
+            
+            if (sender != view) {
+                view.beginRecording();
             }
         }
 
@@ -158,8 +195,12 @@ public interface RecordMacroPresenter {
                 }
             }
             
-            if (delegate != null && sender != delegate) {
+            if (delegate != null) {
                 delegate.onEndRecording(sender);
+            }
+            
+            if (sender != view) {
+                view.endRecording();
             }
         }
 
@@ -176,7 +217,7 @@ public interface RecordMacroPresenter {
             }
             
             if (delegate != null) {
-                delegate.onRecordingSaved(result);
+                delegate.onRecordingSave(result);
             }
         }
 
@@ -203,12 +244,11 @@ public interface RecordMacroPresenter {
                 Logger.error(this, "Parsing error: " + e);
             }
             
-            if (delegate != null) {
-                delegate.onUpdateEvents(descriptions);
-            }
+            reloadData();
         }
 
         // # HotkeyMonitor.Listener
+        
         @Override
         public void onHotkeyEvent(KeyEventKind kind) {
             if (!kind.isReleaseOrTap()) {

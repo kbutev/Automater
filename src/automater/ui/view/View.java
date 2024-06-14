@@ -4,13 +4,18 @@
  */
 package automater.ui.view;
 
+import java.awt.Component;
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Defines commonly used methods for a view element.
  *
  * @author Bytevi
  */
-public interface BaseView {
-
+public interface View {
+    
+    @NotNull Component asComponent();
+    
     void onViewStart();
     void onViewSuspended();
     void onViewResume();

@@ -7,6 +7,7 @@ package automater.storage;
 import automater.TextValue;
 import automater.di.DI;
 import automater.model.macro.Macro;
+import automater.model.macro.MacroFileSummary;
 import automater.model.macro.MacroSummary;
 import automater.parser.MacroParser;
 import automater.utilities.Errors;
@@ -31,11 +32,11 @@ public interface MacroStorage {
     
     interface Protocol {
         
-        @NotNull List<MacroSummary> getMacroSummaryList() throws Exception;
-        @NotNull MacroSummary getMacroSummary(@NotNull String name) throws Exception;
+        @NotNull List<MacroFileSummary> getMacroSummaryList() throws Exception;
+        @NotNull MacroFileSummary getMacroSummary(@NotNull String name) throws Exception;
         @NotNull Macro.Protocol getMacro(@NotNull String name) throws Exception;
         @NotNull void saveMacro(@NotNull Macro.Protocol macro) throws Exception;
-        void deleteMacro(@NotNull String name);
+        void deleteMacro(@NotNull MacroFileSummary summary);
     }
     
     class Impl implements Protocol {
@@ -51,8 +52,8 @@ public interface MacroStorage {
         }
 
         @Override
-        public List<MacroSummary> getMacroSummaryList() throws Exception {
-            ArrayList<MacroSummary> result = new ArrayList<>();
+        public List<MacroFileSummary> getMacroSummaryList() throws Exception {
+            ArrayList<MacroFileSummary> result = new ArrayList<>();
             List<File> files = FileSystem.getAllFilesInDirectory(storagePath, MACRO_EXTENSION);
             
             for (var file : files) {
@@ -69,12 +70,12 @@ public interface MacroStorage {
         }
         
         @Override
-        public MacroSummary getMacroSummary(@NotNull String name) throws Exception {
+        public MacroFileSummary getMacroSummary(@NotNull String name) throws Exception {
             File file = FileSystem.getFile(storagePath, name);
             return getMacroSummaryFromFile(file);
         }
         
-        private @NotNull MacroSummary getMacroSummaryFromFile(@NotNull File file) throws Exception {
+        private @NotNull MacroFileSummary getMacroSummaryFromFile(@NotNull File file) throws Exception {
             var json = FileSystem.readFromFile(file);
             
             var macroJSON = gson.fromJson(json, JsonObject.class);
@@ -89,7 +90,8 @@ public interface MacroStorage {
                 throw new JsonParseException("Invalid json");
             }
 
-            return gson.fromJson(macroSummaryJSON, MacroSummary.class);
+            var summary = gson.fromJson(macroSummaryJSON, MacroSummary.class);
+            return new MacroFileSummary(summary, file.getAbsolutePath());
         }
         
         @Override
@@ -142,8 +144,13 @@ public interface MacroStorage {
         }
         
         @Override
-        public void deleteMacro(@NotNull String name) {
-            File file = FileSystem.getFile(storagePath, name);
+        public void deleteMacro(@NotNull MacroFileSummary summary) {
+            File file = FileSystem.getFile(summary.filePath);
+            
+            if (!file.exists()) {
+                throw Errors.fileOrDirectoryNotFound();
+            }
+            
             file.delete();
         }
         

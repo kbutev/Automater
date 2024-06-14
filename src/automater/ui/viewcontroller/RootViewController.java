@@ -16,7 +16,7 @@ public interface RootViewController {
 
     @Nullable BaseViewController getCurrentViewController();
     void navigateToRecordScreen();
-    void navigateToOpenScreen();
+    void navigateToOpenMacrosScreen();
     void navigateToPlayScreen(@NotNull automater.work.model.Macro macro);
     void navigateToEditScreen(@NotNull automater.work.model.Macro macro);
 }

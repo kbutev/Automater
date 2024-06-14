@@ -4,17 +4,12 @@
  */
 package automater.presenter;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 /**
  *
  * @author Kristiyan Butev
  */
-public interface Presenter<Delegate> {
+public interface Presenter {
 
-    @Nullable Delegate getDelegate();
-    void setDelegate(@NotNull Delegate delegate);
     void start();
     void stop();
     void reloadData();

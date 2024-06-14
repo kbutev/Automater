@@ -6,10 +6,9 @@ package automater;
 
 import automater.di.DI;
 import automater.di.DISetup;
+import automater.router.MasterRouter;
 import automater.service.NativeEventMonitor;
-import automater.ui.viewcontroller.PrimaryViewContoller;
 import automater.utilities.DeviceNotifications;
-import org.jetbrains.annotations.NotNull;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -21,9 +20,6 @@ import org.jnativehook.GlobalScreen;
  * @author Bytevi
  */
 public class Automater {
-
-    @NotNull
-    public static final PrimaryViewContoller primaryViewContoller = new PrimaryViewContoller();
 
     /**
      * @param args the command line arguments
@@ -59,7 +55,7 @@ public class Automater {
         DeviceNotifications.getShared().showTrayIcon();
         DeviceNotifications.getShared().setTrayIconTooltip(TextValue.getText(TextValue.SystemTray_Tooltip));
 
-        // Start first screen
-        primaryViewContoller.start();
+        // Start
+        DI.get(MasterRouter.Protocol.class).start();
     }
 }

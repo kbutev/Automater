@@ -63,4 +63,8 @@ public class Errors {
     public static @NotNull ClassNotFoundException classNotFound(@NotNull String description) {
         return new ClassNotFoundException(description);
     }
+    
+    public static @NotNull RuntimeException fileOrDirectoryNotFound() {
+        return new RuntimeException("File or directory does not exist");
+    }
 }

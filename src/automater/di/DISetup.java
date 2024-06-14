@@ -41,5 +41,7 @@ public class DISetup {
         injector.registerInstance(new automater.work.Executor.Impl());
         
         injector.registerInstance(new automater.service.NativeEventMonitor.Impl());
+        
+        injector.registerInstance(new automater.router.MasterRouter.Impl());
     }
 }

@@ -28,9 +28,11 @@ public enum TextValue {
     Input_MousePress, Input_MouseRelease,
     Input_MouseMove, Input_MouseMotion, Input_MouseWheel,
     Input_SystemCommand, Input_Screenshot,
+    // Root
+    Root_TabShowMacros, Root_TabRecordMacro, Root_TabSettings,
+    Root_TabShowMacrosTip, Root_TabRecordMacroTip, Root_TabSettingsTip,
     // Record form
     Record_FormTitle, Record_HeaderText,
-    Record_SwitchToOpenButtonTitle, Record_SwitchToOpenButtonTip,
     Record_MacroActionListName,
     Record_IdleStatus,
     Record_MacroNameFieldDefaultText, Record_MacroNameFieldTip,
@@ -40,7 +42,6 @@ public enum TextValue {
     Record_NotificationStopTitle, Record_NotificationStopMessage, Record_NotificationStopTooltip,
     // Open form
     Open_FormTitle, Open_HeaderText,
-    Open_SwitchToRecordButtonTitle, Open_SwitchToRecordButtonTip,
     Open_DefaultMacroNameText,
     Open_NumActions, Open_CreatedOn, Open_LastPlayedOn, Open_NumTimesPlayed, Open_HasNeverBeenPlayed,
     // Play form
@@ -92,8 +93,8 @@ public enum TextValue {
     Commands_NotificationErrorTitle, Commands_NotificationErrorMessage,
     // Dialog
     Dialog_OK,
+    Dialog_FailedTitle, Dialog_FailedMessage,
     Dialog_SavedRecordingTitle, Dialog_SavedRecordingMessage,
-    Dialog_SaveRecordingFailedTitle, Dialog_SaveRecordingFailedMessage,
     Dialog_ConfirmDeleteMacroTitle, Dialog_ConfirmDeleteMacroMessage,
     // System tray
     SystemTray_Tooltip,
@@ -202,12 +203,19 @@ public enum TextValue {
             put(Input_SystemCommand, "SystemCommand %@");
             put(Input_Screenshot, "Screenshot '%@'");
 
+            // Root
+            put(Root_TabShowMacros, "Macros");
+            put(Root_TabRecordMacro, "Record");
+            put(Root_TabSettings, "Settings");
+            
+            put(Root_TabShowMacrosTip, "Show all macros");
+            put(Root_TabRecordMacroTip, "Record new macro");
+            put(Root_TabSettingsTip, "Settings");
+            
             // Record form
             put(Record_FormTitle, "Automater - Record");
             put(Record_HeaderText, "Record macro");
-            put(Record_SwitchToOpenButtonTitle, "MACROS >");
-            put(Record_SwitchToOpenButtonTip, "Switch to open macros screen");
-            put(Record_MacroActionListName, "Recorded actions");
+            put(Record_MacroActionListName, "Actions");
             put(Record_IdleStatus, "Idle (Press %@ to RECORD/FINISH)");
             put(Record_MacroNameFieldDefaultText, "Untitled macro");
             put(Record_MacroNameFieldTip, "The name of the macro");
@@ -229,8 +237,6 @@ public enum TextValue {
             // Open form
             put(Open_FormTitle, "Automater - Macros");
             put(Open_HeaderText, "Macros");
-            put(Open_SwitchToRecordButtonTitle, "RECORD >");
-            put(Open_SwitchToRecordButtonTip, "Switch to record macro screen");
             put(Open_DefaultMacroNameText, "Select macro from the list");
             put(Open_NumActions, "%@ actions");
             put(Open_CreatedOn, "Created on: %@");
@@ -337,8 +343,8 @@ public enum TextValue {
             put(Dialog_OK, "Ok");
             put(Dialog_SavedRecordingTitle, "Save recording");
             put(Dialog_SavedRecordingMessage, "Successfully saved the recording!");
-            put(Dialog_SaveRecordingFailedTitle, "Save recording");
-            put(Dialog_SaveRecordingFailedMessage, "Could not save recording: %@");
+            put(Dialog_FailedTitle, "Error");
+            put(Dialog_FailedMessage, "%@");
             put(Dialog_ConfirmDeleteMacroTitle, "Delete macro");
             put(Dialog_ConfirmDeleteMacroMessage, "Are you sure you want to delete '%@'?");
 

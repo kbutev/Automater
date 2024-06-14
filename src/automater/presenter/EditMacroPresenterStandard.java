@@ -142,7 +142,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, HotkeyMon
             endListeningForKeystrokes();
         }
 
-        _rootViewController.navigateToOpenScreen();
+        _rootViewController.navigateToOpenMacrosScreen();
     }
 
     @Override

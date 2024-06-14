@@ -44,7 +44,7 @@ public interface PlayMacroPresenter {
         void updatePlayStatus(@NotNull automater.work.model.ExecutorProgress progress);
     }
 
-    interface Protocol extends Presenter<Delegate> {
+    interface Protocol extends PresenterWithDelegate<Delegate> {
 
         void playMacro(@Nullable Object sender);
         void stopMacro(@Nullable Object sender);
@@ -239,9 +239,15 @@ public interface PlayMacroPresenter {
             if (!preferences.getValues().startNotification) {
                 return;
             }
+            
+            var hotkey = actionHotkeyMonitor.getHotkey();
+            
+            if (hotkey == null) {
+                return;
+            }
 
             String macroName = macro.name;
-            String macroHotkey = actionHotkeyMonitor.getHotkey().toString();
+            String macroHotkey = hotkey.toString();
 
             String title = TextValue.getText(TextValue.Play_NotificationStartTitle);
             String message = TextValue.getText(TextValue.Play_NotificationStartMessage, macroName, macroHotkey);

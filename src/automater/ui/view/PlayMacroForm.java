@@ -9,6 +9,7 @@ import automater.TextValue;
 import automater.model.Keystroke;
 import automater.settings.Hotkey;
 import automater.utilities.SimpleCallback;
+import java.awt.Component;
 import org.jetbrains.annotations.NotNull;
 import javax.swing.DefaultListSelectionModel;
 
@@ -16,7 +17,7 @@ import javax.swing.DefaultListSelectionModel;
  *
  * @author Bytevi
  */
-public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
+public class PlayMacroForm extends javax.swing.JFrame implements View {
 
     // UI callbacks
     public SimpleCallback onBackButtonCallback = SimpleCallback.createDoNothing();
@@ -212,7 +213,13 @@ public class PlayMacroForm extends javax.swing.JFrame implements BaseView {
         macroActionsList.setSelectionModel(selectionModel);
     }
 
-    // # GenericView
+    // # View
+    
+    @Override
+    public @NotNull Component asComponent() {
+        return this;
+    }
+    
     @Override
     public void onViewStart() {
         macroActionsList.setModel(StandardDescriptionDataSource.createGeneric());

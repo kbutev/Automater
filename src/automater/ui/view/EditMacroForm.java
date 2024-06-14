@@ -7,6 +7,7 @@ package automater.ui.view;
 import automater.TextValue;
 import automater.utilities.Callback;
 import automater.utilities.SimpleCallback;
+import java.awt.Component;
 import org.jetbrains.annotations.NotNull;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Bytevi
  */
-public class EditMacroForm extends javax.swing.JFrame implements BaseView {
+public class EditMacroForm extends javax.swing.JFrame implements View {
 
     // UI callbacks
     public SimpleCallback onBackButtonCallback = SimpleCallback.createDoNothing();
@@ -325,6 +326,13 @@ public class EditMacroForm extends javax.swing.JFrame implements BaseView {
         macroDescriptionTextArea.getDocument().addDocumentListener(listener);
     }
 
+    // # View
+    
+    @Override
+    public @NotNull Component asComponent() {
+        return this;
+    }
+    
     @Override
     public void onViewStart() {
 

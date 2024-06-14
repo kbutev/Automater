@@ -108,7 +108,8 @@ public interface MacroActionParser {
     }
     
     // Action types mapped to their respective class types
-    final static Map<String, ClassMapping> type_mappings = Map.of(MacroHardwareAction.Click.TYPE, ClassMapping.make(MacroHardwareAction.Click.class),
+    final static Map<String, ClassMapping> type_mappings = Map.of(
+        MacroHardwareAction.Click.TYPE, ClassMapping.make(MacroHardwareAction.Click.class),
         MacroHardwareAction.MouseMove.TYPE, ClassMapping.make(MacroHardwareAction.MouseMove.class),
         MacroHardwareAction.MouseScroll.TYPE, ClassMapping.make(MacroHardwareAction.MouseScroll.class)
     );
