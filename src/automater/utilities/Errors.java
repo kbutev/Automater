@@ -56,8 +56,8 @@ public class Errors {
         return new IllegalStateException("Delegate not set");
     }
 
-    public static @NotNull RuntimeException serializationFailed() {
-        return new RuntimeException("Serialization failed");
+    public static @NotNull RuntimeException parsing() {
+        return new RuntimeException("Parsing error");
     }
 
     public static @NotNull ClassNotFoundException classNotFound(@NotNull String description) {

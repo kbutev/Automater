@@ -349,7 +349,7 @@ public interface NativeEventMonitor {
 
         }
         
-        private void forEachListener(Callback<Listener> callback) {
+        private void forEachListener(Callback.WithParameter<Listener> callback) {
             for (var listener : listeners) {
                 callback.perform(listener);
             }

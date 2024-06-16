@@ -31,13 +31,13 @@ public class LooperSwing {
         return singleton;
     }
 
-    public void performCallback(@NotNull final SimpleCallback callback) {
+    public void performCallback(@NotNull final Callback.Blank callback) {
         SwingUtilities.invokeLater(() -> {
             callback.perform();
         });
     }
 
-    public <T> void performCallback(@NotNull final Callback<T> callback, @Nullable final T parameter) {
+    public <T> void performCallback(@NotNull final Callback.WithParameter<T> callback, @Nullable final T parameter) {
         SwingUtilities.invokeLater(() -> {
             callback.perform(parameter);
         });

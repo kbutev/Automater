@@ -7,6 +7,7 @@ package automater.input;
 import automater.TextValue;
 import automater.utilities.Description;
 import automater.utilities.FileSystem;
+import automater.utilities.Path;
 import automater.utilities.TimeType;
 import automater.utilities.TimeValue;
 import org.jetbrains.annotations.NotNull;
@@ -127,7 +128,7 @@ public class InputDescriptions {
     }
 
     public static Description getScreenshot(long timestamp, @NotNull String path) {
-        String fileName = FileSystem.getLastComponentFromPath(path);
+        String fileName = Path.build(path).lastComponent();
 
         String name = "Screenshot";
         String time = String.format("%s", TIMESTAMP_TIME_TYPE.asStringFromTime(TimeValue.fromMilliseconds(timestamp)));

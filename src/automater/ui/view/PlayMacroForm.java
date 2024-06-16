@@ -8,7 +8,7 @@ import automater.Strings;
 import automater.TextValue;
 import automater.model.Keystroke;
 import automater.settings.Hotkey;
-import automater.utilities.SimpleCallback;
+import automater.utilities.Callback;
 import java.awt.Component;
 import org.jetbrains.annotations.NotNull;
 import javax.swing.DefaultListSelectionModel;
@@ -20,10 +20,10 @@ import javax.swing.DefaultListSelectionModel;
 public class PlayMacroForm extends javax.swing.JFrame implements View {
 
     // UI callbacks
-    public SimpleCallback onBackButtonCallback = SimpleCallback.createDoNothing();
-    public SimpleCallback onPlayButtonCallback = SimpleCallback.createDoNothing();
-    public SimpleCallback onStopButtonCallback = SimpleCallback.createDoNothing();
-    public SimpleCallback onOptionsButtonCallback = SimpleCallback.createDoNothing();
+    public Callback.Blank onBackButtonCallback = Callback.buildBlank();
+    public Callback.Blank onPlayButtonCallback = Callback.buildBlank();
+    public Callback.Blank onStopButtonCallback = Callback.buildBlank();
+    public Callback.Blank onOptionsButtonCallback = Callback.buildBlank();
 
     /**
      * Creates new form PlayMacroForm

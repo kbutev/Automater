@@ -19,8 +19,8 @@ import automater.service.HotkeyMonitor;
 import automater.storage.MacroStorage;
 import automater.ui.view.RecordMacroPanel;
 import automater.ui.view.StandardDescriptionDataSource;
+import automater.utilities.Callback;
 import automater.utilities.Logger;
-import automater.utilities.SimpleCallback;
 import java.util.ArrayList;
 import org.apache.commons.lang3.time.StopWatch;
 import org.jetbrains.annotations.NotNull;
@@ -76,25 +76,22 @@ public interface RecordMacroPresenter {
         private void setup() {
             var self = this;
 
-            view.onSwitchToPlayButtonCallback = new SimpleCallback() {
+            view.onSwitchToPlayButtonCallback = new Callback.Blank() {
                 @Override
                 public void perform() {
                     self.stop();
                 }
             };
 
-            view.onBeginRecordMacroButtonCallback = new SimpleCallback() {
+            view.onBeginRecordMacroButtonCallback = new Callback.Blank() {
                 @Override
                 public void perform() {
                     self.beginRecording(self.view);
                 }
             };
 
-            view.onStopRecordMacroButtonCallback = new SimpleCallback() {
-                @Override
-                public void perform() {
-                    self.endRecording(self.view);
-                }
+            view.onStopRecordMacroButtonCallback = () -> {
+                self.endRecording(self.view);
             };
 
             view.onSaveMacroButtonCallback = (String argument) -> {

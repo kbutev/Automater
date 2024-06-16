@@ -10,7 +10,7 @@ import automater.model.Keystroke;
 import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import automater.utilities.Logger;
-import automater.utilities.SimpleCallback;
+import automater.utilities.Callback.Blank;
 import java.awt.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,10 +21,10 @@ import org.jetbrains.annotations.NotNull;
 public class RecordMacroPanel extends javax.swing.JPanel implements View {
 
     // UI callbacks
-    public SimpleCallback onSwitchToPlayButtonCallback = SimpleCallback.createDoNothing();
-    public SimpleCallback onBeginRecordMacroButtonCallback = SimpleCallback.createDoNothing();
-    public SimpleCallback onStopRecordMacroButtonCallback = SimpleCallback.createDoNothing();
-    public Callback<String> onSaveMacroButtonCallback = Callback.createDoNothing();
+    public Callback.Blank onSwitchToPlayButtonCallback = Callback.buildBlank();
+    public Callback.Blank onBeginRecordMacroButtonCallback = Callback.buildBlank();
+    public Callback.Blank onStopRecordMacroButtonCallback = Callback.buildBlank();
+    public Callback.WithParameter<String> onSaveMacroButtonCallback = Callback.buildBlankWithParameter();
     
     /**
      * Creates new form RecordMacroPanel

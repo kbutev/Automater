@@ -25,7 +25,7 @@ public class AlertWindows {
     public static void showMessage(@NotNull Component parent,
             @NotNull String title, @NotNull String message,
             @NotNull String buttonText,
-            @Nullable SimpleCallback okCallback) {
+            @Nullable Callback.Blank okCallback) {
         Object[] options = {buttonText};
 
         int result = JOptionPane.showOptionDialog(parent,
@@ -44,8 +44,8 @@ public class AlertWindows {
 
     public static void showConfirmationMessage(@NotNull Component parent,
             @NotNull String title, @NotNull String message,
-            @Nullable SimpleCallback confirmCallback,
-            @Nullable SimpleCallback cancelCallback) {
+            @Nullable Callback.Blank confirmCallback,
+            @Nullable Callback.Blank cancelCallback) {
         int result = JOptionPane.showConfirmDialog(parent, message, title, JOptionPane.YES_NO_OPTION);
 
         if (result == JOptionPane.YES_OPTION) {
@@ -68,7 +68,7 @@ public class AlertWindows {
     public static void showErrorMessage(@NotNull Component parent,
             @NotNull String title, @NotNull String message,
             @NotNull String buttonText,
-            @Nullable SimpleCallback okCallback) {
+            @Nullable Callback.Blank okCallback) {
         Object[] options = {buttonText};
 
         int result = JOptionPane.showOptionDialog(parent,

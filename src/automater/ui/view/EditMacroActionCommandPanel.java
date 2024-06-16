@@ -14,8 +14,8 @@ import javax.swing.event.DocumentListener;
  */
 public class EditMacroActionCommandPanel extends javax.swing.JPanel {
     // UI callbacks
-    public Callback<String> onCommandValueChanged = Callback.createDoNothing();
-    public Callback<Boolean> onReportErrorChanged = Callback.createDoNothing();
+    public Callback.WithParameter<String> onCommandValueChanged = Callback.buildBlankWithParameter();
+    public Callback.WithParameter<Boolean> onReportErrorChanged = Callback.buildBlankWithParameter();
 
     /**
      * Creates new form EditMacroActionCommandPanel

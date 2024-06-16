@@ -43,7 +43,7 @@ public interface BasePresenter {
         public void onMacroDescriptionChanged(@NotNull String description);
     
         // Keystroke events
-        public void startListeningForKeystrokes(@NotNull Callback<automater.settings.Hotkey> onKeystrokeEnteredCallback);
+        public void startListeningForKeystrokes(@NotNull Callback.WithParameter<automater.settings.Hotkey> onKeystrokeEnteredCallback);
         public void endListeningForKeystrokes();
     }
 }

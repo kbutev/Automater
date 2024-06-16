@@ -65,7 +65,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, HotkeyMon
 
     // Hotkey recording
     private boolean _recording = false;
-    @NotNull private Callback _onKeystrokeEnteredCallback = Callback.createDoNothing();
+    @NotNull private Callback.WithParameter<automater.settings.Hotkey> _onKeystrokeEnteredCallback = Callback.buildBlankWithParameter();
     @Nullable private Hotkey _hotkeyRecorded;
 
     // Edit detection
@@ -421,7 +421,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, HotkeyMon
     }
 
     @Override
-    public void startListeningForKeystrokes(@NotNull Callback<automater.settings.Hotkey> onKeystrokeEnteredCallback) {
+    public void startListeningForKeystrokes(@NotNull Callback.WithParameter<automater.settings.Hotkey> onKeystrokeEnteredCallback) {
         if (_recording) {
             return;
         }

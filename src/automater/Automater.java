@@ -8,7 +8,11 @@ import automater.di.DI;
 import automater.di.DISetup;
 import automater.router.MasterRouter;
 import automater.service.NativeEventMonitor;
+import automater.storage.PreferencesStorage;
 import automater.utilities.DeviceNotifications;
+import automater.utilities.FileSystem;
+import automater.utilities.Path;
+import com.google.gson.Gson;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -56,6 +60,23 @@ public class Automater {
         DeviceNotifications.getShared().setTrayIconTooltip(TextValue.getText(TextValue.SystemTray_Tooltip));
 
         // Start
+        var gson = new Gson();
+        var path = Path.getLocalDirectory().withSubpath("preferences.json");
+        var json = gson.toJson(path);
+        var result = gson.fromJson(json, Path.class);
+        var file = result.getFile();
+        var extension = path.extension();
+        var lastComponent = path.lastComponent();
+        var parent = path.parent();
+        
+        try {
+            var contents = FileSystem.readFromFile(file);
+            automater.utilities.Logger.message("Automater", "test: " + result.toString());
+        } catch (Exception e) {
+            automater.utilities.Logger.message("Automater", "error: " + e);
+        }
+        
+        DI.get(PreferencesStorage.Protocol.class).load();
         DI.get(MasterRouter.Protocol.class).start();
     }
 }

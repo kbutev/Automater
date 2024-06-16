@@ -4,20 +4,33 @@
  */
 package automater.utilities;
 
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * A function callback that takes 1 parameter and returns no value.
  *
  * @author Bytevi
  */
-@FunctionalInterface
-public interface Callback<Input> {
+public interface Callback {
+    
+    interface Blank {
+        public void perform();
+    }
+    
+    interface WithParameter<Input> {
+        public void perform(Input argument);
+    }
 
-    public void perform(Input argument);
+    public static @NotNull Blank buildBlank() {
+        return new Blank() {
+            @Override
+            public void perform() {
+                // Do nothing
+            }
+        };
+    }
 
-    public static <Input> @Nullable Callback createDoNothing() {
-        return new Callback<Input>() {
+    public static <Input> @NotNull WithParameter buildBlankWithParameter() {
+        return new WithParameter<Input>() {
             @Override
             public void perform(Input argument) {
                 // Do nothing

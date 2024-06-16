@@ -9,19 +9,19 @@ import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.Looper;
 import automater.utilities.LooperSwing;
-import automater.utilities.SimpleCallback;
+import automater.utilities.Callback.Blank;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import automater.di.DI;
 import automater.model.macro.MacroFileSummary;
-import automater.model.macro.MacroSummary;
 import automater.model.macro.MacroSummaryDescription;
 import automater.parser.DescriptionParser;
 import automater.storage.MacroStorage;
 import automater.ui.view.ShowMacrosPanel;
 import automater.ui.view.StandardDescriptionDataSource;
 import automater.utilities.AlertWindows;
+import automater.utilities.Callback;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.Nullable;
 
@@ -179,7 +179,7 @@ public interface ShowMacrosPresenter {
 
             var macro = macroDescriptions.get(index);
 
-            var confirm = new SimpleCallback() {
+            var confirm = new Callback.Blank() {
                 @Override
                 public void perform() {
                     deleteMacroAt(index);
@@ -195,13 +195,13 @@ public interface ShowMacrosPresenter {
         private void updateMacroData() {
             var presenter = this;
 
-            Looper.getShared().performAsyncCallbackInBackground(new SimpleCallback() {
+            Looper.getShared().performAsyncCallbackInBackground(new Callback.Blank() {
                 @Override
                 public void perform() {
                     try {
                         var macros = presenter.storage.getMacroSummaryList();
                         
-                        LooperSwing.getShared().performCallback(new SimpleCallback() {
+                        LooperSwing.getShared().performCallback(new Callback.Blank() {
                             @Override
                             public void perform() {
                                 Logger.message(this, "Performing data update: " + macros.size() + " macros");

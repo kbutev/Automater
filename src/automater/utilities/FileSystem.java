@@ -11,7 +11,6 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Defines commonly used file system methods.
@@ -20,88 +19,19 @@ import org.jetbrains.annotations.Nullable;
  */
 public class FileSystem {
 
-    private static String absolutePath;
+    public static @NotNull List<File> getAllInDirectory(@NotNull Path path) {
+        var files = new ArrayList<File>();
 
-    public static @NotNull String getDirectorySeparator() {
-        if (DeviceOS.isWindows()) {
-            return "\\";
-        }
-
-        return "/";
-    }
-
-    public synchronized static @NotNull String getLocalFilePath() {
-        if (absolutePath == null) {
-            absolutePath = new File("").getAbsolutePath();
-        }
-
-        return absolutePath;
-    }
-    
-    public static boolean validatePath(@NotNull String path) {
-        return true;
-    }
-
-    public static @NotNull String buildPath(@NotNull String base, @NotNull String path) {
-        if (base.isEmpty()) {
-            return path;
-        }
-
-        return base + getDirectorySeparator() + path;
-    }
-
-    public static @NotNull String buildPath(@NotNull String path) {
-        String separator = getDirectorySeparator();
-        int lastIndexOfSlash = path.lastIndexOf(separator);
-
-        if (lastIndexOfSlash != -1 && lastIndexOfSlash + 1 < path.length()) {
-            path = path.substring(0, lastIndexOfSlash + 1);
-        }
-
-        return path;
-    }
-
-    public static @NotNull String getLastComponentFromPath(@NotNull String path) {
-        String separator = getDirectorySeparator();
-        int lastIndexOfSlash = path.lastIndexOf(separator);
-
-        if (lastIndexOfSlash == -1) {
-            return path;
-        }
-
-        if (lastIndexOfSlash + 1 < path.length()) {
-            path = path.substring(lastIndexOfSlash + 1);
-            return path;
-        }
-
-        return "";
-    }
-
-    public static @NotNull String addFileExtension(@NotNull String path, @NotNull String extension) {
-        if (!extension.startsWith(".")) {
-            extension = "." + extension;
-        }
-        
-        if (!path.endsWith(extension)) {
-            path = path + extension;
-        }
-
-        return path;
-    }
-
-    public static @NotNull List<File> getAllInDirectory(@NotNull String path) {
-        ArrayList<File> files = new ArrayList<>();
-
-        File folder = new File(path);
+        var folder = path.getFile();
 
         if (!folder.isDirectory()) {
             return files;
         }
 
-        File[] listOfFiles = folder.listFiles();
+        var listOfFiles = folder.listFiles();
 
         for (int e = 0; e < listOfFiles.length; e++) {
-            File file = listOfFiles[e];
+            var file = listOfFiles[e];
 
             files.add(file);
         }
@@ -109,49 +39,35 @@ public class FileSystem {
         return files;
     }
 
-    public static @NotNull List<File> getAllFilesInDirectory(@NotNull String path) {
+    public static @NotNull List<File> getAllFilesInDirectory(@NotNull Path path) {
         return getAllFilesInDirectory(path, new ArrayList<>());
     }
 
-    public static @NotNull List<File> getAllFilesInDirectory(@NotNull String path, @NotNull String extension) {
-        ArrayList<String> extensions = new ArrayList<>();
+    public static @NotNull List<File> getAllFilesInDirectory(@NotNull Path path, @NotNull String extension) {
+        var extensions = new ArrayList<String>();
         extensions.add(extension);
         return getAllFilesInDirectory(path, extensions);
     }
     
-    public static @NotNull File getFile(@NotNull String base, @NotNull String name) {
-        return getFile(FileSystem.buildPath(base, name));
-    }
-    
-    public static @NotNull File getFile(@NotNull String path) {
-        File file = new File(path);
+    public static @NotNull List<File> getAllFilesInDirectory(@NotNull Path path, @NotNull List<String> extensions) {
+        var files = new ArrayList<File>();
 
-        if (file.isDirectory()) {
-            throw new UnsupportedOperationException("Not a file");
-        }
-        
-        return file;
-    }
-
-    public static @NotNull List<File> getAllFilesInDirectory(@NotNull String path, @NotNull List<String> extensions) {
-        ArrayList<File> files = new ArrayList<>();
-
-        File folder = new File(path);
+        var folder = path.getFile();
 
         if (!folder.isDirectory()) {
             return files;
         }
 
-        File[] listOfFiles = folder.listFiles();
+        var listOfFiles = folder.listFiles();
 
         for (int e = 0; e < listOfFiles.length; e++) {
-            File file = listOfFiles[e];
+            var file = listOfFiles[e];
 
             if (file.isDirectory()) {
                 continue;
             }
 
-            for (String extension : extensions) {
+            for (var extension : extensions) {
                 if (file.getName().endsWith(extension)) {
                     files.add(listOfFiles[e]);
                 }
@@ -162,14 +78,14 @@ public class FileSystem {
     }
     
     public static @NotNull String readFromFile(@NotNull File file) throws Exception {
-        String data = "";
+        var data = "";
 
         BufferedReader reader = null;
 
         try {
             reader = new BufferedReader(new FileReader(file));
 
-            String line = reader.readLine();
+            var line = reader.readLine();
 
             while (line != null) {
                 data = data.concat(line);
@@ -198,9 +114,9 @@ public class FileSystem {
 
         try {
             writer = new PrintWriter(file);
-            String[] lines = data.split("\n");
+            var lines = data.split("\n");
 
-            for (String line : lines) {
+            for (var line : lines) {
                 writer.println(line);
             }
 

@@ -130,22 +130,20 @@ public class Logger {
 
 class LoggerFile {
 
-    @NotNull private static final Object _lock = new Object();
-    @Nullable private static File _logFile;
-    @Nullable private static FileWriter _logWriter;
+    private static final @NotNull Object _lock = new Object();
+    private static @Nullable File _logFile;
+    private static @Nullable FileWriter _logWriter;
 
-    public static @NotNull String getFilePath() {
-        String path = FileSystem.getLocalFilePath();
-        return FileSystem.buildPath(path, Logger.LOG_FILE_NAME);
+    public static @NotNull Path getFilePath() {
+        return Path.getLocalDirectory().withSubpath(Logger.LOG_FILE_NAME);
     }
 
-    public static @NotNull String getLogFilePath() {
+    public static @Nullable Path getBackupFilePath() {
         if (Logger.LOG_BACKUP_FILE_NAME.isEmpty()) {
-            return "";
+            return null;
         }
 
-        String path = FileSystem.getLocalFilePath();
-        return FileSystem.buildPath(path, Logger.LOG_BACKUP_FILE_NAME);
+        return Path.getLocalDirectory().withSubpath(Logger.LOG_BACKUP_FILE_NAME);
     }
 
     public static @NotNull File getFile() {
@@ -153,7 +151,7 @@ class LoggerFile {
     }
 
     public static void writeToFile(@NotNull String data) {
-        FileWriter writer = setupFileWriterIfNecessary();
+        var writer = setupFileWriterIfNecessary();
 
         if (writer == null) {
             return;
@@ -162,7 +160,7 @@ class LoggerFile {
         try {
             String[] lines = data.split("\n");
 
-            for (String line : lines) {
+            for (var line : lines) {
                 writer.append(line + "\n");
             }
 
@@ -179,13 +177,13 @@ class LoggerFile {
             if (!initialized) {
                 // Backup current log file if a backup name is defined
                 // Otherwise just delete the current log file
-                if (!getLogFilePath().isEmpty()) {
+                if (getBackupFilePath() != null) {
                     backupFile();
                 } else {
                     deleteFile();
                 }
 
-                _logFile = new File(getFilePath());
+                _logFile = getFilePath().getFile();
             }
 
             return _logFile;
@@ -193,15 +191,17 @@ class LoggerFile {
     }
 
     public static void backupFile() {
-        if (getLogFilePath().isEmpty()) {
+        var backupPath = getBackupFilePath();
+        
+        if (backupPath == null) {
             return;
         }
 
         // Delete backup file (if it exists)
         // Backup current log file
         // Delete log file (if it exists)
-        File backup = new File(getLogFilePath());
-        File logFile = new File(getFilePath());
+        var backup = backupPath.getFile();
+        var logFile = getFilePath().getFile();
 
         try {
             backup.delete();
@@ -221,7 +221,7 @@ class LoggerFile {
     }
 
     public static void deleteFile() {
-        File logFile = new File(getFilePath());
+        var logFile = getFilePath().getFile();
 
         try {
             logFile.delete();
@@ -231,7 +231,7 @@ class LoggerFile {
     }
 
     public static @Nullable FileWriter setupFileWriterIfNecessary() {
-        File logFile = getFile();
+        var logFile = getFile();
 
         synchronized (_lock) {
             if (_logWriter == null) {

@@ -83,7 +83,8 @@ public class DeviceNotifications {
             return;
         }
 
-        Image image = Toolkit.getDefaultToolkit().createImage(Resources.getImagePath(NOTIFICATION_IMAGE_FILE));
+        var toolkit = Toolkit.getDefaultToolkit();
+        var image = toolkit.createImage(Resources.getImagePath(NOTIFICATION_IMAGE_FILE).toString());
 
         _icon = new TrayIcon(image, "Automater");
         _icon.setImageAutoSize(true);

@@ -69,17 +69,17 @@ public class Looper {
         _clientsManager.unsubscribe(client);
     }
 
-    public void performSyncCallbackInBackground(@NotNull final SimpleCallback callback) {
+    public void performSyncCallbackInBackground(@NotNull final Callback.Blank callback) {
         _callbacksManager.queueCallback(callback);
         enterSyncWaitLock();
     }
 
-    public <T> void performSyncCallbackInBackground(@NotNull final Callback<T> callback, @Nullable final T parameter) {
+    public <T> void performSyncCallbackInBackground(@NotNull final Callback.WithParameter<T> callback, @Nullable final T parameter) {
         _callbacksManager.queueCallback(callback, parameter);
         enterSyncWaitLock();
     }
 
-    public void performSyncCallbackOnAWTQueue(@NotNull final SimpleCallback callback) {
+    public void performSyncCallbackOnAWTQueue(@NotNull final Callback.Blank callback) {
         if (java.awt.EventQueue.isDispatchThread()) {
             callback.perform();
             return;
@@ -94,7 +94,7 @@ public class Looper {
         }
     }
 
-    public <T> void performSyncCallbackOnAWTQueue(@NotNull final Callback<T> callback, @Nullable final T parameter) {
+    public <T> void performSyncCallbackOnAWTQueue(@NotNull final Callback.WithParameter<T> callback, @Nullable final T parameter) {
         if (java.awt.EventQueue.isDispatchThread()) {
             callback.perform(parameter);
             return;
@@ -109,21 +109,21 @@ public class Looper {
         }
     }
 
-    public void performAsyncCallbackInBackground(@NotNull final SimpleCallback callback) {
+    public void performAsyncCallbackInBackground(@NotNull final Callback.Blank callback) {
         _callbacksManager.queueCallback(callback);
     }
 
-    public <T> void performAsyncCallbackInBackground(@NotNull final Callback<T> callback, @Nullable final T parameter) {
+    public <T> void performAsyncCallbackInBackground(@NotNull final Callback.WithParameter<T> callback, @Nullable final T parameter) {
         _callbacksManager.queueCallback(callback, parameter);
     }
 
-    public void performAsyncCallbackOnAWTQueue(@NotNull final SimpleCallback callback) {
+    public void performAsyncCallbackOnAWTQueue(@NotNull final Callback.Blank callback) {
         java.awt.EventQueue.invokeLater(() -> {
             callback.perform();
         });
     }
 
-    public <T> void performAsyncCallbackOnAWTQueue(@NotNull final Callback<T> callback, @Nullable final T parameter) {
+    public <T> void performAsyncCallbackOnAWTQueue(@NotNull final Callback.WithParameter<T> callback, @Nullable final T parameter) {
         java.awt.EventQueue.invokeLater(() -> {
             callback.perform(parameter);
         });
@@ -216,13 +216,13 @@ public class Looper {
 
         private @NotNull ArrayList<LooperCallback> _callbacks = new ArrayList();
 
-        private void queueCallback(@NotNull SimpleCallback callback) {
+        private void queueCallback(@NotNull Callback.Blank callback) {
             synchronized (_mainLock) {
                 _callbacks.add(new LooperCallback(callback));
             }
         }
 
-        private <T> void queueCallback(@NotNull Callback<T> callback, @Nullable T parameter) {
+        private <T> void queueCallback(@NotNull Callback.WithParameter<T> callback, @Nullable T parameter) {
             synchronized (_mainLock) {
                 _callbacks.add(new LooperCallback(callback, parameter));
             }
@@ -296,17 +296,17 @@ class LooperClientSubscription {
 
 class LooperCallback<T> {
 
-    public final @NotNull SimpleCallback callback;
-    public final @NotNull Callback<T> callbackWithParameter;
+    public final @NotNull Callback.Blank callback;
+    public final @NotNull Callback.WithParameter<T> callbackWithParameter;
     public final @Nullable T parameter;
 
-    LooperCallback(@NotNull SimpleCallback callback) {
+    LooperCallback(@NotNull Callback.Blank callback) {
         this.callback = callback;
         this.callbackWithParameter = null;
         this.parameter = null;
     }
 
-    LooperCallback(@NotNull Callback<T> callback, @Nullable T parameter) {
+    LooperCallback(@NotNull Callback.WithParameter<T> callback, @Nullable T parameter) {
         this.callback = null;
         this.callbackWithParameter = callback;
         this.parameter = parameter;

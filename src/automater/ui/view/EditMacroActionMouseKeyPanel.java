@@ -19,8 +19,8 @@ import javax.swing.event.ListDataListener;
 public class EditMacroActionMouseKeyPanel extends javax.swing.JPanel {
 
     // UI callbacks
-    public Callback<String> onSelectedValueCallback = Callback.createDoNothing();
-    public Callback<Boolean> onPressCheckCallback = Callback.createDoNothing();
+    public Callback.WithParameter<String> onSelectedValueCallback = Callback.buildBlankWithParameter();
+    public Callback.WithParameter<Boolean> onPressCheckCallback = Callback.buildBlankWithParameter();
 
     /**
      * Creates new form EditMacroActionSpecificValuesKey

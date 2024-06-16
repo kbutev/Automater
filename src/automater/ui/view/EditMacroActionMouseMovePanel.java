@@ -15,8 +15,8 @@ import javax.swing.event.DocumentListener;
 public class EditMacroActionMouseMovePanel extends javax.swing.JPanel {
 
     // UI callbacks
-    public Callback<String> onXValueChangedCallback = Callback.createDoNothing();
-    public Callback<String> onYValueChangedCallback = Callback.createDoNothing();
+    public Callback.WithParameter<String> onXValueChangedCallback = Callback.buildBlankWithParameter();
+    public Callback.WithParameter<String> onYValueChangedCallback = Callback.buildBlankWithParameter();
 
     /**
      * Creates new form EditMacroActionMouseMovePanel

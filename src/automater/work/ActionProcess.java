@@ -4,9 +4,9 @@
  */
 package automater.work;
 
+import automater.utilities.Callback;
 import automater.utilities.Errors;
 import automater.utilities.Looper;
-import automater.utilities.SimpleCallback;
 import automater.work.model.ActionContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -83,7 +83,7 @@ public class ActionProcess implements BaseActionProcess {
 
             final ActionProcess process = this;
 
-            Looper.getShared().performAsyncCallbackInBackground(new SimpleCallback() {
+            Looper.getShared().performAsyncCallbackInBackground(new Callback.Blank() {
                 @Override
                 public void perform() {
                     process.perform();

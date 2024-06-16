@@ -6,7 +6,7 @@ package automater.ui.view;
 
 import automater.TextValue;
 import automater.storage.PreferencesStorage;
-import automater.utilities.SimpleCallback;
+import automater.utilities.Callback;
 import automater.utilities.StringFormatting;
 import automater.work.model.MacroParameters;
 import org.jetbrains.annotations.NotNull;
@@ -20,8 +20,8 @@ import javax.swing.event.DocumentListener;
 public class PlayMacroOptionsDialog extends javax.swing.JDialog {
 
     // UI callbacks
-    public SimpleCallback onCancelButtonCallback = SimpleCallback.createDoNothing();
-    public SimpleCallback onSaveButtonCallback = SimpleCallback.createDoNothing();
+    public Callback.Blank onCancelButtonCallback = Callback.buildBlank();
+    public Callback.Blank onSaveButtonCallback = Callback.buildBlank();
 
     /**
      * Creates new form PlayMacroOptionsDialog

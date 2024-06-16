@@ -6,7 +6,7 @@ package automater.ui.view;
 
 import automater.TextValue;
 import automater.utilities.Callback;
-import automater.utilities.SimpleCallback;
+import automater.utilities.Callback.Blank;
 import java.awt.Component;
 import org.jetbrains.annotations.NotNull;
 import javax.swing.event.DocumentEvent;
@@ -20,16 +20,16 @@ import org.jetbrains.annotations.Nullable;
 public class EditMacroForm extends javax.swing.JFrame implements View {
 
     // UI callbacks
-    public SimpleCallback onBackButtonCallback = SimpleCallback.createDoNothing();
-    public SimpleCallback onSaveButtonCallback = SimpleCallback.createDoNothing();
-    public Callback<Integer> onSelectItem = Callback.createDoNothing();
-    public Callback<Integer> onClickItem = Callback.createDoNothing();
-    public Callback<Integer> onDoubleClickItem = Callback.createDoNothing();
-    public Callback<Integer> onDeleteButtonCallback = Callback.createDoNothing();
-    public Callback<Integer> onEditButtonCallback = Callback.createDoNothing();
-    public Callback<Integer> onInsertCallback = Callback.createDoNothing();
-    public Callback<String> onNameChangedCallback = Callback.createDoNothing();
-    public Callback<String> onDescriptionChangedCallback = Callback.createDoNothing();
+    public Callback.Blank onBackButtonCallback = Callback.buildBlank();
+    public Callback.Blank onSaveButtonCallback = Callback.buildBlank();
+    public Callback.WithParameter<Integer> onSelectItem = Callback.buildBlankWithParameter();
+    public Callback.WithParameter<Integer> onClickItem = Callback.buildBlankWithParameter();
+    public Callback.WithParameter<Integer> onDoubleClickItem = Callback.buildBlankWithParameter();
+    public Callback.WithParameter<Integer> onDeleteButtonCallback = Callback.buildBlankWithParameter();
+    public Callback.WithParameter<Integer> onEditButtonCallback = Callback.buildBlankWithParameter();
+    public Callback.WithParameter<Integer> onInsertCallback = Callback.buildBlankWithParameter();
+    public Callback.WithParameter<String> onNameChangedCallback = Callback.buildBlankWithParameter();
+    public Callback.WithParameter<String> onDescriptionChangedCallback = Callback.buildBlankWithParameter();
 
     /**
      * Creates new form EditMacroForm

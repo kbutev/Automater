@@ -9,7 +9,7 @@ import automater.presenter.RecordMacroPresenter;
 import automater.ui.view.RecordMacroPanel;
 import automater.utilities.AlertWindows;
 import automater.utilities.Logger;
-import automater.utilities.SimpleCallback;
+import automater.utilities.Callback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -78,7 +78,7 @@ public interface RecordMacroRouter {
             var textMessage = TextValue.getText(TextValue.Dialog_SavedRecordingMessage);
             var ok = TextValue.getText(TextValue.Dialog_OK);
 
-            AlertWindows.showMessage(view, textTitle, textMessage, ok, new SimpleCallback() {
+            AlertWindows.showMessage(view, textTitle, textMessage, ok, new Callback.Blank() {
                 @Override
                 public void perform() {
                     //_presenter.onRecordingSavedSuccessufllyClosed();

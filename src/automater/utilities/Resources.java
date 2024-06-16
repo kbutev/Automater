@@ -20,24 +20,10 @@ public class Resources {
     public final static String JPG_EXTENSION = "jpg";
     public final static String JPEG_EXTENSION = "jpeg";
 
-    public static @NotNull String getImagePath(@NotNull String key) {
-        String file = addImageExtensionIfNecessary(key);
-
-        return FileSystem.buildPath(RESOURCES_DIRECTORY_PATH, file);
-    }
-
-    private static @NotNull String addImageExtensionIfNecessary(@NotNull String key) {
-        if (containsImageExtension(key)) {
-            return key;
-        }
-
-        return key + "." + DEFAULT_IMAGE_EXTENSION;
-    }
-
-    private static boolean containsImageExtension(@NotNull String key) {
-        return key.contains("." + DEFAULT_IMAGE_EXTENSION)
-                || key.contains("." + PNG_EXTENSION)
-                || key.contains("." + JPG_EXTENSION)
-                || key.contains("." + JPEG_EXTENSION);
+    public static @NotNull Path getImagePath(@NotNull String key) {
+        return Path.getLocalDirectory()
+                .withSubpath(RESOURCES_DIRECTORY_PATH)
+                .withSubpath(key)
+                .withFileExtension(DEFAULT_IMAGE_EXTENSION);
     }
 }

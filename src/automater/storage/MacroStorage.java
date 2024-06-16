@@ -13,6 +13,7 @@ import automater.parser.MacroParser;
 import automater.utilities.Errors;
 import automater.utilities.FileSystem;
 import automater.utilities.Logger;
+import automater.utilities.Path;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -45,16 +46,16 @@ public interface MacroStorage {
         
         private final MacroParser.Protocol macroParser = DI.get(MacroParser.Protocol.class);
         
-        private @NotNull String storagePath;
+        private @NotNull Path storagePath;
         
         public Impl() {
-            storagePath = FileSystem.getLocalFilePath();
+            storagePath = Path.getLocalDirectory();
         }
 
         @Override
         public List<MacroFileSummary> getMacroSummaryList() throws Exception {
-            ArrayList<MacroFileSummary> result = new ArrayList<>();
-            List<File> files = FileSystem.getAllFilesInDirectory(storagePath, MACRO_EXTENSION);
+            var result = new ArrayList<MacroFileSummary>();
+            var files = FileSystem.getAllFilesInDirectory(storagePath, MACRO_EXTENSION);
             
             for (var file : files) {
                 try {
@@ -71,7 +72,7 @@ public interface MacroStorage {
         
         @Override
         public MacroFileSummary getMacroSummary(@NotNull String name) throws Exception {
-            File file = FileSystem.getFile(storagePath, name);
+            File file = getMacroFile(name);
             return getMacroSummaryFromFile(file);
         }
         
@@ -96,7 +97,7 @@ public interface MacroStorage {
         
         @Override
         public Macro.Protocol getMacro(@NotNull String name) throws Exception {
-            List<File> files = FileSystem.getAllFilesInDirectory(storagePath, MACRO_EXTENSION);
+            var files = FileSystem.getAllFilesInDirectory(storagePath, MACRO_EXTENSION);
             
             for (var file : files) {
                 try {
@@ -115,20 +116,13 @@ public interface MacroStorage {
         public void saveMacro(@NotNull Macro.Protocol macro) throws Exception {
             Logger.message(this, "Saving new macro '" + macro.getSummary().name + "' to storage...");
             
-            var fileName = macro.getSummary().name;
-            var filePath = FileSystem.buildPath(storagePath, fileName);
-            filePath = FileSystem.addFileExtension(filePath, MACRO_EXTENSION);
-            
-            var fileError = validateMacroPath(filePath);
-            
-            if (fileError != null) {
-                throw fileError;
-            }
+            var filePath = getMacroPath(macro.getSummary().name);
+            filePath = filePath.withFileExtension(MACRO_EXTENSION);
             
             try {
                 var json = gson.toJson(macroParser.parseToJSON(macro));
                 
-                File file = new File(filePath);
+                var file = filePath.getFile();
 
                 if (file.exists()) {
                     file.delete();
@@ -145,7 +139,7 @@ public interface MacroStorage {
         
         @Override
         public void deleteMacro(@NotNull MacroFileSummary summary) {
-            File file = FileSystem.getFile(summary.filePath);
+            var file = getMacroFile(summary.filePath);
             
             if (!file.exists()) {
                 throw Errors.fileOrDirectoryNotFound();
@@ -154,18 +148,12 @@ public interface MacroStorage {
             file.delete();
         }
         
-        private @Nullable Exception validateMacroPath(@NotNull String path) {
-            if (!FileSystem.validatePath(path)) {
-                return Errors.invalidArgument("name");
-            }
-            
-            var name = FileSystem.getLastComponentFromPath(path);
-            
-            if (name.isEmpty()) {
-                return new Exception(TextValue.getText(TextValue.Error_NameIsEmpty));
-            }
-            
-            return null;
+        private @NotNull Path getMacroPath(@NotNull String name) {
+            return storagePath.withSubpath(name);
+        }
+        
+        private @NotNull File getMacroFile(@NotNull String name) {
+            return getMacroPath(name).getFile();
         }
     }
 }

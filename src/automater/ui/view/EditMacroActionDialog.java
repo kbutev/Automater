@@ -6,7 +6,7 @@ package automater.ui.view;
 
 import automater.TextValue;
 import automater.utilities.Callback;
-import automater.utilities.SimpleCallback;
+import automater.utilities.Callback.Blank;
 import automater.utilities.StringFormatting;
 import automater.mutableaction.MutableActionType;
 import java.awt.BorderLayout;
@@ -34,13 +34,13 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     public static final int MAX_TIMESTAMP_VALUE_LENGTH = 7;
 
     // UI callbacks
-    public SimpleCallback onCancelButtonCallback = SimpleCallback.createDoNothing();
-    public SimpleCallback onSaveButtonCallback = SimpleCallback.createDoNothing();
+    public Callback.Blank onCancelButtonCallback = Callback.buildBlank();
+    public Callback.Blank onSaveButtonCallback = Callback.buildBlank();
 
-    public Callback<Integer> onTypeChangedCallback = Callback.createDoNothing();
+    public Callback.WithParameter<Integer> onTypeChangedCallback = Callback.buildBlankWithParameter();
 
-    public SimpleCallback onHotkeyButtonCallback = SimpleCallback.createDoNothing();
-    public SimpleCallback onPressCheckCallback = SimpleCallback.createDoNothing();
+    public Callback.Blank onHotkeyButtonCallback = Callback.buildBlank();
+    public Callback.Blank onPressCheckCallback = Callback.buildBlank();
 
     public TimeType defaultSelectedTimeType = TimeType.seconds;
 
@@ -422,7 +422,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         // Setup view
         EditMacroActionWaitPanel view = new EditMacroActionWaitPanel();
 
-        view.onWaitTimeCallback = new Callback<String>() {
+        view.onWaitTimeCallback = new Callback.WithParameter<String>() {
             @Override
             public void perform(String argument) {
                 if (argument.isEmpty()) {
@@ -435,7 +435,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
             }
         };
 
-        view.onTimeTypeCallback = new Callback<TimeType>() {
+        view.onTimeTypeCallback = new Callback.WithParameter<TimeType>() {
             @Override
             public void perform(TimeType argument) {
                 setActionSecondValue(argument.name());
@@ -468,7 +468,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
 
         view.onHotkeyButtonCallback = onHotkeyButtonCallback;
 
-        view.onPressCheckCallback = new Callback<Boolean>() {
+        view.onPressCheckCallback = new Callback.WithParameter<Boolean>() {
             @Override
             public void perform(Boolean argument) {
                 String newValue = String.valueOf(view.pressCheck.isSelected());
@@ -509,7 +509,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         // Setup view
         EditMacroActionMouseKeyPanel view = new EditMacroActionMouseKeyPanel();
 
-        view.onSelectedValueCallback = new Callback<String>() {
+        view.onSelectedValueCallback = new Callback.WithParameter<String>() {
             @Override
             public void perform(String argument) {
                 String newValue = argument;
@@ -517,7 +517,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
             }
         };
 
-        view.onPressCheckCallback = new Callback<Boolean>() {
+        view.onPressCheckCallback = new Callback.WithParameter<Boolean>() {
             @Override
             public void perform(Boolean argument) {
                 String newValue = String.valueOf(view.pressCheck.isSelected());
@@ -551,14 +551,14 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
 
         // Setup view
         EditMacroActionMouseMovePanel view = new EditMacroActionMouseMovePanel();
-        view.onXValueChangedCallback = new Callback<String>() {
+        view.onXValueChangedCallback = new Callback.WithParameter<String>() {
             @Override
             public void perform(String argument) {
                 String newValue = argument;
                 setActionFirstValue(newValue);
             }
         };
-        view.onYValueChangedCallback = new Callback<String>() {
+        view.onYValueChangedCallback = new Callback.WithParameter<String>() {
             @Override
             public void perform(String argument) {
                 String newValue = argument;
@@ -588,7 +588,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
 
         // Setup view
         EditMacroActionCommandPanel view = new EditMacroActionCommandPanel();
-        view.onCommandValueChanged = new Callback<String>() {
+        view.onCommandValueChanged = new Callback.WithParameter<String>() {
             @Override
             public void perform(String argument) {
                 String newValue = argument;
@@ -596,7 +596,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
             }
         };
 
-        view.onReportErrorChanged = new Callback<Boolean>() {
+        view.onReportErrorChanged = new Callback.WithParameter<Boolean>() {
             @Override
             public void perform(Boolean argument) {
                 String newValue = String.valueOf(argument);
@@ -625,7 +625,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
 
         // Setup view
         EditMacroActionScreenshot view = new EditMacroActionScreenshot();
-        view.onPathChanged = new Callback<String>() {
+        view.onPathChanged = new Callback.WithParameter<String>() {
             @Override
             public void perform(String argument) {
                 String newValue = argument;

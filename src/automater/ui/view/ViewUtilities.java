@@ -7,7 +7,6 @@ package automater.ui.view;
 import automater.Strings;
 import automater.utilities.Resources;
 import org.jetbrains.annotations.NotNull;
-import java.awt.Image;
 import java.awt.Toolkit;
 
 /**
@@ -17,12 +16,14 @@ import java.awt.Toolkit;
 public class ViewUtilities {
 
     public static void setAppIconForFrame(@NotNull javax.swing.JFrame frame) {
-        Image image = Toolkit.getDefaultToolkit().createImage(Resources.getImagePath(Strings.APP_ICON_FILE));
+        var toolkit = Toolkit.getDefaultToolkit();
+        var image = toolkit.createImage(Resources.getImagePath(Strings.APP_ICON_FILE).toString());
         frame.setIconImage(image);
     }
 
     public static void setAppRedIconForFrame(@NotNull javax.swing.JFrame frame) {
-        Image image = Toolkit.getDefaultToolkit().createImage(Resources.getImagePath(Strings.APP_ICON_RED_FILE));
+        var toolkit = Toolkit.getDefaultToolkit();
+        var image = toolkit.createImage(Resources.getImagePath(Strings.APP_ICON_RED_FILE).toString());
         frame.setIconImage(image);
     }
 }

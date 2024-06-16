@@ -16,12 +16,12 @@ import org.jetbrains.annotations.Nullable;
 public class ShowMacrosPanel extends javax.swing.JPanel implements View {
     
     // UI callbacks
-    public Callback<Integer> onSelectItem = Callback.createDoNothing();
-    public Callback<Integer> onClickItem = Callback.createDoNothing();
-    public Callback<Integer> onDoubleClickItem = Callback.createDoNothing();
-    public Callback<Integer> onOpenItem = Callback.createDoNothing();
-    public Callback<Integer> onEditItem = Callback.createDoNothing();
-    public Callback<Integer> onDeleteItem = Callback.createDoNothing();
+    public Callback.WithParameter<Integer> onSelectItem = Callback.buildBlankWithParameter();
+    public Callback.WithParameter<Integer> onClickItem = Callback.buildBlankWithParameter();
+    public Callback.WithParameter<Integer> onDoubleClickItem = Callback.buildBlankWithParameter();
+    public Callback.WithParameter<Integer> onOpenItem = Callback.buildBlankWithParameter();
+    public Callback.WithParameter<Integer> onEditItem = Callback.buildBlankWithParameter();
+    public Callback.WithParameter<Integer> onDeleteItem = Callback.buildBlankWithParameter();
     
     /**
      * Creates new form ShowMacrosPanel

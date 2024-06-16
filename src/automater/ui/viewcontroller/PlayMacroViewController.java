@@ -14,7 +14,7 @@ import automater.utilities.AlertWindows;
 import automater.utilities.Description;
 import automater.utilities.DeviceTaskBar;
 import automater.utilities.Logger;
-import automater.utilities.SimpleCallback;
+import automater.utilities.Callback;
 import automater.work.model.MacroParameters;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -45,32 +45,20 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
     private void setupViewCallbacks() {
         var self = this;
 
-        _form.onBackButtonCallback = new SimpleCallback() {
-            @Override
-            public void perform() {
-                _presenter.navigateBack();
-            }
+        _form.onBackButtonCallback = (Callback.Blank) () -> {
+            _presenter.navigateBack();
         };
 
-        _form.onPlayButtonCallback = new SimpleCallback() {
-            @Override
-            public void perform() {
-                _presenter.playMacro(self);
-            }
+        _form.onPlayButtonCallback = (Callback.Blank) () -> {
+            _presenter.playMacro(self);
         };
 
-        _form.onStopButtonCallback = new SimpleCallback() {
-            @Override
-            public void perform() {
-                _presenter.stopMacro(self);
-            }
+        _form.onStopButtonCallback = (Callback.Blank) () -> {
+            _presenter.stopMacro(self);
         };
 
-        _form.onOptionsButtonCallback = new SimpleCallback() {
-            @Override
-            public void perform() {
-                displayOptionsWindow();
-            }
+        _form.onOptionsButtonCallback = (Callback.Blank) () -> {
+            displayOptionsWindow();
         };
     }
 
@@ -174,14 +162,14 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
 
         _optionsDialog = new PlayMacroOptionsDialog(_form, true);
 
-        _optionsDialog.onCancelButtonCallback = new SimpleCallback() {
+        _optionsDialog.onCancelButtonCallback = new Callback.Blank() {
             @Override
             public void perform() {
                 _optionsDialog.setVisible(false);
             }
         };
 
-        _optionsDialog.onSaveButtonCallback = new SimpleCallback() {
+        _optionsDialog.onSaveButtonCallback = new Callback.Blank() {
             @Override
             public void perform() {
                 PreferencesStorage.Values values = getPreferenceValuesFromOptionsDialog();

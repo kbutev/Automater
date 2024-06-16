@@ -29,6 +29,7 @@ import automater.input.InputScreenshot;
 import automater.input.InputSystemCommand;
 import automater.utilities.DeviceNotifications;
 import automater.utilities.FileSystem;
+import automater.utilities.Path;
 import automater.work.model.ActionContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -881,7 +882,7 @@ class ActionScreenshot extends Action implements InputScreenshot {
         Dimension screen = context.getCurrentScreenSize();
         Rectangle fullScreenArea = new Rectangle(0, 0, screen.width, screen.height);
         String filePath = evaluatePath(screenshotPath, context);
-        String pathWithoutFileName = FileSystem.buildPath(filePath);
+        String pathWithoutFileName = Path.build(filePath).toString();
 
         try {
             createFolderForScreenshot(pathWithoutFileName);
@@ -920,7 +921,7 @@ class ActionScreenshot extends Action implements InputScreenshot {
 
     private String evaluatePath(@NotNull String path, @NotNull ActionContext.Protocol context) {
         // Make sure that the path is OK
-        path = FileSystem.addFileExtension(path, ".jpg");
+        path = Path.build(path).withFileExtension(".jpg").toString();
 
         Date now = new Date();
         Calendar calendar = Calendar.getInstance(TimeZone.getDefault());

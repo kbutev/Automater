@@ -11,7 +11,6 @@ import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.Looper;
 import automater.utilities.LooperClient;
-import automater.utilities.SimpleCallback;
 import automater.work.model.ActionContext;
 import automater.work.model.ExecutorProgress;
 import automater.work.model.Macro;
@@ -768,11 +767,8 @@ public interface ExecutorProcess {
                 return;
             }
 
-            Looper.getShared().performSyncCallbackOnAWTQueue(new SimpleCallback() {
-                @Override
-                public void perform() {
-                    listener.onStart(repeatTimes);
-                }
+            Looper.getShared().performSyncCallbackOnAWTQueue(() -> {
+                listener.onStart(repeatTimes);
             });
         }
 
@@ -781,11 +777,8 @@ public interface ExecutorProcess {
                 return;
             }
 
-            Looper.getShared().performSyncCallbackOnAWTQueue(new SimpleCallback() {
-                @Override
-                public void perform() {
-                    listener.onActionExecute(action);
-                }
+            Looper.getShared().performSyncCallbackOnAWTQueue(() -> {
+                listener.onActionExecute(action);
             });
         }
 
@@ -794,11 +787,8 @@ public interface ExecutorProcess {
                 return;
             }
 
-            Looper.getShared().performSyncCallbackOnAWTQueue(new SimpleCallback() {
-                @Override
-                public void perform() {
-                    listener.onActionUpdate(action);
-                }
+            Looper.getShared().performSyncCallbackOnAWTQueue(() -> {
+                listener.onActionUpdate(action);
             });
         }
 
@@ -807,11 +797,8 @@ public interface ExecutorProcess {
                 return;
             }
 
-            Looper.getShared().performSyncCallbackOnAWTQueue(new SimpleCallback() {
-                @Override
-                public void perform() {
-                    listener.onActionFinish(action);
-                }
+            Looper.getShared().performSyncCallbackOnAWTQueue(() -> {
+                listener.onActionFinish(action);
             });
         }
 
@@ -820,11 +807,8 @@ public interface ExecutorProcess {
                 return;
             }
 
-            Looper.getShared().performSyncCallbackOnAWTQueue(new SimpleCallback() {
-                @Override
-                public void perform() {
-                    listener.onWait();
-                }
+            Looper.getShared().performSyncCallbackOnAWTQueue(() -> {
+                listener.onWait();
             });
         }
 
@@ -833,11 +817,8 @@ public interface ExecutorProcess {
                 return;
             }
 
-            Looper.getShared().performSyncCallbackOnAWTQueue(new SimpleCallback() {
-                @Override
-                public void perform() {
-                    listener.onCancel();
-                }
+            Looper.getShared().performSyncCallbackOnAWTQueue(() -> {
+                listener.onCancel();
             });
         }
 
@@ -846,11 +827,8 @@ public interface ExecutorProcess {
                 return;
             }
 
-            Looper.getShared().performSyncCallbackOnAWTQueue(new SimpleCallback() {
-                @Override
-                public void perform() {
-                    listener.onRepeat(numberOfTimesPlayed, numberOfTimesToPlay);
-                }
+            Looper.getShared().performSyncCallbackOnAWTQueue(() -> {
+                listener.onRepeat(numberOfTimesPlayed, numberOfTimesToPlay);
             });
         }
 
@@ -859,11 +837,8 @@ public interface ExecutorProcess {
                 return;
             }
 
-            Looper.getShared().performSyncCallbackOnAWTQueue(new SimpleCallback() {
-                @Override
-                public void perform() {
-                    listener.onFinish();
-                }
+            Looper.getShared().performSyncCallbackOnAWTQueue(() -> {
+                listener.onFinish();
             });
         }
     }

@@ -20,8 +20,8 @@ import org.jetbrains.annotations.NotNull;
 public class EditMacroActionWaitPanel extends javax.swing.JPanel {
 
     // UI callbacks
-    public Callback<String> onWaitTimeCallback = Callback.createDoNothing();
-    public Callback<TimeType> onTimeTypeCallback = Callback.createDoNothing();
+    public Callback.WithParameter<String> onWaitTimeCallback = Callback.buildBlankWithParameter();
+    public Callback.WithParameter<TimeType> onTimeTypeCallback = Callback.buildBlankWithParameter();
 
     public void setTime(@NotNull TimeValue time, @NotNull String timeTypeString) {
         timeValue = time;

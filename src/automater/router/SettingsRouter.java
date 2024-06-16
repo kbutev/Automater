@@ -5,8 +5,10 @@
 package automater.router;
 
 import automater.presenter.SettingsPresenter;
-import automater.ui.view.RecordMacroPanel;
 import automater.ui.view.SettingsPanel;
+import automater.utilities.Callback;
+import automater.utilities.Path;
+import javax.swing.JFileChooser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,5 +36,22 @@ public interface SettingsRouter {
         }
         
         // # SettingsPresenter.Delegate
+        
+        @Override
+        public void pickDirectory(Callback.WithParameter<Path> success, Callback.Blank failure) {
+            var chooser = new JFileChooser();
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            
+            var choice = chooser.showOpenDialog(view);
+
+            if (choice != JFileChooser.APPROVE_OPTION) {
+                failure.perform();
+                return;
+            }
+            
+            var file = chooser.getSelectedFile();
+            var path = Path.build(file.getAbsolutePath());
+            success.perform(path);
+        }
     }
 }

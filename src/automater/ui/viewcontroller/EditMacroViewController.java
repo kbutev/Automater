@@ -14,7 +14,7 @@ import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import automater.utilities.Description;
 import automater.utilities.Logger;
-import automater.utilities.SimpleCallback;
+import automater.utilities.Callback.Blank;
 import java.awt.event.WindowEvent;
 import java.util.List;
 import automater.mutableaction.BaseMutableAction;
@@ -44,14 +44,14 @@ public class EditMacroViewController implements BaseViewController, EditMacroPre
     }
 
     private void setupViewCallbacks() {
-        _form.onBackButtonCallback = new SimpleCallback() {
+        _form.onBackButtonCallback = new Callback.Blank() {
             @Override
             public void perform() {
                 _presenter.onCloseMacroWithoutSaving();
             }
         };
 
-        _form.onDeleteButtonCallback = new Callback<Integer>() {
+        _form.onDeleteButtonCallback = new Callback.WithParameter<Integer>() {
             @Override
             public void perform(Integer argument) {
                 _presenter.onDeleteMacroActionAt(argument);
@@ -59,28 +59,28 @@ public class EditMacroViewController implements BaseViewController, EditMacroPre
             }
         };
 
-        _form.onDoubleClickItem = new Callback<Integer>() {
+        _form.onDoubleClickItem = new Callback.WithParameter<Integer>() {
             @Override
             public void perform(Integer argument) {
                 _presenter.onStartEditMacroActionAt(argument);
             }
         };
 
-        _form.onSaveButtonCallback = new SimpleCallback() {
+        _form.onSaveButtonCallback = new Callback.Blank() {
             @Override
             public void perform() {
                 onSaveMacro();
             }
         };
 
-        _form.onEditButtonCallback = new Callback<Integer>() {
+        _form.onEditButtonCallback = new Callback.WithParameter<Integer>() {
             @Override
             public void perform(Integer argument) {
                 _presenter.onStartEditMacroActionAt(argument);
             }
         };
 
-        _form.onInsertCallback = new Callback<Integer>() {
+        _form.onInsertCallback = new Callback.WithParameter<Integer>() {
             @Override
             public void perform(Integer argument) {
                 // -1 is used to express that no selection has been made
@@ -93,14 +93,14 @@ public class EditMacroViewController implements BaseViewController, EditMacroPre
             }
         };
 
-        _form.onNameChangedCallback = new Callback<String>() {
+        _form.onNameChangedCallback = new Callback.WithParameter<String>() {
             @Override
             public void perform(String argument) {
                 _presenter.onMacroNameChanged(argument);
             }
         };
 
-        _form.onDescriptionChangedCallback = new Callback<String>() {
+        _form.onDescriptionChangedCallback = new Callback.WithParameter<String>() {
             @Override
             public void perform(String argument) {
                 _presenter.onMacroDescriptionChanged(argument);
@@ -184,7 +184,7 @@ public class EditMacroViewController implements BaseViewController, EditMacroPre
         String textTitle = TextValue.getText(TextValue.Edit_CloseWithoutSavingTitle);
         String textMessage = TextValue.getText(TextValue.Edit_CloseWithoutSavingMessage);
 
-        AlertWindows.showConfirmationMessage(_form, textTitle, textMessage, new SimpleCallback() {
+        AlertWindows.showConfirmationMessage(_form, textTitle, textMessage, new Callback.Blank() {
             @Override
             public void perform() {
                 _presenter.navigateBack();
@@ -204,28 +204,28 @@ public class EditMacroViewController implements BaseViewController, EditMacroPre
 
         _editActionDialog = new EditMacroActionDialog(_form, true);
 
-        _editActionDialog.onCancelButtonCallback = new SimpleCallback() {
+        _editActionDialog.onCancelButtonCallback = new Callback.Blank() {
             @Override
             public void perform() {
                 cancelEditMacroActionDialog();
             }
         };
 
-        _editActionDialog.onSaveButtonCallback = new SimpleCallback() {
+        _editActionDialog.onSaveButtonCallback = new Callback.Blank() {
             @Override
             public void perform() {
                 tryToSaveAndCloseEditMacroActionDialog();
             }
         };
 
-        _editActionDialog.onTypeChangedCallback = new Callback<Integer>() {
+        _editActionDialog.onTypeChangedCallback = new Callback.WithParameter<Integer>() {
             @Override
             public void perform(Integer argument) {
                 changeEditMacroActionTypeForTypeIndex(argument);
             }
         };
 
-        _editActionDialog.onHotkeyButtonCallback = new SimpleCallback() {
+        _editActionDialog.onHotkeyButtonCallback = new Callback.Blank() {
             @Override
             public void perform() {
                 if (!_isHotkeyRecording) {
@@ -330,11 +330,8 @@ public class EditMacroViewController implements BaseViewController, EditMacroPre
         _isHotkeyRecording = true;
         _editActionDialog.startHotkeyListening();
 
-        Callback onHotkeyEnteredCallback = new Callback<Hotkey>() {
-            @Override
-            public void perform(Hotkey argument) {
-                endHotkeyListening(argument);
-            }
+        var onHotkeyEnteredCallback = (Callback.WithParameter<Hotkey>) (Hotkey argument) -> {
+            endHotkeyListening(argument);
         };
 
         _presenter.startListeningForKeystrokes(onHotkeyEnteredCallback);

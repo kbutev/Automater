@@ -4,21 +4,34 @@
  */
 package automater.ui.view;
 
+import automater.utilities.Callback;
 import java.awt.Component;
+import org.jetbrains.annotations.NotNull;
 
 /**
  *
  * @author Kristiyan Butev
  */
 public class SettingsPanel extends javax.swing.JPanel implements View {
-
+    
+    // UI callbacks
+    public Callback.Blank onPickMacrosDirectory = Callback.buildBlank();
+    
     /**
      * Creates new form SettingsPanel
      */
     public SettingsPanel() {
         initComponents();
     }
-
+    
+    // # Configuration
+    
+    public void setScriptsDirectory(@NotNull String path) {
+        scriptsDirectoryField.setText(path);
+    }
+    
+    // # View
+    
     @Override
     public Component asComponent() {
         return this;
@@ -58,21 +71,72 @@ public class SettingsPanel extends javax.swing.JPanel implements View {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        macrosDirectoryLabel = new javax.swing.JLabel();
+        scriptsDirectoryField = new javax.swing.JTextField();
+        macrosDirectoryButton = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+
+        macrosDirectoryLabel.setText("Macros");
+
+        scriptsDirectoryField.setText("...");
+        scriptsDirectoryField.setEnabled(false);
+
+        macrosDirectoryButton.setText("Browse");
+        macrosDirectoryButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                macrosDirectoryButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel1.setText("Directories");
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel2.setText("Hotkeys");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(macrosDirectoryLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(scriptsDirectoryField, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(macrosDirectoryButton))
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(8, 8, 8)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(scriptsDirectoryField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(macrosDirectoryButton)
+                    .addComponent(macrosDirectoryLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel2)
+                .addContainerGap(205, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
-    
-    
 
-
+    private void macrosDirectoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_macrosDirectoryButtonActionPerformed
+        onPickMacrosDirectory.perform();
+    }//GEN-LAST:event_macrosDirectoryButtonActionPerformed
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JButton macrosDirectoryButton;
+    private javax.swing.JLabel macrosDirectoryLabel;
+    private javax.swing.JTextField scriptsDirectoryField;
     // End of variables declaration//GEN-END:variables
 }

@@ -17,7 +17,7 @@ import javax.swing.event.DocumentListener;
 public class EditMacroActionScreenshot extends javax.swing.JPanel {
 
     // UI callbacks
-    public Callback<String> onPathChanged = Callback.createDoNothing();
+    public Callback.WithParameter<String> onPathChanged = Callback.buildBlankWithParameter();
     /**
      * Creates new form EditMacroActionScreenshot
      */

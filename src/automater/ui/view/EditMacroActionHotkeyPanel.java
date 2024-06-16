@@ -5,7 +5,7 @@
 package automater.ui.view;
 
 import automater.utilities.Callback;
-import automater.utilities.SimpleCallback;
+import automater.utilities.Callback.Blank;
 
 /**
  *
@@ -14,8 +14,8 @@ import automater.utilities.SimpleCallback;
 public class EditMacroActionHotkeyPanel extends javax.swing.JPanel {
 
     // UI callbacks
-    public SimpleCallback onHotkeyButtonCallback = SimpleCallback.createDoNothing();
-    public Callback<Boolean> onPressCheckCallback = Callback.createDoNothing();
+    public Callback.Blank onHotkeyButtonCallback = Callback.buildBlank();
+    public Callback.WithParameter<Boolean> onPressCheckCallback = Callback.buildBlankWithParameter();
 
     /**
      * Creates new form EditMacroActionHotkeyPanel
