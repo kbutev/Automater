@@ -4,6 +4,7 @@
  */
 package automater.router;
 
+import automater.model.macro.Macro;
 import automater.ui.view.ShowMacrosPanel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,6 +18,7 @@ public interface ShowMacrosRouter {
     
     interface Protocol {
         
+        void openMacro(@NotNull Macro.Protocol macro);
     }
     
     class Impl implements Protocol, ShowMacrosPresenter.Delegate {
@@ -30,6 +32,11 @@ public interface ShowMacrosRouter {
         
         public @NotNull ShowMacrosPanel getView() {
             return view;
+        }
+        
+        @Override
+        public void openMacro(@NotNull Macro.Protocol macro) {
+            masterRouter.openMacro(macro);
         }
     }
 }

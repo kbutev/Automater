@@ -22,8 +22,12 @@ public class Path {
         return new Path(java.nio.file.Path.of(System.getProperty("user.dir")));
     }
     
-    public static @NotNull Path build(@NotNull String lastComponent) {
-        return getLocalDirectory().withSubpath(lastComponent);
+    public static @NotNull Path buildAbsolute(@NotNull String absolute) {
+        return new Path(absolute);
+    }
+    
+    public static @NotNull Path buildLocal(@NotNull String component) {
+        return getLocalDirectory().withSubpath(component);
     }
     
     public Path(@NotNull java.nio.file.Path value) {
@@ -37,6 +41,10 @@ public class Path {
     }
     
     // # Validation
+    
+    public boolean startWith(@NotNull Path other) {
+        return toJavaPath().startsWith(other.toJavaPath());
+    }
     
     public boolean lastComponentEquals(@NotNull String component) {
         return lastComponent().equals(component);

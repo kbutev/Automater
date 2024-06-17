@@ -6,6 +6,7 @@ package automater.model.macro;
 
 import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  *
@@ -21,6 +22,9 @@ public class MacroSummary {
     @SerializedName("name")
     public final @NotNull String name;
     
+    @SerializedName("description")
+    public final @NotNull String description;
+    
     @SerializedName("actionsCount")
     public final int actionsCount;
     
@@ -29,9 +33,10 @@ public class MacroSummary {
     @SerializedName("playCount")
     public final int playCount;
     
-    public MacroSummary(@NotNull String name, int playCount, int actionsCount) {
+    public MacroSummary(@NotNull String name, @Nullable String description, int playCount, int actionsCount) {
         version = VERSION;
         this.name = name;
+        this.description = description != null ? description : "";
         this.playCount = playCount;
         this.actionsCount = actionsCount;
     }

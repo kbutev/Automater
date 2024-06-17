@@ -58,7 +58,7 @@ public interface SettingsRouter {
             }
             
             var file = chooser.getSelectedFile();
-            var path = Path.build(file.getAbsolutePath());
+            var path = Path.buildAbsolute(file.getAbsolutePath());
             
             if (success != null) {
                 success.perform(path);

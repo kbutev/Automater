@@ -7,11 +7,9 @@ package automater.ui.view;
 import automater.datasource.StandardDescriptionDataSource;
 import automater.ui.text.Strings;
 import automater.ui.text.TextValue;
-import automater.model.Keystroke;
 import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import automater.utilities.Logger;
-import automater.utilities.Callback.Blank;
 import java.awt.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,29 +38,6 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
     @Override
     public @NotNull Component asComponent() {
         return this;
-    }
-    
-    @Override
-    public void onViewStart() {
-        macroActionsList.setModel(StandardDescriptionDataSource.createGeneric());
-    }
-    
-    @Override
-    public void onViewSuspended() {
-        
-    }
-    
-    @Override
-    public void onViewResume() {
-        macroActionsList.setModel(StandardDescriptionDataSource.createGeneric());
-
-        macroNameField.setText(TextValue.getText(TextValue.Record_MacroNameFieldDefaultText));
-        macroDescriptionField.setText("");
-    }
-    
-    @Override
-    public void onViewTerminate() {
-        
     }
     
     @Override
@@ -224,7 +199,7 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
             }
         });
 
-        macroStateLabel.setText("Idle (Press F4 to RECORD/FINISH)");
+        macroStateLabel.setText("Status");
 
         macroActionsListName.setText("Actions");
 
@@ -240,19 +215,19 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(macroNameLabel)
                             .addComponent(descriptionMacroLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(macroNameField)
                             .addComponent(macroDescriptionField, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(macroStateLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 221, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
-                        .addComponent(recordMacroButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(saveMacroButton))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(macroActionsListName)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(recordMacroButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(saveMacroButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(macroStateLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(

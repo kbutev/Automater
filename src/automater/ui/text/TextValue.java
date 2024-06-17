@@ -48,13 +48,13 @@ public enum TextValue {
     Play_FormTitle,
     Play_BackButtonTitle,
     Play_PlayButtonTitle, Play_StopButtonTitle,
+    Play_PauseButtonTitle, Play_ResumeButtonTitle,
     Play_DialogErrorTitle,
     Play_NotificationStartTitle, Play_NotificationStartMessage,
     Play_NotificationFinishTitle, Play_NotificationFinishMessage,
     Play_NotificationRepeatTitle, Play_NotificationRepeatMessage,
     Play_NotificationRepeatForever,
-    Play_StatusIdle, Play_StatusFinished, Play_StatusWaiting, Play_StatusPerformedWaiting,
-    Play_StatusPerforming, Play_StatusPerformingRepeat,
+    Play_StatusIdle, Play_StatusPaused, Play_StatusRunning,
     // Play options dialog
     PlayOptions_Title, PlayOptions_CancelButtonTitle, PlayOptions_SaveButtonTitle,
     PlayOptions_NotificationPlay, PlayOptions_NotificationStop, PlayOptions_NotificationRepeat,
@@ -250,6 +250,8 @@ public enum TextValue {
             put(Play_BackButtonTitle, "< BACK");
             put(Play_PlayButtonTitle, "Play (%@)");
             put(Play_StopButtonTitle, "Stop (%@)");
+            put(Play_ResumeButtonTitle, "Resume (%@)");
+            put(Play_PauseButtonTitle, "Pause (%@)");
             put(Play_DialogErrorTitle, "Failed to play Macro");
             put(Play_NotificationStartTitle, "Automater");
             put(Play_NotificationStartMessage, "Playing '%@' (Press %@ to stop)");
@@ -259,11 +261,8 @@ public enum TextValue {
             put(Play_NotificationRepeatMessage, "Repeat playing '%@' (%@)");
             put(Play_NotificationRepeatForever, "Repeat forever");
             put(Play_StatusIdle, "Idle");
-            put(Play_StatusFinished, "Finished");
-            put(Play_StatusWaiting, "Waiting");
-            put(Play_StatusPerformedWaiting, "Finished %@, waiting for next");
-            put(Play_StatusPerforming, "Performing %@");
-            put(Play_StatusPerformingRepeat, "[%@] Performing %@");
+            put(Play_StatusPaused, "Paused");
+            put(Play_StatusRunning, "Running (%@%)");
 
             // Play options form
             put(PlayOptions_Title, "Set play options");

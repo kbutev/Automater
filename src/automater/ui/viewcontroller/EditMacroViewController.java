@@ -113,13 +113,11 @@ public class EditMacroViewController implements BaseViewController, EditMacroPre
         setupViewCallbacks();
 
         _form.setVisible(true);
-        _form.onViewStart();
     }
 
     @Override
     public void resume() {
         _form.setVisible(true);
-        _form.onViewResume();
 
         _presenter.requestDataUpdate();
     }
@@ -127,12 +125,10 @@ public class EditMacroViewController implements BaseViewController, EditMacroPre
     @Override
     public void suspend() {
         _form.setVisible(false);
-        _form.onViewSuspended();
     }
 
     @Override
     public void terminate() {
-        _form.onViewTerminate();
         _form.dispatchEvent(new WindowEvent(_form, WindowEvent.WINDOW_CLOSING));
     }
 

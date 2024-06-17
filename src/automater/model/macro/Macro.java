@@ -23,7 +23,7 @@ public interface Macro {
     }
     
     public static @NotNull Macro.Protocol build(@NotNull String name, @NotNull List<MacroAction> actions) {
-        return new Macro.Impl(new MacroSummary(name, 0, actions.size()), actions);
+        return new Macro.Impl(new MacroSummary(name, null, 0, actions.size()), actions);
     }
     
     interface Protocol {

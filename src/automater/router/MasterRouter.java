@@ -4,6 +4,7 @@
  */
 package automater.router;
 
+import automater.model.macro.Macro;
 import automater.ui.text.TextValue;
 import automater.presenter.Presenter;
 import automater.presenter.RecordMacroPresenter;
@@ -28,9 +29,12 @@ public interface MasterRouter {
         void start();
         
         void enableTabs(boolean value);
+        
+        void openMacro(@NotNull Macro.Protocol macro);
     }
     
     class Impl implements Protocol {
+        
         private final @NotNull PrimaryRootFrame view;
         
         private @Nullable ShowMacrosPresenter.Protocol openMacrosPresenter;
@@ -104,7 +108,13 @@ public interface MasterRouter {
             view.enableTabs(value);
         }
         
-        // # Pritive
+        @Override
+        public void openMacro(@NotNull Macro.Protocol macro) {
+            var router = new PlayMacroRouter.Impl(this, macro);
+            router.start();
+        }
+        
+        // # Primitive
         
         private void onSwitchTab(@NotNull View selectedView) {
             var currentPresenter = tabs.get(currentlySelectedTab);

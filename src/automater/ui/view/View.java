@@ -16,10 +16,5 @@ public interface View {
     
     @NotNull Component asComponent();
     
-    void onViewStart();
-    void onViewSuspended();
-    void onViewResume();
-    void onViewTerminate();
-
     void reloadData();
 }

@@ -39,26 +39,6 @@ public class ShowMacrosPanel extends javax.swing.JPanel implements View {
     }
     
     @Override
-    public void onViewStart() {
-        macrosList.setModel(StandardDescriptionDataSource.createGeneric());
-    }
-
-    @Override
-    public void onViewSuspended() {
-
-    }
-
-    @Override
-    public void onViewResume() {
-
-    }
-
-    @Override
-    public void onViewTerminate() {
-
-    }
-
-    @Override
     public void reloadData() {
 
     }

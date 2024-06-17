@@ -44,6 +44,9 @@ public interface PreferencesStorage {
         @SerializedName("playMacroHotkey")
         public @NotNull Keystroke playMacroHotkey = Keystroke.build(KeyValue.F4);
         
+        @SerializedName("pauseMacroHotkey")
+        public @NotNull Keystroke pauseMacroHotkey = Keystroke.build(KeyValue.F3);
+        
         @SerializedName("stopMacroHotkey")
         public @NotNull Keystroke stopMacroHotkey = Keystroke.build(KeyValue.F4);
         
@@ -61,6 +64,7 @@ public interface PreferencesStorage {
             result.startRecordHotkey = startRecordHotkey;
             result.stopRecordHotkey = stopRecordHotkey;
             result.playMacroHotkey = playMacroHotkey;
+            result.pauseMacroHotkey = pauseMacroHotkey;
             result.stopMacroHotkey = stopMacroHotkey;
             
             result.startNotification = startNotification;
@@ -180,7 +184,7 @@ public interface PreferencesStorage {
             var macrosDirectory = values.macrosDirectory;
             
             if (!macrosDirectory.exists()) {
-                if (!macrosDirectory.lastComponentEquals(DEFAULT_MACROS_DIRECTORY)) {
+                if (!macrosDirectory.startWith(Path.getLocalDirectory())) {
                     Logger.warning(this, "Macros directory is invalid, resetting it to default value");
                     
                     values.macrosDirectory = defaults.macrosDirectory;
@@ -188,6 +192,8 @@ public interface PreferencesStorage {
                 }
                 
                 if (!macrosDirectory.exists()) {
+                    Logger.warning(this, "Macros directory doesn't exist, creating new directory now");
+                    
                     FileSystem.createDirectory(macrosDirectory);
                 }
             }

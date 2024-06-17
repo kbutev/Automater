@@ -4,6 +4,7 @@
  */
 package automater.model.macro;
 
+import automater.utilities.Path;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -13,10 +14,10 @@ import org.jetbrains.annotations.NotNull;
 public class MacroFileSummary {
     
     public final @NotNull MacroSummary summary;
-    public final @NotNull String filePath;
+    public final @NotNull Path path;
     
-    public MacroFileSummary(@NotNull MacroSummary summary, @NotNull String filePath) {
+    public MacroFileSummary(@NotNull MacroSummary summary, @NotNull Path path) {
         this.summary = summary;
-        this.filePath = filePath;
+        this.path = path;
     }
 }

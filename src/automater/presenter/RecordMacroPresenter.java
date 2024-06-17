@@ -75,22 +75,20 @@ public interface RecordMacroPresenter {
         }
         
         private void setup() {
-            var self = this;
-
             view.onSwitchToPlayButtonCallback = () -> {
-                self.stop();
+                stop();
             };
 
             view.onBeginRecordMacroButtonCallback = () -> {
-                self.beginRecording(self.view);
+                beginRecording(view);
             };
 
             view.onStopRecordMacroButtonCallback = () -> {
-                self.endRecording(self.view);
+                endRecording(view);
             };
 
             view.onSaveMacroButtonCallback = (String argument) -> {
-                self.saveRecording(argument, view.getMacroDescription());
+                saveRecording(argument, view.getMacroDescription());
             };
             
             view.setHotkeyText(preferences.getValues().startRecordHotkey.toString(),

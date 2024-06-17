@@ -4,8 +4,14 @@
  */
 package automater.router;
 
+import automater.model.macro.Macro;
+import automater.presenter.PlayMacroPresenter;
+import automater.storage.PreferencesStorage;
+import automater.ui.view.PlayMacroFrame;
+import automater.utilities.Description;
+import automater.work.model.ExecutorProgress;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  *
@@ -15,23 +21,61 @@ public interface PlayMacroRouter {
     
     interface Protocol {
         
-        void start(@NotNull MasterRouter.Protocol router);
-        void goBack();
+        void start();
     }
     
-    class Impl implements Protocol {
+    class Impl implements Protocol, PlayMacroPresenter.Delegate {
         
-        @Nullable MasterRouter.Protocol masterRouter;
+        private final @NotNull PlayMacroFrame view;
+        private final @NotNull MasterRouter.Protocol masterRouter;
+        private @NotNull PlayMacroPresenter.Protocol playMacroPresenter;
 
-        @Override
-        public void start(@NotNull MasterRouter.Protocol router) {
+        public Impl(@NotNull MasterRouter.Protocol router, @NotNull Macro.Protocol macro) {
+            view = new PlayMacroFrame();
             masterRouter = router;
+            setup(macro);
+        }
+        
+        private void setup(@NotNull Macro.Protocol macro) {
+            playMacroPresenter = new PlayMacroPresenter.Impl(view, macro);
+            playMacroPresenter.setDelegate(this);
         }
         
         @Override
-        public void goBack() {
-            assert masterRouter != null;
+        public void start() {
+            playMacroPresenter.start();
+            view.present();
+        }
+        
+        // # PlayMacroPresenter.Delegate
+        
+        @Override
+        public void onError(Exception e) {
             
+        }
+        
+        @Override
+        public void onLoadedPreferencesFromStorage(PreferencesStorage.Values values) {
+            
+        }
+        
+        @Override
+        public void onLoadedMacroFromStorage(String macroName, String macroDescription, List<Description> macroActions) {
+            
+        }
+        
+        @Override
+        public void startPlaying() {
+            
+        }
+        
+        @Override
+        public void stopPlaying(boolean wasCancelled) {
+            
+        }
+        
+        @Override
+        public void updatePlayStatus(ExecutorProgress progress) {
             
         }
     }

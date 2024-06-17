@@ -84,6 +84,15 @@ public interface SettingsPresenter {
                     setupStopMacroHotkey(values);
                 }, null);
             };
+            
+            view.onPauseMacroHotkeyClick = () -> {
+                delegate.chooseHotkey((Keystroke result) -> {
+                    var values = preferences.getValues();
+                    values.pauseMacroHotkey = result;
+                    onSavePreferences(values);
+                    setupPauseMacroHotkey(values);
+                }, null);
+            };
         }
 
         @Override
@@ -114,6 +123,7 @@ public interface SettingsPresenter {
             setupStopRecordHotkey(values);
             setupStartMacroHotkey(values);
             setupStopMacroHotkey(values);
+            setupPauseMacroHotkey(values);
             view.setMacrosDirectory(values.macrosDirectory.toString());
         }
         
@@ -133,10 +143,6 @@ public interface SettingsPresenter {
             preferences.save();
         }
         
-        private @NotNull Path getCurrentMacroDirectory() {
-            return preferences.getValues().macrosDirectory;
-        }
-        
         private void setupStartRecordHotkey(@NotNull PreferencesStorage.Values values) {
             view.setStartRecordHotkey(values.startRecordHotkey.toString());
         }
@@ -151,6 +157,10 @@ public interface SettingsPresenter {
         
         private void setupStopMacroHotkey(@NotNull PreferencesStorage.Values values) {
             view.setStopMacroHotkey(values.stopMacroHotkey.toString());
+        }
+        
+        private void setupPauseMacroHotkey(@NotNull PreferencesStorage.Values values) {
+            view.setPauseMacroHotkey(values.pauseMacroHotkey.toString());
         }
     }
 }

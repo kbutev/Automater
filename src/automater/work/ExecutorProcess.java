@@ -262,37 +262,7 @@ public interface ExecutorProcess {
         // # ExecutorProgress
         @Override
         public @NotNull String getCurrentStatus() {
-            if (isFinished()) {
-                return TextValue.getText(TextValue.Play_StatusFinished);
-            }
-
-            if (isWaiting()) {
-                BaseActionProcess previous = getPreviousActionProcess();
-
-                if (previous == null) {
-                    return TextValue.getText(TextValue.Play_StatusWaiting);
-                }
-
-                return TextValue.getText(TextValue.Play_StatusPerformedWaiting, previous.getAction().getStandart());
-            }
-
-            BaseActionProcess current = getCurrentActionProcess();
-
-            if (current == null) {
-                return TextValue.getText(TextValue.Play_StatusIdle);
-            }
-
-            String actionDescription = current.getAction().getStandart();
-
-            if (getTimesWillPlay() > 1 && !isRepeatForever()) {
-                int timesPlayed = getPlayCount();
-                int timesWillPlay = getTimesWillPlay();
-
-                String repeatText = String.valueOf(timesPlayed) + "/" + String.valueOf(timesWillPlay);
-                return TextValue.getText(TextValue.Play_StatusPerformingRepeat, repeatText, actionDescription);
-            }
-
-            return TextValue.getText(TextValue.Play_StatusPerforming, actionDescription);
+            return "";
         }
 
         @Override

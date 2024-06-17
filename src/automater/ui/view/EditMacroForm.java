@@ -336,26 +336,6 @@ public class EditMacroForm extends javax.swing.JFrame implements View {
     }
     
     @Override
-    public void onViewStart() {
-
-    }
-
-    @Override
-    public void onViewSuspended() {
-
-    }
-
-    @Override
-    public void onViewResume() {
-
-    }
-
-    @Override
-    public void onViewTerminate() {
-
-    }
-
-    @Override
     public void reloadData() {
 
     }

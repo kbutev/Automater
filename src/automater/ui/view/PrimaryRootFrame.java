@@ -33,15 +33,15 @@ public class PrimaryRootFrame extends javax.swing.JFrame {
     }
     
     public @NotNull View getSelectedTab() {
-        return (View) jTabbedPane1.getSelectedComponent();
+        return (View) tabbedPane.getSelectedComponent();
     }
     
     public void enableTabs(boolean value) {
-        jTabbedPane1.setEnabled(value);
+        tabbedPane.setEnabled(value);
     }
     
     public void addTab(@NotNull String title, @NotNull View view, @Nullable String tooltip) {
-        jTabbedPane1.addTab(title, null, view.asComponent(), tooltip != null ? tooltip : "");
+        tabbedPane.addTab(title, null, view.asComponent(), tooltip != null ? tooltip : "");
     }
     
     private void setup() {
@@ -49,13 +49,13 @@ public class PrimaryRootFrame extends javax.swing.JFrame {
 
         setTitle(TextValue.getText(TextValue.Open_FormTitle));
         
-        jTabbedPane1.addChangeListener((ChangeEvent e) -> {
+        tabbedPane.addChangeListener((ChangeEvent e) -> {
             onTabClick();
         });
     }
     
     private void onTabClick() {
-        onSwitchTabCallback.perform((View) jTabbedPane1.getSelectedComponent());
+        onSwitchTabCallback.perform((View) tabbedPane.getSelectedComponent());
     }
 
     /**
@@ -67,7 +67,7 @@ public class PrimaryRootFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jTabbedPane1 = new javax.swing.JTabbedPane();
+        tabbedPane = new javax.swing.JTabbedPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -78,14 +78,14 @@ public class PrimaryRootFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE)
+                .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 381, Short.MAX_VALUE)
+                .addComponent(tabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -126,6 +126,6 @@ public class PrimaryRootFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTabbedPane tabbedPane;
     // End of variables declaration//GEN-END:variables
 }

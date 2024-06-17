@@ -9,7 +9,6 @@ import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.Looper;
 import automater.utilities.LooperSwing;
-import automater.utilities.Callback.Blank;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +19,7 @@ import automater.parser.DescriptionParser;
 import automater.storage.MacroStorage;
 import automater.ui.view.ShowMacrosPanel;
 import automater.datasource.StandardDescriptionDataSource;
+import automater.model.macro.Macro;
 import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import java.util.stream.Collectors;
@@ -34,6 +34,7 @@ public interface ShowMacrosPresenter {
 
     interface Delegate {
         
+        void openMacro(@NotNull Macro.Protocol macro);
     }
     
     interface Protocol extends PresenterWithDelegate<Delegate> {
@@ -62,15 +63,15 @@ public interface ShowMacrosPresenter {
         
         private void setup() {
             view.onSelectItem = (Integer index) -> {
-                openMacroAt(index);
+                
             };
 
             view.onDoubleClickItem = (Integer index) -> {
-                editMacroAt(index);
+                openMacroAt(index);
             };
 
             view.onOpenItem = (Integer index) -> {
-                editMacroAt(index);
+                openMacroAt(index);
             };
 
             view.onEditItem = (Integer index) -> {
@@ -90,7 +91,6 @@ public interface ShowMacrosPresenter {
 
             Logger.message(this, "Start.");
 
-            view.onViewStart();
             updateMacroData();
         }
         
@@ -118,16 +118,20 @@ public interface ShowMacrosPresenter {
 
         @Override
         public void openMacroAt(int index) {
-            Logger.messageEvent(this, "Open macro at " + String.valueOf(index));
-
             if (index < 0 || index >= macros.size()) {
                 Logger.error(this, "Cannot open macro at " + String.valueOf(index) + ", invalid index");
                 return;
             }
-
-            var macro = macros.get(index);
-
-            //rootViewController.navigateToPlayScreen(macro);
+            
+            var summary = macros.get(index);
+            Logger.messageEvent(this, "Open macro at " + summary.path.toStringWithQuotes());
+            
+            try {
+                var macro = storage.getMacro(summary.path);
+                delegate.openMacro(macro);
+            } catch (Exception e) {
+                
+            }
         }
 
         @Override
@@ -155,7 +159,7 @@ public interface ShowMacrosPresenter {
 
             var macro = macros.get(index);
             
-            Logger.message(this, "Delete macro '" + macro.filePath + "'");
+            Logger.message(this, "Delete macro " + macro.path.toStringWithQuotes());
 
             try {
                 storage.deleteMacro(macro);

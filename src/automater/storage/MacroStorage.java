@@ -15,12 +15,14 @@ import automater.utilities.FileSystem;
 import automater.utilities.Logger;
 import automater.utilities.Path;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  *
@@ -36,7 +38,7 @@ public interface MacroStorage {
         
         @NotNull List<MacroFileSummary> getMacroSummaryList() throws Exception;
         @NotNull MacroFileSummary getMacroSummary(@NotNull String name) throws Exception;
-        @NotNull Macro.Protocol getMacro(@NotNull String name) throws Exception;
+        @NotNull Macro.Protocol getMacro(@NotNull Path path) throws Exception;
         @NotNull void saveMacro(@NotNull Macro.Protocol macro) throws Exception;
         void deleteMacro(@NotNull MacroFileSummary summary);
     }
@@ -58,7 +60,7 @@ public interface MacroStorage {
         }
         
         @Override
-        public List<MacroFileSummary> getMacroSummaryList() throws Exception {
+        public @NotNull List<MacroFileSummary> getMacroSummaryList() throws Exception {
             var result = new ArrayList<MacroFileSummary>();
             var files = FileSystem.getAllFilesInDirectory(getDirectory(), MACRO_EXTENSION);
             
@@ -76,9 +78,16 @@ public interface MacroStorage {
         }
         
         @Override
-        public MacroFileSummary getMacroSummary(@NotNull String name) throws Exception {
-            File file = getMacroFile(name);
-            return getMacroSummaryFromFile(file);
+        public @Nullable MacroFileSummary getMacroSummary(@NotNull String name) throws Exception {
+            var summaries = getMacroSummaryList();
+            
+            for (var summary : summaries) {
+                if (summary.summary.name.equals(name)) {
+                    return summary;
+                }
+            }
+            
+            return null;
         }
         
         private @NotNull MacroFileSummary getMacroSummaryFromFile(@NotNull File file) throws Exception {
@@ -97,24 +106,18 @@ public interface MacroStorage {
             }
 
             var summary = gson.fromJson(macroSummaryJSON, MacroSummary.class);
-            return new MacroFileSummary(summary, file.getAbsolutePath());
+            return new MacroFileSummary(summary, Path.buildAbsolute(file.getAbsolutePath()));
         }
         
         @Override
-        public Macro.Protocol getMacro(@NotNull String name) throws Exception {
-            var files = FileSystem.getAllFilesInDirectory(getDirectory(), MACRO_EXTENSION);
-            
-            for (var file : files) {
-                try {
-                    var json = FileSystem.readFromFile(file);
-                    return gson.fromJson(json, Macro.Impl.class);
-                } catch (Exception e) {
-                    Logger.error(this, "Failed to read macro, error: " + e);
-                    throw e;
-                }
+        public @NotNull Macro.Protocol getMacro(@NotNull Path path) throws Exception {
+            try {
+                var json = FileSystem.readFromFile(path.getFile());
+                return macroParser.parseFromJSON(gson.fromJson(json, JsonElement.class));
+            } catch (Exception e) {
+                Logger.error(this, "Failed to read macro, error: " + e);
+                throw e;
             }
-            
-            return null;
         }
         
         @Override
@@ -144,7 +147,7 @@ public interface MacroStorage {
         
         @Override
         public void deleteMacro(@NotNull MacroFileSummary summary) {
-            var file = getMacroFile(summary.filePath);
+            var file = summary.path.getFile();
             
             if (!file.exists()) {
                 throw Errors.fileOrDirectoryNotFound();
@@ -155,10 +158,6 @@ public interface MacroStorage {
         
         private @NotNull Path getMacroPath(@NotNull String name) {
             return getDirectory().withSubpath(name);
-        }
-        
-        private @NotNull File getMacroFile(@NotNull String name) {
-            return getMacroPath(name).getFile();
         }
     }
 }
