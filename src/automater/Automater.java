@@ -4,6 +4,7 @@
  */
 package automater;
 
+import automater.ui.text.TextValue;
 import automater.di.DI;
 import automater.di.DISetup;
 import automater.router.MasterRouter;
@@ -60,22 +61,6 @@ public class Automater {
         DeviceNotifications.getShared().setTrayIconTooltip(TextValue.getText(TextValue.SystemTray_Tooltip));
 
         // Start
-        var gson = new Gson();
-        var path = Path.getLocalDirectory().withSubpath("preferences.json");
-        var json = gson.toJson(path);
-        var result = gson.fromJson(json, Path.class);
-        var file = result.getFile();
-        var extension = path.extension();
-        var lastComponent = path.lastComponent();
-        var parent = path.parent();
-        
-        try {
-            var contents = FileSystem.readFromFile(file);
-            automater.utilities.Logger.message("Automater", "test: " + result.toString());
-        } catch (Exception e) {
-            automater.utilities.Logger.message("Automater", "error: " + e);
-        }
-        
         DI.get(PreferencesStorage.Protocol.class).load();
         DI.get(MasterRouter.Protocol.class).start();
     }

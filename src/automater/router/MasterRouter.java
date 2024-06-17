@@ -4,7 +4,7 @@
  */
 package automater.router;
 
-import automater.TextValue;
+import automater.ui.text.TextValue;
 import automater.presenter.Presenter;
 import automater.presenter.RecordMacroPresenter;
 import automater.presenter.SettingsPresenter;
@@ -22,6 +22,8 @@ import java.util.Map;
 public interface MasterRouter {
     
     interface Protocol {
+        
+        @NotNull javax.swing.JFrame getView();
         
         void start();
         
@@ -82,6 +84,11 @@ public interface MasterRouter {
         }
         
         // # Protocol
+        
+        @Override
+        public @NotNull javax.swing.JFrame getView() {
+            return view;
+        }
         
         @Override
         public void start() {

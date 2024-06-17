@@ -9,7 +9,6 @@ import automater.model.KeyEventKind;
 import automater.model.KeyValue;
 import automater.model.Keystroke;
 import automater.mvp.BasePresenter.EditMacroPresenter;
-import automater.settings.Hotkey;
 import automater.ui.viewcontroller.RootViewController;
 import automater.utilities.Callback;
 import automater.utilities.Description;
@@ -65,8 +64,8 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, HotkeyMon
 
     // Hotkey recording
     private boolean _recording = false;
-    @NotNull private Callback.WithParameter<automater.settings.Hotkey> _onKeystrokeEnteredCallback = Callback.buildBlankWithParameter();
-    @Nullable private Hotkey _hotkeyRecorded;
+    @NotNull private Callback.WithParameter<Keystroke> _onKeystrokeEnteredCallback = Callback.buildBlankWithParameter();
+    @Nullable private Keystroke _hotkeyRecorded;
 
     // Edit detection
     private boolean _wasEdited = false;
@@ -421,7 +420,7 @@ public class EditMacroPresenterStandard implements EditMacroPresenter, HotkeyMon
     }
 
     @Override
-    public void startListeningForKeystrokes(@NotNull Callback.WithParameter<automater.settings.Hotkey> onKeystrokeEnteredCallback) {
+    public void startListeningForKeystrokes(@NotNull Callback.WithParameter<Keystroke> onKeystrokeEnteredCallback) {
         if (_recording) {
             return;
         }

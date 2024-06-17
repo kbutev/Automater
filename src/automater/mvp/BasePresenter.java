@@ -4,6 +4,7 @@
  */
 package automater.mvp;
 
+import automater.model.Keystroke;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +44,7 @@ public interface BasePresenter {
         public void onMacroDescriptionChanged(@NotNull String description);
     
         // Keystroke events
-        public void startListeningForKeystrokes(@NotNull Callback.WithParameter<automater.settings.Hotkey> onKeystrokeEnteredCallback);
+        public void startListeningForKeystrokes(@NotNull Callback.WithParameter<Keystroke> onKeystrokeEnteredCallback);
         public void endListeningForKeystrokes();
     }
 }

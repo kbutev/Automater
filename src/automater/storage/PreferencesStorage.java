@@ -26,19 +26,26 @@ public interface PreferencesStorage {
     public static final String VERSION = "1.0";
     public static final String VERSION_KEY = "version";
     public static final String PREFERENCES_FILE_NAME = "preferences.json";
+    public static final String DEFAULT_MACROS_DIRECTORY = "macros";
     
     class Values {
         @SerializedName(VERSION_KEY)
         public @NotNull String version = VERSION;
         
         @SerializedName("macrosDirectory")
-        public @NotNull Path macrosDirectory = Path.getLocalDirectory();
+        public @NotNull Path macrosDirectory = Path.getLocalDirectory().withSubpath(DEFAULT_MACROS_DIRECTORY);
         
-        @SerializedName("recordHotkey")
-        public @NotNull Keystroke recordHotkey = Keystroke.build(KeyValue.F4); // Record and stop
+        @SerializedName("startRecordHotkey")
+        public @NotNull Keystroke startRecordHotkey = Keystroke.build(KeyValue.F4);
         
-        @SerializedName("playHotkey")
-        public @NotNull Keystroke playHotkey = Keystroke.build(KeyValue.F4); // Play and stop
+        @SerializedName("stopRecordHotkey")
+        public @NotNull Keystroke stopRecordHotkey = Keystroke.build(KeyValue.F4);
+        
+        @SerializedName("playMacroHotkey")
+        public @NotNull Keystroke playMacroHotkey = Keystroke.build(KeyValue.F4);
+        
+        @SerializedName("stopMacroHotkey")
+        public @NotNull Keystroke stopMacroHotkey = Keystroke.build(KeyValue.F4);
         
         @SerializedName("startNotification")
         public boolean startNotification = false;
@@ -50,10 +57,15 @@ public interface PreferencesStorage {
             var result = new Values();
             result.version = version;
             result.macrosDirectory = macrosDirectory;
-            result.recordHotkey = recordHotkey;
-            result.playHotkey = playHotkey;
-            result.recordHotkey = recordHotkey;
+            
+            result.startRecordHotkey = startRecordHotkey;
+            result.stopRecordHotkey = stopRecordHotkey;
+            result.playMacroHotkey = playMacroHotkey;
+            result.stopMacroHotkey = stopMacroHotkey;
+            
+            result.startNotification = startNotification;
             result.stopNotification = stopNotification;
+            
             return result;
         }
     }
@@ -109,6 +121,8 @@ public interface PreferencesStorage {
                 } catch (Exception e) {
                     Logger.error(this, "Failed to load preferences, error: " + e);
                 }
+            } else {
+                validateAndFixPaths(values);
             }
             
             save();
@@ -166,10 +180,16 @@ public interface PreferencesStorage {
             var macrosDirectory = values.macrosDirectory;
             
             if (!macrosDirectory.exists()) {
-                Logger.warning(this, "Macros directory is invalid, resetting it to default value");
+                if (!macrosDirectory.lastComponentEquals(DEFAULT_MACROS_DIRECTORY)) {
+                    Logger.warning(this, "Macros directory is invalid, resetting it to default value");
+                    
+                    values.macrosDirectory = defaults.macrosDirectory;
+                    result = false;
+                }
                 
-                values.macrosDirectory = defaults.macrosDirectory;
-                result = false;
+                if (!macrosDirectory.exists()) {
+                    FileSystem.createDirectory(macrosDirectory);
+                }
             }
             
             return result;

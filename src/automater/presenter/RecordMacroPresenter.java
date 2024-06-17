@@ -17,9 +17,9 @@ import automater.parser.MacroActionParser;
 import automater.service.EventMonitor;
 import automater.service.HotkeyMonitor;
 import automater.storage.MacroStorage;
+import automater.storage.PreferencesStorage;
 import automater.ui.view.RecordMacroPanel;
-import automater.ui.view.StandardDescriptionDataSource;
-import automater.utilities.Callback;
+import automater.datasource.StandardDescriptionDataSource;
 import automater.utilities.Logger;
 import java.util.ArrayList;
 import org.apache.commons.lang3.time.StopWatch;
@@ -53,6 +53,7 @@ public interface RecordMacroPresenter {
     class Impl implements Protocol, EventMonitor.Listener, HotkeyMonitor.Listener {
 
         private final MacroStorage.Protocol storage = DI.get(MacroStorage.Protocol.class);
+        private final PreferencesStorage.Protocol preferences = DI.get(PreferencesStorage.Protocol.class);
         private final MacroActionParser.Protocol actionParser = DI.get(MacroActionParser.Protocol.class);
         private final DescriptionParser.Protocol descriptionParser = DI.get(DescriptionParser.Protocol.class);
 
@@ -76,18 +77,12 @@ public interface RecordMacroPresenter {
         private void setup() {
             var self = this;
 
-            view.onSwitchToPlayButtonCallback = new Callback.Blank() {
-                @Override
-                public void perform() {
-                    self.stop();
-                }
+            view.onSwitchToPlayButtonCallback = () -> {
+                self.stop();
             };
 
-            view.onBeginRecordMacroButtonCallback = new Callback.Blank() {
-                @Override
-                public void perform() {
-                    self.beginRecording(self.view);
-                }
+            view.onBeginRecordMacroButtonCallback = () -> {
+                self.beginRecording(self.view);
             };
 
             view.onStopRecordMacroButtonCallback = () -> {
@@ -97,6 +92,9 @@ public interface RecordMacroPresenter {
             view.onSaveMacroButtonCallback = (String argument) -> {
                 self.saveRecording(argument, view.getMacroDescription());
             };
+            
+            view.setHotkeyText(preferences.getValues().startRecordHotkey.toString(),
+                    preferences.getValues().stopRecordHotkey.toString());
         }
 
         @Override

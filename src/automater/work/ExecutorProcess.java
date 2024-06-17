@@ -4,7 +4,7 @@
  */
 package automater.work;
 
-import automater.TextValue;
+import automater.ui.text.TextValue;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.DeviceScreen;
 import automater.utilities.Errors;

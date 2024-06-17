@@ -4,7 +4,7 @@
  */
 package automater.router;
 
-import automater.TextValue;
+import automater.ui.text.TextValue;
 import automater.presenter.RecordMacroPresenter;
 import automater.ui.view.RecordMacroPanel;
 import automater.utilities.AlertWindows;

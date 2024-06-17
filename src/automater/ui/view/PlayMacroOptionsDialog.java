@@ -4,7 +4,7 @@
  */
 package automater.ui.view;
 
-import automater.TextValue;
+import automater.ui.text.TextValue;
 import automater.storage.PreferencesStorage;
 import automater.utilities.Callback;
 import automater.utilities.StringFormatting;

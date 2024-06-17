@@ -4,10 +4,10 @@
  */
 package automater.ui.view;
 
-import automater.Strings;
-import automater.TextValue;
-import automater.model.Keystroke;
-import automater.settings.Hotkey;
+import automater.utilities.ViewUtilities;
+import automater.datasource.StandardDescriptionDataSource;
+import automater.ui.text.Strings;
+import automater.ui.text.TextValue;
 import automater.utilities.Callback;
 import java.awt.Component;
 import org.jetbrains.annotations.NotNull;
@@ -207,7 +207,7 @@ public class PlayMacroForm extends javax.swing.JFrame implements View {
         this.setTitle(TextValue.getText(TextValue.Play_FormTitle));
 
         backButton.setText(TextValue.getText(TextValue.Play_BackButtonTitle));
-        playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, playOrStopHotkey));
+        playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, playHotkey));
 
         // Set model from start
         macroActionsList.setSelectionModel(selectionModel);
@@ -253,7 +253,7 @@ public class PlayMacroForm extends javax.swing.JFrame implements View {
 
         isPlaying = true;
 
-        playAndStopButton.setText(TextValue.getText(TextValue.Play_StopButtonTitle, playOrStopHotkey));
+        playAndStopButton.setText(TextValue.getText(TextValue.Play_StopButtonTitle, stopHotkey));
         backButton.setEnabled(false);
         optionsButton.setEnabled(false);
         setProgressBarValue(0);
@@ -261,14 +261,14 @@ public class PlayMacroForm extends javax.swing.JFrame implements View {
         ViewUtilities.setAppRedIconForFrame(this);
     }
 
-    public void cancelRecording() {
+    public void stopRecording() {
         if (!isPlaying) {
             return;
         }
 
         isPlaying = false;
 
-        playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, playOrStopHotkey));
+        playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, playHotkey));
         backButton.setEnabled(true);
         optionsButton.setEnabled(true);
 
@@ -276,7 +276,7 @@ public class PlayMacroForm extends javax.swing.JFrame implements View {
     }
 
     public void finishRecording() {
-        cancelRecording();
+        stopRecording();
     }
 
     public void setMacroInfo(@NotNull String macroName, @NotNull String macroDescription, @NotNull StandardDescriptionDataSource macroActionsDataSource) {
@@ -307,20 +307,22 @@ public class PlayMacroForm extends javax.swing.JFrame implements View {
         }
     }
 
-    public void setPlayOrStopHotkeyText(@NotNull Keystroke hotkey) {
-        playOrStopHotkey = hotkey.toString();
+    public void setHotkeyText(@NotNull String play, @NotNull String stop) {
+        playHotkey = play;
+        stopHotkey = stop;
 
         if (!isPlaying) {
-            playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, playOrStopHotkey));
+            playAndStopButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, playHotkey));
         } else {
-            playAndStopButton.setText(TextValue.getText(TextValue.Play_StopButtonTitle, playOrStopHotkey));
+            playAndStopButton.setText(TextValue.getText(TextValue.Play_StopButtonTitle, stopHotkey));
         }
     }
 
     // # Private properties
     private boolean isPlaying = false;
     private @NotNull final DisabledItemSelectionModel selectionModel = new DisabledItemSelectionModel();
-    private @NotNull String playOrStopHotkey = Strings.DEFAULT_PLAY_OR_STOP_HOTKEY;
+    private @NotNull String playHotkey = Strings.DEFAULT_PLAY_OR_STOP_HOTKEY;
+    private @NotNull String stopHotkey = Strings.DEFAULT_PLAY_OR_STOP_HOTKEY;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton backButton;

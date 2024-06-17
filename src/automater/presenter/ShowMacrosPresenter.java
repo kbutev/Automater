@@ -4,7 +4,7 @@
  */
 package automater.presenter;
 
-import automater.TextValue;
+import automater.ui.text.TextValue;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.Looper;
@@ -19,7 +19,7 @@ import automater.model.macro.MacroSummaryDescription;
 import automater.parser.DescriptionParser;
 import automater.storage.MacroStorage;
 import automater.ui.view.ShowMacrosPanel;
-import automater.ui.view.StandardDescriptionDataSource;
+import automater.datasource.StandardDescriptionDataSource;
 import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import java.util.stream.Collectors;

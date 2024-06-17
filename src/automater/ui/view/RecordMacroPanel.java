@@ -4,8 +4,9 @@
  */
 package automater.ui.view;
 
-import automater.Strings;
-import automater.TextValue;
+import automater.datasource.StandardDescriptionDataSource;
+import automater.ui.text.Strings;
+import automater.ui.text.TextValue;
 import automater.model.Keystroke;
 import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
@@ -75,7 +76,7 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
         macroNameField.setText(TextValue.getText(TextValue.Record_MacroNameFieldDefaultText));
         macroNameField.setToolTipText(TextValue.getText(TextValue.Record_MacroNameFieldTip));
 
-        macroStateLabel.setText(TextValue.getText(TextValue.Record_IdleStatus, recordOrStopHotkey));
+        macroStateLabel.setText(TextValue.getText(TextValue.Record_IdleStatus, startHotkey));
 
         saveMacroButton.setText(TextValue.getText(TextValue.Record_SaveButton));
         saveMacroButton.setToolTipText(TextValue.getText(TextValue.Record_SaveButtonDisabledTip));
@@ -134,10 +135,11 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
         AlertWindows.showErrorMessage(getParent(), title, message, "Ok");
     }
 
-    public void setRecordOrStopHotkeyText(@NotNull Keystroke hotkey) {
-        recordOrStopHotkey = hotkey.toString();
+    public void setHotkeyText(@NotNull String start, @NotNull String stop) {
+        startHotkey = start;
+        stopHotkey = stop;
 
-        macroStateLabel.setText(TextValue.getText(TextValue.Record_IdleStatus, recordOrStopHotkey));
+        updateRecordState();
     }
 
     public void scrollToBottom() {
@@ -148,6 +150,8 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
     // # Private
     private void updateRecordState() {
         if (!_isRecording) {
+            macroStateLabel.setText(TextValue.getText(TextValue.Record_IdleStatus, startHotkey));
+            
             if (_recordStartCount == 0) {
                 recordMacroButton.setText(TextValue.getText(TextValue.Record_BeginRecordingButtonTitle));
             } else {
@@ -156,6 +160,8 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
 
             recordMacroButton.setToolTipText(TextValue.getText(TextValue.Record_BeginRecordingButtonTip));
         } else {
+            macroStateLabel.setText(TextValue.getText(TextValue.Record_RecordStatus, stopHotkey));
+            
             recordMacroButton.setText(TextValue.getText(TextValue.Record_StopRecordingButtonTitle));
             recordMacroButton.setToolTipText(TextValue.getText(TextValue.Record_StopRecordingButtonTip));
         }
@@ -164,7 +170,8 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
     // Private properties
     private boolean _isRecording = false;
     private int _recordStartCount = 0;
-    private @NotNull String recordOrStopHotkey = Strings.DEFAULT_PLAY_OR_STOP_HOTKEY;
+    private @NotNull String startHotkey = Strings.DEFAULT_PLAY_OR_STOP_HOTKEY;
+    private @NotNull String stopHotkey = Strings.DEFAULT_PLAY_OR_STOP_HOTKEY;
 
     /**
      * This method is called from within the constructor to initialize the form.

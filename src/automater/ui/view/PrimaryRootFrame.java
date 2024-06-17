@@ -4,7 +4,8 @@
  */
 package automater.ui.view;
 
-import automater.TextValue;
+import automater.utilities.ViewUtilities;
+import automater.ui.text.TextValue;
 import automater.utilities.Callback;
 import javax.swing.event.ChangeEvent;
 import org.jetbrains.annotations.NotNull;

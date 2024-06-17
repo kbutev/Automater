@@ -5,13 +5,14 @@
 package automater.presenter;
 
 import automater.di.DI;
+import automater.model.Keystroke;
 import automater.storage.PreferencesStorage;
 import automater.ui.view.SettingsPanel;
 import org.jetbrains.annotations.NotNull;
-import automater.utilities.Callback;
 import automater.utilities.Path;
 import automater.utilities.Callback;
 import automater.utilities.Logger;
+import org.jetbrains.annotations.Nullable;
 
 /**
  *
@@ -21,7 +22,8 @@ public interface SettingsPresenter {
     
     interface Delegate {
         
-        void pickDirectory(Callback.WithParameter<Path> success, Callback.Blank failure);
+        void chooseDirectory(@NotNull Path directory, @Nullable Callback.WithParameter<Path> success, @Nullable Callback.Blank failure);
+        void chooseHotkey(@Nullable Callback.WithParameter<Keystroke> success, @Nullable Callback.Blank failure);
     }
     
     interface Protocol extends PresenterWithDelegate<Delegate> {
@@ -42,11 +44,45 @@ public interface SettingsPresenter {
         
         private void setup() {
             view.onPickMacrosDirectory = () -> {
-                delegate.pickDirectory((Path result) -> {
+                delegate.chooseDirectory(Path.getLocalDirectory(), (Path result) -> {
                     onChooseMacrosDirectory(result);
-                }, () -> {
-                    
-                });
+                }, null);
+            };
+            
+            view.onStartRecordHotkeyClick = () -> {
+                delegate.chooseHotkey((Keystroke result) -> {
+                    var values = preferences.getValues();
+                    values.startRecordHotkey = result;
+                    onSavePreferences(values);
+                    setupStartRecordHotkey(values);
+                }, null);
+            };
+            
+            view.onStopRecordHotkeyClick = () -> {
+                delegate.chooseHotkey((Keystroke result) -> {
+                    var values = preferences.getValues();
+                    values.stopRecordHotkey = result;
+                    onSavePreferences(values);
+                    setupStopRecordHotkey(values);
+                }, null);
+            };
+            
+            view.onPlayMacroHotkeyClick = () -> {
+                delegate.chooseHotkey((Keystroke result) -> {
+                    var values = preferences.getValues();
+                    values.playMacroHotkey = result;
+                    onSavePreferences(values);
+                    setupStartMacroHotkey(values);
+                }, null);
+            };
+            
+            view.onStopMacroHotkeyClick = () -> {
+                delegate.chooseHotkey((Keystroke result) -> {
+                    var values = preferences.getValues();
+                    values.stopMacroHotkey = result;
+                    onSavePreferences(values);
+                    setupStopMacroHotkey(values);
+                }, null);
             };
         }
 
@@ -73,7 +109,12 @@ public interface SettingsPresenter {
         
         @Override
         public void reloadData() {
-            view.setScriptsDirectory(preferences.getValues().macrosDirectory.toString());
+            var values = preferences.getValues();
+            setupStartRecordHotkey(values);
+            setupStopRecordHotkey(values);
+            setupStartMacroHotkey(values);
+            setupStopMacroHotkey(values);
+            view.setMacrosDirectory(values.macrosDirectory.toString());
         }
         
         private void onChooseMacrosDirectory(@NotNull Path path) {
@@ -85,6 +126,31 @@ public interface SettingsPresenter {
             preferences.save();
             
             reloadData();
+        }
+        
+        private void onSavePreferences(@NotNull PreferencesStorage.Values values) {
+            preferences.setValues(values);
+            preferences.save();
+        }
+        
+        private @NotNull Path getCurrentMacroDirectory() {
+            return preferences.getValues().macrosDirectory;
+        }
+        
+        private void setupStartRecordHotkey(@NotNull PreferencesStorage.Values values) {
+            view.setStartRecordHotkey(values.startRecordHotkey.toString());
+        }
+        
+        private void setupStopRecordHotkey(@NotNull PreferencesStorage.Values values) {
+            view.setStopRecordHotkey(values.stopRecordHotkey.toString());
+        }
+        
+        private void setupStartMacroHotkey(@NotNull PreferencesStorage.Values values) {
+            view.setPlayMacroHotkey(values.playMacroHotkey.toString());
+        }
+        
+        private void setupStopMacroHotkey(@NotNull PreferencesStorage.Values values) {
+            view.setStopMacroHotkey(values.stopMacroHotkey.toString());
         }
     }
 }

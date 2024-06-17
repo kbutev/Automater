@@ -4,7 +4,10 @@
  */
 package automater.router;
 
+import automater.model.Keystroke;
+import automater.presenter.ChooseHotkeyPresenter;
 import automater.presenter.SettingsPresenter;
+import automater.ui.view.ChooseKeyDialog;
 import automater.ui.view.SettingsPanel;
 import automater.utilities.Callback;
 import automater.utilities.Path;
@@ -38,20 +41,37 @@ public interface SettingsRouter {
         // # SettingsPresenter.Delegate
         
         @Override
-        public void pickDirectory(Callback.WithParameter<Path> success, Callback.Blank failure) {
+        public void chooseDirectory(@NotNull Path directory,
+                @Nullable Callback.WithParameter<Path> success,
+                @Nullable Callback.Blank failure) {
             var chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            chooser.setCurrentDirectory(directory.getFile());
             
             var choice = chooser.showOpenDialog(view);
 
             if (choice != JFileChooser.APPROVE_OPTION) {
-                failure.perform();
+                if (failure != null) {
+                    failure.perform();
+                }
                 return;
             }
             
             var file = chooser.getSelectedFile();
             var path = Path.build(file.getAbsolutePath());
-            success.perform(path);
+            
+            if (success != null) {
+                success.perform(path);
+            }
+        }
+        
+        @Override
+        public void chooseHotkey(@Nullable Callback.WithParameter<Keystroke> success, @Nullable Callback.Blank failure) {
+            var dialog = new ChooseKeyDialog(masterRouter.getView(), true);
+            var presenter = new ChooseHotkeyPresenter.Impl(dialog);
+            presenter.setSuccessCallback(success);
+            presenter.setFailureallback(failure);
+            presenter.start();
         }
     }
 }

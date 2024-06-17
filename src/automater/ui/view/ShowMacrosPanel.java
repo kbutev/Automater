@@ -4,6 +4,7 @@
  */
 package automater.ui.view;
 
+import automater.datasource.StandardDescriptionDataSource;
 import automater.utilities.Callback;
 import java.awt.Component;
 import org.jetbrains.annotations.NotNull;

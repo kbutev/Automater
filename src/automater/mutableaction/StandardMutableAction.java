@@ -4,7 +4,7 @@
  */
 package automater.mutableaction;
 
-import automater.TextValue;
+import automater.ui.text.TextValue;
 import automater.input.InputDescriptions;
 import automater.input.InputDoNothing;
 import automater.input.InputKey;

@@ -2,7 +2,7 @@
  * Created by Kristiyan Butev.
  * Copyright © 2019 Kristiyan Butev. All rights reserved.
  */
-package automater;
+package automater.ui.text;
 
 import automater.utilities.Logger;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public enum TextValue {
     // Record form
     Record_FormTitle, Record_HeaderText,
     Record_MacroActionListName,
-    Record_IdleStatus,
+    Record_IdleStatus, Record_RecordStatus,
     Record_MacroNameFieldDefaultText, Record_MacroNameFieldTip,
     Record_BeginRecordingButtonTitle, Record_BeginRecordingButtonTip, Record_StopRecordingButtonTitle, Record_StopRecordingButtonTip, Record_RedoRecordingButtonTitle,
     Record_SaveButton, Record_SaveButtonEnabledTip, Record_SaveButtonDisabledTip,
@@ -216,7 +216,8 @@ public enum TextValue {
             put(Record_FormTitle, "Automater - Record");
             put(Record_HeaderText, "Record macro");
             put(Record_MacroActionListName, "Actions");
-            put(Record_IdleStatus, "Idle (Press %@ to RECORD/FINISH)");
+            put(Record_IdleStatus, "Idle (%@ to play)");
+            put(Record_RecordStatus, "Recording (%@ to stop)");
             put(Record_MacroNameFieldDefaultText, "Untitled macro");
             put(Record_MacroNameFieldTip, "The name of the macro");
             put(Record_BeginRecordingButtonTitle, "Record");

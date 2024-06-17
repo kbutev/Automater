@@ -2,8 +2,9 @@
  * Created by Kristiyan Butev.
  * Copyright © 2019 Kristiyan Butev. All rights reserved.
  */
-package automater.ui.view;
+package automater.datasource;
 
+import automater.model.event.EventDescription;
 import automater.utilities.CollectionUtilities;
 import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
@@ -16,26 +17,29 @@ import javax.swing.event.ListDataListener;
  *
  * @author Bytevi
  */
-public class StandardDescriptionDataSource implements ListModel<String> {
+public class StandardEventDescriptionDataSource implements ListModel<String> {
 
-    @NotNull public final List<String> data;
+    @NotNull public final List<EventDescription> data;
 
-    public static @NotNull StandardDescriptionDataSource createGeneric() {
-        return new StandardDescriptionDataSource();
+    public static @NotNull StandardEventDescriptionDataSource createGeneric() {
+        return new StandardEventDescriptionDataSource();
     }
 
-    public static @NotNull StandardDescriptionDataSource createDataSource(@NotNull List<String> actions) {
-        return new StandardDescriptionDataSource(actions);
+    public static @NotNull StandardEventDescriptionDataSource createDataSource(@NotNull List<EventDescription> actions) {
+        return new StandardEventDescriptionDataSource(actions);
     }
 
-    protected StandardDescriptionDataSource() {
+    protected StandardEventDescriptionDataSource() {
         this.data = new ArrayList();
     }
 
-    protected StandardDescriptionDataSource(@NotNull List<String> actions) {
+    protected StandardEventDescriptionDataSource(@NotNull List<EventDescription> actions) {
         this.data = CollectionUtilities.copyAsImmutable(actions);
     }
     
+    public EventDescription get(int index) {
+        return data.get(index);
+    }
 
     @Override
     public int getSize() {
@@ -44,7 +48,7 @@ public class StandardDescriptionDataSource implements ListModel<String> {
 
     @Override
     public String getElementAt(int index) {
-        return data.get(index);
+        return data.get(index).toString();
     }
 
     @Override

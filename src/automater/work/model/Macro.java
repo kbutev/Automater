@@ -4,7 +4,7 @@
  */
 package automater.work.model;
 
-import automater.TextValue;
+import automater.ui.text.TextValue;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.DateUtilities;
 import automater.utilities.Description;

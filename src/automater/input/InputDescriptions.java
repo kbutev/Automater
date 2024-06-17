@@ -4,7 +4,7 @@
  */
 package automater.input;
 
-import automater.TextValue;
+import automater.ui.text.TextValue;
 import automater.utilities.Description;
 import automater.utilities.FileSystem;
 import automater.utilities.Path;

@@ -4,17 +4,16 @@
  */
 package automater.ui.viewcontroller;
 
-import automater.TextValue;
+import automater.ui.text.TextValue;
 import automater.mvp.BasePresenter.EditMacroPresenter;
-import automater.settings.Hotkey;
 import automater.ui.view.EditMacroActionDialog;
 import automater.ui.view.EditMacroForm;
-import automater.ui.view.StandardDescriptionDataSource;
+import automater.datasource.StandardDescriptionDataSource;
+import automater.model.Keystroke;
 import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import automater.utilities.Description;
 import automater.utilities.Logger;
-import automater.utilities.Callback.Blank;
 import java.awt.event.WindowEvent;
 import java.util.List;
 import automater.mutableaction.BaseMutableAction;
@@ -330,7 +329,7 @@ public class EditMacroViewController implements BaseViewController, EditMacroPre
         _isHotkeyRecording = true;
         _editActionDialog.startHotkeyListening();
 
-        var onHotkeyEnteredCallback = (Callback.WithParameter<Hotkey>) (Hotkey argument) -> {
+        var onHotkeyEnteredCallback = (Callback.WithParameter<Keystroke>) (Keystroke argument) -> {
             endHotkeyListening(argument);
         };
 
@@ -348,13 +347,13 @@ public class EditMacroViewController implements BaseViewController, EditMacroPre
         _presenter.endListeningForKeystrokes();
     }
 
-    private void endHotkeyListening(@NotNull Hotkey hotkeyEntered) {
+    private void endHotkeyListening(@NotNull Keystroke hotkeyEntered) {
         if (!_isHotkeyRecording) {
             return;
         }
 
         _isHotkeyRecording = false;
-        _editActionDialog.endHotkeyListening(hotkeyEntered.key.toString());
+        _editActionDialog.endHotkeyListening(hotkeyEntered.toString());
 
         _presenter.endListeningForKeystrokes();
     }

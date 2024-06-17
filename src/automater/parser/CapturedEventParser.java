@@ -10,6 +10,7 @@ import automater.model.Keystroke;
 import automater.model.Point;
 import automater.model.event.CapturedEvent;
 import automater.model.event.CapturedHardwareEvent;
+import automater.utilities.Errors;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jnativehook.NativeInputEvent;
@@ -50,7 +51,7 @@ public interface CapturedEventParser {
                 return new CapturedHardwareEvent.MouseScroll(time, Point.zero(), scrollPoint);
             }
 
-            throw new UnsupportedOperationException("Unrecognizable native event");
+            throw Errors.unsupported("Unrecognizable native event");
         }
 
         @Override
@@ -60,18 +61,19 @@ public interface CapturedEventParser {
                 var keyValue = keyboardMappings.get(code);
 
                 if (keyValue == null) {
-                    throw new UnsupportedOperationException("Unrecognizable keyboard key value");
+                    throw Errors.unsupported("Unrecognizablekeyboard key value");
                 }
                 
                 if (keyValue.isModifier()) {
-                    throw new UnsupportedOperationException("Unrecognizable keyboard key value");
+                    // TODO: fix
+                    throw Errors.unsupported("Unrecognizablekeyboard key value");
                 }
                 
                 var keystroke = new Keystroke(keyValue);
                 return new CapturedHardwareEvent.Click(time, kind, keystroke);
             }
 
-            throw new UnsupportedOperationException("Unrecognizable native event");
+            throw Errors.unsupported("Unrecognizable native event");
         }
 
         @Override
@@ -79,7 +81,7 @@ public interface CapturedEventParser {
             var keyValue = mouseKeyMappings.get(event.getButton());
 
             if (keyValue == null) {
-                throw new UnsupportedOperationException("Unrecognizable mouse key value");
+                throw Errors.unsupported("Unrecognizablekeyboard mousekey value");
             }
 
             var keystroke = new Keystroke(keyValue);

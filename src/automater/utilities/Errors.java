@@ -19,6 +19,10 @@ public class Errors {
     public static @NotNull Exception unknownError() {
         return new Exception("Unknown error");
     }
+    
+    public static @NotNull Exception unsupported(@Nullable String description) {
+        return new UnsupportedOperationException(description != null ? description : "Unsupported");
+    }
 
     public static @NotNull RuntimeException invalidArgument(@Nullable String description) {
         return new IllegalArgumentException(description != null ? description : "");

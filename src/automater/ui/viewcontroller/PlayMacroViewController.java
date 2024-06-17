@@ -4,12 +4,12 @@
  */
 package automater.ui.viewcontroller;
 
-import automater.TextValue;
+import automater.ui.text.TextValue;
 import automater.presenter.PlayMacroPresenter;
 import automater.storage.PreferencesStorage;
 import automater.ui.view.PlayMacroForm;
 import automater.ui.view.PlayMacroOptionsDialog;
-import automater.ui.view.StandardDescriptionDataSource;
+import automater.datasource.StandardDescriptionDataSource;
 import automater.utilities.AlertWindows;
 import automater.utilities.Description;
 import automater.utilities.DeviceTaskBar;
@@ -96,7 +96,7 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
     public void onError(@NotNull Exception e) {
         Logger.error(this, "Error encountered: " + e.toString());
 
-        _form.cancelRecording();
+        _form.stopRecording();
 
         // Show message alert
         String textTitle = TextValue.getText(TextValue.Play_DialogErrorTitle);
@@ -112,7 +112,7 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
 
         setMacroParametersDescription(new MacroParameters());
 
-        _form.setPlayOrStopHotkeyText(values.playHotkey);
+        _form.setHotkeyText(values.playMacroHotkey.toString(), values.stopMacroHotkey.toString());
     }
 
     @Override
@@ -135,7 +135,7 @@ public class PlayMacroViewController implements BaseViewController, PlayMacroPre
 
             DeviceTaskBar.getShared().resetAppTaskBarProgress(_form);
         } else {
-            _form.cancelRecording();
+            _form.stopRecording();
 
             DeviceTaskBar.getShared().resetAppTaskBarProgress(_form);
         }

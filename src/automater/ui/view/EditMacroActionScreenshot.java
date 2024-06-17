@@ -4,8 +4,8 @@
  */
 package automater.ui.view;
 
-import automater.TextValue;
-import static automater.TextValue.EditAction_ScreenshotTip;
+import automater.ui.text.TextValue;
+import static automater.ui.text.TextValue.EditAction_ScreenshotTip;
 import automater.utilities.Callback;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;

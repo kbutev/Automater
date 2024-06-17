@@ -4,7 +4,7 @@
  */
 package automater.storage;
 
-import automater.TextValue;
+import automater.ui.text.TextValue;
 import automater.di.DI;
 import automater.model.macro.Macro;
 import automater.model.macro.MacroFileSummary;
@@ -21,7 +21,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  *
@@ -32,6 +31,8 @@ public interface MacroStorage {
     public static final String MACRO_EXTENSION = "macro";
     
     interface Protocol {
+        
+        @NotNull Path getDirectory();
         
         @NotNull List<MacroFileSummary> getMacroSummaryList() throws Exception;
         @NotNull MacroFileSummary getMacroSummary(@NotNull String name) throws Exception;
@@ -44,18 +45,22 @@ public interface MacroStorage {
         
         private final Gson gson = DI.get(Gson.class);
         
+        private final PreferencesStorage.Protocol preferences = DI.get(PreferencesStorage.Protocol.class);
         private final MacroParser.Protocol macroParser = DI.get(MacroParser.Protocol.class);
         
-        private @NotNull Path storagePath;
-        
         public Impl() {
-            storagePath = Path.getLocalDirectory();
+            
         }
 
         @Override
+        public @NotNull Path getDirectory() {
+            return preferences.getValues().macrosDirectory;
+        }
+        
+        @Override
         public List<MacroFileSummary> getMacroSummaryList() throws Exception {
             var result = new ArrayList<MacroFileSummary>();
-            var files = FileSystem.getAllFilesInDirectory(storagePath, MACRO_EXTENSION);
+            var files = FileSystem.getAllFilesInDirectory(getDirectory(), MACRO_EXTENSION);
             
             for (var file : files) {
                 try {
@@ -97,7 +102,7 @@ public interface MacroStorage {
         
         @Override
         public Macro.Protocol getMacro(@NotNull String name) throws Exception {
-            var files = FileSystem.getAllFilesInDirectory(storagePath, MACRO_EXTENSION);
+            var files = FileSystem.getAllFilesInDirectory(getDirectory(), MACRO_EXTENSION);
             
             for (var file : files) {
                 try {
@@ -149,7 +154,7 @@ public interface MacroStorage {
         }
         
         private @NotNull Path getMacroPath(@NotNull String name) {
-            return storagePath.withSubpath(name);
+            return getDirectory().withSubpath(name);
         }
         
         private @NotNull File getMacroFile(@NotNull String name) {

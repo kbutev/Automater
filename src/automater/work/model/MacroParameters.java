@@ -4,7 +4,7 @@
  */
 package automater.work.model;
 
-import automater.TextValue;
+import automater.ui.text.TextValue;
 import java.io.Serializable;
 
 /**

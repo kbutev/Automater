@@ -4,7 +4,7 @@
  */
 package automater.presenter;
 
-import automater.TextValue;
+import automater.ui.text.TextValue;
 import automater.di.DI;
 import automater.model.KeyEventKind;
 import automater.model.KeyValue;

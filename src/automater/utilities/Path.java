@@ -36,6 +36,12 @@ public class Path {
         stringValue = value;
     }
     
+    // # Validation
+    
+    public boolean lastComponentEquals(@NotNull String component) {
+        return lastComponent().equals(component);
+    }
+    
     // # Manipulation
     
     @Override

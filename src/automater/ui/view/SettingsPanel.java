@@ -16,6 +16,10 @@ public class SettingsPanel extends javax.swing.JPanel implements View {
     
     // UI callbacks
     public Callback.Blank onPickMacrosDirectory = Callback.buildBlank();
+    public Callback.Blank onStartRecordHotkeyClick = Callback.buildBlank();
+    public Callback.Blank onStopRecordHotkeyClick = Callback.buildBlank();
+    public Callback.Blank onPlayMacroHotkeyClick = Callback.buildBlank();
+    public Callback.Blank onStopMacroHotkeyClick = Callback.buildBlank();
     
     /**
      * Creates new form SettingsPanel
@@ -26,7 +30,23 @@ public class SettingsPanel extends javax.swing.JPanel implements View {
     
     // # Configuration
     
-    public void setScriptsDirectory(@NotNull String path) {
+    public void setStartRecordHotkey(@NotNull String value) {
+        startRecordButton.setText(value);
+    }
+    
+    public void setStopRecordHotkey(@NotNull String value) {
+        stopRecordButton.setText(value);
+    }
+    
+    public void setPlayMacroHotkey(@NotNull String value) {
+        playMacroButton.setText(value);
+    }
+    
+    public void setStopMacroHotkey(@NotNull String value) {
+        stopMacroButton.setText(value);
+    }
+    
+    public void setMacrosDirectory(@NotNull String path) {
         scriptsDirectoryField.setText(path);
     }
     
@@ -76,6 +96,14 @@ public class SettingsPanel extends javax.swing.JPanel implements View {
         macrosDirectoryButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        startRecordLabel = new javax.swing.JLabel();
+        startRecordButton = new javax.swing.JButton();
+        stopRecordLabel = new javax.swing.JLabel();
+        stopRecordButton = new javax.swing.JButton();
+        playMacroLabel = new javax.swing.JLabel();
+        playMacroButton = new javax.swing.JButton();
+        stopMacroLabel = new javax.swing.JLabel();
+        stopMacroButton = new javax.swing.JButton();
 
         macrosDirectoryLabel.setText("Macros");
 
@@ -95,6 +123,42 @@ public class SettingsPanel extends javax.swing.JPanel implements View {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel2.setText("Hotkeys");
 
+        startRecordLabel.setText("Start record");
+
+        startRecordButton.setText("KEY");
+        startRecordButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                startRecordButtonActionPerformed(evt);
+            }
+        });
+
+        stopRecordLabel.setText("Stop record");
+
+        stopRecordButton.setText("KEY");
+        stopRecordButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stopRecordButtonActionPerformed(evt);
+            }
+        });
+
+        playMacroLabel.setText("Play macro");
+
+        playMacroButton.setText("KEY");
+        playMacroButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                playMacroButtonActionPerformed(evt);
+            }
+        });
+
+        stopMacroLabel.setText("Stop macro");
+
+        stopMacroButton.setText("KEY");
+        stopMacroButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stopMacroButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -102,15 +166,34 @@ public class SettingsPanel extends javax.swing.JPanel implements View {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(macrosDirectoryLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(scriptsDirectoryField, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(macrosDirectoryButton))
                     .addComponent(jLabel1)
-                    .addComponent(jLabel2))
-                .addContainerGap(27, Short.MAX_VALUE))
+                    .addComponent(jLabel2)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(startRecordButton)
+                            .addComponent(macrosDirectoryLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(scriptsDirectoryField, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(macrosDirectoryButton))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(stopRecordLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(stopRecordButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(playMacroButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(playMacroLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(stopMacroButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(stopMacroLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(startRecordLabel)))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -124,19 +207,56 @@ public class SettingsPanel extends javax.swing.JPanel implements View {
                     .addComponent(macrosDirectoryLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
-                .addContainerGap(205, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(startRecordLabel)
+                    .addComponent(stopRecordLabel)
+                    .addComponent(playMacroLabel)
+                    .addComponent(stopMacroLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(playMacroButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(startRecordButton)
+                        .addComponent(stopRecordButton)
+                        .addComponent(stopMacroButton)))
+                .addContainerGap(148, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void macrosDirectoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_macrosDirectoryButtonActionPerformed
         onPickMacrosDirectory.perform();
     }//GEN-LAST:event_macrosDirectoryButtonActionPerformed
+
+    private void startRecordButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startRecordButtonActionPerformed
+        onStartRecordHotkeyClick.perform();
+    }//GEN-LAST:event_startRecordButtonActionPerformed
+
+    private void stopRecordButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopRecordButtonActionPerformed
+        onStopRecordHotkeyClick.perform();
+    }//GEN-LAST:event_stopRecordButtonActionPerformed
+
+    private void playMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playMacroButtonActionPerformed
+        onPlayMacroHotkeyClick.perform();
+    }//GEN-LAST:event_playMacroButtonActionPerformed
+
+    private void stopMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopMacroButtonActionPerformed
+        onStopMacroHotkeyClick.perform();
+    }//GEN-LAST:event_stopMacroButtonActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JButton macrosDirectoryButton;
     private javax.swing.JLabel macrosDirectoryLabel;
+    private javax.swing.JButton playMacroButton;
+    private javax.swing.JLabel playMacroLabel;
     private javax.swing.JTextField scriptsDirectoryField;
+    private javax.swing.JButton startRecordButton;
+    private javax.swing.JLabel startRecordLabel;
+    private javax.swing.JButton stopMacroButton;
+    private javax.swing.JLabel stopMacroLabel;
+    private javax.swing.JButton stopRecordButton;
+    private javax.swing.JLabel stopRecordLabel;
     // End of variables declaration//GEN-END:variables
 }

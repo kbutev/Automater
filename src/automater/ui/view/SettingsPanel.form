@@ -19,17 +19,44 @@
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <Component id="macrosDirectoryLabel" min="-2" pref="70" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="scriptsDirectoryField" min="-2" pref="213" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="macrosDirectoryButton" min="-2" max="-2" attributes="0"/>
-                  </Group>
                   <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel2" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="1" attributes="0">
+                          <Component id="startRecordButton" min="-2" max="-2" attributes="0"/>
+                          <Component id="macrosDirectoryLabel" min="-2" pref="70" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="scriptsDirectoryField" min="-2" pref="213" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="macrosDirectoryButton" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                  <Component id="stopRecordLabel" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="stopRecordButton" alignment="0" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="playMacroButton" max="32767" attributes="0"/>
+                                  <Component id="playMacroLabel" max="32767" attributes="0"/>
+                              </Group>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="stopMacroButton" max="32767" attributes="0"/>
+                                  <Component id="stopMacroLabel" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                      </Group>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
+                      <Component id="startRecordLabel" min="-2" max="-2" attributes="0"/>
+                  </Group>
               </Group>
-              <EmptySpace pref="27" max="32767" attributes="0"/>
+              <EmptySpace pref="13" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -46,7 +73,23 @@
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="205" max="32767" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="startRecordLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="stopRecordLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="playMacroLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="stopMacroLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="playMacroButton" alignment="1" min="-2" pref="23" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="startRecordButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="stopRecordButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="stopMacroButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace pref="148" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -86,6 +129,58 @@
         </Property>
         <Property name="text" type="java.lang.String" value="Hotkeys"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="startRecordLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Start record"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="startRecordButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="KEY"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="startRecordButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="stopRecordLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Stop record"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="stopRecordButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="KEY"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="stopRecordButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="playMacroLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Play macro"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="playMacroButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="KEY"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="playMacroButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="stopMacroLabel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Stop macro"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="stopMacroButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="KEY"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="stopMacroButtonActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

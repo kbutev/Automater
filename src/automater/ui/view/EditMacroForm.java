@@ -4,7 +4,9 @@
  */
 package automater.ui.view;
 
-import automater.TextValue;
+import automater.utilities.ViewUtilities;
+import automater.datasource.StandardDescriptionDataSource;
+import automater.ui.text.TextValue;
 import automater.utilities.Callback;
 import automater.utilities.Callback.Blank;
 import java.awt.Component;

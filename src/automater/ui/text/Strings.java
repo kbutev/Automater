@@ -2,7 +2,7 @@
  * Created by Kristiyan Butev.
  * Copyright © 2019 Kristiyan Butev. All rights reserved.
  */
-package automater;
+package automater.ui.text;
 
 /**
  * List of string constants for the application.

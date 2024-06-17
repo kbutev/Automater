@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,14 @@ import java.util.List;
  * @author Bytevi
  */
 public class FileSystem {
+    
+    public static void createBlankFile(@NotNull Path path) throws IOException {
+        path.getFile().createNewFile();
+    }
+    
+    public static void createDirectory(@NotNull Path path) {
+        path.getFile().mkdirs();
+    }
 
     public static @NotNull List<File> getAllInDirectory(@NotNull Path path) {
         var files = new ArrayList<File>();
