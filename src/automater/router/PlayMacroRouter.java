@@ -6,11 +6,7 @@ package automater.router;
 
 import automater.model.macro.Macro;
 import automater.presenter.PlayMacroPresenter;
-import automater.storage.PreferencesStorage;
 import automater.ui.view.PlayMacroFrame;
-import automater.utilities.Description;
-import automater.work.model.ExecutorProgress;
-import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -49,34 +45,5 @@ public interface PlayMacroRouter {
         
         // # PlayMacroPresenter.Delegate
         
-        @Override
-        public void onError(Exception e) {
-            
-        }
-        
-        @Override
-        public void onLoadedPreferencesFromStorage(PreferencesStorage.Values values) {
-            
-        }
-        
-        @Override
-        public void onLoadedMacroFromStorage(String macroName, String macroDescription, List<Description> macroActions) {
-            
-        }
-        
-        @Override
-        public void startPlaying() {
-            
-        }
-        
-        @Override
-        public void stopPlaying(boolean wasCancelled) {
-            
-        }
-        
-        @Override
-        public void updatePlayStatus(ExecutorProgress progress) {
-            
-        }
     }
 }

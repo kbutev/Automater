@@ -58,6 +58,8 @@ public class Automater {
         DeviceNotifications.getShared().setTrayIconTooltip(TextValue.getText(TextValue.SystemTray_Tooltip));
 
         // Start
+        DI.get(automater.utilities.Looper.Main.class).start();
+        DI.get(automater.utilities.Looper.Background.class).start();
         DI.get(PreferencesStorage.Protocol.class).load();
         DI.get(MasterRouter.Protocol.class).start();
     }

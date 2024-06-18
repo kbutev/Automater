@@ -215,7 +215,7 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(macroNameLabel)
                             .addComponent(descriptionMacroLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(macroNameField)
                             .addComponent(macroDescriptionField, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)))

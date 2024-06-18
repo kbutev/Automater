@@ -10,6 +10,8 @@ import automater.ui.text.TextValue;
 import automater.utilities.Callback;
 import automater.utilities.ViewUtilities;
 import java.awt.Component;
+import javax.swing.DefaultListSelectionModel;
+import javax.swing.JFrame;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -37,6 +39,7 @@ public class PlayMacroFrame extends javax.swing.JFrame implements View {
     }
     
     private void setup() {
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         stateButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, playHotkey));
         pauseResumeButton.setText(TextValue.getText(TextValue.Play_PauseButtonTitle, pauseHotkey));
     }
@@ -298,10 +301,8 @@ public class PlayMacroFrame extends javax.swing.JFrame implements View {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new PlayMacroFrame().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new PlayMacroFrame().setVisible(true);
         });
     }
     
@@ -323,4 +324,16 @@ public class PlayMacroFrame extends javax.swing.JFrame implements View {
     private javax.swing.JButton stateButton;
     private javax.swing.JLabel statusLabel;
     // End of variables declaration//GEN-END:variables
+}
+
+class DisabledItemSelectionModel extends DefaultListSelectionModel {
+
+    @Override
+    public void setSelectionInterval(int index0, int index1) {
+        super.setSelectionInterval(-1, -1);
+    }
+
+    public void manualySelectIndex(int index) {
+        super.setSelectionInterval(index, index);
+    }
 }

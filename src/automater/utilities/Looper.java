@@ -5,201 +5,142 @@
 package automater.utilities;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Contains utilities for performing callbacks, and updating objects every
- * interval.
- *
- * LooperClients are updated by one single specific background thread. Do not
- * block it!
- *
- * The performSyncCallback blocks the caller thread until the given callback is
- * performed on a background thread (same background thread as the
- * LooperClients).
+ * Performs callbacks and loops.
  *
  * @author Bytevi
  */
-public class Looper {
-
+public interface Looper {
+    
     public static int LOOPER_INTERVAL_MSEC = 50;
-
-    private static Looper singleton;
-
-    private final @NotNull ClientsManager _clientsManager = new ClientsManager();
-    private final @NotNull CallbacksManager _callbacksManager = new CallbacksManager();
-
-    private final @NotNull Runnable _looperRunnable = () -> {
-        loop();
-        loopAgain();
-    };
-
-    private final @NotNull ScheduledThreadPoolExecutor _looperExecutor = new ScheduledThreadPoolExecutor(1);
-
-    private final @NotNull Object _syncWaitLock = new Object();
-    private final @NotNull ArrayList<Thread> _syncWaitingThreads = new ArrayList<>();
-
-    private Looper() {
-        loopAgain();
+    
+    interface Subscriber {
+        
+        void onLoop(double dt);
     }
-
-    // # Public
-    synchronized public static @NotNull Looper getShared() {
-        if (singleton == null) {
-            singleton = new Looper();
+    
+    interface Protocol {
+        
+        void subscribe(@NotNull Subscriber subscriber);
+        void subscribe(@NotNull Subscriber subscriber, int delayInMS);
+        void unsubscribe(@NotNull Subscriber subscriber);
+        void performAsync(final @NotNull Callback.Blank callback);
+        
+        void start();
+    }
+    
+    interface Main extends Protocol {
+        
+        void performSync(final @NotNull Callback.Blank callback);
+    }
+    
+    interface Background extends Protocol {
+        
+    }
+    
+    class Base implements Protocol {
+        
+        private final @NotNull Object lock = new Object();
+        private final boolean isBackground;
+        private final @NotNull ScheduledThreadPoolExecutor looperExecutor = new ScheduledThreadPoolExecutor(1);
+        private final BackgroundCallbacksManager backgroundCallbacksManager;
+        
+        private boolean isStarted = false;
+        private @NotNull ArrayList<SubscriberEntry> subscriptions = new ArrayList<>();
+        
+        Base(boolean isBackground) {
+            this.isBackground = isBackground;
+            backgroundCallbacksManager = isBackground ? new BackgroundCallbacksManager() : null;
         }
-
-        return singleton;
-    }
-
-    public void subscribe(@NotNull final LooperClient client, int delay) {
-        _clientsManager.subscribe(client, delay);
-    }
-
-    public void subscribe(@NotNull final LooperClient client) {
-        subscribe(client, 0);
-    }
-
-    public void unsubscribe(@NotNull final LooperClient client) {
-        _clientsManager.unsubscribe(client);
-    }
-
-    public void performSyncCallbackInBackground(@NotNull final Callback.Blank callback) {
-        _callbacksManager.queueCallback(callback);
-        enterSyncWaitLock();
-    }
-
-    public <T> void performSyncCallbackInBackground(@NotNull final Callback.WithParameter<T> callback, @Nullable final T parameter) {
-        _callbacksManager.queueCallback(callback, parameter);
-        enterSyncWaitLock();
-    }
-
-    public void performSyncCallbackOnAWTQueue(@NotNull final Callback.Blank callback) {
-        if (java.awt.EventQueue.isDispatchThread()) {
-            callback.perform();
-            return;
+        
+        // # Main
+        
+        @Override
+        public void subscribe(@NotNull Subscriber subscriber) {
+            subscribe(subscriber, LOOPER_INTERVAL_MSEC);
         }
-
-        try {
-            java.awt.EventQueue.invokeAndWait(() -> {
-                callback.perform();
-            });
-        } catch (Exception e) {
-
-        }
-    }
-
-    public <T> void performSyncCallbackOnAWTQueue(@NotNull final Callback.WithParameter<T> callback, @Nullable final T parameter) {
-        if (java.awt.EventQueue.isDispatchThread()) {
-            callback.perform(parameter);
-            return;
-        }
-
-        try {
-            java.awt.EventQueue.invokeAndWait(() -> {
-                callback.perform(parameter);
-            });
-        } catch (Exception e) {
-
-        }
-    }
-
-    public void performAsyncCallbackInBackground(@NotNull final Callback.Blank callback) {
-        _callbacksManager.queueCallback(callback);
-    }
-
-    public <T> void performAsyncCallbackInBackground(@NotNull final Callback.WithParameter<T> callback, @Nullable final T parameter) {
-        _callbacksManager.queueCallback(callback, parameter);
-    }
-
-    public void performAsyncCallbackOnAWTQueue(@NotNull final Callback.Blank callback) {
-        java.awt.EventQueue.invokeLater(() -> {
-            callback.perform();
-        });
-    }
-
-    public <T> void performAsyncCallbackOnAWTQueue(@NotNull final Callback.WithParameter<T> callback, @Nullable final T parameter) {
-        java.awt.EventQueue.invokeLater(() -> {
-            callback.perform(parameter);
-        });
-    }
-
-    // # Private
-    private void loop() {
-        _clientsManager.loop();
-        _callbacksManager.loop();
-    }
-
-    private void loopAgain() {
-        releaseAllSyncWaitLocks();
-
-        _looperExecutor.schedule(_looperRunnable, LOOPER_INTERVAL_MSEC, TimeUnit.MILLISECONDS);
-    }
-
-    private void enterSyncWaitLock() {
-        synchronized (_syncWaitLock) {
-            _syncWaitingThreads.add(Thread.currentThread());
-        }
-
-        try {
-            Thread.currentThread().wait();
-        } catch (Exception e) {
-
-        }
-
-        // No need to remove itself from the array, its removed by the releaser
-    }
-
-    private void releaseAllSyncWaitLocks() {
-        synchronized (_syncWaitLock) {
-            for (Thread t : _syncWaitingThreads) {
-                t.interrupt();
-            }
-
-            _syncWaitingThreads.clear();
-        }
-    }
-
-    class ClientsManager {
-
-        private @NotNull HashSet<LooperClientSubscription> _subscriptions = new HashSet<>();
-
-        private final @NotNull Object _mainLock = new Object();
-
-        private void subscribe(@NotNull final LooperClient client, int delay) {
-            synchronized (_mainLock) {
-                _subscriptions.add(new LooperClientSubscription(client, delay));
+        
+        @Override
+        public void subscribe(@NotNull Subscriber subscriber, int delayInMS) {
+            synchronized (lock) {
+                for (var sub : subscriptions) {
+                    if (sub.sub == subscriber) {
+                        return;
+                    }
+                }
+                
+                subscriptions.add(new SubscriberEntry(subscriber, delayInMS));
             }
         }
-
-        private void unsubscribe(@NotNull final LooperClient client) {
-            synchronized (_mainLock) {
-                LooperClientSubscription subToRemove = null;
-
-                for (LooperClientSubscription sub : _subscriptions) {
-                    if (sub.client == client) {
+        
+        @Override
+        public void unsubscribe(@NotNull Subscriber subscriber) {
+            synchronized (lock) {
+                SubscriberEntry subToRemove = null;
+                
+                for (var sub : subscriptions) {
+                    if (sub.sub == subscriber) {
                         subToRemove = sub;
                         break;
                     }
                 }
-
-                _subscriptions.remove(subToRemove);
+                
+                subscriptions.remove(subToRemove);
             }
         }
+        
+        public void performSync(final @NotNull Callback.Blank callback) {
+            if (isBackground) {
+                callback.perform();
+            } else {
+                if (java.awt.EventQueue.isDispatchThread()) {
+                    callback.perform();
+                    return;
+                }
 
+                try {
+                    java.awt.EventQueue.invokeAndWait(() -> {
+                        callback.perform();
+                    });
+                } catch (Exception e) {
+
+                }
+            }
+        }
+        
+        @Override
+        public void performAsync(final @NotNull Callback.Blank callback) {
+            if (isBackground) {
+                backgroundCallbacksManager.queueCallback(callback);
+            } else {
+                java.awt.EventQueue.invokeLater(() -> {
+                    callback.perform();
+                });
+            } 
+        }
+        
+        @Override
+        public void start() {
+            assert !isStarted;
+            isStarted = true;
+            loopAgain();
+        }
+        
+        // # Private
+        
         private void loop() {
-            Collection<LooperClientSubscription> subscriptions;
+            Collection<SubscriberEntry> subscriptions;
 
-            synchronized (_mainLock) {
-                subscriptions = CollectionUtilities.copyAsImmutable(_subscriptions);
+            synchronized (lock) {
+                subscriptions = CollectionUtilities.copyAsImmutable(this.subscriptions);
             }
 
-            for (LooperClientSubscription sub : subscriptions) {
+            for (var sub : subscriptions) {
                 try {
                     sub.loop(LOOPER_INTERVAL_MSEC);
                 } catch (Exception e) {
@@ -207,41 +148,93 @@ public class Looper {
                     e.printStackTrace(System.out);
                 }
             }
-        }
-    }
-
-    class CallbacksManager {
-
-        private final @NotNull Object _mainLock = new Object();
-
-        private @NotNull ArrayList<LooperCallback> _callbacks = new ArrayList();
-
-        private void queueCallback(@NotNull Callback.Blank callback) {
-            synchronized (_mainLock) {
-                _callbacks.add(new LooperCallback(callback));
+            
+            if (isBackground) {
+                backgroundCallbacksManager.loop();
             }
         }
+        
+        private void loopAgain() {
+            looperExecutor.schedule(() -> {
+                loop();
+                loopAgain();
+            },
+            LOOPER_INTERVAL_MSEC, TimeUnit.MILLISECONDS);
+        }
+    }
+    
+    class SubscriberEntry {
+        final @NotNull Subscriber sub;
+        final int delayInMS;
+        final double delayInSeconds;
+        private int currentTimer;
 
-        private <T> void queueCallback(@NotNull Callback.WithParameter<T> callback, @Nullable T parameter) {
-            synchronized (_mainLock) {
-                _callbacks.add(new LooperCallback(callback, parameter));
+        SubscriberEntry(@NotNull Subscriber sub, int delayInMS) {
+            this.sub = sub;
+            this.delayInMS = delayInMS;
+            delayInSeconds = delayInMS / 1000;
+            currentTimer = delayInMS;
+        }
+        
+        public void loop(int dt) {
+            // Loop only every specific interval
+            if (delayInMS != 0) {
+                currentTimer -= dt;
+
+                if (currentTimer > 0) {
+                    return;
+                }
+
+                // Reset timer to original value
+                // Overkill time value is also added to the result
+                currentTimer += delayInMS;
+            }
+
+            // Loop
+            sub.onLoop(delayInSeconds);
+        }
+    }
+    
+    class MainImpl extends Base implements Main {
+        
+        public MainImpl() {
+            super(false);
+        }
+    }
+    
+    class BackgroundImpl extends Base implements Background {
+        
+        public BackgroundImpl() {
+            super(true);
+        }
+    }
+    
+    class BackgroundCallbacksManager {
+
+        private final @NotNull Object lock = new Object();
+
+        private @NotNull ArrayList<Callback.Blank> callbacks = new ArrayList();
+
+        private void queueCallback(@NotNull Callback.Blank callback) {
+            synchronized (lock) {
+                callbacks.add(callback);
             }
         }
 
         private void clearCallbacks() {
-            synchronized (_mainLock) {
-                _callbacks.clear();
+            synchronized (lock) {
+                callbacks.clear();
             }
         }
 
         private void loop() {
-            Collection<LooperCallback> callbacks;
+            Collection<Callback.Blank> callbacks;
 
-            synchronized (_mainLock) {
-                callbacks = CollectionUtilities.copyAsImmutable(_callbacks);
+            synchronized (lock) {
+                callbacks = CollectionUtilities.copyAsImmutable(this.callbacks);
             }
 
-            for (LooperCallback callback : callbacks) {
+            for (var callback : callbacks) {
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
@@ -258,65 +251,6 @@ public class Looper {
             }
 
             clearCallbacks();
-        }
-    }
-}
-
-class LooperClientSubscription {
-
-    public final @NotNull LooperClient client;
-
-    private final int _timer;
-    private int _currentTimer;
-
-    LooperClientSubscription(@NotNull LooperClient client, int timer) {
-        this.client = client;
-        this._timer = timer;
-        this._currentTimer = timer;
-    }
-
-    public void loop(int dt) {
-        // Loop only every specific interval
-        if (_timer != 0) {
-            _currentTimer -= dt;
-
-            if (_currentTimer > 0) {
-                return;
-            }
-
-            // Reset timer to original value
-            // Overkill time value is also added to the result
-            _currentTimer += _timer;
-        }
-
-        // Loop
-        this.client.loop();
-    }
-}
-
-class LooperCallback<T> {
-
-    public final @NotNull Callback.Blank callback;
-    public final @NotNull Callback.WithParameter<T> callbackWithParameter;
-    public final @Nullable T parameter;
-
-    LooperCallback(@NotNull Callback.Blank callback) {
-        this.callback = callback;
-        this.callbackWithParameter = null;
-        this.parameter = null;
-    }
-
-    LooperCallback(@NotNull Callback.WithParameter<T> callback, @Nullable T parameter) {
-        this.callback = null;
-        this.callbackWithParameter = callback;
-        this.parameter = parameter;
-    }
-
-    public void perform() {
-        if (callback != null) {
-            this.callback.perform();
-        } else {
-            this.callbackWithParameter.perform(parameter);
         }
     }
 }

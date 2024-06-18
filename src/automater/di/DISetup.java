@@ -27,7 +27,8 @@ public class DISetup {
         var gson = new GsonBuilder().setPrettyPrinting().create();
         injector.registerInstance(gson);
 
-        injector.registerInstance(new automater.work.ActionSettingsManager.Impl());
+        injector.registerInstance(new automater.utilities.Looper.MainImpl());
+        injector.registerInstance(new automater.utilities.Looper.BackgroundImpl());
 
         injector.registerInstance(new automater.parser.MacroActionParser.Impl());
         injector.registerInstance(new automater.parser.MacroActionsParser.Impl());
@@ -37,8 +38,6 @@ public class DISetup {
 
         injector.registerInstance(new automater.storage.PreferencesStorage.Impl());
         injector.registerInstance(new automater.storage.MacroStorage.Impl());
-        
-        injector.registerInstance(new automater.work.Executor.Impl());
         
         injector.registerInstance(new automater.service.NativeEventMonitor.Impl());
         

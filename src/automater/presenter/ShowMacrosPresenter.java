@@ -46,6 +46,7 @@ public interface ShowMacrosPresenter {
     
     class Impl implements Protocol {
         
+        private final Looper.Protocol looper = DI.get(Looper.Background.class);
         private final MacroStorage.Protocol storage = DI.get(MacroStorage.Protocol.class);
         private final DescriptionParser.Protocol descriptionParser = DI.get(DescriptionParser.Protocol.class);
         
@@ -199,7 +200,7 @@ public interface ShowMacrosPresenter {
         private void updateMacroData() {
             var presenter = this;
 
-            Looper.getShared().performAsyncCallbackInBackground(new Callback.Blank() {
+            looper.performAsync(new Callback.Blank() {
                 @Override
                 public void perform() {
                     try {

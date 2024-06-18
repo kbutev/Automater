@@ -7,6 +7,9 @@ package automater.presenter;
 import automater.datasource.StandardDescriptionDataSource;
 import automater.ui.text.TextValue;
 import automater.di.DI;
+import automater.execution.Command;
+import automater.execution.MacroProcess;
+import automater.execution.MacroProcessBuilder;
 import automater.model.KeyEventKind;
 import automater.model.KeyValue;
 import automater.model.Keystroke;
@@ -19,11 +22,7 @@ import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.DeviceNotifications;
-import automater.work.BaseAction;
-import automater.work.Executor;
-import automater.work.ExecutorProcess;
 import java.util.List;
-import automater.work.model.ExecutorProgress;
 import java.util.ArrayList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,28 +36,23 @@ public interface PlayMacroPresenter {
 
     interface Delegate {
 
-        void onError(@NotNull Exception e);
-        void onLoadedPreferencesFromStorage(@NotNull PreferencesStorage.Values values);
-        void onLoadedMacroFromStorage(@NotNull String macroName, @NotNull String macroDescription, @NotNull List<Description> macroActions);
-        void startPlaying();
-        void stopPlaying(boolean wasCancelled);
-        void updatePlayStatus(@NotNull automater.work.model.ExecutorProgress progress);
     }
 
     interface Protocol extends PresenterWithDelegate<Delegate> {
 
-        void playMacro(@Nullable Object sender);
-        void stopMacro(@Nullable Object sender);
-        void pauseMacro(@Nullable Object sender);
-        void resumeMacro(@Nullable Object sender);
+        boolean isPlaying();
+        
+        void startMacroExecution(@Nullable Object sender);
+        void stopMacroExecution(@Nullable Object sender);
+        void pauseMacroExecution(@Nullable Object sender);
+        void resumeMacroExecution(@Nullable Object sender);
         void navigateBack();
     }
 
-    class Impl implements Protocol, Executor.Listener, HotkeyMonitor.Listener {
+    class Impl implements Protocol, HotkeyMonitor.Listener, MacroProcess.Listener {
 
         private final PreferencesStorage.Protocol preferences = DI.get(PreferencesStorage.Protocol.class);
         private final DescriptionParser.Protocol descriptionParser = DI.get(DescriptionParser.Protocol.class);
-        private final Executor.Protocol executor = DI.get(Executor.Protocol.class);
 
         private final @NotNull PlayMacroFrame view;
         private @Nullable Delegate delegate;
@@ -67,7 +61,8 @@ public interface PlayMacroPresenter {
 
         private final @NotNull Macro.Protocol macro;
         private final @NotNull List<String> actionDescriptions;
-        private @Nullable ExecutorProcess.Protocol ongoingExecution;
+        
+        private @Nullable MacroProcess.Protocol runningProcess;
 
         public Impl(@NotNull PlayMacroFrame view, @NotNull Macro.Protocol macro) {
             this.view = view;
@@ -83,19 +78,19 @@ public interface PlayMacroPresenter {
             var self = this;
             
             view.onPlayButtonCallback = () -> {
-                playMacro(self);
+                startMacroExecution(self);
             };
             
             view.onStopButtonCallback = () -> {
-                stopMacro(self);
+                stopMacroExecution(self);
             };
             
             view.onResumeButtonCallback = () -> {
-                resumeMacro(self);
+                resumeMacroExecution(self);
             };
             
             view.onPauseButtonCallback = () -> {
-                pauseMacro(self);
+                pauseMacroExecution(self);
             };
             
             for (var action : macro.getActions()) {
@@ -151,63 +146,9 @@ public interface PlayMacroPresenter {
             
             //view.setHotkeys(play, stop, pause, resume);
         }
-
-        // # BaseExecutorListener
-        @Override
-        public void onStart(int numberOfActions) {
-            displayPlayingStartedNotification();
-        }
-
-        @Override
-        public void onActionExecute(@NotNull BaseAction action) {
-            updatePlayStatus();
-        }
-
-        @Override
-        public void onActionUpdate(@NotNull BaseAction action) {
-            updatePlayStatus();
-        }
-
-        @Override
-        public void onActionFinish(@NotNull BaseAction action) {
-            updatePlayStatus();
-        }
-
-        @Override
-        public void onWait() {
-            updatePlayStatus();
-        }
-
-        @Override
-        public void onRepeat(int numberOfTimesPlayed, int numberOfTimesToPlay) {
-            
-        }
-
-        @Override
-        public void onCancel() {
-            Logger.message(this, "Playing was cancelled!");
-
-            delegate.stopPlaying(true);
-        }
-
-        @Override
-        public void onFinish() {
-            Logger.message(this, "Successfully finished playing!");
-
-            displayPlayingFinishedNotification();
-
-            ongoingExecution = null;
-
-            delegate.stopPlaying(false);
-        }
-
-        // # HotkeyMonitor.Listener
-        @Override
-        public void onHotkeyEvent(@NotNull KeyEventKind kind) {
-
-        }
-
+        
         // # PlayMacroPresenter
+        
         @Override
         public void navigateBack() {
             Logger.messageEvent(this, "Navigate back.");
@@ -217,82 +158,101 @@ public interface PlayMacroPresenter {
             } catch (Exception e) {
             }
         }
-
+        
         @Override
-        public void playMacro(@Nullable Object sender) {
-            Logger.messageEvent(this, "Play.");
-            
-            view.playRecording();
-            
-//            var macroParameters = new MacroParameters();
-//
-//            try {
-//                ongoingExecution = executor.performMacro(macro, macroParameters, this);
-//            } catch (Exception e) {
-//                Logger.error(this, "Failed to start executor: " + e.toString());
-//                e.printStackTrace(System.out);
-//                delegate.onError(e);
-//                return;
-//            }
-//
-//            macro.incrementNumberOfTimesPlayed();
-//            macro.setLastTimePlayedDate(new Date());
-//
-//            try {
-//                //storage.getMacrosStorage().updateMacroInStorage(macro);
-//            } catch (Exception e) {
-//                Logger.error(this, "Failed to update macro in storage: " + e.toString());
-//            }
-//
-//            delegate.startPlaying();
+        public boolean isPlaying() {
+            return runningProcess != null;
         }
 
         @Override
-        public void stopMacro(@Nullable Object sender) {
+        public void startMacroExecution(@Nullable Object sender) {
+            Logger.messageEvent(this, "Play.");
+            
+            var builder = new MacroProcessBuilder.Impl();
+            builder.setRootType(true);
+            builder.setupWithMacro(macro);
+            
+            try {
+                var process = builder.build();
+                process.addListener(this);
+                process.start(null);
+                runningProcess = process;
+            } catch (Exception e) {
+                Logger.error(this, "Failed to play macro, error: " + e);
+                return;
+            }
+            
+            view.playRecording();
+        }
+
+        @Override
+        public void stopMacroExecution(@Nullable Object sender) {
             Logger.messageEvent(this, "Stop playing...");
             
-            view.stopRecording();
-            
-            if (ongoingExecution == null) {
-                Logger.messageEvent(this, "No need to stop, already idle.");
+            if (!isPlaying()) {
+                Logger.error(this, "Failed to stop, macro is not running");
                 return;
             }
             
             try {
-                ongoingExecution.stop();
-                Logger.messageEvent(this, "Stopped ongoing execution process.");
-                ongoingExecution = null;
+                runningProcess.cancel();
             } catch (Exception e) {
-                Logger.error(this, "Failed to stop execution process: " + e.toString());
+                Logger.error(this, "Failed to stop, error: " + e);
             }
-
-            // Do not alert the presenter delegate here, as a BaseExecutorListener we should
-            // be alerted by the execution that the process stopped
+            
+            view.stopRecording();
         }
         
         @Override
-        public void pauseMacro(@Nullable Object sender) {
+        public void pauseMacroExecution(@Nullable Object sender) {
             Logger.messageEvent(this, "Pause");
             
             view.pauseRecording();
         }
         
         @Override
-        public void resumeMacro(@Nullable Object sender) {
+        public void resumeMacroExecution(@Nullable Object sender) {
             Logger.messageEvent(this, "Resume");
             
             view.resumeRecording();
         }
-
-        // # Private
-        private void updatePlayStatus() {
-            if (ongoingExecution == null) {
+        
+        // # MacroProcess.Listener
+        
+        @Override
+        public void onStart() {
+            
+        }
+        
+        @Override
+        public void onNextCommand(@NotNull Command.Protocol command) {
+            
+        }
+        
+        @Override
+        public void onEnd(boolean cancelled) {
+            
+        }
+        
+        // # HotkeyMonitor.Listener
+        
+        @Override
+        public void onHotkeyEvent(@NotNull KeyEventKind kind) {
+            if (!kind.isReleaseOrTap()) {
                 return;
             }
+            
+            if (isPlaying()) {
+                stopMacroExecution(this);
+            } else {
+                startMacroExecution(this);
+            }
+        }
 
-            ExecutorProgress progress = ongoingExecution.getProgress();
-
-            delegate.updatePlayStatus(progress);
+        // # Private
+        
+        private void updatePlayStatus() {
+            
         }
 
         private void displayPlayingStartedNotification() {
