@@ -5,7 +5,7 @@
 package automater.service;
 
 import automater.model.KeyEventKind;
-import automater.model.Keystroke;
+import automater.model.InputKeystroke;
 import automater.model.event.CapturedEvent;
 import automater.model.event.CapturedHardwareEvent;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +21,7 @@ public interface HotkeyListener {
         
         boolean shouldStop();
         
-        void onKeyPressed(@NotNull Keystroke key);
+        void onKeyPressed(@NotNull InputKeystroke key);
         void onExit();
     }
     

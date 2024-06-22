@@ -14,43 +14,41 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Kristiyan Butev
  */
-public class Keystroke {
+public class InputKeystroke {
 
     @SerializedName("v")
-    public final @NotNull KeyValue value;
+    public final @NotNull InputKeyValue value;
 
     @SerializedName("m")
     @JSONDecoder.Optional
-    private final @Nullable KeyModifier modifier;
+    private final @Nullable InputKeyModifier modifier;
 
-    public static @NotNull
-    Keystroke anyKey() {
-        return new Keystroke(KeyValue.X);
+    public static @NotNull InputKeystroke anyKey() {
+        return new InputKeystroke(InputKeyValue.X);
     }
 
-    public static @NotNull
-    Keystroke build(@NotNull KeyValue value) {
-        return new Keystroke(value);
+    public static @NotNull InputKeystroke build(@NotNull InputKeyValue value) {
+        return new InputKeystroke(value);
     }
 
-    public Keystroke(@NotNull KeyValue value) {
+    public InputKeystroke(@NotNull InputKeyValue value) {
         this.value = value;
         this.modifier = null;
     }
 
-    public Keystroke(@NotNull KeyValue value, @Nullable KeyModifier modifier) {
+    public InputKeystroke(@NotNull InputKeyValue value, @Nullable InputKeyModifier modifier) {
         this.value = value;
         this.modifier = modifier != null ? modifier.copy() : null;
     }
 
     public @NotNull
-    KeyModifier getModifier() {
-        return modifier != null ? modifier : KeyModifier.none();
+    InputKeyModifier getModifier() {
+        return modifier != null ? modifier : InputKeyModifier.none();
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Keystroke other) {
+        if (o instanceof InputKeystroke other) {
             return value == other.value && getModifier().equals(other.getModifier());
         }
 
@@ -75,15 +73,15 @@ public class Keystroke {
     }
 
     public boolean isMouse() {
-        return value == KeyValue.MOUSE_LEFT_CLICK
-                || value == KeyValue.MOUSE_RIGHT_CLICK
-                || value == KeyValue.MOUSE_MIDDLE_CLICK
-                || value == KeyValue.MOUSE_4_CLICK
-                || value == KeyValue.MOUSE_5_CLICK;
+        return value == InputKeyValue.MOUSE_LEFT_CLICK
+                || value == InputKeyValue.MOUSE_RIGHT_CLICK
+                || value == InputKeyValue.MOUSE_MIDDLE_CLICK
+                || value == InputKeyValue.MOUSE_4_CLICK
+                || value == InputKeyValue.MOUSE_5_CLICK;
     }
 
     public static String extractKeyValueFromKeyString(@NotNull String value) {
-        int lastIndexOfModifierSeparator = value.lastIndexOf(KeyModifierValue.getSeparatorSymbol());
+        int lastIndexOfModifierSeparator = value.lastIndexOf(InputKeyModifierValue.getSeparatorSymbol());
 
         if (lastIndexOfModifierSeparator == -1) {
             return value;
@@ -98,7 +96,7 @@ public class Keystroke {
     }
 
     public static String extractKeyModifiersFromKeyString(@NotNull String value) {
-        int lastIndexOfModifierSeparator = value.lastIndexOf(KeyModifierValue.getSeparatorSymbol());
+        int lastIndexOfModifierSeparator = value.lastIndexOf(InputKeyModifierValue.getSeparatorSymbol());
 
         if (lastIndexOfModifierSeparator == -1) {
             return "";

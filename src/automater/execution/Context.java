@@ -28,20 +28,29 @@ public interface Context {
         
         private final @Nullable Owner parent;
         private final @Nullable Owner root;
+        private final double currentTime;
         
-        public Process(@NotNull Owner owner) {
+        public Process(@NotNull Owner owner, double time) {
             parent = owner;
             root = null;
+            currentTime = time;
         }
         
-        public Process(@NotNull Context.Protocol context, @NotNull Owner owner) {
+        public Process(@NotNull Owner owner, @NotNull Owner root, double time) {
             parent = owner;
-            root = context.getParentOwner();
+            this.root = root;
+            currentTime = time;
+        }
+        
+        public Process(@NotNull Context.Protocol context, double time) {
+            parent = context.getParentOwner();
+            root = context.getRootOwner();
+            currentTime = time;
         }
         
         @Override
         public double getTime() {
-            return 0;
+            return currentTime;
         }
         
         @Override

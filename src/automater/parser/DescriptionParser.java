@@ -17,7 +17,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 /**
- *
+ * Immutable.
  * @author Kristiyan Butev
  */
 public interface DescriptionParser {
@@ -47,7 +47,7 @@ public interface DescriptionParser {
         
         @Override
         public @NotNull MacroActionDescription parseMacroAction(@NotNull MacroAction action) throws Exception {
-            var timestamp = String.format("%.1f", action.getTimestamp());
+            var timestamp = action.getTimestamp();
             
             if (action instanceof MacroHardwareAction.Click click) {
                 return new MacroActionDescription(timestamp, "click." + click.kind.name(), click.keystroke.toString());

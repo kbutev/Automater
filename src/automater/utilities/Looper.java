@@ -51,7 +51,7 @@ public interface Looper {
         private final BackgroundCallbacksManager backgroundCallbacksManager;
         
         private boolean isStarted = false;
-        private @NotNull ArrayList<SubscriberEntry> subscriptions = new ArrayList<>();
+        private final @NotNull ArrayList<SubscriberEntry> subscriptions = new ArrayList<>();
         
         Base(boolean isBackground) {
             this.isBackground = isBackground;
@@ -62,11 +62,15 @@ public interface Looper {
         
         @Override
         public void subscribe(@NotNull Subscriber subscriber) {
+            assert isStarted;
+            
             subscribe(subscriber, LOOPER_INTERVAL_MSEC);
         }
         
         @Override
         public void subscribe(@NotNull Subscriber subscriber, int delayInMS) {
+            assert isStarted;
+            
             synchronized (lock) {
                 for (var sub : subscriptions) {
                     if (sub.sub == subscriber) {
@@ -80,6 +84,8 @@ public interface Looper {
         
         @Override
         public void unsubscribe(@NotNull Subscriber subscriber) {
+            assert isStarted;
+            
             synchronized (lock) {
                 SubscriberEntry subToRemove = null;
                 
@@ -95,7 +101,10 @@ public interface Looper {
         }
         
         public void performSync(final @NotNull Callback.Blank callback) {
+            assert isStarted;
+            
             if (isBackground) {
+                assert false; // Unsupported
                 callback.perform();
             } else {
                 if (java.awt.EventQueue.isDispatchThread()) {
@@ -108,13 +117,15 @@ public interface Looper {
                         callback.perform();
                     });
                 } catch (Exception e) {
-
+                    Logger.error(this, "Unhandled exception: " + e);
                 }
             }
         }
         
         @Override
         public void performAsync(final @NotNull Callback.Blank callback) {
+            assert isStarted;
+            
             if (isBackground) {
                 backgroundCallbacksManager.queueCallback(callback);
             } else {
@@ -172,7 +183,7 @@ public interface Looper {
         SubscriberEntry(@NotNull Subscriber sub, int delayInMS) {
             this.sub = sub;
             this.delayInMS = delayInMS;
-            delayInSeconds = delayInMS / 1000;
+            delayInSeconds = delayInMS / 1000.0;
             currentTimer = delayInMS;
         }
         
@@ -213,7 +224,7 @@ public interface Looper {
 
         private final @NotNull Object lock = new Object();
 
-        private @NotNull ArrayList<Callback.Blank> callbacks = new ArrayList();
+        private final @NotNull ArrayList<Callback.Blank> callbacks = new ArrayList();
 
         private void queueCallback(@NotNull Callback.Blank callback) {
             synchronized (lock) {
@@ -234,6 +245,8 @@ public interface Looper {
                 callbacks = CollectionUtilities.copyAsImmutable(this.callbacks);
             }
 
+            clearCallbacks();
+            
             for (var callback : callbacks) {
                 Runnable runnable = new Runnable() {
                     @Override
@@ -249,8 +262,6 @@ public interface Looper {
 
                 new Thread(runnable).start();
             }
-
-            clearCallbacks();
         }
     }
 }

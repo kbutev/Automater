@@ -4,7 +4,7 @@
  */
 package automater.router;
 
-import automater.model.Keystroke;
+import automater.model.InputKeystroke;
 import automater.presenter.ChooseHotkeyPresenter;
 import automater.presenter.SettingsPresenter;
 import automater.ui.view.ChooseKeyDialog;
@@ -66,7 +66,7 @@ public interface SettingsRouter {
         }
         
         @Override
-        public void chooseHotkey(@Nullable Callback.WithParameter<Keystroke> success, @Nullable Callback.Blank failure) {
+        public void chooseHotkey(@Nullable Callback.WithParameter<InputKeystroke> success, @Nullable Callback.Blank failure) {
             var dialog = new ChooseKeyDialog(masterRouter.getView(), true);
             var presenter = new ChooseHotkeyPresenter.Impl(dialog);
             presenter.setSuccessCallback(success);

@@ -5,7 +5,7 @@
 package automater.presenter;
 
 import automater.di.DI;
-import automater.model.Keystroke;
+import automater.model.InputKeystroke;
 import automater.storage.PreferencesStorage;
 import automater.ui.view.SettingsPanel;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +23,7 @@ public interface SettingsPresenter {
     interface Delegate {
         
         void chooseDirectory(@NotNull Path directory, @Nullable Callback.WithParameter<Path> success, @Nullable Callback.Blank failure);
-        void chooseHotkey(@Nullable Callback.WithParameter<Keystroke> success, @Nullable Callback.Blank failure);
+        void chooseHotkey(@Nullable Callback.WithParameter<InputKeystroke> success, @Nullable Callback.Blank failure);
     }
     
     interface Protocol extends PresenterWithDelegate<Delegate> {
@@ -50,7 +50,7 @@ public interface SettingsPresenter {
             };
             
             view.onStartRecordHotkeyClick = () -> {
-                delegate.chooseHotkey((Keystroke result) -> {
+                delegate.chooseHotkey((InputKeystroke result) -> {
                     var values = preferences.getValues();
                     values.startRecordHotkey = result;
                     onSavePreferences(values);
@@ -59,7 +59,7 @@ public interface SettingsPresenter {
             };
             
             view.onStopRecordHotkeyClick = () -> {
-                delegate.chooseHotkey((Keystroke result) -> {
+                delegate.chooseHotkey((InputKeystroke result) -> {
                     var values = preferences.getValues();
                     values.stopRecordHotkey = result;
                     onSavePreferences(values);
@@ -68,7 +68,7 @@ public interface SettingsPresenter {
             };
             
             view.onPlayMacroHotkeyClick = () -> {
-                delegate.chooseHotkey((Keystroke result) -> {
+                delegate.chooseHotkey((InputKeystroke result) -> {
                     var values = preferences.getValues();
                     values.playMacroHotkey = result;
                     onSavePreferences(values);
@@ -77,7 +77,7 @@ public interface SettingsPresenter {
             };
             
             view.onStopMacroHotkeyClick = () -> {
-                delegate.chooseHotkey((Keystroke result) -> {
+                delegate.chooseHotkey((InputKeystroke result) -> {
                     var values = preferences.getValues();
                     values.stopMacroHotkey = result;
                     onSavePreferences(values);
@@ -86,7 +86,7 @@ public interface SettingsPresenter {
             };
             
             view.onPauseMacroHotkeyClick = () -> {
-                delegate.chooseHotkey((Keystroke result) -> {
+                delegate.chooseHotkey((InputKeystroke result) -> {
                     var values = preferences.getValues();
                     values.pauseMacroHotkey = result;
                     onSavePreferences(values);

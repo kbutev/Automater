@@ -68,7 +68,7 @@ public interface NativeEventMonitor {
 
     class Impl implements Protocol {
 
-        private final CapturedEventParser.Protocol parser = DI.get(CapturedEventParser.Protocol.class);
+        private CapturedEventParser.Protocol parser;
 
         private static final Object registerLock = new Object();
         private static SwingDispatchService swingDispatchService = null;
@@ -113,6 +113,7 @@ public interface NativeEventMonitor {
         public void start() throws Exception {
             Logger.message(this, "start");
             
+            parser = new CapturedEventParser.Impl();
             state.start();
             nativeHookListener.parser = parser;
             nativeHookListener.filter = filter;
@@ -173,6 +174,10 @@ public interface NativeEventMonitor {
         public void nativeKeyPressed(NativeKeyEvent event) {
             try {
                 var result = parser.parseNativeKeyboardEvent(event, 0, KeyEventKind.press);
+                
+                if (result == null) {
+                    return;
+                }
 
                 if (filter.filtersOut(result)) {
                     return;
@@ -194,6 +199,10 @@ public interface NativeEventMonitor {
             try {
                 var result = parser.parseNativeKeyboardEvent(event, 0, KeyEventKind.release);
 
+                if (result == null) {
+                    return;
+                }
+                
                 if (filter.filtersOut(result)) {
                     return;
                 }

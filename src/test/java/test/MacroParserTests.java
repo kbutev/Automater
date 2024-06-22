@@ -7,8 +7,8 @@ package test.java.test;
 import automater.di.DI;
 import automater.di.DISetup;
 import automater.model.KeyEventKind;
-import automater.model.KeyValue;
-import automater.model.Keystroke;
+import automater.model.InputKeyValue;
+import automater.model.InputKeystroke;
 import automater.model.macro.Macro;
 import automater.model.action.MacroAction;
 import automater.model.action.MacroHardwareAction;
@@ -51,9 +51,9 @@ public class MacroParserTests implements Constants {
     public void testStandard() throws Exception {
         // From object to json and back
         var actions = new ArrayList<MacroAction>();
-        var first = new MacroHardwareAction.Click(1.25, KeyEventKind.press, new Keystroke(KeyValue.X));
-        var second = new MacroHardwareAction.Click(2.2, KeyEventKind.release, new Keystroke(KeyValue.X));
-        var third = new MacroHardwareAction.Click(3, KeyEventKind.tap, new Keystroke(KeyValue.Z));
+        var first = new MacroHardwareAction.Click(1.25, KeyEventKind.press, new InputKeystroke(InputKeyValue.X));
+        var second = new MacroHardwareAction.Click(2.2, KeyEventKind.release, new InputKeystroke(InputKeyValue.X));
+        var third = new MacroHardwareAction.Click(3, KeyEventKind.tap, new InputKeystroke(InputKeyValue.Z));
         actions.add(first);
         actions.add(second);
         actions.add(third);

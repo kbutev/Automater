@@ -5,8 +5,8 @@
 package automater.storage;
 
 import automater.di.DI;
-import automater.model.KeyValue;
-import automater.model.Keystroke;
+import automater.model.InputKeyValue;
+import automater.model.InputKeystroke;
 import automater.utilities.FileSystem;
 import automater.utilities.Logger;
 import automater.utilities.Path;
@@ -36,19 +36,19 @@ public interface PreferencesStorage {
         public @NotNull Path macrosDirectory = Path.getLocalDirectory().withSubpath(DEFAULT_MACROS_DIRECTORY);
         
         @SerializedName("startRecordHotkey")
-        public @NotNull Keystroke startRecordHotkey = Keystroke.build(KeyValue.F4);
+        public @NotNull InputKeystroke startRecordHotkey = InputKeystroke.build(InputKeyValue.F4);
         
         @SerializedName("stopRecordHotkey")
-        public @NotNull Keystroke stopRecordHotkey = Keystroke.build(KeyValue.F4);
+        public @NotNull InputKeystroke stopRecordHotkey = InputKeystroke.build(InputKeyValue.F4);
         
         @SerializedName("playMacroHotkey")
-        public @NotNull Keystroke playMacroHotkey = Keystroke.build(KeyValue.F4);
+        public @NotNull InputKeystroke playMacroHotkey = InputKeystroke.build(InputKeyValue.F4);
         
         @SerializedName("pauseMacroHotkey")
-        public @NotNull Keystroke pauseMacroHotkey = Keystroke.build(KeyValue.F3);
+        public @NotNull InputKeystroke pauseMacroHotkey = InputKeystroke.build(InputKeyValue.F3);
         
         @SerializedName("stopMacroHotkey")
-        public @NotNull Keystroke stopMacroHotkey = Keystroke.build(KeyValue.F4);
+        public @NotNull InputKeystroke stopMacroHotkey = InputKeystroke.build(InputKeyValue.F4);
         
         @SerializedName("startNotification")
         public boolean startNotification = false;

@@ -6,8 +6,8 @@ package automater.presenter;
 
 import automater.di.DI;
 import automater.model.KeyEventKind;
-import automater.model.KeyValue;
-import automater.model.Keystroke;
+import automater.model.InputKeyValue;
+import automater.model.InputKeystroke;
 import automater.model.macro.Macro;
 import automater.model.action.MacroAction;
 import automater.model.event.CapturedEvent;
@@ -70,7 +70,7 @@ public interface RecordMacroPresenter {
 
         public Impl(@NotNull RecordMacroPanel view) {
             this.view = view;
-            actionHotkeyMonitor = HotkeyMonitor.build(Keystroke.build(KeyValue.F4));
+            actionHotkeyMonitor = HotkeyMonitor.build(InputKeystroke.build(InputKeyValue.F4));
             setup();
         }
         
@@ -104,7 +104,6 @@ public interface RecordMacroPresenter {
             Logger.message(this, "Start");
             
             try {
-                timer.start();
                 actionHotkeyMonitor.setListener(this);
                 actionHotkeyMonitor.start();
             } catch (Exception e) {
@@ -119,8 +118,6 @@ public interface RecordMacroPresenter {
             Logger.message(this, "Stop");
 
             try {
-                timer.stop();
-                timer.reset();
                 actionHotkeyMonitor.stop();
             } catch (Exception e) {}
             
@@ -146,7 +143,7 @@ public interface RecordMacroPresenter {
         
         @Override
         public double getCurrentRecordTime() {
-            return (double)timer.getTime() / 1000; // Milliseconds to seconds
+            return timer.getTime() / 1000.0; // Milliseconds to seconds
         }
 
         @Override
@@ -174,11 +171,20 @@ public interface RecordMacroPresenter {
             if (sender != view) {
                 view.beginRecording();
             }
+            
+            try {
+                timer.start();
+            } catch (Exception e) {}
         }
 
         @Override
         public void endRecording(@Nullable Object sender) {
             Logger.messageEvent(this, "End recording");
+            
+            try {
+                timer.stop();
+                timer.reset();
+            } catch (Exception e) {}
             
             try {
                 recorder.stop();

@@ -14,7 +14,7 @@ import com.google.gson.annotations.SerializedName;
  * 
  * @author Bytevi
  */
-public enum KeyValue {
+public enum InputKeyValue {
     UNKNOWN,
     
     @SerializedName("ML") MOUSE_LEFT_CLICK,

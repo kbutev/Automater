@@ -184,11 +184,8 @@ public interface ShowMacrosPresenter {
 
             var macro = macroDescriptions.get(index);
 
-            var confirm = new Callback.Blank() {
-                @Override
-                public void perform() {
-                    deleteMacroAt(index);
-                }
+            var confirm = (Callback.Blank) () -> {
+                deleteMacroAt(index);
             };
 
             var textTitle = TextValue.getText(TextValue.Dialog_ConfirmDeleteMacroTitle);

@@ -5,7 +5,7 @@
 package automater.model.action;
 
 import automater.model.KeyEventKind;
-import automater.model.Keystroke;
+import automater.model.InputKeystroke;
 import automater.model.Point;
 import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
@@ -50,13 +50,13 @@ public interface MacroHardwareAction {
         @NotNull public final KeyEventKind kind;
 
         @SerializedName("v")
-        @NotNull public final Keystroke keystroke;
+        @NotNull public final InputKeystroke keystroke;
 
         public Click() {
-            this(0, KeyEventKind.tap, Keystroke.anyKey());
+            this(0, KeyEventKind.tap, InputKeystroke.anyKey());
         }
 
-        public Click(double timestamp, @NotNull KeyEventKind kind, @NotNull Keystroke value) {
+        public Click(double timestamp, @NotNull KeyEventKind kind, @NotNull InputKeystroke value) {
             super(TYPE, timestamp);
             this.kind = kind;
             this.keystroke = value;

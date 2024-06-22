@@ -18,20 +18,19 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Kristiyan Butev
  */
-public class KeyModifier {
+public class InputKeyModifier {
 
     @JSONDecoder.Optional
-    private @Nullable List<KeyModifierValue> values;
+    private @Nullable List<InputKeyModifierValue> values;
 
-    public static KeyModifier none() {
-        return new KeyModifier();
+    public static InputKeyModifier none() {
+        return new InputKeyModifier();
     }
 
-    public @NotNull
-    KeyModifier createWithNewAddedModifier(@NotNull KeyModifierValue value) {
-        KeyModifier modifiers = copy();
+    public @NotNull InputKeyModifier withModifierAdded(@NotNull InputKeyModifierValue value) {
+        InputKeyModifier modifiers = copy();
 
-        if (value == KeyModifierValue.NONE) {
+        if (modifiers.getRawValues().contains(value)) {
             return modifiers;
         }
 
@@ -40,11 +39,10 @@ public class KeyModifier {
         return modifiers;
     }
 
-    public @NotNull
-    KeyModifier createWithRemovedModifier(@NotNull KeyModifierValue value) {
-        KeyModifier modifiers = copy();
+    public @NotNull InputKeyModifier withModifierRemoved(@NotNull InputKeyModifierValue value) {
+        InputKeyModifier modifiers = copy();
 
-        if (value == KeyModifierValue.NONE) {
+        if (!modifiers.getRawValues().contains(value)) {
             return modifiers;
         }
 
@@ -53,32 +51,32 @@ public class KeyModifier {
         return modifiers;
     }
 
-    public KeyModifier() {
+    public InputKeyModifier() {
 
     }
 
-    public KeyModifier(@NotNull KeyModifierValue value) {
+    public InputKeyModifier(@NotNull InputKeyModifierValue value) {
         getRawValues().add(value);
     }
 
-    public KeyModifier(@NotNull List<KeyModifierValue> values) {
+    public InputKeyModifier(@NotNull List<InputKeyModifierValue> values) {
         if (values.isEmpty()) {
             return;
         }
 
-        for (KeyModifierValue value : values) {
+        for (InputKeyModifierValue value : values) {
             getRawValues().add(value);
         }
     }
 
-    public KeyModifier(@NotNull String string) {
-        String suffix = KeyModifierValue.getSeparatorSymbol();
+    public InputKeyModifier(@NotNull String string) {
+        String suffix = InputKeyModifierValue.getSeparatorSymbol();
 
         String[] strings = string.split(Pattern.quote(suffix));
 
         for (int e = 0; e < string.length(); e++) {
             try {
-                KeyModifierValue modifier = KeyModifierValue.valueOf(strings[e]);
+                InputKeyModifierValue modifier = InputKeyModifierValue.valueOf(strings[e]);
                 values.add(modifier);
             } catch (Exception exc) {
 
@@ -90,7 +88,7 @@ public class KeyModifier {
     public String toString() {
         String value = "";
 
-        for (KeyModifierValue flag : getRawValues()) {
+        for (InputKeyModifierValue flag : getRawValues()) {
             value = value.concat(flag.toString());
         }
 
@@ -99,7 +97,7 @@ public class KeyModifier {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof KeyModifier other) {
+        if (o instanceof InputKeyModifier other) {
             return getRawValues().equals(other.getRawValues());
         }
 
@@ -117,7 +115,7 @@ public class KeyModifier {
         return values != null && values.isEmpty();
     }
 
-    private List<KeyModifierValue> getRawValues() {
+    private List<InputKeyModifierValue> getRawValues() {
         if (values == null) {
             values = new ArrayList<>();
         }
@@ -125,15 +123,15 @@ public class KeyModifier {
         return values;
     }
 
-    public Set<KeyModifierValue> getValues() {
+    public Set<InputKeyModifierValue> getValues() {
         return new HashSet(getRawValues());
     }
 
-    public KeyModifier copy() {
-        return new KeyModifier(getRawValues());
+    public InputKeyModifier copy() {
+        return new InputKeyModifier(getRawValues());
     }
 
-    public boolean contains(@NotNull KeyModifierValue value) {
+    public boolean contains(@NotNull InputKeyModifierValue value) {
         return values != null ? getRawValues().contains(value) : false;
     }
 }

@@ -19,6 +19,7 @@ import automater.model.action.MacroAction;
 
 /**
  * Parsers macro actions and other related data.
+ * Immutable.
  * @author Kristiyan Butev
  */
 public interface MacroActionsParser {

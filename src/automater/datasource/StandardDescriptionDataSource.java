@@ -18,7 +18,7 @@ import javax.swing.event.ListDataListener;
  */
 public class StandardDescriptionDataSource implements ListModel<String> {
 
-    @NotNull public final List<String> data;
+    public final @NotNull List<String> data;
 
     public static @NotNull StandardDescriptionDataSource createGeneric() {
         return new StandardDescriptionDataSource();
@@ -35,7 +35,6 @@ public class StandardDescriptionDataSource implements ListModel<String> {
     protected StandardDescriptionDataSource(@NotNull List<String> actions) {
         this.data = CollectionUtilities.copyAsImmutable(actions);
     }
-    
 
     @Override
     public int getSize() {

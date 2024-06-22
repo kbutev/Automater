@@ -20,6 +20,16 @@ public class DI {
     public static Injector internalInjector = Injectors.autoDiscovering();
 
     public static <T extends Object> T get(Class<T> cls) throws UnsatisfiedResolutionException, AmbiguousResolutionException, CreationException, ScopeNotActiveException {
-        return internalInjector.getInstance(cls);
+        var result = internalInjector.getInstance(cls);
+        
+        if (cls.isAnnotationPresent(UniqueDependency.class)) {
+            try {
+                return (T) result.getClass().getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        
+        return result;
     }
 }

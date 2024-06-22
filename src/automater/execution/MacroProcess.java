@@ -10,7 +10,6 @@ import automater.utilities.CollectionUtilities;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.Looper;
-import automater.utilities.LooperClient;
 import automater.utilities.RunState;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +38,7 @@ public interface MacroProcess {
         boolean isRunning();
         double getCurrentTime();
         double getDuration();
+        double getProgressPercentage();
         
         void addListener(@NotNull Listener listener);
         void removeListener(@NotNull Listener listener);
@@ -59,7 +59,7 @@ public interface MacroProcess {
         private final double duration;
         
         private final @NotNull RunState state = new RunState();
-        private @Nullable Context.Protocol context;
+        private @Nullable Context.Protocol originContext;
         
         private final @NotNull ArrayList<Listener> listeners;
         
@@ -67,7 +67,7 @@ public interface MacroProcess {
         
         public Child(@NotNull List<Command.Protocol> commands) {
             this.commands = CollectionUtilities.copy(commands);
-            duration = !commands.isEmpty() ? commands.get(commands.size()).getTimestamp() : 0;
+            duration = !commands.isEmpty() ? commands.get(commands.size()-1).getTimestamp() : 0;
             listeners = new ArrayList<>();
         }
         
@@ -75,15 +75,15 @@ public interface MacroProcess {
         
         @Override
         public boolean isRunning() {
-            synchronized (listeners) {
+            synchronized (lock) {
                 return state.isStarted();
             }
         }
         
         @Override
         public double getCurrentTime() {
-            synchronized (listeners) {
-                return timer.getTime(TimeUnit.MILLISECONDS) * 1000;
+            synchronized (lock) {
+                return timer.getTime(TimeUnit.MILLISECONDS) / 1000.0;
             }
         }
         
@@ -93,8 +93,15 @@ public interface MacroProcess {
         }
         
         @Override
+        public double getProgressPercentage() {
+            var duration = getDuration();
+            var result = duration != 0 ? getCurrentTime() / duration : 1.0;
+            return result < 1.0 ? result : 1.0;
+        }
+        
+        @Override
         public void addListener(@NotNull Listener listener) {
-            synchronized (listeners) {
+            synchronized (lock) {
                 if (!listeners.contains(listener)) {
                     listeners.add(listener);
                 }
@@ -103,7 +110,7 @@ public interface MacroProcess {
         
         @Override
         public void removeListener(@NotNull Listener listener) {
-            synchronized (listeners) {
+            synchronized (lock) {
                 if (listeners.contains(listener)) {
                     listeners.remove(listener);
                 }
@@ -115,7 +122,7 @@ public interface MacroProcess {
             synchronized (lock) {
                 state.start();
                 
-                this.context = context != null ? context : new Context.Process(this);
+                originContext = context;
                 
                 if (!commands.isEmpty()) {
                     var firstCommand = commands.get(0);
@@ -167,12 +174,16 @@ public interface MacroProcess {
         // # Loop
         
         void update() {
+            var time = getCurrentTime();
+            
             synchronized (lock) {
                 if (commands.isEmpty()) {
                     return;
                 }
 
-                Logger.message(this, "update");
+                var context = originContext != null ? new Context.Process(originContext, time) : new Context.Process(this, time);
+                
+                //Logger.message(this, "update");
 
                 var next = commands.get(0);
 
@@ -202,7 +213,6 @@ public interface MacroProcess {
             // assume in synchronized (lock)
             
             state.stop();
-            listeners.clear();
             timer.stop();
             timer.reset();
         }
@@ -254,8 +264,6 @@ public interface MacroProcess {
         
         @Override
         public void start(@Nullable Context.Protocol context) throws Exception {
-            context = context != null ? context : new Context.Process(this);
-            
             super.start(context);
             
             looper.subscribe(this, LOOP_DELAY);

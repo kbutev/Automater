@@ -6,7 +6,7 @@ package automater.service;
 
 import automater.di.DI;
 import automater.model.KeyEventKind;
-import automater.model.Keystroke;
+import automater.model.InputKeystroke;
 import automater.model.event.CapturedEvent;
 import automater.model.event.CapturedHardwareEvent;
 import automater.utilities.Errors;
@@ -20,11 +20,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface HotkeyMonitor {
 
-    public static @NotNull Protocol build(@NotNull Keystroke hotkey) {
+    public static @NotNull Protocol build(@NotNull InputKeystroke hotkey) {
         return new Impl(hotkey);
     }
     
-    public static @NotNull Protocol build(@NotNull Keystroke hotkey, @NotNull String name) {
+    public static @NotNull Protocol build(@NotNull InputKeystroke hotkey, @NotNull String name) {
         var result = new Impl(hotkey);
         result.setName(name);
         return result;
@@ -34,8 +34,8 @@ public interface HotkeyMonitor {
 
         @Nullable Listener getListener();
         void setListener(@NotNull Listener listener);
-        @Nullable Keystroke getHotkey();
-        void setHotkey(@NotNull Keystroke hotkey);
+        @Nullable InputKeystroke getHotkey();
+        void setHotkey(@NotNull InputKeystroke hotkey);
         @NotNull String getName();
         void setName(@NotNull String name);
 
@@ -52,10 +52,10 @@ public interface HotkeyMonitor {
 
         private final NativeEventMonitor.Protocol monitor = DI.get(NativeEventMonitor.Protocol.class);
         private @Nullable Listener listener;
-        private @Nullable Keystroke hotkey;
+        private @Nullable InputKeystroke hotkey;
         private @NotNull String name = "";
 
-        public Impl(@NotNull Keystroke hotkey) {
+        public Impl(@NotNull InputKeystroke hotkey) {
             this.hotkey = hotkey;
         }
 
@@ -72,12 +72,12 @@ public interface HotkeyMonitor {
         }
 
         @Override
-        public @Nullable Keystroke getHotkey() {
+        public @Nullable InputKeystroke getHotkey() {
             return hotkey;
         }
 
         @Override
-        public void setHotkey(@NotNull Keystroke hotkey) {
+        public void setHotkey(@NotNull InputKeystroke hotkey) {
             assert hotkey != null;
             this.hotkey = hotkey;
         }

@@ -13,20 +13,23 @@ import org.jetbrains.annotations.NotNull;
  */
 public class MacroActionDescription {
 
-    private final @NotNull String timestamp;
-    private final @NotNull String type;
-    private final @NotNull String value;
-    private final @NotNull String description;
+    public final @NotNull String timestamp;
+    public final double timestampAsDouble;
+    public final @NotNull String type;
+    public final @NotNull String value;
+    public final @NotNull String description;
 
     public MacroActionDescription() {
         timestamp = "0";
+        timestampAsDouble = 0;
         type = "unknown";
         value = "";
         description = timestamp + "|" + type + "|" + value;
     }
 
-    public MacroActionDescription(@NotNull String timestamp, @NotNull String type, @NotNull String value) {
-        this.timestamp = timestamp;
+    public MacroActionDescription(double timestamp, @NotNull String type, @NotNull String value) {
+        this.timestamp = String.format("%.1f", timestamp);
+        this.timestampAsDouble = timestamp;
         this.type = type;
         this.value = value;
         description = timestamp + "|" + type + "|" + value;

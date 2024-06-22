@@ -7,10 +7,10 @@ package test.java.test;
 import automater.di.DI;
 import automater.di.DISetup;
 import automater.model.KeyEventKind;
-import automater.model.KeyModifier;
-import automater.model.KeyModifierValue;
-import automater.model.KeyValue;
-import automater.model.Keystroke;
+import automater.model.InputKeyModifier;
+import automater.model.InputKeyModifierValue;
+import automater.model.InputKeyValue;
+import automater.model.InputKeystroke;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,7 +53,7 @@ public class KeystrokeTests {
     @Test
     public void testConstruction() throws Exception {
         try {
-            var t1 = new Keystroke(KeyValue.X);
+            var t1 = new InputKeystroke(InputKeyValue.X);
         } catch (Exception e) {
             assertTrue(false);
         }
@@ -61,17 +61,17 @@ public class KeystrokeTests {
     
     @Test
     public void testParsing() throws Exception {
-        var keystroke = new Keystroke(KeyValue.X, new KeyModifier(KeyModifierValue.ALT));
+        var keystroke = new InputKeystroke(InputKeyValue.X, new InputKeyModifier(InputKeyModifierValue.ALT));
         var a = new MacroHardwareAction.Click(1.25, KeyEventKind.press, keystroke);
         
         var json = parser.parseToJSON(a);
         
         if (parser.parseFromJSON(json) instanceof MacroHardwareAction.Click result) {
             assertTrue(result.keystroke.equals(keystroke));
-            assertTrue(result.keystroke.value.equals(KeyValue.X));
-            assertFalse(result.keystroke.equals(new Keystroke(KeyValue.Z)));
-            assertTrue(result.keystroke.getModifier().contains(KeyModifierValue.ALT));
-            assertFalse(result.keystroke.getModifier().contains(KeyModifierValue.CTRL));
+            assertTrue(result.keystroke.value.equals(InputKeyValue.X));
+            assertFalse(result.keystroke.equals(new InputKeystroke(InputKeyValue.Z)));
+            assertTrue(result.keystroke.getModifier().contains(InputKeyModifierValue.ALT));
+            assertFalse(result.keystroke.getModifier().contains(InputKeyModifierValue.CTRL));
         } else {
             assertTrue(true);
         }

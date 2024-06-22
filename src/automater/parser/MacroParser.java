@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Parsers macros.
+ * Immutable.
  * @author Kristiyan Butev
  */
 public interface MacroParser {

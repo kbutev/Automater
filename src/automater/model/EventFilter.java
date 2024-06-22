@@ -21,7 +21,7 @@ public class EventFilter {
     boolean mouseMove = false;
     boolean mouseScroll = false;
 
-    ArrayList<Keystroke> keystrokes = new ArrayList<>();
+    ArrayList<InputKeystroke> keystrokes = new ArrayList<>();
 
     public @NotNull
     EventFilter copy() {

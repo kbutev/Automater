@@ -4,24 +4,25 @@
  */
 package automater.presenter;
 
-import automater.datasource.StandardDescriptionDataSource;
+import automater.datasource.MacroActionDataSource;
 import automater.ui.text.TextValue;
 import automater.di.DI;
 import automater.execution.Command;
 import automater.execution.MacroProcess;
 import automater.execution.MacroProcessBuilder;
 import automater.model.KeyEventKind;
-import automater.model.KeyValue;
-import automater.model.Keystroke;
+import automater.model.InputKeyValue;
+import automater.model.InputKeystroke;
+import automater.model.action.MacroActionDescription;
 import automater.model.macro.Macro;
 import automater.parser.DescriptionParser;
 import automater.service.HotkeyMonitor;
 import automater.storage.PreferencesStorage;
 import automater.ui.view.PlayMacroFrame;
-import automater.utilities.Description;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.DeviceNotifications;
+import automater.utilities.Looper;
 import java.util.List;
 import java.util.ArrayList;
 import org.jetbrains.annotations.NotNull;
@@ -49,8 +50,9 @@ public interface PlayMacroPresenter {
         void navigateBack();
     }
 
-    class Impl implements Protocol, HotkeyMonitor.Listener, MacroProcess.Listener {
+    class Impl implements Protocol, Looper.Subscriber, HotkeyMonitor.Listener, MacroProcess.Listener {
 
+        private final Looper.Main looper = DI.get(Looper.Main.class);
         private final PreferencesStorage.Protocol preferences = DI.get(PreferencesStorage.Protocol.class);
         private final DescriptionParser.Protocol descriptionParser = DI.get(DescriptionParser.Protocol.class);
 
@@ -60,7 +62,7 @@ public interface PlayMacroPresenter {
         private final HotkeyMonitor.Protocol actionHotkeyMonitor;
 
         private final @NotNull Macro.Protocol macro;
-        private final @NotNull List<String> actionDescriptions;
+        private final @NotNull List<MacroActionDescription> actionDescriptions;
         
         private @Nullable MacroProcess.Protocol runningProcess;
 
@@ -69,7 +71,7 @@ public interface PlayMacroPresenter {
             this.macro = macro;
             actionDescriptions = new ArrayList<>();
 
-            actionHotkeyMonitor = HotkeyMonitor.build(Keystroke.build(KeyValue.F4));
+            actionHotkeyMonitor = HotkeyMonitor.build(InputKeystroke.build(InputKeyValue.F4));
             
             setup();
         }
@@ -96,12 +98,13 @@ public interface PlayMacroPresenter {
             for (var action : macro.getActions()) {
                 try {
                     var description = descriptionParser.parseMacroAction(action);
-                    actionDescriptions.add(description.toString());
+                    actionDescriptions.add(description);
                 } catch (Exception e) {}
             }
         }
 
-        // # BasePresenter
+        // # Protocol
+        
         @Override
         public void start() {
             if (delegate == null) {
@@ -116,6 +119,8 @@ public interface PlayMacroPresenter {
 
             Logger.message(this, "Start.");
 
+            looper.subscribe(this);
+            
             reloadData();
         }
 
@@ -124,6 +129,8 @@ public interface PlayMacroPresenter {
             try {
                 actionHotkeyMonitor.stop();
             } catch (Exception e) {}
+            
+            looper.unsubscribe(this);
         }
 
         @Override
@@ -141,13 +148,17 @@ public interface PlayMacroPresenter {
         public void reloadData() {
             view.setMacroName(macro.getSummary().name);
             
-            var dataSource = StandardDescriptionDataSource.createDataSource(actionDescriptions);
+            var dataSource = new MacroActionDataSource(actionDescriptions);
             view.setDataSource(dataSource);
+            
+            if (runningProcess != null) {
+                var currentTime = runningProcess.getCurrentTime();
+                var selection = dataSource.getSelectIndexForTime(currentTime);
+                view.setSelectedIndex(selection);
+            }
             
             //view.setHotkeys(play, stop, pause, resume);
         }
-        
-        // # PlayMacroPresenter
         
         @Override
         public void navigateBack() {
@@ -166,6 +177,11 @@ public interface PlayMacroPresenter {
 
         @Override
         public void startMacroExecution(@Nullable Object sender) {
+            if (isPlaying()) {
+                Logger.error(this, "Failed to play, macro is already running");
+                return;
+            }
+            
             Logger.messageEvent(this, "Play.");
             
             var builder = new MacroProcessBuilder.Impl();
@@ -187,12 +203,12 @@ public interface PlayMacroPresenter {
 
         @Override
         public void stopMacroExecution(@Nullable Object sender) {
-            Logger.messageEvent(this, "Stop playing...");
-            
             if (!isPlaying()) {
                 Logger.error(this, "Failed to stop, macro is not running");
                 return;
             }
+            
+            Logger.messageEvent(this, "Stop playing...");
             
             try {
                 runningProcess.cancel();
@@ -205,16 +221,58 @@ public interface PlayMacroPresenter {
         
         @Override
         public void pauseMacroExecution(@Nullable Object sender) {
+            if (!isPlaying()) {
+                Logger.error(this, "Failed to pause, macro is not running");
+                return;
+            }
+            
             Logger.messageEvent(this, "Pause");
+            
+            try {
+                runningProcess.pause();
+            } catch (Exception e) {
+                Logger.error(this, "Failed to pause, error: " + e);
+            }
             
             view.pauseRecording();
         }
         
         @Override
         public void resumeMacroExecution(@Nullable Object sender) {
+            if (!isPlaying()) {
+                Logger.error(this, "Failed to resume, macro is not running");
+                return;
+            }
+            
             Logger.messageEvent(this, "Resume");
             
+            try {
+                runningProcess.resume();
+            } catch (Exception e) {
+                Logger.error(this, "Failed to pause, error: " + e);
+            }
+            
             view.resumeRecording();
+        }
+        
+        // # Looper.Subscriber
+        
+        @Override
+        public void onLoop(double dt) {
+            if (!isPlaying()) {
+                return;
+            }
+            
+            var currentTime = runningProcess.getCurrentTime();
+            var progress = runningProcess.getProgressPercentage();
+            view.setProgressBarValue(progress);
+            
+            var dataSource = view.getDataSource();
+            
+            if (dataSource != null) {
+                var selection = dataSource.getSelectIndexForTime(currentTime);
+                view.setSelectedIndex(selection);
+            }
         }
         
         // # MacroProcess.Listener
@@ -231,7 +289,15 @@ public interface PlayMacroPresenter {
         
         @Override
         public void onEnd(boolean cancelled) {
+            runningProcess = null;
             
+            if (cancelled) {
+                Logger.message(this, "Cancelled");
+            } else {
+                Logger.message(this, "End");
+            }
+            
+            view.stopRecording();
         }
         
         // # HotkeyMonitor.Listener

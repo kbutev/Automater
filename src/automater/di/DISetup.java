@@ -6,6 +6,7 @@ package automater.di;
 
 import org.int4.dirk.api.Injector;
 import com.google.gson.GsonBuilder;
+import java.awt.GraphicsEnvironment;
 
 /**
  *
@@ -27,14 +28,18 @@ public class DISetup {
         var gson = new GsonBuilder().setPrettyPrinting().create();
         injector.registerInstance(gson);
 
+        injector.registerInstance(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice());
+        
         injector.registerInstance(new automater.utilities.Looper.MainImpl());
         injector.registerInstance(new automater.utilities.Looper.BackgroundImpl());
 
         injector.registerInstance(new automater.parser.MacroActionParser.Impl());
         injector.registerInstance(new automater.parser.MacroActionsParser.Impl());
         injector.registerInstance(new automater.parser.DescriptionParser.Impl());
-        injector.registerInstance(new automater.parser.CapturedEventParser.Impl());
         injector.registerInstance(new automater.parser.MacroParser.Impl());
+        injector.registerInstance(new automater.parser.InputKeyValueParser.Impl());
+        injector.registerInstance(new automater.parser.OutputKeyValueParser.Impl());
+        injector.registerInstance(new automater.parser.CapturedEventParser.Impl());
 
         injector.registerInstance(new automater.storage.PreferencesStorage.Impl());
         injector.registerInstance(new automater.storage.MacroStorage.Impl());

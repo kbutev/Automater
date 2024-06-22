@@ -4,7 +4,7 @@
  */
 package automater.presenter;
 
-import automater.model.Keystroke;
+import automater.model.InputKeystroke;
 import automater.service.HotkeyListener;
 import automater.ui.view.ChooseKeyDialog;
 import automater.utilities.Callback;
@@ -23,14 +23,14 @@ public interface ChooseHotkeyPresenter {
     
     class Impl implements Protocol, HotkeyListener.Delegate {
 
-        @Nullable Callback.WithParameter<Keystroke> success;
+        @Nullable Callback.WithParameter<InputKeystroke> success;
         @Nullable Callback.Blank failure;
         
         private final @NotNull ChooseKeyDialog view;
         
         private final HotkeyListener.Protocol monitor = new HotkeyListener.Impl();
         
-        private @Nullable Keystroke result;
+        private @Nullable InputKeystroke result;
         
         public Impl(@NotNull ChooseKeyDialog view) {
             this.view = view;
@@ -43,7 +43,7 @@ public interface ChooseHotkeyPresenter {
             };
         }
         
-        public void setSuccessCallback(@Nullable Callback.WithParameter<Keystroke> callback) {
+        public void setSuccessCallback(@Nullable Callback.WithParameter<InputKeystroke> callback) {
             success = callback;
         }
         
@@ -83,7 +83,7 @@ public interface ChooseHotkeyPresenter {
         }
         
         @Override
-        public void onKeyPressed(@NotNull Keystroke key) {
+        public void onKeyPressed(@NotNull InputKeystroke key) {
             result = key;
         }
         

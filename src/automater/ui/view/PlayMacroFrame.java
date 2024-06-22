@@ -4,7 +4,7 @@
  */
 package automater.ui.view;
 
-import automater.datasource.StandardDescriptionDataSource;
+import automater.datasource.MacroActionDataSource;
 import automater.ui.text.Strings;
 import automater.ui.text.TextValue;
 import automater.utilities.Callback;
@@ -13,6 +13,7 @@ import java.awt.Component;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JFrame;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  *
@@ -42,6 +43,9 @@ public class PlayMacroFrame extends javax.swing.JFrame implements View {
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         stateButton.setText(TextValue.getText(TextValue.Play_PlayButtonTitle, playHotkey));
         pauseResumeButton.setText(TextValue.getText(TextValue.Play_PauseButtonTitle, pauseHotkey));
+        
+        // Set selection model
+        macroActionsList.setSelectionModel(selectionModel);
     }
     
     // # Public
@@ -54,8 +58,13 @@ public class PlayMacroFrame extends javax.swing.JFrame implements View {
         macroNameLabel.setText(name);
     }
     
-    public void setDataSource(@NotNull StandardDescriptionDataSource macroActionsDataSource) {
-        macroActionsList.setModel(macroActionsDataSource);
+    public @Nullable MacroActionDataSource getDataSource() {
+        return dataSource;
+    }
+    
+    public void setDataSource(@NotNull MacroActionDataSource dataSource) {
+        this.dataSource = dataSource;
+        macroActionsList.setModel(dataSource);
     }
     
     public void setHotkeys(@NotNull String play, @NotNull String stop, @NotNull String pause, @NotNull String resume) {
@@ -310,6 +319,7 @@ public class PlayMacroFrame extends javax.swing.JFrame implements View {
     private boolean isPlaying = false;
     private boolean isPaused = false;
     private final @NotNull DisabledItemSelectionModel selectionModel = new DisabledItemSelectionModel();
+    private @Nullable MacroActionDataSource dataSource;
     private @NotNull String playHotkey = Strings.DEFAULT_PLAY_OR_STOP_HOTKEY;
     private @NotNull String stopHotkey = Strings.DEFAULT_PLAY_OR_STOP_HOTKEY;
     private @NotNull String pauseHotkey = Strings.DEFAULT_PAUSE_OR_RESUME_HOTKEY;
