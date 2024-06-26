@@ -9,100 +9,109 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jnativehook.keyboard.NativeKeyEvent;
 
 /**
  *
  * @author Kristiyan Butev
  */
-public class InputKeystroke {
-
-    @SerializedName("v")
-    public final @NotNull InputKeyValue value;
-
-    @SerializedName("m")
-    @JSONDecoder.Optional
-    private final @Nullable InputKeyModifier modifier;
-
-    public static @NotNull InputKeystroke anyKey() {
-        return new InputKeystroke(InputKeyValue.X);
+public interface InputKeystroke {
+    
+    interface Protocol {
+        
+        boolean isKeyboard();
+        boolean isMouse();
+        boolean equalsIgnoreModifier(Object o);
     }
 
-    public static @NotNull InputKeystroke build(@NotNull InputKeyValue value) {
-        return new InputKeystroke(value);
-    }
+    class AWT implements Protocol {
+        @SerializedName("v")
+        public final @NotNull InputKeyValue.AWT value;
 
-    public InputKeystroke(@NotNull InputKeyValue value) {
-        this.value = value;
-        this.modifier = null;
-    }
+        @SerializedName("m")
+        @JSONDecoder.Optional
+        private final @Nullable InputKeyModifier modifier;
 
-    public InputKeystroke(@NotNull InputKeyValue value, @Nullable InputKeyModifier modifier) {
-        this.value = value;
-        this.modifier = modifier != null ? modifier.copy() : null;
-    }
-
-    public @NotNull
-    InputKeyModifier getModifier() {
-        return modifier != null ? modifier : InputKeyModifier.none();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof InputKeystroke other) {
-            return value == other.value && getModifier().equals(other.getModifier());
+        public static @NotNull AWT anyKey() {
+            return new AWT(InputKeyValue.AWT.buildKeyboardKey(NativeKeyEvent.VC_X));
         }
 
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 59 * hash + Objects.hashCode(value);
-        hash = 59 * hash + Objects.hashCode(getModifier());
-        return hash;
-    }
-
-    @Override
-    public String toString() {
-        return getModifier().toString() + value.toString();
-    }
-
-    public boolean isKeyboard() {
-        return !isMouse();
-    }
-
-    public boolean isMouse() {
-        return value == InputKeyValue.MOUSE_LEFT_CLICK
-                || value == InputKeyValue.MOUSE_RIGHT_CLICK
-                || value == InputKeyValue.MOUSE_MIDDLE_CLICK
-                || value == InputKeyValue.MOUSE_4_CLICK
-                || value == InputKeyValue.MOUSE_5_CLICK;
-    }
-
-    public static String extractKeyValueFromKeyString(@NotNull String value) {
-        int lastIndexOfModifierSeparator = value.lastIndexOf(InputKeyModifierValue.getSeparatorSymbol());
-
-        if (lastIndexOfModifierSeparator == -1) {
-            return value;
+        public static @NotNull AWT build(@NotNull InputKeyValue.AWT value) {
+            return new AWT(value);
         }
 
-        if (lastIndexOfModifierSeparator + 1 >= value.length()) {
-            return "";
+        public static @NotNull AWT buildFromCode(int code) {
+            return new AWT(InputKeyValue.AWT.buildKeyboardKey(code));
         }
 
-        String result = value.substring(lastIndexOfModifierSeparator + 1);
-        return result;
-    }
-
-    public static String extractKeyModifiersFromKeyString(@NotNull String value) {
-        int lastIndexOfModifierSeparator = value.lastIndexOf(InputKeyModifierValue.getSeparatorSymbol());
-
-        if (lastIndexOfModifierSeparator == -1) {
-            return "";
+        public static @NotNull AWT buildFromCode(int code, @NotNull InputKeyModifier modifier) {
+            return new AWT(InputKeyValue.AWT.buildKeyboardKey(code), modifier);
         }
 
-        String result = value.substring(0, lastIndexOfModifierSeparator + 1);
-        return result;
+        public AWT(@NotNull InputKeyValue.AWT value) {
+            this.value = value;
+            this.modifier = null;
+        }
+
+        public AWT(int code, @NotNull InputKeyModifier modifier) {
+            this.value = InputKeyValue.AWT.buildKeyboardKey(code);
+            this.modifier = modifier;
+        }
+
+        public AWT(@NotNull InputKeyValue.AWT value, @NotNull InputKeyModifier modifier) {
+            this.value = value;
+            this.modifier = modifier;
+        }
+
+        public @NotNull InputKeyModifier getModifier() {
+            return modifier != null ? modifier : InputKeyModifier.none();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof InputKeystroke.AWT other) {
+                return value.equals(other.value) && getModifier().equals(other.getModifier());
+            }
+
+            return false;
+        }
+
+        @Override
+        public boolean equalsIgnoreModifier(Object o) {
+            if (o instanceof InputKeystroke.AWT other) {
+                return value.equals(other.value);
+            }
+
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 59 * hash + Objects.hashCode(value);
+            hash = 59 * hash + Objects.hashCode(getModifier());
+            return hash;
+        }
+
+        @Override
+        public String toString() {
+            var mod = "";
+
+            if (modifier != null) {
+                mod = modifier.isBlank() ? mod : modifier.toString();
+            }
+
+            return mod + value.toString();
+        }
+
+        @Override
+        public boolean isKeyboard() {
+            return !isMouse();
+        }
+
+        @Override
+        public boolean isMouse() {
+            return value.isMouse();
+        }
     }
 }

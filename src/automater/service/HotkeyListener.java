@@ -21,7 +21,7 @@ public interface HotkeyListener {
         
         boolean shouldStop();
         
-        void onKeyPressed(@NotNull InputKeystroke key);
+        void onKeyPressed(@NotNull InputKeystroke.Protocol key);
         void onExit();
     }
     

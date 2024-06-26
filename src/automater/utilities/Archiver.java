@@ -45,7 +45,7 @@ public class Archiver {
 
             return result;
         } catch (Exception e) {
-            Logger.utilityError(_archiver, "Cannot serialize object " + object.toString() + ", " + e.toString());
+            Logger.error(_archiver, "Cannot serialize object " + object.toString() + ", " + e.toString());
         }
 
         return null;
@@ -101,7 +101,7 @@ public class Archiver {
 
             return (T) result;
         } catch (Exception e) {
-            Logger.utilityError(_archiver, e.toString());
+            Logger.error(_archiver, e.toString());
         }
 
         return null;
@@ -139,7 +139,7 @@ public class Archiver {
 
             return (ArrayList<T>) result;
         } catch (Exception e) {
-            Logger.utilityError(_archiver, e.toString());
+            Logger.error(_archiver, e.toString());
         }
 
         return null;

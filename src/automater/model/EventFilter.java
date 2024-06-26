@@ -23,8 +23,7 @@ public class EventFilter {
 
     ArrayList<InputKeystroke> keystrokes = new ArrayList<>();
 
-    public @NotNull
-    EventFilter copy() {
+    public @NotNull EventFilter copy() {
         var result = new EventFilter();
         result.keyboard = keyboard;
         result.keystrokes = CollectionUtilities.copy(keystrokes);

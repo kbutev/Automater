@@ -6,8 +6,6 @@ package automater.presenter;
 
 import automater.di.DI;
 import automater.model.KeyEventKind;
-import automater.model.InputKeyValue;
-import automater.model.InputKeystroke;
 import automater.model.macro.Macro;
 import automater.model.action.MacroAction;
 import automater.model.event.CapturedEvent;
@@ -20,7 +18,9 @@ import automater.storage.MacroStorage;
 import automater.storage.PreferencesStorage;
 import automater.ui.view.RecordMacroPanel;
 import automater.datasource.StandardDescriptionDataSource;
+import automater.model.macro.MacroSummary;
 import automater.utilities.Logger;
+import automater.utilities.Size;
 import java.util.ArrayList;
 import org.apache.commons.lang3.time.StopWatch;
 import org.jetbrains.annotations.NotNull;
@@ -70,7 +70,7 @@ public interface RecordMacroPresenter {
 
         public Impl(@NotNull RecordMacroPanel view) {
             this.view = view;
-            actionHotkeyMonitor = HotkeyMonitor.build(InputKeystroke.build(InputKeyValue.F4));
+            actionHotkeyMonitor = HotkeyMonitor.build(PreferencesStorage.defaultMediaHotkey);
             setup();
         }
         
@@ -148,7 +148,7 @@ public interface RecordMacroPresenter {
 
         @Override
         public void beginRecording(@Nullable Object sender) {
-            Logger.messageEvent(this, "Begin recording");
+            Logger.message(this, "Begin recording");
             
             actions.clear();
             descriptions.clear();
@@ -173,17 +173,17 @@ public interface RecordMacroPresenter {
             }
             
             try {
+                timer.reset();
                 timer.start();
             } catch (Exception e) {}
         }
 
         @Override
         public void endRecording(@Nullable Object sender) {
-            Logger.messageEvent(this, "End recording");
+            Logger.message(this, "End recording");
             
             try {
                 timer.stop();
-                timer.reset();
             } catch (Exception e) {}
             
             try {
@@ -208,7 +208,9 @@ public interface RecordMacroPresenter {
             var result = false;
             
             try {
-                var macro = Macro.build(name, actions);
+                var primaryScreen = recorder.getPrimaryScreenSize();
+                var summary = new MacroSummary(name, description, 0, actions.size(), primaryScreen);
+                var macro = Macro.build(summary, actions);
                 storage.saveMacro(macro);
                 result = true;
             } catch (Exception e) {
@@ -249,7 +251,7 @@ public interface RecordMacroPresenter {
         // # HotkeyMonitor.Listener
         
         @Override
-        public void onHotkeyEvent(KeyEventKind kind) {
+        public void onHotkeyEvent(@NotNull KeyEventKind kind) {
             if (!kind.isReleaseOrTap()) {
                 return;
             }

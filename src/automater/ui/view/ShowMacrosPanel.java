@@ -114,11 +114,6 @@ public class ShowMacrosPanel extends javax.swing.JPanel implements View {
         deleteMacroButton = new javax.swing.JButton();
         macroDescriptionLabel = new javax.swing.JLabel();
 
-        macrosList.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         macrosList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         macrosList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {

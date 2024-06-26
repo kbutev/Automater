@@ -6,14 +6,14 @@ package test.java.test;
 
 import automater.di.DI;
 import automater.di.DISetup;
-import automater.model.KeyEventKind;
-import automater.model.InputKeyValue;
 import automater.model.InputKeystroke;
+import automater.model.KeyEventKind;
 import automater.model.macro.Macro;
 import automater.model.action.MacroAction;
 import automater.model.action.MacroHardwareAction;
 import automater.parser.MacroParser;
 import java.util.ArrayList;
+import org.jnativehook.keyboard.NativeKeyEvent;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +22,9 @@ import org.junit.jupiter.api.Test;
  * @author Kristiyan Butev
  */
 public class MacroParserTests implements Constants {
+    
+    public static final int key_x = NativeKeyEvent.VC_X;
+    public static final int key_z = NativeKeyEvent.VC_Z;
     
     // Immutable.
     MacroParser.Protocol parser;
@@ -51,9 +54,9 @@ public class MacroParserTests implements Constants {
     public void testStandard() throws Exception {
         // From object to json and back
         var actions = new ArrayList<MacroAction>();
-        var first = new MacroHardwareAction.Click(1.25, KeyEventKind.press, new InputKeystroke(InputKeyValue.X));
-        var second = new MacroHardwareAction.Click(2.2, KeyEventKind.release, new InputKeystroke(InputKeyValue.X));
-        var third = new MacroHardwareAction.Click(3, KeyEventKind.tap, new InputKeystroke(InputKeyValue.Z));
+        var first = new MacroHardwareAction.AWTClick(1.25, KeyEventKind.press, InputKeystroke.AWT.buildFromCode(key_x));
+        var second = new MacroHardwareAction.AWTClick(2.2, KeyEventKind.release, InputKeystroke.AWT.buildFromCode(key_x));
+        var third = new MacroHardwareAction.AWTClick(3, KeyEventKind.tap, InputKeystroke.AWT.buildFromCode(key_z));
         actions.add(first);
         actions.add(second);
         actions.add(third);

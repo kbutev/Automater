@@ -45,5 +45,9 @@ public interface PlayMacroRouter {
         
         // # PlayMacroPresenter.Delegate
         
+        @Override
+        public void onExit() {
+            playMacroPresenter.stop();
+        }
     }
 }

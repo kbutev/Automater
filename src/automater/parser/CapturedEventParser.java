@@ -7,12 +7,12 @@ package automater.parser;
 import automater.di.DI;
 import automater.model.KeyEventKind;
 import automater.model.InputKeyModifier;
-import automater.model.InputKeyModifierValue;
 import automater.model.InputKeystroke;
-import automater.model.Point;
+import automater.utilities.Point;
 import automater.model.event.CapturedEvent;
 import automater.model.event.CapturedHardwareEvent;
 import automater.utilities.Errors;
+import java.awt.event.KeyEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jnativehook.NativeInputEvent;
 import org.jnativehook.keyboard.NativeKeyEvent;
@@ -30,17 +30,16 @@ import org.jnativehook.mouse.NativeMouseWheelEvent;
 public interface CapturedEventParser {
 
     @automater.di.UniqueDependency()
-    interface Protocol {
+    interface AWTProtocol {
 
         @NotNull CapturedEvent parseNativeEvent(@NotNull NativeInputEvent event, double time) throws Exception;
         @Nullable CapturedEvent parseNativeKeyboardEvent(@NotNull NativeKeyEvent event, double time, @NotNull KeyEventKind kind) throws Exception;
         @NotNull CapturedEvent parseNativeMouseKeyEvent(@NotNull NativeMouseEvent event, double time, @NotNull KeyEventKind kind) throws Exception;
     }
 
-    class Impl implements Protocol {
+    class AWTImpl implements AWTProtocol {
         
-        private final InputKeyValueParser.Protocol keyValueParser = DI.get(InputKeyValueParser.Protocol.class);
-        private @NotNull InputKeyModifier currentModifier = new InputKeyModifier();
+        private final InputKeyValueParser.AWTProtocol keyValueParser = DI.get(InputKeyValueParser.AWTProtocol.class);
 
         @Override
         public @NotNull CapturedEvent parseNativeEvent(@NotNull NativeInputEvent event, double time) throws Exception {
@@ -64,28 +63,17 @@ public interface CapturedEventParser {
         @Override
         public @Nullable CapturedEvent parseNativeKeyboardEvent(@NotNull NativeKeyEvent event, double time, @NotNull KeyEventKind kind) throws Exception {
             if (event instanceof NativeKeyEvent key) {
-                var keyValue = keyValueParser.parseFromKeyboardCode(key.getKeyCode());
-
-                if (keyValue == null) {
+                var code = key.getKeyCode();
+                var modifierCode = key.getModifiers();
+                
+                if (code == KeyEvent.VK_UNDEFINED) {
                     throw Errors.unsupported("Unrecognizablekeyboard key value");
                 }
                 
-                if (keyValue.isModifier()) {
-                    var modifier = InputKeyModifierValue.build(keyValue);
-                    
-                    if (modifier != null) {
-                        if (kind == KeyEventKind.press) {
-                            currentModifier = currentModifier.withModifierAdded(modifier);
-                        } else if (kind == KeyEventKind.release) {
-                            currentModifier = currentModifier.withModifierRemoved(modifier);
-                        }
-                    }
-                    
-                    return null;
-                }
-                
-                var keystroke = new InputKeystroke(keyValue, currentModifier);
-                return new CapturedHardwareEvent.Click(time, kind, keystroke);
+                var keyValue = keyValueParser.parseFromKeyboardCode(code);
+                var modifier = new InputKeyModifier(modifierCode);
+                var keystroke = new InputKeystroke.AWT(keyValue, modifier);
+                return new CapturedHardwareEvent.AWTClick(time, kind, keystroke);
             }
 
             throw Errors.unsupported("Unrecognizable native event");
@@ -93,14 +81,15 @@ public interface CapturedEventParser {
 
         @Override
         public @NotNull CapturedEvent parseNativeMouseKeyEvent(@NotNull NativeMouseEvent event, double time, @NotNull KeyEventKind kind) throws Exception {
-            var keyValue = keyValueParser.parseFromMouseCode(event.getButton());
+            var code = event.getButton();
 
-            if (keyValue == null) {
+            if (code == KeyEvent.VK_UNDEFINED) {
                 throw Errors.unsupported("Unrecognizablekeyboard mousekey value");
             }
 
-            var keystroke = new InputKeystroke(keyValue);
-            return new CapturedHardwareEvent.Click(time, kind, keystroke);
+            var keyValue = keyValueParser.parseFromMouseCode(code);
+            var keystroke = new InputKeystroke.AWT(keyValue);
+            return new CapturedHardwareEvent.AWTClick(time, kind, keystroke);
         }
     }
 }

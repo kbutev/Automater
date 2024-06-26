@@ -7,6 +7,7 @@ package automater.model.macro;
 import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import automater.utilities.Size;
 
 /**
  *
@@ -33,11 +34,19 @@ public class MacroSummary {
     @SerializedName("playCount")
     public final int playCount;
     
-    public MacroSummary(@NotNull String name, @Nullable String description, int playCount, int actionsCount) {
+    @SerializedName("primaryScreen")
+    public final @NotNull Size primaryScreen;
+    
+    public MacroSummary(@NotNull String name,
+            @Nullable String description,
+            int playCount,
+            int actionsCount,
+            @NotNull Size primaryScreen) {
         version = VERSION;
         this.name = name;
         this.description = description != null ? description : "";
         this.playCount = playCount;
         this.actionsCount = actionsCount;
+        this.primaryScreen = primaryScreen;
     }
 }

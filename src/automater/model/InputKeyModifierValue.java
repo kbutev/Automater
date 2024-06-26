@@ -5,9 +5,6 @@
 package automater.model;
 
 import java.awt.event.KeyEvent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jnativehook.keyboard.NativeKeyEvent;
 
 /**
  * Represents a modifier for a system key value.
@@ -15,9 +12,10 @@ import org.jnativehook.keyboard.NativeKeyEvent;
  * @author Bytevi
  */
 public enum InputKeyModifierValue {
-    CTRL(NativeKeyEvent.CTRL_MASK),
+    CTRL(KeyEvent.VK_CONTROL),
     ALT(KeyEvent.VK_ALT),
-    SHIFT(KeyEvent.VK_SHIFT);
+    SHIFT(KeyEvent.VK_SHIFT),
+    META(KeyEvent.VK_META);
     
     private final int value;
     
@@ -25,28 +23,8 @@ public enum InputKeyModifierValue {
         this.value = value;
     }
     
-    public int getValue() {
+    public int getKeyEventValue() {
         return value;
-    }
-    
-    public static @Nullable InputKeyModifierValue build(@NotNull InputKeyValue value) {
-        switch (value) {
-            //case KeyValue.WINDOWS_OR_COMMAND:
-            //    return WINDOWS_OR_COMMAND;
-            //case KeyValue.FUNCTION:
-            //    return FUNCTION;
-            // TODO
-            default:
-                return null;
-        }
-    }
-
-    public static @NotNull String getSeparatorSymbol() {
-        return "+";
-    }
-
-    public static boolean isOnWindowsPlatform() {
-        return true;
     }
 
     @Override
@@ -60,12 +38,14 @@ public enum InputKeyModifierValue {
                 "ALT";
             case SHIFT ->
                 "SHIFT";
+            case META ->
+                "META";
             default ->
                 "";
         };
 
         if (value.length() > 0) {
-            value = value.concat(getSeparatorSymbol());
+            value = value.concat("+");
         }
 
         return value;

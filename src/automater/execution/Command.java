@@ -4,11 +4,16 @@
  */
 package automater.execution;
 
+import automater.di.DI;
+import automater.model.InputKeystroke;
 import automater.model.KeyEventKind;
+import automater.model.OutputKeyValue;
 import automater.model.action.MacroHardwareAction;
 import automater.model.macro.Macro;
+import automater.parser.OutputKeyValueParser;
 import automater.service.HardwareInputSimulator;
 import automater.utilities.CollectionUtilities;
+import automater.utilities.Errors;
 import automater.utilities.Logger;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -85,13 +90,15 @@ public interface Command {
         }
     }
     
-    class HardwareEvents extends Base {
+    class AWTHardwareEvents extends Base {
+        
+        private final OutputKeyValueParser.Protocol keyValueParser = DI.get(OutputKeyValueParser.Protocol.class);
         
         private final @NotNull List<MacroHardwareAction.Generic> actions;
-        private final @NotNull HardwareInputSimulator.Protocol simulator;
+        private final @NotNull HardwareInputSimulator.AWTProtocol simulator;
         
-        public HardwareEvents(@NotNull List<MacroHardwareAction.Generic> actions,
-                @NotNull HardwareInputSimulator.Protocol simulator) {
+        public AWTHardwareEvents(@NotNull List<MacroHardwareAction.Generic> actions,
+                @NotNull HardwareInputSimulator.AWTProtocol simulator) {
             super(!actions.isEmpty() ? actions.get(actions.size()-1).timestamp : 0);
             this.actions = CollectionUtilities.copy(actions);
             this.simulator = simulator;
@@ -108,7 +115,7 @@ public interface Command {
                 var nextAction = actions.get(0);
                 
                 if (context.getTime() >= nextAction.getTimestamp()) {
-                    performAction(nextAction);
+                    try { performAction(nextAction); } catch (Exception e) {}
                     actions.remove(0);
                 } else {
                     return Status.running;
@@ -123,17 +130,31 @@ public interface Command {
             
         }
         
-        private void performAction(@NotNull MacroHardwareAction.Generic action) {
+        private void performAction(@NotNull MacroHardwareAction.Generic action) throws Exception {
             if (action instanceof MacroHardwareAction.Click click) {
-                if (click.kind == KeyEventKind.press) {
-                    simulator.simulateKeyPress(click.keystroke);
-                } else if (click.kind == KeyEventKind.release) {
-                    simulator.simulateKeyRelease(click.keystroke);
-                } else if (click.kind == KeyEventKind.tap) {
-                    simulator.simulateKeyTap(click.keystroke);
+                if (click.keystroke instanceof InputKeystroke.AWT awtKeystroke) {
+                    var key = keyValueParser.parse(awtKeystroke.value);
+                    
+                    if (key instanceof OutputKeyValue.AWT awtKey) {
+                        if (click.kind == KeyEventKind.press) {
+                            simulator.simulateKeyPress(awtKey);
+                        } else if (click.kind == KeyEventKind.release) {
+                            simulator.simulateKeyRelease(awtKey);
+                        } else if (click.kind == KeyEventKind.tap) {
+                            simulator.simulateKeyTap(awtKey);
+                        }
+                        
+                        return;
+                    }
                 }
+                
+                throw Errors.unsupported("Unrecognized command action");
+            } else if (action instanceof MacroHardwareAction.MouseMove mmove) {
+                simulator.simulateMouseMove(mmove.point);
+            } else if (action instanceof MacroHardwareAction.MouseScroll mscroll) {
+                simulator.simulateMouseScroll(mscroll.scroll);
             } else {
-                // TODO
+                throw Errors.unsupported("Unrecognized command action");
             }
         }
     }

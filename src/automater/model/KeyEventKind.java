@@ -14,4 +14,14 @@ public enum KeyEventKind {
     public boolean isReleaseOrTap() {
         return this == release || this == tap;
     }
+    
+    @Override
+    public String toString() {
+        switch (this) {
+            case press: return "press";
+            case release: return "release";
+            case tap: return "tap";
+            default: return "";
+        }
+    }
 }

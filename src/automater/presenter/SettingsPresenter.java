@@ -23,7 +23,7 @@ public interface SettingsPresenter {
     interface Delegate {
         
         void chooseDirectory(@NotNull Path directory, @Nullable Callback.WithParameter<Path> success, @Nullable Callback.Blank failure);
-        void chooseHotkey(@Nullable Callback.WithParameter<InputKeystroke> success, @Nullable Callback.Blank failure);
+        void chooseHotkey(@Nullable Callback.WithParameter<InputKeystroke.AWT> success, @Nullable Callback.Blank failure);
     }
     
     interface Protocol extends PresenterWithDelegate<Delegate> {
@@ -50,7 +50,7 @@ public interface SettingsPresenter {
             };
             
             view.onStartRecordHotkeyClick = () -> {
-                delegate.chooseHotkey((InputKeystroke result) -> {
+                delegate.chooseHotkey((var result) -> {
                     var values = preferences.getValues();
                     values.startRecordHotkey = result;
                     onSavePreferences(values);
@@ -59,7 +59,7 @@ public interface SettingsPresenter {
             };
             
             view.onStopRecordHotkeyClick = () -> {
-                delegate.chooseHotkey((InputKeystroke result) -> {
+                delegate.chooseHotkey((var result) -> {
                     var values = preferences.getValues();
                     values.stopRecordHotkey = result;
                     onSavePreferences(values);
@@ -68,7 +68,7 @@ public interface SettingsPresenter {
             };
             
             view.onPlayMacroHotkeyClick = () -> {
-                delegate.chooseHotkey((InputKeystroke result) -> {
+                delegate.chooseHotkey((var result) -> {
                     var values = preferences.getValues();
                     values.playMacroHotkey = result;
                     onSavePreferences(values);
@@ -77,7 +77,7 @@ public interface SettingsPresenter {
             };
             
             view.onStopMacroHotkeyClick = () -> {
-                delegate.chooseHotkey((InputKeystroke result) -> {
+                delegate.chooseHotkey((var result) -> {
                     var values = preferences.getValues();
                     values.stopMacroHotkey = result;
                     onSavePreferences(values);
@@ -86,7 +86,7 @@ public interface SettingsPresenter {
             };
             
             view.onPauseMacroHotkeyClick = () -> {
-                delegate.chooseHotkey((InputKeystroke result) -> {
+                delegate.chooseHotkey((var result) -> {
                     var values = preferences.getValues();
                     values.pauseMacroHotkey = result;
                     onSavePreferences(values);

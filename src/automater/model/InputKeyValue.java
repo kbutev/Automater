@@ -5,196 +5,122 @@
 package automater.model;
 
 import com.google.gson.annotations.SerializedName;
+import java.util.Map;
+import static java.util.Map.entry;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.jnativehook.keyboard.NativeKeyEvent;
+import org.jnativehook.mouse.NativeMouseEvent;
 
 /**
  * Represents a keyboard or mouse key value.
  * 
- * Use toString() and fromString() to display an appropriate user readable text
- * value or to serialize the enum.
- * 
  * @author Bytevi
  */
-public enum InputKeyValue {
-    UNKNOWN,
+public interface InputKeyValue {
     
-    @SerializedName("ML") MOUSE_LEFT_CLICK,
-    @SerializedName("MR") MOUSE_RIGHT_CLICK,
-    @SerializedName("M3") MOUSE_MIDDLE_CLICK,
-    @SerializedName("M4") MOUSE_4_CLICK,
-    @SerializedName("M5") MOUSE_5_CLICK,
+    interface Protocol {
+        
+        boolean isKeyboard();
+        boolean isMouse();
+    }
+    
+    /// Java awt robot input key.
+    class AWT implements Protocol {
+        static final String KEYBOARD_PREFIX = "k.";
+        static final String MOUSE_PREFIX = "m.";
 
-    @SerializedName("1") n1,
-    @SerializedName("2") n2,
-    @SerializedName("3") n3,
-    @SerializedName("4") n4,
-    @SerializedName("5") n5,
-    @SerializedName("6") n6,
-    @SerializedName("7") n7,
-    @SerializedName("8") n8,
-    @SerializedName("9") n9,
-    @SerializedName("0") n0,
-    
-    A,
-    B,
-    C,
-    D,
-    E,
-    F,
-    G,
-    H,
-    I,
-    J,
-    K,
-    L,
-    M,
-    N,
-    O,
-    P,
-    Q,
-    R,
-    S,
-    T,
-    U,
-    V,
-    W,
-    X,
-    Y,
-    Z,
-    
-    NATIVE_KEY_FIRST,
-    NATIVE_KEY_LAST,
-    NATIVE_KEY_TYPED,
-    NATIVE_KEY_PRESSED,
-    NATIVE_KEY_RELEASED,
-    KEY_LOCATION_UNKNOWN,
-    KEY_LOCATION_STANDARD,
-    KEY_LOCATION_LEFT,
-    KEY_LOCATION_RIGHT,
-    KEY_LOCATION_NUMPAD,
-    ESCAPE,
-    F1,
-    F2,
-    F3,
-    F4,
-    F5,
-    F6,
-    F7,
-    F8,
-    F9,
-    F10,
-    F11,
-    F12,
-    F13,
-    F14,
-    F15,
-    F16,
-    F17,
-    F18,
-    F19,
-    F20,
-    F21,
-    F22,
-    F23,
-    F24,
-    BACKQUOTE,
-    MINUS,
-    EQUALS,
-    BACKSPACE,
-    TAB,
-    CAPS_LOCK,
-    OPEN_BRACKET,
-    CLOSE_BRACKET,
-    BACK_SLASH,
-    SEMICOLON,
-    QUOTE,
-    ENTER,
-    COMMA,
-    PERIOD,
-    SLASH,
-    SPACE,
-    PRINTSCREEN,
-    SCROLL_LOCK,
-    PAUSE,
-    INSERT,
-    DELETE,
-    HOME,
-    END,
-    PAGE_UP,
-    PAGE_DOWN,
-    UP,
-    LEFT,
-    CLEAR,
-    RIGHT,
-    DOWN,
-    NUM_LOCK,
-    SEPARATOR,
-    SHIFT,
-    CONTROL,
-    ALT,
-    META,
-    CONTEXT_MENU,
-    POWER,
-    SLEEP,
-    WAKE,
-    MEDIA_PLAY,
-    MEDIA_STOP,
-    MEDIA_PREVIOUS,
-    MEDIA_NEXT,
-    MEDIA_SELECT,
-    MEDIA_EJECT,
-    VOLUME_MUTE,
-    VOLUME_UP,
-    VOLUME_DOWN,
-    APP_MAIL,
-    APP_CALCULATOR,
-    APP_MUSIC,
-    APP_PICTURES,
-    BROWSER_SEARCH,
-    BROWSER_HOME,
-    BROWSER_BACK,
-    BROWSER_FORWARD,
-    BROWSER_STOP,
-    BROWSER_REFRESH,
-    BROWSER_FAVORITES,
-    KATAKANA,
-    UNDERSCORE,
-    FURIGANA,
-    KANJI,
-    HIRAGANA,
-    YEN,
-    SUN_HELP,
-    SUN_STOP,
-    SUN_PROPS,
-    SUN_FRONT,
-    SUN_OPEN,
-    SUN_FIND,
-    SUN_AGAIN,
-    SUN_UNDO,
-    SUN_COPY,
-    SUN_INSERT,
-    SUN_CUT;
-   
-    public boolean isModifier() {
-        switch(this)
-        {
-            case CONTROL:
-                return true;
-            case ALT:
-                return true;
-            case SHIFT:
-                return true;
+        @SerializedName("c")
+        public final int code;
+
+        @SerializedName("t")
+        public final @NotNull KeyValueType type;
+
+        public static @Nullable AWT build(@NotNull String string) {
+            if (string.startsWith(KEYBOARD_PREFIX)) {
+                try {
+                    var code = Integer.valueOf(string.substring(KEYBOARD_PREFIX.length()));
+                    return AWT.buildKeyboardKey(code);
+                } catch (Exception e) {}
+            } else if (string.startsWith(MOUSE_PREFIX)) {
+                try {
+                    var code = Integer.valueOf(string.substring(MOUSE_PREFIX.length()));
+                    return AWT.buildMouseKey(code);
+                } catch (Exception e) {}
+            }
+
+            return null;
         }
 
-        return false;
-    }
+        public static @NotNull AWT buildKeyboardKey(int code) {
+            return new AWT(code, KeyValueType.keyboard);
+        }
 
-    @Override
-    public String toString() {
-        String value = name();
+        public static @NotNull AWT buildKeyboardKey(@NotNull NativeKeyEvent key) {
+            return new AWT(key.getKeyCode(), KeyValueType.keyboard);
+        }
 
-        value = value.replaceFirst("_", "");
+        public static @NotNull AWT buildMouseKey(int code) {
+            return new AWT(code, KeyValueType.mouse);
+        }
 
-        return value;
+        AWT(int code, @NotNull KeyValueType isKeyboard) {
+            this.code = code;
+            this.type = isKeyboard;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof InputKeyValue.AWT other) {
+                return this.code == other.code && this.type == other.type;
+            }
+
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 5;
+            hash = 97 * hash + Objects.hashCode(code) + Objects.hashCode(type);
+            return hash;
+        }
+
+        @Override
+        public boolean isKeyboard() {
+            return type == KeyValueType.keyboard;
+        }
+
+        @Override
+        public boolean isMouse() {
+            return type == KeyValueType.mouse;
+        }
+
+        public static boolean isModifier(@NotNull NativeKeyEvent event) {
+            var isLCtrl = event.getModifiers() & NativeKeyEvent.CTRL_L_MASK;
+            var isRCtrl = event.getModifiers() & NativeKeyEvent.CTRL_R_MASK;
+            var isCtrl = event.getModifiers() & NativeKeyEvent.CTRL_MASK;
+
+            return isLCtrl == 1 || isRCtrl == 1 || isCtrl == 1;
+        }
+
+        @Override
+        public String toString() {
+            if (isKeyboard()) {
+                var result = NativeKeyEvent.getKeyText(code);
+                return result != null ? result : "?";
+            } else {
+                return mouseStringMappings.getOrDefault(code, "?");
+            }
+        }
+
+        public final static Map<Integer, String> mouseStringMappings = Map.ofEntries(
+            entry(NativeMouseEvent.BUTTON1, "L MOUSE"),
+            entry(NativeMouseEvent.BUTTON2, "R MOUSE"),
+            entry(NativeMouseEvent.BUTTON3, "M MOUSE"),
+            entry(NativeMouseEvent.BUTTON4, "MOUSE 4"),
+            entry(NativeMouseEvent.BUTTON5, "MOUSE 5")
+        );
     }
 }
 

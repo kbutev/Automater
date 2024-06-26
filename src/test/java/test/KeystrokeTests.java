@@ -7,9 +7,6 @@ package test.java.test;
 import automater.di.DI;
 import automater.di.DISetup;
 import automater.model.KeyEventKind;
-import automater.model.InputKeyModifier;
-import automater.model.InputKeyModifierValue;
-import automater.model.InputKeyValue;
 import automater.model.InputKeystroke;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
@@ -19,12 +16,16 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import automater.model.action.MacroHardwareAction;
 import automater.parser.MacroActionParser;
+import org.jnativehook.keyboard.NativeKeyEvent;
 
 /**
  *
  * @author Kristiyan Butev
  */
 public class KeystrokeTests {
+    
+    public static final int key_x = NativeKeyEvent.VC_X;
+    public static final int key_z = NativeKeyEvent.VC_Z;
     
     // Immutable.
     MacroActionParser.Protocol parser;
@@ -53,7 +54,7 @@ public class KeystrokeTests {
     @Test
     public void testConstruction() throws Exception {
         try {
-            var t1 = new InputKeystroke(InputKeyValue.X);
+            var t1 = InputKeystroke.AWT.buildFromCode(NativeKeyEvent.VC_X);
         } catch (Exception e) {
             assertTrue(false);
         }
@@ -61,17 +62,15 @@ public class KeystrokeTests {
     
     @Test
     public void testParsing() throws Exception {
-        var keystroke = new InputKeystroke(InputKeyValue.X, new InputKeyModifier(InputKeyModifierValue.ALT));
-        var a = new MacroHardwareAction.Click(1.25, KeyEventKind.press, keystroke);
+        var keystroke = InputKeystroke.AWT.buildFromCode(key_x);
+        var a = new MacroHardwareAction.AWTClick(1.25, KeyEventKind.press, keystroke);
         
         var json = parser.parseToJSON(a);
         
-        if (parser.parseFromJSON(json) instanceof MacroHardwareAction.Click result) {
+        if (parser.parseFromJSON(json) instanceof MacroHardwareAction.AWTClick result) {
             assertTrue(result.keystroke.equals(keystroke));
-            assertTrue(result.keystroke.value.equals(InputKeyValue.X));
-            assertFalse(result.keystroke.equals(new InputKeystroke(InputKeyValue.Z)));
-            assertTrue(result.keystroke.getModifier().contains(InputKeyModifierValue.ALT));
-            assertFalse(result.keystroke.getModifier().contains(InputKeyModifierValue.CTRL));
+            assertTrue(result.keystroke.value.code == key_x);
+            assertFalse(result.keystroke.value.code == key_z);
         } else {
             assertTrue(true);
         }

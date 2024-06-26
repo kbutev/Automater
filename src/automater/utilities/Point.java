@@ -2,7 +2,7 @@
  *  Created by Kristiyan Butev.
  *  Copyright © 2024 Kristiyan Butev. All rights reserved.
  */
-package automater.model;
+package automater.utilities;
 
 import com.google.gson.annotations.SerializedName;
 

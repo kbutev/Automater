@@ -11,8 +11,6 @@ import automater.execution.Command;
 import automater.execution.MacroProcess;
 import automater.execution.MacroProcessBuilder;
 import automater.model.KeyEventKind;
-import automater.model.InputKeyValue;
-import automater.model.InputKeystroke;
 import automater.model.action.MacroActionDescription;
 import automater.model.macro.Macro;
 import automater.parser.DescriptionParser;
@@ -36,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 public interface PlayMacroPresenter {
 
     interface Delegate {
-
+        void onExit();
     }
 
     interface Protocol extends PresenterWithDelegate<Delegate> {
@@ -71,7 +69,7 @@ public interface PlayMacroPresenter {
             this.macro = macro;
             actionDescriptions = new ArrayList<>();
 
-            actionHotkeyMonitor = HotkeyMonitor.build(InputKeystroke.build(InputKeyValue.F4));
+            actionHotkeyMonitor = HotkeyMonitor.build(PreferencesStorage.defaultMediaHotkey);
             
             setup();
         }
@@ -93,6 +91,10 @@ public interface PlayMacroPresenter {
             
             view.onPauseButtonCallback = () -> {
                 pauseMacroExecution(self);
+            };
+            
+            view.onWindowClosedCallback = () -> {
+                delegate.onExit();
             };
             
             for (var action : macro.getActions()) {
@@ -162,7 +164,7 @@ public interface PlayMacroPresenter {
         
         @Override
         public void navigateBack() {
-            Logger.messageEvent(this, "Navigate back.");
+            Logger.message(this, "Navigate back.");
 
             try {
                 actionHotkeyMonitor.stop();
@@ -182,7 +184,7 @@ public interface PlayMacroPresenter {
                 return;
             }
             
-            Logger.messageEvent(this, "Play.");
+            Logger.message(this, "Play.");
             
             var builder = new MacroProcessBuilder.Impl();
             builder.setRootType(true);
@@ -208,7 +210,7 @@ public interface PlayMacroPresenter {
                 return;
             }
             
-            Logger.messageEvent(this, "Stop playing...");
+            Logger.message(this, "Stop playing...");
             
             try {
                 runningProcess.cancel();
@@ -226,7 +228,7 @@ public interface PlayMacroPresenter {
                 return;
             }
             
-            Logger.messageEvent(this, "Pause");
+            Logger.message(this, "Pause");
             
             try {
                 runningProcess.pause();
@@ -244,7 +246,7 @@ public interface PlayMacroPresenter {
                 return;
             }
             
-            Logger.messageEvent(this, "Resume");
+            Logger.message(this, "Resume");
             
             try {
                 runningProcess.resume();

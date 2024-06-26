@@ -5,6 +5,7 @@
 package automater.execution;
 
 import automater.di.DI;
+import automater.service.HardwareInputSimulator;
 import automater.utilities.Callback;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.Errors;
@@ -235,7 +236,7 @@ public interface MacroProcess {
                     listener.onEnd(false);
                 });
             } catch (Exception e) {
-
+                Logger.error(this, "Failed to end process, error: " + e);
             }
         }
         
@@ -255,9 +256,11 @@ public interface MacroProcess {
     
     class Root extends Child implements Looper.Subscriber {
         
+        private final @NotNull HardwareInputSimulator.Protocol simulator;
         
-        public Root(@NotNull List<Command.Protocol> commands) {
+        public Root(@NotNull List<Command.Protocol> commands, @NotNull HardwareInputSimulator.Protocol simulator) {
             super(commands);
+            this.simulator = simulator;
         }
         
         // # Protocol
@@ -283,6 +286,8 @@ public interface MacroProcess {
             super.stop();
             
             looper.unsubscribe(this);
+            
+            simulator.end();
         }
     }
 }

@@ -9,7 +9,7 @@ import automater.model.action.MacroAction;
 import automater.model.action.MacroHardwareAction;
 import automater.service.HardwareInputSimulator;
 import automater.utilities.Errors;
-import automater.utilities.Looper;
+import automater.utilities.Size;
 import java.awt.GraphicsDevice;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +25,7 @@ public interface CommandBuilder {
     interface Protocol {
         
         void setMacrosActions(@NotNull List<MacroAction> actions);
+        @Nullable HardwareInputSimulator.Protocol getHardwareInputSimulator();
         void setHardwareInputSimulator(@NotNull HardwareInputSimulator.Protocol simulator);
         
         @NotNull List<Command.Protocol> build() throws Exception;
@@ -37,9 +38,9 @@ public interface CommandBuilder {
         private @Nullable List<MacroAction> actions;
         private @Nullable HardwareInputSimulator.Protocol simulator;
         
-        public Impl() {
+        public Impl(@NotNull Size referenceScreen) {
             try {
-                simulator = new HardwareInputSimulator.Impl(screen);
+                simulator = new HardwareInputSimulator.AWTImpl(screen, referenceScreen);
             } catch (Exception e) {
                 
             }
@@ -50,6 +51,11 @@ public interface CommandBuilder {
         @Override
         public void setMacrosActions(@NotNull List<MacroAction> actions) {
             this.actions = actions;
+        }
+        
+        @Override
+        public @Nullable HardwareInputSimulator.Protocol getHardwareInputSimulator() {
+            return simulator;
         }
         
         @Override
@@ -67,6 +73,11 @@ public interface CommandBuilder {
         }
         
         private @NotNull List<Command.Protocol> buildFromActions(@NotNull List<MacroAction> actions) throws Exception {
+            if (!(simulator instanceof HardwareInputSimulator.AWTProtocol awtSimulator)) {
+                throw Errors.parsing();
+            }
+            
+            
             var result = new ArrayList<Command.Protocol>();
             
             var currentHardwareActions = new ArrayList<MacroHardwareAction.Generic>();
@@ -75,7 +86,7 @@ public interface CommandBuilder {
                 if (action instanceof MacroHardwareAction.Generic hardwareAction) {
                     currentHardwareActions.add(hardwareAction);
                 } else {
-                    result.add(new Command.HardwareEvents(currentHardwareActions, simulator));
+                    result.add(new Command.AWTHardwareEvents(currentHardwareActions, awtSimulator));
                     currentHardwareActions.clear();
                     
                     // TODO: handle other types of actions
@@ -83,7 +94,7 @@ public interface CommandBuilder {
             }
             
             if (!currentHardwareActions.isEmpty()) {
-                result.add(new Command.HardwareEvents(currentHardwareActions, simulator));
+                result.add(new Command.AWTHardwareEvents(currentHardwareActions, awtSimulator));
             }
             
             return result;

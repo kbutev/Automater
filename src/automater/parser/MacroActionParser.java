@@ -46,7 +46,9 @@ public interface MacroActionParser {
         @Override
         public @NotNull MacroAction parseFromCapturedEvent(@NotNull CapturedEvent event, double timestamp) throws Exception {
             if (event instanceof CapturedHardwareEvent.Click click) {
-                return new MacroHardwareAction.Click(timestamp, click.kind, click.keystroke);
+                if (click instanceof CapturedHardwareEvent.AWTClick awtClick) {
+                    return new MacroHardwareAction.AWTClick(timestamp, awtClick.kind, awtClick.keystroke);
+                }
             } else if (event instanceof CapturedHardwareEvent.MouseMove mm) {
                 return new MacroHardwareAction.MouseMove(timestamp, mm.point);
             } else if (event instanceof CapturedHardwareEvent.MouseScroll ms) {
@@ -110,7 +112,7 @@ public interface MacroActionParser {
     
     // Action types mapped to their respective class types
     final static Map<String, ClassMapping> type_mappings = Map.of(
-        MacroHardwareAction.Click.TYPE, ClassMapping.make(MacroHardwareAction.Click.class),
+        MacroHardwareAction.AWTClick.TYPE, ClassMapping.make(MacroHardwareAction.AWTClick.class),
         MacroHardwareAction.MouseMove.TYPE, ClassMapping.make(MacroHardwareAction.MouseMove.class),
         MacroHardwareAction.MouseScroll.TYPE, ClassMapping.make(MacroHardwareAction.MouseScroll.class)
     );

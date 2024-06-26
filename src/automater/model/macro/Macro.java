@@ -8,6 +8,7 @@ import automater.model.action.MacroAction;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
+import automater.utilities.Size;
 
 /**
  *
@@ -23,7 +24,7 @@ public interface Macro {
     }
     
     public static @NotNull Macro.Protocol build(@NotNull String name, @NotNull List<MacroAction> actions) {
-        return new Macro.Impl(new MacroSummary(name, null, 0, actions.size()), actions);
+        return new Macro.Impl(new MacroSummary(name, null, 0, actions.size(), Size.zero()), actions);
     }
     
     interface Protocol {

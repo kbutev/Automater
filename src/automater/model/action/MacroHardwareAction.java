@@ -6,7 +6,7 @@ package automater.model.action;
 
 import automater.model.KeyEventKind;
 import automater.model.InputKeystroke;
-import automater.model.Point;
+import automater.utilities.Point;
 import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,8 +41,8 @@ public interface MacroHardwareAction {
             return timestamp;
         }
     }
-
-    class Click extends Generic {
+    
+    abstract class Click <KeystrokeT extends InputKeystroke.Protocol> extends Generic {
 
         public static final String TYPE = TYPE_PREFIX + "c";
 
@@ -50,31 +50,39 @@ public interface MacroHardwareAction {
         @NotNull public final KeyEventKind kind;
 
         @SerializedName("v")
-        @NotNull public final InputKeystroke keystroke;
+        @NotNull public final KeystrokeT keystroke;
 
-        public Click() {
-            this(0, KeyEventKind.tap, InputKeystroke.anyKey());
-        }
-
-        public Click(double timestamp, @NotNull KeyEventKind kind, @NotNull InputKeystroke value) {
+        public Click(double timestamp, @NotNull KeyEventKind kind, @NotNull KeystrokeT value) {
             super(TYPE, timestamp);
             this.kind = kind;
             this.keystroke = value;
         }
 
-        public Click(@NotNull Click other) {
-            super(TYPE, other.getTimestamp());
-            this.kind = other.kind;
-            this.keystroke = other.keystroke;
+        @Override
+        abstract public @NotNull MacroAction copy();
+
+        public KeyEventKind getEventKind() {
+            return kind;
+        }
+    }
+    
+    class AWTClick extends Click<InputKeystroke.AWT> {
+        
+        public AWTClick() {
+            super(0, KeyEventKind.tap, InputKeystroke.AWT.anyKey());
+        }
+        
+        public AWTClick(@NotNull AWTClick other) {
+            super(other.timestamp, other.kind, other.keystroke);
+        }
+        
+        public AWTClick(double timestamp, @NotNull KeyEventKind kind, @NotNull InputKeystroke.AWT value) {
+            super(timestamp, kind, value);
         }
 
         @Override
         public @NotNull MacroAction copy() {
-            return new Click(this);
-        }
-
-        public KeyEventKind getEventKind() {
-            return kind;
+            return new AWTClick(this);
         }
     }
 

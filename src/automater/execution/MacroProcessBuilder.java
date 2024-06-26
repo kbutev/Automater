@@ -5,6 +5,7 @@
 package automater.execution;
 
 import automater.model.macro.Macro;
+import automater.utilities.Errors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,10 +45,18 @@ public interface MacroProcessBuilder {
         
         @Override
         public @NotNull MacroProcess.Protocol build() throws Exception {
-            var commandsBuild = new CommandBuilder.Impl();
+            var commandsBuild = new CommandBuilder.Impl(macro.getSummary().primaryScreen);
             commandsBuild.setMacrosActions(macro.getActions());
+            
             var commands = commandsBuild.build();
-            var result = rootType ? new MacroProcess.Root(commands) : new MacroProcess.Child(commands);
+            
+            var simulator = commandsBuild.getHardwareInputSimulator();
+            
+            if (simulator == null) {
+                throw Errors.illegalStateError();
+            }
+            
+            var result = rootType ? new MacroProcess.Root(commands, simulator) : new MacroProcess.Child(commands);
             return result;
         }
     }

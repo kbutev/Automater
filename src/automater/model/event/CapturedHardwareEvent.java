@@ -6,7 +6,7 @@ package automater.model.event;
 
 import automater.model.KeyEventKind;
 import automater.model.InputKeystroke;
-import automater.model.Point;
+import automater.utilities.Point;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,17 +15,29 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface CapturedHardwareEvent {
     
-    class Click implements CapturedEvent {
-        @NotNull public final KeyEventKind kind;
-        @NotNull public final InputKeystroke keystroke;
+    abstract class Click <KeystrokeT extends InputKeystroke.Protocol> implements CapturedEvent {
+        public final @NotNull KeyEventKind kind;
+        public final @NotNull KeystrokeT keystroke;
         
-        public Click() {
-            this(0, KeyEventKind.tap, InputKeystroke.anyKey());
-        }
-        
-        public Click(double timestamp, @NotNull KeyEventKind kind, @NotNull InputKeystroke keystroke) {
+        public Click(double timestamp, @NotNull KeyEventKind kind, @NotNull KeystrokeT keystroke) {
             this.kind = kind;
             this.keystroke = keystroke;
+        }
+        
+        @Override
+        public String toString() {
+            return kind.toString() + " " + keystroke.toString();
+        }
+    }
+    
+    class AWTClick extends Click<InputKeystroke.AWT> {
+        
+        public AWTClick() {
+            super(0, KeyEventKind.tap, InputKeystroke.AWT.anyKey());
+        }
+        
+        public AWTClick(double timestamp, @NotNull KeyEventKind kind, @NotNull InputKeystroke.AWT keystroke) {
+            super(timestamp, kind, keystroke);
         }
     }
     
@@ -38,6 +50,11 @@ public interface CapturedHardwareEvent {
         
         public MouseMove(double timestamp, @NotNull Point point) {
             this.point = point;
+        }
+        
+        @Override
+        public String toString() {
+            return "mmove " + point.toString();
         }
     }
     
@@ -52,6 +69,11 @@ public interface CapturedHardwareEvent {
         public MouseScroll(double timestamp, @NotNull Point point, @NotNull Point scroll) {
             this.point = point;
             this.scroll = scroll;
+        }
+        
+        @Override
+        public String toString() {
+            return "mscroll " + point.toString() + " " + scroll.toString();
         }
     }
 }

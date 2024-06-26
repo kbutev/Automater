@@ -5,7 +5,6 @@
 package automater.storage;
 
 import automater.di.DI;
-import automater.model.InputKeyValue;
 import automater.model.InputKeystroke;
 import automater.utilities.FileSystem;
 import automater.utilities.Logger;
@@ -15,6 +14,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import java.io.File;
 import org.jetbrains.annotations.NotNull;
+import org.jnativehook.keyboard.NativeKeyEvent;
 
 /**
  * Holds the application general preference settings, such as UI preferences.
@@ -28,6 +28,8 @@ public interface PreferencesStorage {
     public static final String PREFERENCES_FILE_NAME = "preferences.json";
     public static final String DEFAULT_MACROS_DIRECTORY = "macros";
     
+    public static final InputKeystroke.AWT defaultMediaHotkey = InputKeystroke.AWT.buildFromCode(NativeKeyEvent.VC_F4);
+    
     class Values {
         @SerializedName(VERSION_KEY)
         public @NotNull String version = VERSION;
@@ -36,19 +38,19 @@ public interface PreferencesStorage {
         public @NotNull Path macrosDirectory = Path.getLocalDirectory().withSubpath(DEFAULT_MACROS_DIRECTORY);
         
         @SerializedName("startRecordHotkey")
-        public @NotNull InputKeystroke startRecordHotkey = InputKeystroke.build(InputKeyValue.F4);
+        public @NotNull InputKeystroke.AWT startRecordHotkey = defaultMediaHotkey;
         
         @SerializedName("stopRecordHotkey")
-        public @NotNull InputKeystroke stopRecordHotkey = InputKeystroke.build(InputKeyValue.F4);
+        public @NotNull InputKeystroke.AWT stopRecordHotkey = defaultMediaHotkey;
         
         @SerializedName("playMacroHotkey")
-        public @NotNull InputKeystroke playMacroHotkey = InputKeystroke.build(InputKeyValue.F4);
+        public @NotNull InputKeystroke.AWT playMacroHotkey = defaultMediaHotkey;
         
         @SerializedName("pauseMacroHotkey")
-        public @NotNull InputKeystroke pauseMacroHotkey = InputKeystroke.build(InputKeyValue.F3);
+        public @NotNull InputKeystroke.AWT pauseMacroHotkey = defaultMediaHotkey;
         
         @SerializedName("stopMacroHotkey")
-        public @NotNull InputKeystroke stopMacroHotkey = InputKeystroke.build(InputKeyValue.F4);
+        public @NotNull InputKeystroke.AWT stopMacroHotkey = defaultMediaHotkey;
         
         @SerializedName("startNotification")
         public boolean startNotification = false;

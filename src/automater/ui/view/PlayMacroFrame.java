@@ -26,6 +26,7 @@ public class PlayMacroFrame extends javax.swing.JFrame implements View {
     public Callback.Blank onStopButtonCallback = Callback.buildBlank();
     public Callback.Blank onPauseButtonCallback = Callback.buildBlank();
     public Callback.Blank onResumeButtonCallback = Callback.buildBlank();
+    public Callback.Blank onWindowClosedCallback = Callback.buildBlank();
     
     /**
      * Creates new form OpenMacroFrame
@@ -197,6 +198,11 @@ public class PlayMacroFrame extends javax.swing.JFrame implements View {
         setTitle("Play macro");
         setMaximumSize(new java.awt.Dimension(32767, 32767));
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         macroNameLabel.setFont(new java.awt.Font("Verdana", 0, 18)); // NOI18N
         macroNameLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -280,6 +286,10 @@ public class PlayMacroFrame extends javax.swing.JFrame implements View {
             onResumeButtonCallback.perform();
         }
     }//GEN-LAST:event_pauseResumeButtonActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        onWindowClosedCallback.perform();
+    }//GEN-LAST:event_formWindowClosed
 
     /**
      * @param args the command line arguments

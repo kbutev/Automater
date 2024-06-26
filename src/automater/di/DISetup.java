@@ -37,9 +37,9 @@ public class DISetup {
         injector.registerInstance(new automater.parser.MacroActionsParser.Impl());
         injector.registerInstance(new automater.parser.DescriptionParser.Impl());
         injector.registerInstance(new automater.parser.MacroParser.Impl());
-        injector.registerInstance(new automater.parser.InputKeyValueParser.Impl());
+        injector.registerInstance(new automater.parser.InputKeyValueParser.AWTImpl());
         injector.registerInstance(new automater.parser.OutputKeyValueParser.Impl());
-        injector.registerInstance(new automater.parser.CapturedEventParser.Impl());
+        injector.registerInstance(new automater.parser.CapturedEventParser.AWTImpl());
 
         injector.registerInstance(new automater.storage.PreferencesStorage.Impl());
         injector.registerInstance(new automater.storage.MacroStorage.Impl());

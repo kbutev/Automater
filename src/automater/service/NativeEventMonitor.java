@@ -10,7 +10,9 @@ import automater.model.KeyEventKind;
 import automater.model.event.CapturedEvent;
 import automater.parser.CapturedEventParser;
 import automater.utilities.Callback;
+import automater.utilities.CollectionUtilities;
 import automater.utilities.Logger;
+import automater.utilities.Looper;
 import automater.utilities.RunState;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -68,7 +70,7 @@ public interface NativeEventMonitor {
 
     class Impl implements Protocol {
 
-        private CapturedEventParser.Protocol parser;
+        private CapturedEventParser.AWTProtocol parser;
 
         private static final Object registerLock = new Object();
         private static SwingDispatchService swingDispatchService = null;
@@ -113,7 +115,7 @@ public interface NativeEventMonitor {
         public void start() throws Exception {
             Logger.message(this, "start");
             
-            parser = new CapturedEventParser.Impl();
+            parser = new CapturedEventParser.AWTImpl();
             state.start();
             nativeHookListener.parser = parser;
             nativeHookListener.filter = filter;
@@ -151,7 +153,9 @@ public interface NativeEventMonitor {
     // Hook listener
     class NativeHookListener implements ActionListener, ItemListener, NativeKeyListener, NativeMouseInputListener, NativeMouseWheelListener, WindowListener {
 
-        private CapturedEventParser.Protocol parser;
+        private final Looper.Main looper = DI.get(Looper.Main.class);
+        
+        private CapturedEventParser.AWTProtocol parser;
         private ArrayList<Listener> listeners = new ArrayList<>();
         private EventFilter filter = new EventFilter();
         
@@ -359,9 +363,13 @@ public interface NativeEventMonitor {
         }
         
         private void forEachListener(Callback.WithParameter<Listener> callback) {
-            for (var listener : listeners) {
-                callback.perform(listener);
-            }
+            var listeners = CollectionUtilities.copy(this.listeners);
+            
+            looper.performAsync(() -> {
+                for (var listener : listeners) {
+                    callback.perform(listener);
+                }
+            });
         }
     }
 }

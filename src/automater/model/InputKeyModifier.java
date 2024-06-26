@@ -4,15 +4,10 @@
  */
 package automater.model;
 
-import automater.json.JSONDecoder;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
-import java.util.Set;
-import java.util.regex.Pattern;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jnativehook.keyboard.NativeKeyEvent;
 
 /**
  *
@@ -20,85 +15,35 @@ import org.jetbrains.annotations.Nullable;
  */
 public class InputKeyModifier {
 
-    @JSONDecoder.Optional
-    private @Nullable List<InputKeyModifierValue> values;
+    @SerializedName("v") private final int value;
 
     public static InputKeyModifier none() {
         return new InputKeyModifier();
     }
 
-    public @NotNull InputKeyModifier withModifierAdded(@NotNull InputKeyModifierValue value) {
-        InputKeyModifier modifiers = copy();
-
-        if (modifiers.getRawValues().contains(value)) {
-            return modifiers;
-        }
-
-        modifiers.getRawValues().add(value);
-
-        return modifiers;
-    }
-
-    public @NotNull InputKeyModifier withModifierRemoved(@NotNull InputKeyModifierValue value) {
-        InputKeyModifier modifiers = copy();
-
-        if (!modifiers.getRawValues().contains(value)) {
-            return modifiers;
-        }
-
-        modifiers.getRawValues().remove(value);
-
-        return modifiers;
-    }
-
     public InputKeyModifier() {
-
+        value = 0;
     }
 
-    public InputKeyModifier(@NotNull InputKeyModifierValue value) {
-        getRawValues().add(value);
-    }
-
-    public InputKeyModifier(@NotNull List<InputKeyModifierValue> values) {
-        if (values.isEmpty()) {
-            return;
-        }
-
-        for (InputKeyModifierValue value : values) {
-            getRawValues().add(value);
-        }
-    }
-
-    public InputKeyModifier(@NotNull String string) {
-        String suffix = InputKeyModifierValue.getSeparatorSymbol();
-
-        String[] strings = string.split(Pattern.quote(suffix));
-
-        for (int e = 0; e < string.length(); e++) {
-            try {
-                InputKeyModifierValue modifier = InputKeyModifierValue.valueOf(strings[e]);
-                values.add(modifier);
-            } catch (Exception exc) {
-
-            }
-        }
+    public InputKeyModifier(int value) {
+        this.value = value;
     }
 
     @Override
     public String toString() {
-        String value = "";
-
-        for (InputKeyModifierValue flag : getRawValues()) {
-            value = value.concat(flag.toString());
+        var mod = getValue();
+        
+        if (mod == null) {
+            return "n/a";
         }
-
-        return value;
+        
+        return mod.toString();
     }
 
     @Override
     public boolean equals(Object o) {
         if (o instanceof InputKeyModifier other) {
-            return getRawValues().equals(other.getRawValues());
+            return value == other.value;
         }
 
         return false;
@@ -107,31 +52,35 @@ public class InputKeyModifier {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 97 * hash + Objects.hashCode(this.getRawValues());
+        hash = 97 * hash + Objects.hashCode(value);
         return hash;
     }
-
-    public boolean isEmpty() {
-        return values != null && values.isEmpty();
+    
+    public boolean isBlank() {
+        return getValue() == null;
     }
-
-    private List<InputKeyModifierValue> getRawValues() {
-        if (values == null) {
-            values = new ArrayList<>();
+    
+    public @Nullable InputKeyModifierValue getValue() {
+        if (c(NativeKeyEvent.CTRL_L_MASK) || c(NativeKeyEvent.CTRL_MASK) || c(NativeKeyEvent.CTRL_R_MASK)) {
+            return InputKeyModifierValue.CTRL;
         }
-
-        return values;
+        
+        if (c(NativeKeyEvent.SHIFT_L_MASK) || c(NativeKeyEvent.SHIFT_MASK) || c(NativeKeyEvent.SHIFT_R_MASK)) {
+            return InputKeyModifierValue.SHIFT;
+        }
+        
+        if (c(NativeKeyEvent.ALT_L_MASK) || c(NativeKeyEvent.ALT_MASK) || c(NativeKeyEvent.ALT_R_MASK)) {
+            return InputKeyModifierValue.ALT;
+        }
+        
+        if (c(NativeKeyEvent.META_L_MASK) || c(NativeKeyEvent.META_MASK) || c(NativeKeyEvent.META_R_MASK)) {
+            return InputKeyModifierValue.META;
+        }
+        
+        return null;
     }
-
-    public Set<InputKeyModifierValue> getValues() {
-        return new HashSet(getRawValues());
-    }
-
-    public InputKeyModifier copy() {
-        return new InputKeyModifier(getRawValues());
-    }
-
-    public boolean contains(@NotNull InputKeyModifierValue value) {
-        return values != null ? getRawValues().contains(value) : false;
+    
+    private boolean c(int mask) {
+        return (value & mask) == mask;
     }
 }

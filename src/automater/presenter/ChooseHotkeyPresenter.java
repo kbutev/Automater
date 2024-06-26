@@ -8,6 +8,7 @@ import automater.model.InputKeystroke;
 import automater.service.HotkeyListener;
 import automater.ui.view.ChooseKeyDialog;
 import automater.utilities.Callback;
+import automater.utilities.Errors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,14 +24,14 @@ public interface ChooseHotkeyPresenter {
     
     class Impl implements Protocol, HotkeyListener.Delegate {
 
-        @Nullable Callback.WithParameter<InputKeystroke> success;
+        @Nullable Callback.WithParameter<InputKeystroke.AWT> success;
         @Nullable Callback.Blank failure;
         
         private final @NotNull ChooseKeyDialog view;
         
         private final HotkeyListener.Protocol monitor = new HotkeyListener.Impl();
         
-        private @Nullable InputKeystroke result;
+        private @Nullable InputKeystroke.AWT result;
         
         public Impl(@NotNull ChooseKeyDialog view) {
             this.view = view;
@@ -43,7 +44,7 @@ public interface ChooseHotkeyPresenter {
             };
         }
         
-        public void setSuccessCallback(@Nullable Callback.WithParameter<InputKeystroke> callback) {
+        public void setSuccessCallback(@Nullable Callback.WithParameter<InputKeystroke.AWT> callback) {
             success = callback;
         }
         
@@ -83,8 +84,12 @@ public interface ChooseHotkeyPresenter {
         }
         
         @Override
-        public void onKeyPressed(@NotNull InputKeystroke key) {
-            result = key;
+        public void onKeyPressed(@NotNull InputKeystroke.Protocol key) {
+            if ((result instanceof InputKeystroke.AWT awtKeystroke)) {
+                result = awtKeystroke;
+            } else {
+                throw Errors.illegalStateError();
+            }
         }
         
         @Override

@@ -20,11 +20,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface HotkeyMonitor {
 
-    public static @NotNull Protocol build(@NotNull InputKeystroke hotkey) {
+    public static @NotNull Protocol build(@NotNull InputKeystroke.Protocol hotkey) {
         return new Impl(hotkey);
     }
     
-    public static @NotNull Protocol build(@NotNull InputKeystroke hotkey, @NotNull String name) {
+    public static @NotNull Protocol build(@NotNull InputKeystroke.Protocol hotkey, @NotNull String name) {
         var result = new Impl(hotkey);
         result.setName(name);
         return result;
@@ -34,8 +34,8 @@ public interface HotkeyMonitor {
 
         @Nullable Listener getListener();
         void setListener(@NotNull Listener listener);
-        @Nullable InputKeystroke getHotkey();
-        void setHotkey(@NotNull InputKeystroke hotkey);
+        @Nullable InputKeystroke.Protocol getHotkey();
+        void setHotkey(@NotNull InputKeystroke.Protocol hotkey);
         @NotNull String getName();
         void setName(@NotNull String name);
 
@@ -52,10 +52,10 @@ public interface HotkeyMonitor {
 
         private final NativeEventMonitor.Protocol monitor = DI.get(NativeEventMonitor.Protocol.class);
         private @Nullable Listener listener;
-        private @Nullable InputKeystroke hotkey;
+        private @Nullable InputKeystroke.Protocol hotkey;
         private @NotNull String name = "";
 
-        public Impl(@NotNull InputKeystroke hotkey) {
+        public Impl(@NotNull InputKeystroke.Protocol hotkey) {
             this.hotkey = hotkey;
         }
 
@@ -72,12 +72,12 @@ public interface HotkeyMonitor {
         }
 
         @Override
-        public @Nullable InputKeystroke getHotkey() {
+        public @Nullable InputKeystroke.Protocol getHotkey() {
             return hotkey;
         }
 
         @Override
-        public void setHotkey(@NotNull InputKeystroke hotkey) {
+        public void setHotkey(@NotNull InputKeystroke.Protocol hotkey) {
             assert hotkey != null;
             this.hotkey = hotkey;
         }
@@ -118,7 +118,9 @@ public interface HotkeyMonitor {
             }
 
             if (event instanceof CapturedHardwareEvent.Click click) {
-                if (hotkey.equals(click.keystroke)) {
+                Logger.messageVerbose(this, "onParseEvent " + click.toString());
+                
+                if (hotkey.equalsIgnoreModifier(click.keystroke)) {
                     listener.onHotkeyEvent(click.kind);
                 }
             }

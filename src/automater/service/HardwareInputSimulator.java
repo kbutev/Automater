@@ -4,15 +4,16 @@
  */
 package automater.service;
 
-import automater.di.DI;
-import automater.model.InputKeystroke;
 import automater.model.OutputKeyValue;
-import automater.model.Point;
+import automater.utilities.Point;
 import java.awt.AWTException;
 import java.awt.GraphicsDevice;
 import java.awt.Robot;
 import org.jetbrains.annotations.NotNull;
-import automater.parser.OutputKeyValueParser;
+import automater.utilities.Logger;
+import automater.utilities.Size;
+import java.awt.Toolkit;
+import java.util.ArrayList;
 
 /**
  *
@@ -22,99 +23,156 @@ public interface HardwareInputSimulator {
     
     interface Protocol {
         
-        void simulateKeyPress(@NotNull InputKeystroke key);
-        void simulateKeyRelease(@NotNull InputKeystroke key);
-        void simulateKeyTap(@NotNull InputKeystroke key);
-        void simulateMouseMove(@NotNull Point point);
+        void end();
     }
     
-    class Impl implements Protocol {
+    interface AWTProtocol extends Protocol {
         
-        private final OutputKeyValueParser.Protocol keyValueParser = DI.get(OutputKeyValueParser.Protocol.class);
+        void simulateKeyPress(@NotNull OutputKeyValue.AWT key);
+        void simulateKeyRelease(@NotNull OutputKeyValue.AWT key);
+        void simulateKeyTap(@NotNull OutputKeyValue.AWT key);
+        void simulateMouseMove(@NotNull Point point);
+        void simulateMouseScroll(@NotNull Point scroll);
+    }
+    
+    class AWTImpl implements AWTProtocol {
+        
         private final @NotNull Robot robot;
+        private final @NotNull Size currentScreen;
+        private final @NotNull Size referenceScreen;
         
-        public Impl(@NotNull GraphicsDevice screen) throws AWTException {
+        private final @NotNull ArrayList<Integer> pressedKeyboardKeys = new ArrayList<>();
+        private final @NotNull ArrayList<Integer> pressedMouseKeys = new ArrayList<>();
+        
+        public AWTImpl(@NotNull GraphicsDevice screen, @NotNull Size referenceScreen) throws AWTException {
             robot = new Robot(screen);
+            // TODO: research why robot getDisplay getSize doesnt work, but toolkit does
+            currentScreen = Size.make(Toolkit.getDefaultToolkit().getScreenSize());
+            this.referenceScreen = referenceScreen;
         }
         
         @Override
-        public void simulateKeyPress(@NotNull InputKeystroke key) {
-            OutputKeyValue code;
+        public void simulateKeyPress(@NotNull OutputKeyValue.AWT key) {
+            int code = key.value;
             
-            try {
-                code = keyValueParser.parse(key.value);
-            } catch (Exception e) {
-                return;
-            }
+            Logger.messageVerbose(this, "press " + key.toString() + " code = " + code);
             
-            // First, simulate the modifier keys
-            for (var inputModifier : key.getModifier().getValues()) {
-                try {
-                    var ouputModifier = keyValueParser.parseModifier(inputModifier);
-                    robot.keyPress(ouputModifier.getValue());
-                } catch (Exception e) {
-                    
-                }
-            }
+            // Modifiers
+//            var modifier = key.getModifier().getValue();
+//            
+//            if (modifier != null) {
+//                var modifierCode = modifier.getKeyEventValue();
+//                
+//                Logger.messageVerbose(this, "press modifier " + modifier.toString() + " code = " + modifierCode);
+//                
+//                pressKey(modifierCode);
+//            }
             
             // And then simulate the actual key value
             if (key.isKeyboard()) {
-                robot.keyPress(code.value);
+                pressKey(code);
             } else {
-                robot.mousePress(code.value);
+                pressMouseKey(code);
             }
         }
         
         @Override
-        public void simulateKeyRelease(@NotNull InputKeystroke key) {
-            OutputKeyValue code;
+        public void simulateKeyRelease(@NotNull OutputKeyValue.AWT key) {
+            int code = key.value;
             
-            try {
-                code = keyValueParser.parse(key.value);
-            } catch (Exception e) {
-                return;
-            }
-            
-            // First, simulate the modifier keys
-            for (var inputModifier : key.getModifier().getValues()) {
-                try {
-                    var ouputModifier = keyValueParser.parseModifier(inputModifier);
-                    robot.keyRelease(ouputModifier.getValue());
-                } catch (Exception e) {
-                    
-                }
-            }
+            Logger.messageVerbose(this, "release " + key.toString() + " code = " + code);
             
             // And then simulate the actual key value
             if (key.isKeyboard()) {
-                robot.keyRelease(code.value);
+                releaseKey(code);
             } else {
-                robot.mouseRelease(code.value);
+                releaseMouseKey(code);
             }
+            
+            // Modifiers
+//            var modifier = key.getModifier().getValue();
+//            
+//            if (modifier != null) {
+//                var modifierCode = modifier.getKeyEventValue();
+//                
+//                Logger.messageVerbose(this, "release modifier " + modifier.toString() + " code = " + modifierCode);
+//                
+//                releaseKey(modifierCode);
+//            }
         }
         
         @Override
-        public void simulateKeyTap(@NotNull InputKeystroke key) {
-            OutputKeyValue code;
-            
-            try {
-                code = keyValueParser.parse(key.value);
-            } catch (Exception e) {
-                return;
-            }
-            
-            if (key.isKeyboard()) {
-                robot.keyPress(code.value);
-                robot.keyRelease(code.value);
-            } else {
-                robot.mousePress(code.value);
-                robot.mouseRelease(code.value);
-            }
+        public void simulateKeyTap(@NotNull OutputKeyValue.AWT key) {
+            simulateKeyPress(key);
+            simulateKeyRelease(key);
         }
         
         @Override
         public void simulateMouseMove(@NotNull Point point) {
-            robot.mouseMove((int)point.x, (int)point.y);
+            double screenScaleX = referenceScreen.width / currentScreen.width;
+            double screenScaleY = referenceScreen.height / currentScreen.height;
+
+            var result = Point.make(point.x / screenScaleX, point.y / screenScaleY);
+            
+            Logger.messageVerbose(this, "move mouse to  " + result.toString());
+            
+            robot.mouseMove((int)result.x, (int)result.y);
+        }
+        
+        @Override
+        public void simulateMouseScroll(@NotNull Point scroll) {
+            Logger.messageVerbose(this, "move scroll by  " + scroll.toString());
+            
+            // TODO
+            //robot.mouseMove((int)point.x, (int)point.y);
+        }
+        
+        @Override
+        public void end() {
+            // Release all pressed keys
+            
+            for (var key : pressedKeyboardKeys) {
+                releaseKey(key);
+            }
+            
+            for (var key : pressedMouseKeys) {
+                releaseMouseKey(key);
+            }
+            
+            pressedMouseKeys.clear();
+            pressedKeyboardKeys.clear();
+        }
+        
+        private void pressKey(int code) {
+            try { robot.keyPress(code); } catch(Exception e) {}
+            
+            if (!pressedKeyboardKeys.contains(code)) {
+                pressedKeyboardKeys.add(code);
+            }
+        }
+        
+        private void releaseKey(int code) {
+            try { robot.keyRelease(code); } catch(Exception e) {}
+            
+            if (pressedKeyboardKeys.contains(code)) {
+                pressedKeyboardKeys.remove((Object)code);
+            }
+        }
+        
+        private void pressMouseKey(int code) {
+            try { robot.mousePress(code); } catch(Exception e) {}
+            
+            if (!pressedMouseKeys.contains(code)) {
+                pressedMouseKeys.add(code);
+            }
+        }
+        
+        private void releaseMouseKey(int code) {
+            try { robot.mouseRelease(code); } catch(Exception e) {}
+            
+            if (pressedMouseKeys.contains(code)) {
+                pressedMouseKeys.remove((Object)code);
+            }
         }
     }
 }

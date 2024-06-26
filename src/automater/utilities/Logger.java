@@ -19,6 +19,8 @@ import java.util.Date;
  */
 public class Logger {
 
+    public static final boolean VERBOSE = true;
+    
     public static final boolean PRINT_TO_LOG_FILE = true;
     public static final String LOG_FILE_NAME = "logs.txt";
     public static final String LOG_BACKUP_FILE_NAME = "logs-previous.txt";
@@ -36,6 +38,10 @@ public class Logger {
     private static final PrintStream _outStream = System.out;
 
     public static void printLine(@Nullable String data) {
+        if (data == null) {
+            return;
+        }
+        
         _outStream.println(data);
 
         if (PRINT_TO_LOG_FILE) {
@@ -50,13 +56,11 @@ public class Logger {
     public static <T> void message(String prefix, @Nullable String string) {
         printLine(generateText(prefix, string));
     }
-
-    public static <T> void messageAction(T origin, @Nullable String string) {
-        printLine(generateText(origin, MESSAGE_ACTION_PREFIX, string));
-    }
-
-    public static <T> void messageEvent(T origin, @Nullable String string) {
-        printLine(generateText(origin, MESSAGE_EVENT_PREFIX, string));
+    
+    public static <T> void messageVerbose(@NotNull T origin, @Nullable String string) {
+        if (VERBOSE) {
+            printLine(generateText(origin, "", string));
+        }
     }
 
     public static <T> void warning(String prefix, @Nullable String string) {
@@ -79,24 +83,14 @@ public class Logger {
         printLine(generateText(prefix, string));
     }
 
-    public static <T> void utilityError(T origin, @Nullable String string) {
-        printLine(generateText(origin, UTILITY_ERROR_PREFIX, string));
-    }
-
-    public static <T> void systemError(T origin, @Nullable String string) {
-        printLine(generateText(origin, SYSTEM_ERROR_PREFIX, string));
-    }
-
-    public static <T> void overrideMe(T origin, @Nullable String methodName) {
-        printLine(generateText(origin, WARNING_PREFIX, OVERRIDE_ME_MESSAGE + methodName));
-    }
-
     private static <T> @NotNull String generateText(T origin, @Nullable String prefix, @Nullable String text) {
         String reportingClass = "Automater";
         
         if (origin.getClass() != null) {
             var name = origin.getClass().getSimpleName();
             reportingClass = name != null ? origin.getClass().getName() : reportingClass;
+        } else {
+            reportingClass = prefix;
         }
         
         return generateText(reportingClass, text);

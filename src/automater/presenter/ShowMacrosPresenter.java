@@ -125,7 +125,7 @@ public interface ShowMacrosPresenter {
             }
             
             var summary = macros.get(index);
-            Logger.messageEvent(this, "Open macro at " + summary.path.toStringWithQuotes());
+            Logger.message(this, "Open macro at " + summary.path.toStringWithQuotes());
             
             try {
                 var macro = storage.getMacro(summary.path);
@@ -137,7 +137,7 @@ public interface ShowMacrosPresenter {
 
         @Override
         public void editMacroAt(int index) {
-            Logger.messageEvent(this, "Edit macro at " + String.valueOf(index));
+            Logger.message(this, "Edit macro at " + String.valueOf(index));
 
             if (index < 0 || index >= macros.size()) {
                 Logger.error(this, "Cannot open macro at " + String.valueOf(index) + ", invalid index");
@@ -151,7 +151,7 @@ public interface ShowMacrosPresenter {
 
         @Override
         public void deleteMacroAt(int index) {
-            Logger.messageEvent(this, "Delete macro at " + String.valueOf(index));
+            Logger.message(this, "Delete macro at " + String.valueOf(index));
 
             if (index < 0 || index >= macros.size()) {
                 Logger.error(this, "Cannot delete macro at " + String.valueOf(index) + ", invalid index");

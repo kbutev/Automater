@@ -11,6 +11,8 @@ import automater.utilities.CollectionUtilities;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.RunState;
+import automater.utilities.Size;
+import java.awt.GraphicsDevice;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -24,8 +26,9 @@ public interface EventMonitor {
         void setListener(@NotNull Listener listener);
         @Nullable EventFilter getFilter();
         void setFilter(@NotNull EventFilter filter);
-
+        
         boolean isRecording();
+        @NotNull Size getPrimaryScreenSize();
         @NotNull List<CapturedEvent> getCapturedEvents();
 
         void start() throws Exception;
@@ -41,6 +44,7 @@ public interface EventMonitor {
 
         private final NativeEventMonitor.Protocol nativeMonitor = DI.get(NativeEventMonitor.Protocol.class);
         private @Nullable Listener listener;
+        private final GraphicsDevice primaryScreen = DI.get(GraphicsDevice.class);
         private final ArrayList<CapturedEvent> capturedEvents = new ArrayList<>();
 
         private final RunState state = new RunState();
@@ -70,6 +74,12 @@ public interface EventMonitor {
         public boolean isRecording() {
             return state.isStarted();
         }
+        
+        @Override
+        public @NotNull Size getPrimaryScreenSize() {
+            var display = primaryScreen.getDisplayMode();
+            return Size.make(display.getWidth(), display.getHeight());
+        }
 
         @Override
         public @NotNull
@@ -97,6 +107,8 @@ public interface EventMonitor {
         // # NativeEventMonitor.Listener
         @Override
         public void onParseEvent(@NotNull CapturedEvent event) {
+            Logger.messageVerbose(this, "onParseEvent " + event.toString());
+            
             capturedEvents.add(event);
 
             if (listener != null) {
