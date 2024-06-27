@@ -45,7 +45,7 @@ public interface MacroProcessBuilder {
         
         @Override
         public @NotNull MacroProcess.Protocol build() throws Exception {
-            var commandsBuild = new CommandBuilder.Impl(macro.getSummary().primaryScreen);
+            var commandsBuild = new CommandBuilder.Impl(macro.getRecordSource().primaryScreenSize);
             commandsBuild.setMacrosActions(macro.getActions());
             
             var commands = commandsBuild.build();

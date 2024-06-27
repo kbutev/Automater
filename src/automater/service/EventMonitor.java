@@ -7,6 +7,7 @@ package automater.service;
 import automater.di.DI;
 import automater.model.EventFilter;
 import automater.model.event.CapturedEvent;
+import automater.provider.ScreenProvider;
 import automater.utilities.CollectionUtilities;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
@@ -43,8 +44,9 @@ public interface EventMonitor {
     class Impl implements Protocol, NativeEventMonitor.Listener {
 
         private final NativeEventMonitor.Protocol nativeMonitor = DI.get(NativeEventMonitor.Protocol.class);
+        private final ScreenProvider.AWTGraphicsDeviceProtocol graphicsDevice = DI.get(ScreenProvider.AWTGraphicsDeviceProtocol.class);
+        
         private @Nullable Listener listener;
-        private final GraphicsDevice primaryScreen = DI.get(GraphicsDevice.class);
         private final ArrayList<CapturedEvent> capturedEvents = new ArrayList<>();
 
         private final RunState state = new RunState();
@@ -77,8 +79,7 @@ public interface EventMonitor {
         
         @Override
         public @NotNull Size getPrimaryScreenSize() {
-            var display = primaryScreen.getDisplayMode();
-            return Size.make(display.getWidth(), display.getHeight());
+            return graphicsDevice.getScreen().size;
         }
 
         @Override

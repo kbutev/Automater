@@ -6,6 +6,7 @@ package automater.parser;
 
 import automater.di.DI;
 import automater.model.macro.Macro;
+import automater.model.macro.MacroRecordSource;
 import automater.model.macro.MacroSummary;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -29,6 +30,7 @@ public interface MacroParser {
     class Impl implements Protocol {
         
         static final String KEY_ACTIONS = Macro.KEY_ACTIONS;
+        static final String KEY_RECORD_SOURCE = Macro.KEY_RECORD_SOURCE;
         static final String KEY_SUMMARY = Macro.KEY_SUMMARY;
         
         final @NotNull Gson gson = DI.get(Gson.class);
@@ -41,16 +43,18 @@ public interface MacroParser {
             }
             
             var summaryJSON = macro.get(KEY_SUMMARY);
+            var recordSourceJSON = macro.get(KEY_RECORD_SOURCE);
             var actionsJSON = macro.get(KEY_ACTIONS);
             
-            if (summaryJSON == null || actionsJSON == null) {
+            if (summaryJSON == null || recordSourceJSON == null || actionsJSON == null) {
                 throw new JsonSyntaxException("Invalid json");
             }
             
             var summary = gson.fromJson(summaryJSON, MacroSummary.class);
+            var recordSource = gson.fromJson(recordSourceJSON, MacroRecordSource.class);
             var actions = actionsParser.parseFromJSON(actionsJSON);
             
-            return Macro.build(summary, actions);
+            return Macro.build(summary, recordSource, actions);
         }
         
         @Override
@@ -58,8 +62,10 @@ public interface MacroParser {
             var result = new JsonObject();
             var actions = actionsParser.parseToJSON(macro.getActions());
             var summary = gson.toJsonTree(macro.getSummary());
+            var recordSource = gson.toJsonTree(macro.getRecordSource());
             
             result.add(KEY_SUMMARY, summary);
+            result.add(KEY_RECORD_SOURCE, recordSource);
             result.add(KEY_ACTIONS, actions);
             
             return result;

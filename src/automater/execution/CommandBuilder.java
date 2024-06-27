@@ -7,10 +7,10 @@ package automater.execution;
 import automater.di.DI;
 import automater.model.action.MacroAction;
 import automater.model.action.MacroHardwareAction;
+import automater.provider.ScreenProvider;
 import automater.service.HardwareInputSimulator;
 import automater.utilities.Errors;
 import automater.utilities.Size;
-import java.awt.GraphicsDevice;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -33,14 +33,12 @@ public interface CommandBuilder {
     
     class Impl implements Protocol {
         
-        private final GraphicsDevice screen = DI.get(GraphicsDevice.class);
-        
         private @Nullable List<MacroAction> actions;
         private @Nullable HardwareInputSimulator.Protocol simulator;
         
         public Impl(@NotNull Size referenceScreen) {
             try {
-                simulator = new HardwareInputSimulator.AWTImpl(screen, referenceScreen);
+                simulator = new HardwareInputSimulator.AWTImpl(referenceScreen);
             } catch (Exception e) {
                 
             }

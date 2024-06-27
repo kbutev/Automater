@@ -30,7 +30,7 @@ public interface InputKeystroke {
 
         @SerializedName("m")
         @JSONDecoder.Optional
-        private final @Nullable InputKeyModifier modifier;
+        private final @Nullable InputKeyModifier.AWT modifier;
 
         public static @NotNull AWT anyKey() {
             return new AWT(InputKeyValue.AWT.buildKeyboardKey(NativeKeyEvent.VC_X));
@@ -44,7 +44,7 @@ public interface InputKeystroke {
             return new AWT(InputKeyValue.AWT.buildKeyboardKey(code));
         }
 
-        public static @NotNull AWT buildFromCode(int code, @NotNull InputKeyModifier modifier) {
+        public static @NotNull AWT buildFromCode(int code, @NotNull InputKeyModifier.AWT modifier) {
             return new AWT(InputKeyValue.AWT.buildKeyboardKey(code), modifier);
         }
 
@@ -53,18 +53,18 @@ public interface InputKeystroke {
             this.modifier = null;
         }
 
-        public AWT(int code, @NotNull InputKeyModifier modifier) {
+        public AWT(int code, @NotNull InputKeyModifier.AWT modifier) {
             this.value = InputKeyValue.AWT.buildKeyboardKey(code);
             this.modifier = modifier;
         }
 
-        public AWT(@NotNull InputKeyValue.AWT value, @NotNull InputKeyModifier modifier) {
+        public AWT(@NotNull InputKeyValue.AWT value, @NotNull InputKeyModifier.AWT modifier) {
             this.value = value;
             this.modifier = modifier;
         }
 
-        public @NotNull InputKeyModifier getModifier() {
-            return modifier != null ? modifier : InputKeyModifier.none();
+        public @NotNull InputKeyModifier.AWT getModifier() {
+            return modifier != null ? modifier : InputKeyModifier.AWT.none();
         }
 
         @Override

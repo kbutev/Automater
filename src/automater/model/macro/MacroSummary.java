@@ -34,19 +34,14 @@ public class MacroSummary {
     @SerializedName("playCount")
     public final int playCount;
     
-    @SerializedName("primaryScreen")
-    public final @NotNull Size primaryScreen;
-    
     public MacroSummary(@NotNull String name,
             @Nullable String description,
             int playCount,
-            int actionsCount,
-            @NotNull Size primaryScreen) {
+            int actionsCount) {
         version = VERSION;
         this.name = name;
         this.description = description != null ? description : "";
         this.playCount = playCount;
         this.actionsCount = actionsCount;
-        this.primaryScreen = primaryScreen;
     }
 }

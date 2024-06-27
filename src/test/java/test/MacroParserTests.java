@@ -11,7 +11,10 @@ import automater.model.KeyEventKind;
 import automater.model.macro.Macro;
 import automater.model.action.MacroAction;
 import automater.model.action.MacroHardwareAction;
+import automater.model.macro.MacroRecordSource;
+import automater.model.macro.MacroRecordSourceKind;
 import automater.parser.MacroParser;
+import automater.utilities.Size;
 import java.util.ArrayList;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -61,7 +64,9 @@ public class MacroParserTests implements Constants {
         actions.add(second);
         actions.add(third);
         
-        var json = parser.parseToJSON(Macro.build("Macro test", actions));
+        var recordSource = new MacroRecordSource(MacroRecordSourceKind.JAVA_AWT_ROBOT, Size.make(100, 100));
+        
+        var json = parser.parseToJSON(Macro.build("Macro test", recordSource, actions));
         
         var macro = parser.parseFromJSON(json);
         var parsedActions = macro.getActions();

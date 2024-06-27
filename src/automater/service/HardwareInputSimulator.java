@@ -4,7 +4,9 @@
  */
 package automater.service;
 
+import automater.di.DI;
 import automater.model.OutputKeyValue;
+import automater.provider.ScreenProvider;
 import automater.utilities.Point;
 import java.awt.AWTException;
 import java.awt.GraphicsDevice;
@@ -12,7 +14,6 @@ import java.awt.Robot;
 import org.jetbrains.annotations.NotNull;
 import automater.utilities.Logger;
 import automater.utilities.Size;
-import java.awt.Toolkit;
 import java.util.ArrayList;
 
 /**
@@ -37,6 +38,9 @@ public interface HardwareInputSimulator {
     
     class AWTImpl implements AWTProtocol {
         
+        private final ScreenProvider.AWTGraphicsDeviceProtocol robotScreen = DI.get(ScreenProvider.AWTGraphicsDeviceProtocol.class);
+        private final ScreenProvider.AWTSimulatorScreen simulatorScreen = DI.get(ScreenProvider.AWTSimulatorScreen.class);
+        
         private final @NotNull Robot robot;
         private final @NotNull Size currentScreen;
         private final @NotNull Size referenceScreen;
@@ -44,10 +48,9 @@ public interface HardwareInputSimulator {
         private final @NotNull ArrayList<Integer> pressedKeyboardKeys = new ArrayList<>();
         private final @NotNull ArrayList<Integer> pressedMouseKeys = new ArrayList<>();
         
-        public AWTImpl(@NotNull GraphicsDevice screen, @NotNull Size referenceScreen) throws AWTException {
-            robot = new Robot(screen);
-            // TODO: research why robot getDisplay getSize doesnt work, but toolkit does
-            currentScreen = Size.make(Toolkit.getDefaultToolkit().getScreenSize());
+        public AWTImpl(@NotNull Size referenceScreen) throws AWTException {
+            robot = new Robot(robotScreen.getGraphicsDevice());
+            currentScreen = simulatorScreen.getScreen().size;
             this.referenceScreen = referenceScreen;
         }
         
@@ -123,8 +126,7 @@ public interface HardwareInputSimulator {
         public void simulateMouseScroll(@NotNull Point scroll) {
             Logger.messageVerbose(this, "move scroll by  " + scroll.toString());
             
-            // TODO
-            //robot.mouseMove((int)point.x, (int)point.y);
+            robot.mouseWheel((int)scroll.y);
         }
         
         @Override

@@ -71,7 +71,7 @@ public interface CapturedEventParser {
                 }
                 
                 var keyValue = keyValueParser.parseFromKeyboardCode(code);
-                var modifier = new InputKeyModifier(modifierCode);
+                var modifier = new InputKeyModifier.AWT(modifierCode);
                 var keystroke = new InputKeystroke.AWT(keyValue, modifier);
                 return new CapturedHardwareEvent.AWTClick(time, kind, keystroke);
             }

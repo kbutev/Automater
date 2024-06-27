@@ -18,9 +18,10 @@ import automater.storage.MacroStorage;
 import automater.storage.PreferencesStorage;
 import automater.ui.view.RecordMacroPanel;
 import automater.datasource.StandardDescriptionDataSource;
+import automater.model.macro.MacroRecordSource;
+import automater.model.macro.MacroRecordSourceKind;
 import automater.model.macro.MacroSummary;
 import automater.utilities.Logger;
-import automater.utilities.Size;
 import java.util.ArrayList;
 import org.apache.commons.lang3.time.StopWatch;
 import org.jetbrains.annotations.NotNull;
@@ -209,8 +210,9 @@ public interface RecordMacroPresenter {
             
             try {
                 var primaryScreen = recorder.getPrimaryScreenSize();
-                var summary = new MacroSummary(name, description, 0, actions.size(), primaryScreen);
-                var macro = Macro.build(summary, actions);
+                var summary = new MacroSummary(name, description, 0, actions.size());
+                var recordSource = new MacroRecordSource(MacroRecordSourceKind.JAVA_AWT_ROBOT, primaryScreen);
+                var macro = Macro.build(summary, recordSource, actions);
                 storage.saveMacro(macro);
                 result = true;
             } catch (Exception e) {
