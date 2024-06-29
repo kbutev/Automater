@@ -37,7 +37,7 @@ public class LooperSwing {
         });
     }
 
-    public <T> void performCallback(@NotNull final Callback.WithParameter<T> callback, @Nullable final T parameter) {
+    public <T> void performCallback(@NotNull final Callback.Param<T> callback, @Nullable final T parameter) {
         SwingUtilities.invokeLater(() -> {
             callback.perform(parameter);
         });

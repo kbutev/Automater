@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 public class PrimaryRootFrame extends javax.swing.JFrame {
 
     // UI callbacks
-    public Callback.WithParameter<View> onSwitchTabCallback = Callback.buildBlankWithParameter();
+    public Callback.Param<View> onSwitchTabCallback = Callback.buildBlankWithParameter();
     
     /**
      * Creates new form PrimaryRootFrame

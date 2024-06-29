@@ -362,7 +362,7 @@ public interface NativeEventMonitor {
 
         }
         
-        private void forEachListener(Callback.WithParameter<Listener> callback) {
+        private void forEachListener(Callback.Param<Listener> callback) {
             var listeners = CollectionUtilities.copy(this.listeners);
             
             looper.performAsync(() -> {

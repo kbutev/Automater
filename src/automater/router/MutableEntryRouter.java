@@ -26,17 +26,17 @@ public interface MutableEntryRouter {
         
         void openPickStringDialog(@NotNull Component sender,
                 @NotNull String value,
-                @NotNull Callback.WithParameter<String> success,
+                @NotNull Callback.Param<String> success,
                 @NotNull Callback.Blank failure);
         
         void openPickPathDialog(@NotNull Component sender,
                 @NotNull Path value,
-                @NotNull Callback.WithParameter<Path> success,
+                @NotNull Callback.Param<Path> success,
                 @NotNull Callback.Blank failure);
         
         void openPickHotkeyDialog(@NotNull Component sender,
                 @NotNull InputKeystroke.AWT value,
-                @NotNull Callback.WithParameter<InputKeystroke.AWT> success,
+                @NotNull Callback.Param<InputKeystroke.AWT> success,
                 @NotNull Callback.Blank failure);
     }
     
@@ -49,7 +49,7 @@ public interface MutableEntryRouter {
         @Override
         public void openPickStringDialog(@NotNull Component sender,
                 @NotNull String value,
-                @NotNull Callback.WithParameter<String> success,
+                @NotNull Callback.Param<String> success,
                 @NotNull Callback.Blank failure) {
             
         }
@@ -57,7 +57,7 @@ public interface MutableEntryRouter {
         @Override
         public void openPickPathDialog(@NotNull Component sender,
                 @NotNull Path value,
-                @NotNull Callback.WithParameter<Path> success,
+                @NotNull Callback.Param<Path> success,
                 @NotNull Callback.Blank failure) {
             var chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -79,7 +79,7 @@ public interface MutableEntryRouter {
         @Override
         public void openPickHotkeyDialog(@NotNull Component sender,
                 @NotNull InputKeystroke.AWT value,
-                @NotNull Callback.WithParameter<InputKeystroke.AWT> success,
+                @NotNull Callback.Param<InputKeystroke.AWT> success,
                 @NotNull Callback.Blank failure) {
             var frame = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, sender);
             

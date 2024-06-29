@@ -8,6 +8,7 @@ import automater.datasource.MutableEntryDataSource;
 import automater.di.DI;
 import automater.storage.PreferencesStorage;
 import automater.ui.view.SettingsPanel;
+import automater.utilities.Callback;
 import org.jetbrains.annotations.NotNull;
 import automater.utilities.Logger;
 import java.util.ArrayList;
@@ -21,6 +22,9 @@ public interface SettingsPresenter {
     
     interface Delegate {
         
+        void showConfirmationDialog(@NotNull String title,
+                @NotNull String body, 
+                @NotNull Callback.Param<Boolean> completion);
     }
     
     interface Protocol extends PresenterWithDelegate<Delegate> {
@@ -47,6 +51,15 @@ public interface SettingsPresenter {
                 saveCurrentData();
                 refreshData();
             };
+            
+            view.onResetAll = () -> {
+                delegate.showConfirmationDialog("Reset to defaults", "Are you sure?", (var result) -> {
+                    if (result) {
+                        preferences.resetToDefaults();
+                        refreshData();
+                    }
+                });
+            };
         }
 
         @Override
@@ -72,7 +85,7 @@ public interface SettingsPresenter {
         
         @Override
         public void reloadData() {
-            var dataSource = new MutableEntryDataSource(getPresenterList());
+            var dataSource = new MutableEntryDataSource(buildDataSource());
             view.setDataSource(dataSource);
         }
         
@@ -84,7 +97,7 @@ public interface SettingsPresenter {
             view.refreshData();
         }
         
-        private List<MutableEntryPresenter.Protocol> getPresenterList() {
+        private List<MutableEntryPresenter.Protocol> buildDataSource() {
             var v = preferences.getValues();
             var result = new ArrayList<MutableEntryPresenter.Protocol>();
             result.add(new MutableEntryPresenter.SystemPath("directory", v.macrosDirectory, null));

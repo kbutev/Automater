@@ -16,7 +16,7 @@ public interface StorageValue <T> {
     @NotNull T get();
     void set(@NotNull T value);
     
-    static <T> @NotNull StorageValue<T> build(@NotNull Callback.Return<T> getCallback, @NotNull Callback.WithParameter<T> set) {
+    static <T> @NotNull StorageValue<T> build(@NotNull Callback.Return<T> getCallback, @NotNull Callback.Param<T> set) {
         return new StorageValue<T>() {
             @Override
             public @NotNull T get() {

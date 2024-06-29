@@ -20,7 +20,7 @@ public interface ValueValidator {
         
         public static Result SUCCESS = new Result(null);
         
-        Result(@Nullable Exception error) {
+        public Result(@Nullable Exception error) {
             this.error = error;
         }
         

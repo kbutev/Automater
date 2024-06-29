@@ -18,7 +18,8 @@ import org.jetbrains.annotations.Nullable;
 public class SettingsPanel extends javax.swing.JPanel implements View {
     
     // UI callbacks
-    public Callback.WithParameter<MutableEntryPresenter.Protocol> onEditItem = Callback.buildBlankWithParameter();
+    public Callback.Param<MutableEntryPresenter.Protocol> onEditItem = Callback.buildBlankWithParameter();
+    public Callback.Blank onResetAll = Callback.buildBlank();
     
     /**
      * Creates new form SettingsPanel
@@ -63,6 +64,7 @@ public class SettingsPanel extends javax.swing.JPanel implements View {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         settingsList = new javax.swing.JList<>();
+        resetAllButton = new javax.swing.JButton();
 
         settingsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         settingsList.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -72,21 +74,34 @@ public class SettingsPanel extends javax.swing.JPanel implements View {
         });
         jScrollPane1.setViewportView(settingsList);
 
+        resetAllButton.setText("Reset All");
+        resetAllButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetAllButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(resetAllButton)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(resetAllButton)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -100,9 +115,14 @@ public class SettingsPanel extends javax.swing.JPanel implements View {
             });
         }
     }//GEN-LAST:event_settingsListMouseClicked
+
+    private void resetAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetAllButtonActionPerformed
+        onResetAll.perform();
+    }//GEN-LAST:event_resetAllButtonActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton resetAllButton;
     private javax.swing.JList<String> settingsList;
     // End of variables declaration//GEN-END:variables
 }

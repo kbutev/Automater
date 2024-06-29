@@ -25,7 +25,7 @@ public interface ChooseHotkeyPresenter {
     
     class Impl implements Protocol, HotkeyListener.Delegate {
 
-        @Nullable Callback.WithParameter<InputKeystroke.AWT> success;
+        @Nullable Callback.Param<InputKeystroke.AWT> success;
         @Nullable Callback.Blank failure;
         
         private final @NotNull ChooseKeyDialog view;
@@ -45,7 +45,7 @@ public interface ChooseHotkeyPresenter {
             };
         }
         
-        public void setSuccessCallback(@Nullable Callback.WithParameter<InputKeystroke.AWT> callback) {
+        public void setSuccessCallback(@Nullable Callback.Param<InputKeystroke.AWT> callback) {
             success = callback;
         }
         

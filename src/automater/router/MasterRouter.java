@@ -31,13 +31,14 @@ public interface MasterRouter {
         void enableTabs(boolean value);
         
         void openMacro(@NotNull Macro.Protocol macro);
+        void editMacro(@NotNull Macro.Protocol macro);
     }
     
     class Impl implements Protocol {
         
         private final @NotNull PrimaryRootFrame view;
         
-        private @Nullable ShowMacrosPresenter.Protocol openMacrosPresenter;
+        private @Nullable ShowMacrosPresenter.Protocol showMacrosPresenter;
         private @Nullable RecordMacroPresenter.Protocol recordMacroPresenter;
         private @Nullable SettingsPresenter.Protocol settingsPresenter;
         
@@ -54,8 +55,8 @@ public interface MasterRouter {
         private void setup() {
             var openMacrosRouter = new ShowMacrosRouter.Impl(this);
             var openMacrosView = openMacrosRouter.getView();
-            openMacrosPresenter = new ShowMacrosPresenter.Impl(openMacrosView);
-            openMacrosPresenter.setDelegate(openMacrosRouter);
+            showMacrosPresenter = new ShowMacrosPresenter.Impl(openMacrosView);
+            showMacrosPresenter.setDelegate(openMacrosRouter);
             view.addTab(TextValue.getText(TextValue.Root_TabShowMacros), 
                     openMacrosView,
                     TextValue.getText(TextValue.Root_TabShowMacrosTip));
@@ -80,8 +81,7 @@ public interface MasterRouter {
                 onSwitchTab(selectedView);
             };
             
-            tabs = Map.of(
-                openMacrosView, openMacrosPresenter,
+            tabs = Map.of(openMacrosView, showMacrosPresenter,
                 recordMacroView, recordMacroPresenter,
                 settingsView, settingsPresenter
             );
@@ -97,7 +97,7 @@ public interface MasterRouter {
         @Override
         public void start() {
             // Start initial presenter
-            openMacrosPresenter.start();
+            showMacrosPresenter.start();
             
             // Present root view
             view.present();
@@ -111,6 +111,12 @@ public interface MasterRouter {
         @Override
         public void openMacro(@NotNull Macro.Protocol macro) {
             var router = new PlayMacroRouter.Impl(this, macro);
+            router.start();
+        }
+        
+        @Override
+        public void editMacro(@NotNull Macro.Protocol macro) {
+            var router = new EditMacroRouter.Impl(this, macro);
             router.start();
         }
         

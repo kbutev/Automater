@@ -240,7 +240,7 @@ public interface MacroProcess {
             }
         }
         
-        private void alertListeners(Callback.WithParameter<Listener> callback) {
+        private void alertListeners(Callback.Param<Listener> callback) {
             // assume in synchronized (lock)
             
             var listeners = CollectionUtilities.copy(this.listeners);

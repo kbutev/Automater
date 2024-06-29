@@ -19,6 +19,7 @@ public interface ShowMacrosRouter {
     interface Protocol {
         
         void openMacro(@NotNull Macro.Protocol macro);
+        void editMacro(@NotNull Macro.Protocol macro);
     }
     
     class Impl implements Protocol, ShowMacrosPresenter.Delegate {
@@ -37,6 +38,11 @@ public interface ShowMacrosRouter {
         @Override
         public void openMacro(@NotNull Macro.Protocol macro) {
             masterRouter.openMacro(macro);
+        }
+        
+        @Override
+        public void editMacro(@NotNull Macro.Protocol macro) {
+            masterRouter.editMacro(macro);
         }
     }
 }

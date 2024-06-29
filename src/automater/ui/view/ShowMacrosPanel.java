@@ -17,18 +17,25 @@ import org.jetbrains.annotations.Nullable;
 public class ShowMacrosPanel extends javax.swing.JPanel implements View {
     
     // UI callbacks
-    public Callback.WithParameter<Integer> onSelectItem = Callback.buildBlankWithParameter();
-    public Callback.WithParameter<Integer> onClickItem = Callback.buildBlankWithParameter();
-    public Callback.WithParameter<Integer> onDoubleClickItem = Callback.buildBlankWithParameter();
-    public Callback.WithParameter<Integer> onOpenItem = Callback.buildBlankWithParameter();
-    public Callback.WithParameter<Integer> onEditItem = Callback.buildBlankWithParameter();
-    public Callback.WithParameter<Integer> onDeleteItem = Callback.buildBlankWithParameter();
+    public Callback.Param<Integer> onSelectItem = Callback.buildBlankWithParameter();
+    public Callback.Param<Integer> onClickItem = Callback.buildBlankWithParameter();
+    public Callback.Param<Integer> onDoubleClickItem = Callback.buildBlankWithParameter();
+    public Callback.Param<Integer> onOpenItem = Callback.buildBlankWithParameter();
+    public Callback.Param<Integer> onEditItem = Callback.buildBlankWithParameter();
+    public Callback.Param<Integer> onDeleteItem = Callback.buildBlankWithParameter();
     
     /**
      * Creates new form ShowMacrosPanel
      */
     public ShowMacrosPanel() {
         initComponents();
+        setup();
+    }
+    
+    private void setup() {
+        macrosList.addListSelectionListener((var selection) -> {
+            onSelectItem(selection.getFirstIndex());
+        });
     }
     
     // - View
@@ -58,6 +65,11 @@ public class ShowMacrosPanel extends javax.swing.JPanel implements View {
     }
 
     // # Private
+    
+    private void onSelectItem(int index) {
+        selectMacroAt(index);
+    }
+    
     private void selectMacroAt(int index) {
         if (_selectedIndex == index) {
             return;

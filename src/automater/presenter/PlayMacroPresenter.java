@@ -97,6 +97,10 @@ public interface PlayMacroPresenter {
                 delegate.onExit();
             };
             
+            setupMacroActionDescriptions();
+        }
+        
+        private void setupMacroActionDescriptions() {
             for (var action : macro.getActions()) {
                 try {
                     var description = descriptionParser.parseMacroAction(action);
@@ -128,6 +132,8 @@ public interface PlayMacroPresenter {
 
         @Override
         public void stop() {
+            Logger.message(this, "Stop.");
+            
             try {
                 actionHotkeyMonitor.stop();
             } catch (Exception e) {}
@@ -158,8 +164,6 @@ public interface PlayMacroPresenter {
                 var selection = dataSource.getSelectIndexForTime(currentTime);
                 view.setSelectedIndex(selection);
             }
-            
-            //view.setHotkeys(play, stop, pause, resume);
         }
         
         @Override

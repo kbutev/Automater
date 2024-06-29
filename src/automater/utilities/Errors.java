@@ -20,7 +20,7 @@ public class Errors {
         return new Exception("Unknown error");
     }
     
-    public static @NotNull Exception unsupported(@Nullable String description) {
+    public static @NotNull RuntimeException unsupported(@Nullable String description) {
         return new UnsupportedOperationException(description != null ? description : "Unsupported");
     }
 

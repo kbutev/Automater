@@ -4,14 +4,10 @@
  */
 package automater.router;
 
-import automater.model.InputKeystroke;
-import automater.presenter.ChooseHotkeyPresenter;
 import automater.presenter.SettingsPresenter;
-import automater.ui.view.ChooseKeyDialog;
 import automater.ui.view.SettingsPanel;
+import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
-import automater.utilities.Path;
-import javax.swing.JFileChooser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,6 +32,13 @@ public interface SettingsRouter {
         
         public @NotNull SettingsPanel getView() {
             return view;
+        }
+        
+        @Override
+        public void showConfirmationDialog(@NotNull String title,
+                    @NotNull String body, 
+                    @NotNull Callback.Param<Boolean> completion) {
+            AlertWindows.showConfirmationMessage(view, title, body, completion);
         }
     }
 }

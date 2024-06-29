@@ -58,6 +58,16 @@ public class AlertWindows {
             }
         }
     }
+    
+    public static void showConfirmationMessage(@NotNull Component parent,
+            @NotNull String title, @NotNull String message,
+            @Nullable Callback.Param<Boolean> callback) {
+        AlertWindows.showConfirmationMessage(parent, title, message, () -> {
+            if (callback != null) { callback.perform(true); }
+        }, () -> {
+            if (callback != null) { callback.perform(false); }
+        });
+    }
 
     public static void showErrorMessage(@NotNull Component parent,
             @NotNull String title, @NotNull String message,

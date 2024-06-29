@@ -20,7 +20,7 @@ public interface Callback {
         public Output perform();
     }
     
-    interface WithParameter <Input> {
+    interface Param <Input> {
         public void perform(Input argument);
     }
 
@@ -30,8 +30,8 @@ public interface Callback {
         };
     }
 
-    public static <Input> @NotNull WithParameter buildBlankWithParameter() {
-        return (WithParameter<Input>) (Input argument) -> {
+    public static <Input> @NotNull Param buildBlankWithParameter() {
+        return (Param<Input>) (Input argument) -> {
             // Do nothing
         };
     }

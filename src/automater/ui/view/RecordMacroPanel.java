@@ -23,7 +23,7 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
     public Callback.Blank onSwitchToPlayButtonCallback = Callback.buildBlank();
     public Callback.Blank onBeginRecordMacroButtonCallback = Callback.buildBlank();
     public Callback.Blank onStopRecordMacroButtonCallback = Callback.buildBlank();
-    public Callback.WithParameter<String> onSaveMacroButtonCallback = Callback.buildBlankWithParameter();
+    public Callback.Param<String> onSaveMacroButtonCallback = Callback.buildBlankWithParameter();
     
     /**
      * Creates new form RecordMacroPanel

@@ -35,6 +35,7 @@ public interface ShowMacrosPresenter {
     interface Delegate {
         
         void openMacro(@NotNull Macro.Protocol macro);
+        void editMacro(@NotNull Macro.Protocol macro);
     }
     
     interface Protocol extends PresenterWithDelegate<Delegate> {
@@ -125,7 +126,7 @@ public interface ShowMacrosPresenter {
             }
             
             var summary = macros.get(index);
-            Logger.message(this, "Open macro at " + summary.path.toStringWithQuotes());
+            Logger.message(this, "Open macro " + summary.path.toStringWithQuotes());
             
             try {
                 var macro = storage.getMacro(summary.path);
@@ -144,9 +145,15 @@ public interface ShowMacrosPresenter {
                 return;
             }
 
-            var macro = macros.get(index);
-
-            //rootViewController.navigateToEditScreen(macro);
+            var summary = macros.get(index);
+            Logger.message(this, "Edit macro " + summary.path.toStringWithQuotes());
+            
+            try {
+                var macro = storage.getMacro(summary.path);
+                delegate.editMacro(macro);
+            } catch (Exception e) {
+                
+            }
         }
 
         @Override
