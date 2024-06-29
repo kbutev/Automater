@@ -41,7 +41,7 @@ public interface MacroActionParser {
     
     class Impl implements Protocol {
         
-        final Gson gson = DI.get(Gson.class);
+        private final Gson gson = DI.get(Gson.class);
         
         @Override
         public @NotNull MacroAction parseFromCapturedEvent(@NotNull CapturedEvent event, double timestamp) throws Exception {

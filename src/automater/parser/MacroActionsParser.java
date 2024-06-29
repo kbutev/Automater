@@ -5,17 +5,15 @@
 package automater.parser;
 
 import automater.di.DI;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import automater.model.action.MacroAction;
+import com.google.gson.Gson;
 
 /**
  * Parsers macro actions and other related data.
@@ -32,7 +30,9 @@ public interface MacroActionsParser {
     
     class Impl implements Protocol {
         
-        final Gson gson = DI.get(Gson.class);
+        private final Gson gson = DI.get(Gson.class);
+        
+        private final MacroActionParser.Impl innerParser = new MacroActionParser.Impl();
         
         @Override
         public @NotNull List<MacroAction> parseFromJSON(@NotNull JsonElement json) throws Exception {
@@ -44,23 +44,14 @@ public interface MacroActionsParser {
                 return new ArrayList();
             }
             
-            var type = array.get(0).getAsJsonObject().get(MacroActionParser.Keys.TYPE).getAsString();
+            var result = new ArrayList<MacroAction>();
             
-            if (type == null) {
-                throw new JsonSyntaxException("Invalid action");
+            for (var element : array) {
+                var action = innerParser.parseFromJSON(element);
+                result.add(action);
             }
             
-            var match = MacroActionParser.type_mappings.get(type);
-            
-            if (match != null) {
-                var jsonString = array.toString();
-                Type matchedType = match.listType;
-                var decoder = match.decoder;
-                var parser = new GsonBuilder().registerTypeAdapter(matchedType, decoder).create();
-                return parser.fromJson(jsonString, matchedType);
-            }
-            
-            throw new JsonSyntaxException("Invalid action");
+            return result;
         }
         
         @Override
