@@ -16,10 +16,12 @@ import org.jetbrains.annotations.NotNull;
 public interface CapturedHardwareEvent {
     
     abstract class Click <KeystrokeT extends InputKeystroke.Protocol> implements CapturedEvent {
+        public final double timestamp;
         public final @NotNull KeyEventKind kind;
         public final @NotNull KeystrokeT keystroke;
         
         public Click(double timestamp, @NotNull KeyEventKind kind, @NotNull KeystrokeT keystroke) {
+            this.timestamp = timestamp;
             this.kind = kind;
             this.keystroke = keystroke;
         }
@@ -28,6 +30,8 @@ public interface CapturedHardwareEvent {
         public String toString() {
             return kind.toString() + " " + keystroke.toString();
         }
+        
+        public abstract @NotNull Click withoutModifier();
     }
     
     class AWTClick extends Click<InputKeystroke.AWT> {
@@ -39,16 +43,23 @@ public interface CapturedHardwareEvent {
         public AWTClick(double timestamp, @NotNull KeyEventKind kind, @NotNull InputKeystroke.AWT keystroke) {
             super(timestamp, kind, keystroke);
         }
+        
+        @Override
+        public @NotNull Click withoutModifier() {
+            return new AWTClick(timestamp, kind, keystroke.withoutModifier());
+        }
     }
     
     class MouseMove implements CapturedEvent {
-        @NotNull public final Point point;
+        public final double timestamp;
+        public final @NotNull Point point;
         
         public MouseMove() {
             this(0, Point.zero());
         }
         
         public MouseMove(double timestamp, @NotNull Point point) {
+            this.timestamp = timestamp;
             this.point = point;
         }
         
@@ -59,14 +70,16 @@ public interface CapturedHardwareEvent {
     }
     
     class MouseScroll implements CapturedEvent {
-        @NotNull public final Point point;
-        @NotNull public final Point scroll;
+        public final double timestamp;
+        public final @NotNull Point point;
+        public final @NotNull Point scroll;
         
         public MouseScroll() {
             this(0, Point.zero(), Point.zero());
         }
         
         public MouseScroll(double timestamp, @NotNull Point point, @NotNull Point scroll) {
+            this.timestamp = timestamp;
             this.point = point;
             this.scroll = scroll;
         }

@@ -227,14 +227,19 @@ public interface RecordMacroPresenter {
         // # EventMonitor.Listener
         
         @Override
-        public void onEventEmitted(@NotNull CapturedEvent event) {
+        public boolean shouldCaptureEvent(@NotNull CapturedEvent event) {
             // Ignore hotkey
             if (event instanceof CapturedHardwareEvent.Click click) {
-                if (click.keystroke.equals(actionHotkeyMonitor.getHotkey())) {
-                    return;
+                if (click.keystroke.equalsIgnoreModifier(actionHotkeyMonitor.getHotkey())) {
+                    return false;
                 }
             }
             
+            return true;
+        }
+        
+        @Override
+        public void onCaptureEvent(@NotNull CapturedEvent event) {
             var timestamp = getCurrentRecordTime();
             
             try {

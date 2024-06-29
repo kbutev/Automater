@@ -23,7 +23,10 @@ public interface InputKeyValue {
     interface Protocol {
         
         boolean isKeyboard();
+        boolean isModifier();
         boolean isMouse();
+        
+        @Nullable InputKeyModifierValue toModifier();
     }
     
     /// Java awt robot input key.
@@ -92,16 +95,22 @@ public interface InputKeyValue {
         }
 
         @Override
+        public boolean isModifier() {
+            if (!isKeyboard()) {
+                return false;
+            }
+            
+            return toModifier() != null;
+        }
+        
+        @Override
         public boolean isMouse() {
             return type == KeyValueType.mouse;
         }
-
-        public static boolean isModifier(@NotNull NativeKeyEvent event) {
-            var isLCtrl = event.getModifiers() & NativeKeyEvent.CTRL_L_MASK;
-            var isRCtrl = event.getModifiers() & NativeKeyEvent.CTRL_R_MASK;
-            var isCtrl = event.getModifiers() & NativeKeyEvent.CTRL_MASK;
-
-            return isLCtrl == 1 || isRCtrl == 1 || isCtrl == 1;
+        
+        @Override
+        public @Nullable InputKeyModifierValue toModifier() {
+            return modifierCodeMappings.get(code);
         }
 
         @Override
@@ -113,6 +122,13 @@ public interface InputKeyValue {
                 return mouseStringMappings.getOrDefault(code, "?");
             }
         }
+        
+        public final static Map<Integer, InputKeyModifierValue> modifierCodeMappings = Map.ofEntries(
+            entry(NativeKeyEvent.VC_CONTROL, InputKeyModifierValue.CTRL),
+            entry(NativeKeyEvent.VC_SHIFT, InputKeyModifierValue.SHIFT),
+            entry(NativeKeyEvent.VC_ALT, InputKeyModifierValue.ALT),
+            entry(NativeKeyEvent.VC_META, InputKeyModifierValue.META)
+        );
 
         public final static Map<Integer, String> mouseStringMappings = Map.ofEntries(
             entry(NativeMouseEvent.BUTTON1, "L MOUSE"),

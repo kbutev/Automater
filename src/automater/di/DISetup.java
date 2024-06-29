@@ -41,6 +41,8 @@ public class DISetup {
         injector.registerInstance(new automater.parser.OutputKeyValueParser.Impl());
         injector.registerInstance(new automater.parser.CapturedEventParser.AWTImpl());
 
+        injector.registerInstance(new automater.router.MutableEntryRouter.Impl());
+        
         injector.registerInstance(new automater.storage.PreferencesStorage.Impl());
         injector.registerInstance(new automater.storage.MacroStorage.Impl());
         

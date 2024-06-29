@@ -9,6 +9,7 @@ import automater.service.HotkeyListener;
 import automater.ui.view.ChooseKeyDialog;
 import automater.utilities.Callback;
 import automater.utilities.Errors;
+import automater.utilities.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,7 +86,8 @@ public interface ChooseHotkeyPresenter {
         
         @Override
         public void onKeyPressed(@NotNull InputKeystroke.Protocol key) {
-            if ((result instanceof InputKeystroke.AWT awtKeystroke)) {
+            if (key instanceof InputKeystroke.AWT awtKeystroke) {
+                Logger.message(this, "Chose hotkey " + key);
                 result = awtKeystroke;
             } else {
                 throw Errors.illegalStateError();

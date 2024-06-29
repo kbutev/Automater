@@ -6,6 +6,7 @@ package automater.model;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jnativehook.keyboard.NativeKeyEvent;
 
@@ -22,15 +23,19 @@ public interface InputKeyModifier {
     class AWT implements Protocol {
         @SerializedName("v") private final int value;
 
-        public static AWT none() {
+        public static @NotNull AWT none() {
             return new AWT();
         }
-
-        public AWT() {
+        
+        public static @NotNull AWT buildFromModifierCode(int code) {
+            return new AWT(code);
+        }
+        
+        AWT() {
             value = 0;
         }
 
-        public AWT(int value) {
+        AWT(int value) {
             this.value = value;
         }
 

@@ -78,10 +78,18 @@ public interface HotkeyListener {
         // # EventMonitor.Listener
         
         @Override
-        public void onEventEmitted(@NotNull CapturedEvent event) {
+        public boolean shouldCaptureEvent(@NotNull CapturedEvent event) {
+            return true;
+        }
+        
+        @Override
+        public void onCaptureEvent(@NotNull CapturedEvent event) {
             if (event instanceof CapturedHardwareEvent.Click click) {
-                if (click.keystroke.isKeyboard() && click.kind == KeyEventKind.release) {
-                    delegate.onKeyPressed(click.keystroke);
+                click = click.withoutModifier(); // Remove the modifier, because AWT robot sucks
+                var key = click.keystroke;
+                
+                if (key.isKeyboard() && !key.isModifier() && click.kind == KeyEventKind.release) {
+                    delegate.onKeyPressed(key);
                     
                     if (delegate.shouldStop()) {
                         stop();

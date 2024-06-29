@@ -13,7 +13,6 @@ import automater.utilities.Errors;
 import automater.utilities.Logger;
 import automater.utilities.RunState;
 import automater.utilities.Size;
-import java.awt.GraphicsDevice;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -38,7 +37,8 @@ public interface EventMonitor {
 
     interface Listener {
 
-        void onEventEmitted(@NotNull CapturedEvent event);
+        boolean shouldCaptureEvent(@NotNull CapturedEvent event);
+        void onCaptureEvent(@NotNull CapturedEvent event);
     }
 
     class Impl implements Protocol, NativeEventMonitor.Listener {
@@ -110,10 +110,14 @@ public interface EventMonitor {
         public void onParseEvent(@NotNull CapturedEvent event) {
             Logger.messageVerbose(this, "onParseEvent " + event.toString());
             
-            capturedEvents.add(event);
-
             if (listener != null) {
-                listener.onEventEmitted(event);
+                if (!listener.shouldCaptureEvent(event)) {
+                    return;
+                }
+                
+                capturedEvents.add(event);
+                
+                listener.onCaptureEvent(event);
             }
         }
 

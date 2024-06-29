@@ -58,7 +58,7 @@ public class ShowMacrosPanel extends javax.swing.JPanel implements View {
     }
 
     // # Private
-    private void selectedMacroAt(int index) {
+    private void selectMacroAt(int index) {
         if (_selectedIndex == index) {
             return;
         }
@@ -198,11 +198,15 @@ public class ShowMacrosPanel extends javax.swing.JPanel implements View {
     }//GEN-LAST:event_deleteMacroButtonActionPerformed
 
     private void macrosListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_macrosListMouseClicked
-        selectedMacroAt(macrosList.getSelectedIndex());
+        selectMacroAt(macrosList.getSelectedIndex());
+        
+        if (evt.getClickCount() > 1) {
+            onOpenItem.perform(getSelectionIndex());
+        }
     }//GEN-LAST:event_macrosListMouseClicked
 
     private void macrosListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_macrosListValueChanged
-        selectedMacroAt(macrosList.getSelectedIndex());
+        selectMacroAt(macrosList.getSelectedIndex());
     }//GEN-LAST:event_macrosListValueChanged
 
 

@@ -20,6 +20,7 @@ public interface InputKeystroke {
     interface Protocol {
         
         boolean isKeyboard();
+        boolean isModifier();
         boolean isMouse();
         boolean equalsIgnoreModifier(Object o);
     }
@@ -98,7 +99,7 @@ public interface InputKeystroke {
             var mod = "";
 
             if (modifier != null) {
-                mod = modifier.isBlank() ? mod : modifier.toString();
+                mod = modifier.isBlank() ? mod : modifier.toString() + "+";
             }
 
             return mod + value.toString();
@@ -110,8 +111,21 @@ public interface InputKeystroke {
         }
 
         @Override
+        public boolean isModifier() {
+            return value.isModifier();
+        }
+        
+        @Override
         public boolean isMouse() {
             return value.isMouse();
+        }
+        
+        public boolean isModifierKey() {
+            return value.isKeyboard();
+        }
+        
+        public @NotNull AWT withoutModifier() {
+            return new AWT(value);
         }
     }
 }

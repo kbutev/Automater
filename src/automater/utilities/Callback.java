@@ -16,25 +16,23 @@ public interface Callback {
         public void perform();
     }
     
-    interface WithParameter<Input> {
+    interface Return <Output> {
+        public Output perform();
+    }
+    
+    interface WithParameter <Input> {
         public void perform(Input argument);
     }
 
     public static @NotNull Blank buildBlank() {
-        return new Blank() {
-            @Override
-            public void perform() {
-                // Do nothing
-            }
+        return () -> {
+            // Do nothing
         };
     }
 
     public static <Input> @NotNull WithParameter buildBlankWithParameter() {
-        return new WithParameter<Input>() {
-            @Override
-            public void perform(Input argument) {
-                // Do nothing
-            }
+        return (WithParameter<Input>) (Input argument) -> {
+            // Do nothing
         };
     }
 }

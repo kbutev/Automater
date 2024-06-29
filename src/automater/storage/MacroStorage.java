@@ -4,7 +4,6 @@
  */
 package automater.storage;
 
-import automater.ui.text.TextValue;
 import automater.di.DI;
 import automater.model.macro.Macro;
 import automater.model.macro.MacroFileSummary;
@@ -56,7 +55,7 @@ public interface MacroStorage {
 
         @Override
         public @NotNull Path getDirectory() {
-            return preferences.getValues().macrosDirectory;
+            return preferences.getValues().macrosDirectory.get();
         }
         
         @Override

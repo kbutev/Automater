@@ -37,41 +37,5 @@ public interface SettingsRouter {
         public @NotNull SettingsPanel getView() {
             return view;
         }
-        
-        // # SettingsPresenter.Delegate
-        
-        @Override
-        public void chooseDirectory(@NotNull Path directory,
-                @Nullable Callback.WithParameter<Path> success,
-                @Nullable Callback.Blank failure) {
-            var chooser = new JFileChooser();
-            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            chooser.setCurrentDirectory(directory.getFile());
-            
-            var choice = chooser.showOpenDialog(view);
-
-            if (choice != JFileChooser.APPROVE_OPTION) {
-                if (failure != null) {
-                    failure.perform();
-                }
-                return;
-            }
-            
-            var file = chooser.getSelectedFile();
-            var path = Path.buildAbsolute(file.getAbsolutePath());
-            
-            if (success != null) {
-                success.perform(path);
-            }
-        }
-        
-        @Override
-        public void chooseHotkey(@Nullable Callback.WithParameter<InputKeystroke.AWT> success, @Nullable Callback.Blank failure) {
-            var dialog = new ChooseKeyDialog(masterRouter.getView(), true);
-            var presenter = new ChooseHotkeyPresenter.Impl(dialog);
-            presenter.setSuccessCallback(success);
-            presenter.setFailureallback(failure);
-            presenter.start();
-        }
     }
 }

@@ -4,9 +4,12 @@
  */
 package automater.ui.view;
 
+import automater.datasource.MutableEntryDataSource;
+import automater.presenter.MutableEntryPresenter;
 import automater.utilities.Callback;
 import java.awt.Component;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  *
@@ -15,12 +18,7 @@ import org.jetbrains.annotations.NotNull;
 public class SettingsPanel extends javax.swing.JPanel implements View {
     
     // UI callbacks
-    public Callback.Blank onPickMacrosDirectory = Callback.buildBlank();
-    public Callback.Blank onStartRecordHotkeyClick = Callback.buildBlank();
-    public Callback.Blank onStopRecordHotkeyClick = Callback.buildBlank();
-    public Callback.Blank onPlayMacroHotkeyClick = Callback.buildBlank();
-    public Callback.Blank onStopMacroHotkeyClick = Callback.buildBlank();
-    public Callback.Blank onPauseMacroHotkeyClick = Callback.buildBlank();
+    public Callback.WithParameter<MutableEntryPresenter.Protocol> onEditItem = Callback.buildBlankWithParameter();
     
     /**
      * Creates new form SettingsPanel
@@ -31,28 +29,13 @@ public class SettingsPanel extends javax.swing.JPanel implements View {
     
     // # Configuration
     
-    public void setStartRecordHotkey(@NotNull String value) {
-        startRecordButton.setText(value);
+    public void setDataSource(@NotNull MutableEntryDataSource dataSource) {
+        this.dataSource = dataSource;
+        settingsList.setModel(dataSource);
     }
     
-    public void setStopRecordHotkey(@NotNull String value) {
-        stopRecordButton.setText(value);
-    }
-    
-    public void setPlayMacroHotkey(@NotNull String value) {
-        playMacroButton.setText(value);
-    }
-    
-    public void setStopMacroHotkey(@NotNull String value) {
-        stopMacroButton.setText(value);
-    }
-    
-    public void setPauseMacroHotkey(@NotNull String value) {
-        pauseMacroButton.setText(value);
-    }
-    
-    public void setMacrosDirectory(@NotNull String path) {
-        scriptsDirectoryField.setText(path);
+    public void refreshData() {
+        settingsList.updateUI();
     }
     
     // # View
@@ -67,6 +50,8 @@ public class SettingsPanel extends javax.swing.JPanel implements View {
         
     }
     
+    private @Nullable MutableEntryDataSource dataSource;
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -76,89 +61,16 @@ public class SettingsPanel extends javax.swing.JPanel implements View {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        macrosDirectoryLabel = new javax.swing.JLabel();
-        scriptsDirectoryField = new javax.swing.JTextField();
-        macrosDirectoryButton = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        startRecordLabel = new javax.swing.JLabel();
-        startRecordButton = new javax.swing.JButton();
-        stopRecordLabel = new javax.swing.JLabel();
-        stopRecordButton = new javax.swing.JButton();
-        playMacroLabel = new javax.swing.JLabel();
-        playMacroButton = new javax.swing.JButton();
-        stopMacroLabel = new javax.swing.JLabel();
-        stopMacroButton = new javax.swing.JButton();
-        pauseMacroLabel = new javax.swing.JLabel();
-        pauseMacroButton = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        settingsList = new javax.swing.JList<>();
 
-        macrosDirectoryLabel.setText("Macros");
-
-        scriptsDirectoryField.setText("...");
-        scriptsDirectoryField.setEnabled(false);
-
-        macrosDirectoryButton.setText("Browse");
-        macrosDirectoryButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                macrosDirectoryButtonActionPerformed(evt);
+        settingsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        settingsList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                settingsListMouseClicked(evt);
             }
         });
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel1.setText("Directories");
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel2.setText("Hotkeys");
-
-        startRecordLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        startRecordLabel.setText("Start record");
-
-        startRecordButton.setText("KEY");
-        startRecordButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                startRecordButtonActionPerformed(evt);
-            }
-        });
-
-        stopRecordLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        stopRecordLabel.setText("Stop record");
-
-        stopRecordButton.setText("KEY");
-        stopRecordButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                stopRecordButtonActionPerformed(evt);
-            }
-        });
-
-        playMacroLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        playMacroLabel.setText("Play macro");
-
-        playMacroButton.setText("KEY");
-        playMacroButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                playMacroButtonActionPerformed(evt);
-            }
-        });
-
-        stopMacroLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        stopMacroLabel.setText("Stop macro");
-
-        stopMacroButton.setText("KEY");
-        stopMacroButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                stopMacroButtonActionPerformed(evt);
-            }
-        });
-
-        pauseMacroLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        pauseMacroLabel.setText("Pause macro");
-
-        pauseMacroButton.setText("KEY");
-        pauseMacroButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                pauseMacroButtonActionPerformed(evt);
-            }
-        });
+        jScrollPane1.setViewportView(settingsList);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -166,111 +78,31 @@ public class SettingsPanel extends javax.swing.JPanel implements View {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel2)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(startRecordButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(macrosDirectoryLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(startRecordLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(stopMacroLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(stopMacroButton))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(scriptsDirectoryField, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(macrosDirectoryButton)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(46, 46, 46)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(stopRecordButton)
-                                    .addComponent(stopRecordLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(pauseMacroButton)
-                                    .addComponent(pauseMacroLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(playMacroButton, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(playMacroLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(104, 104, 104)))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE)
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(8, 8, 8)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(scriptsDirectoryField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(macrosDirectoryButton)
-                    .addComponent(macrosDirectoryLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(startRecordLabel)
-                    .addComponent(stopRecordLabel)
-                    .addComponent(playMacroLabel))
-                .addGap(16, 16, 16)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(startRecordButton)
-                    .addComponent(stopRecordButton)
-                    .addComponent(playMacroButton, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(pauseMacroLabel)
-                    .addComponent(stopMacroLabel))
-                .addGap(12, 12, 12)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(pauseMacroButton)
-                    .addComponent(stopMacroButton))
-                .addContainerGap(75, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void macrosDirectoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_macrosDirectoryButtonActionPerformed
-        onPickMacrosDirectory.perform();
-    }//GEN-LAST:event_macrosDirectoryButtonActionPerformed
-
-    private void startRecordButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startRecordButtonActionPerformed
-        onStartRecordHotkeyClick.perform();
-    }//GEN-LAST:event_startRecordButtonActionPerformed
-
-    private void stopRecordButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopRecordButtonActionPerformed
-        onStopRecordHotkeyClick.perform();
-    }//GEN-LAST:event_stopRecordButtonActionPerformed
-
-    private void playMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playMacroButtonActionPerformed
-        onPlayMacroHotkeyClick.perform();
-    }//GEN-LAST:event_playMacroButtonActionPerformed
-
-    private void stopMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopMacroButtonActionPerformed
-        onStopMacroHotkeyClick.perform();
-    }//GEN-LAST:event_stopMacroButtonActionPerformed
-
-    private void pauseMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pauseMacroButtonActionPerformed
-        onPauseMacroHotkeyClick.perform();
-    }//GEN-LAST:event_pauseMacroButtonActionPerformed
+    private void settingsListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsListMouseClicked
+        var index = settingsList.getSelectedIndex();
+        
+        if (evt.getClickCount() > 1 && dataSource != null) {
+            var item = dataSource.getData().get(index);
+            item.onEdit(this, () -> {
+                onEditItem.perform(item);
+            });
+        }
+    }//GEN-LAST:event_settingsListMouseClicked
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JButton macrosDirectoryButton;
-    private javax.swing.JLabel macrosDirectoryLabel;
-    private javax.swing.JButton pauseMacroButton;
-    private javax.swing.JLabel pauseMacroLabel;
-    private javax.swing.JButton playMacroButton;
-    private javax.swing.JLabel playMacroLabel;
-    private javax.swing.JTextField scriptsDirectoryField;
-    private javax.swing.JButton startRecordButton;
-    private javax.swing.JLabel startRecordLabel;
-    private javax.swing.JButton stopMacroButton;
-    private javax.swing.JLabel stopMacroLabel;
-    private javax.swing.JButton stopRecordButton;
-    private javax.swing.JLabel stopRecordLabel;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JList<String> settingsList;
     // End of variables declaration//GEN-END:variables
 }

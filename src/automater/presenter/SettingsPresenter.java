@@ -4,15 +4,14 @@
  */
 package automater.presenter;
 
+import automater.datasource.MutableEntryDataSource;
 import automater.di.DI;
-import automater.model.InputKeystroke;
 import automater.storage.PreferencesStorage;
 import automater.ui.view.SettingsPanel;
 import org.jetbrains.annotations.NotNull;
-import automater.utilities.Path;
-import automater.utilities.Callback;
 import automater.utilities.Logger;
-import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -22,8 +21,6 @@ public interface SettingsPresenter {
     
     interface Delegate {
         
-        void chooseDirectory(@NotNull Path directory, @Nullable Callback.WithParameter<Path> success, @Nullable Callback.Blank failure);
-        void chooseHotkey(@Nullable Callback.WithParameter<InputKeystroke.AWT> success, @Nullable Callback.Blank failure);
     }
     
     interface Protocol extends PresenterWithDelegate<Delegate> {
@@ -43,55 +40,12 @@ public interface SettingsPresenter {
         }
         
         private void setup() {
-            view.onPickMacrosDirectory = () -> {
-                delegate.chooseDirectory(Path.getLocalDirectory(), (Path result) -> {
-                    onChooseMacrosDirectory(result);
-                }, null);
-            };
+            var self = this;
             
-            view.onStartRecordHotkeyClick = () -> {
-                delegate.chooseHotkey((var result) -> {
-                    var values = preferences.getValues();
-                    values.startRecordHotkey = result;
-                    onSavePreferences(values);
-                    setupStartRecordHotkey(values);
-                }, null);
-            };
-            
-            view.onStopRecordHotkeyClick = () -> {
-                delegate.chooseHotkey((var result) -> {
-                    var values = preferences.getValues();
-                    values.stopRecordHotkey = result;
-                    onSavePreferences(values);
-                    setupStopRecordHotkey(values);
-                }, null);
-            };
-            
-            view.onPlayMacroHotkeyClick = () -> {
-                delegate.chooseHotkey((var result) -> {
-                    var values = preferences.getValues();
-                    values.playMacroHotkey = result;
-                    onSavePreferences(values);
-                    setupStartMacroHotkey(values);
-                }, null);
-            };
-            
-            view.onStopMacroHotkeyClick = () -> {
-                delegate.chooseHotkey((var result) -> {
-                    var values = preferences.getValues();
-                    values.stopMacroHotkey = result;
-                    onSavePreferences(values);
-                    setupStopMacroHotkey(values);
-                }, null);
-            };
-            
-            view.onPauseMacroHotkeyClick = () -> {
-                delegate.chooseHotkey((var result) -> {
-                    var values = preferences.getValues();
-                    values.pauseMacroHotkey = result;
-                    onSavePreferences(values);
-                    setupPauseMacroHotkey(values);
-                }, null);
+            view.onEditItem = (var item) -> {
+                Logger.message(self, "Edited item '" + item.getName() + "'" + " = " + item.getValueAsString());
+                saveCurrentData();
+                refreshData();
             };
         }
 
@@ -118,49 +72,30 @@ public interface SettingsPresenter {
         
         @Override
         public void reloadData() {
-            var values = preferences.getValues();
-            setupStartRecordHotkey(values);
-            setupStopRecordHotkey(values);
-            setupStartMacroHotkey(values);
-            setupStopMacroHotkey(values);
-            setupPauseMacroHotkey(values);
-            view.setMacrosDirectory(values.macrosDirectory.toString());
+            var dataSource = new MutableEntryDataSource(getPresenterList());
+            view.setDataSource(dataSource);
         }
         
-        private void onChooseMacrosDirectory(@NotNull Path path) {
-            Logger.message(this, "Changed macros directory - " + path.toStringWithQuotes());
-            
-            var values = preferences.getValues();
-            values.macrosDirectory = path;
-            preferences.setValues(values);
-            preferences.save();
-            
-            reloadData();
-        }
-        
-        private void onSavePreferences(@NotNull PreferencesStorage.Values values) {
-            preferences.setValues(values);
+        private void saveCurrentData() {
             preferences.save();
         }
         
-        private void setupStartRecordHotkey(@NotNull PreferencesStorage.Values values) {
-            view.setStartRecordHotkey(values.startRecordHotkey.toString());
+        private void refreshData() {
+            view.refreshData();
         }
         
-        private void setupStopRecordHotkey(@NotNull PreferencesStorage.Values values) {
-            view.setStopRecordHotkey(values.stopRecordHotkey.toString());
-        }
-        
-        private void setupStartMacroHotkey(@NotNull PreferencesStorage.Values values) {
-            view.setPlayMacroHotkey(values.playMacroHotkey.toString());
-        }
-        
-        private void setupStopMacroHotkey(@NotNull PreferencesStorage.Values values) {
-            view.setStopMacroHotkey(values.stopMacroHotkey.toString());
-        }
-        
-        private void setupPauseMacroHotkey(@NotNull PreferencesStorage.Values values) {
-            view.setPauseMacroHotkey(values.pauseMacroHotkey.toString());
+        private List<MutableEntryPresenter.Protocol> getPresenterList() {
+            var v = preferences.getValues();
+            var result = new ArrayList<MutableEntryPresenter.Protocol>();
+            result.add(new MutableEntryPresenter.SystemPath("directory", v.macrosDirectory, null));
+            result.add(new MutableEntryPresenter.Hotkey("start recording hotkey", v.startRecordHotkey));
+            result.add(new MutableEntryPresenter.Hotkey("stop recording hotkey", v.stopRecordHotkey));
+            result.add(new MutableEntryPresenter.Hotkey("play recording hotkey", v.playMacroHotkey));
+            result.add(new MutableEntryPresenter.Hotkey("pause recording hotkey", v.pauseMacroHotkey));
+            result.add(new MutableEntryPresenter.Hotkey("stop recording hotkey", v.stopMacroHotkey));
+            result.add(new MutableEntryPresenter.Flag("start notification", v.startNotification));
+            result.add(new MutableEntryPresenter.Flag("stop notification", v.stopNotification));
+            return result;
         }
     }
 }

@@ -324,7 +324,7 @@ public interface PlayMacroPresenter {
         }
 
         private void displayPlayingStartedNotification() {
-            if (!preferences.getValues().startNotification) {
+            if (!preferences.getValues().startNotification.get()) {
                 return;
             }
             
@@ -344,7 +344,7 @@ public interface PlayMacroPresenter {
         }
 
         private void displayPlayingFinishedNotification() {
-            if (!preferences.getValues().stopNotification) {
+            if (!preferences.getValues().stopNotification.get()) {
                 return;
             }
 
