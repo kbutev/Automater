@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import automater.model.MutableStorageValue;
 
 /**
  *
@@ -84,8 +85,8 @@ public interface EditMacroActionPresenter {
             view.refreshData();
         }
         
-        private List<MutableEntryPresenter.Protocol> buildDataSource() {
-            var result = new ArrayList<MutableEntryPresenter.Protocol>();
+        private List<MutableStorageValue.Protocol> buildDataSource() {
+            var result = new ArrayList<MutableStorageValue.Protocol>();
             
             try {
                 var builder = MacroActionBuilder.buildFromAction(action);

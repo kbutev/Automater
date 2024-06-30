@@ -18,11 +18,14 @@ import automater.storage.MacroStorage;
 import automater.storage.PreferencesStorage;
 import automater.ui.view.RecordMacroPanel;
 import automater.datasource.StandardDescriptionDataSource;
+import automater.model.InputKeystroke;
 import automater.model.macro.MacroRecordSource;
 import automater.model.macro.MacroRecordSourceKind;
 import automater.model.macro.MacroSummary;
 import automater.utilities.Logger;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.commons.lang3.time.StopWatch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -92,6 +95,10 @@ public interface RecordMacroPresenter {
                 saveRecording(argument, view.getMacroDescription());
             };
             
+            setupText();
+        }
+        
+        private void setupText() {
             view.setHotkeyText(preferences.getValues().startRecordHotkey.toString(),
                     preferences.getValues().stopRecordHotkey.toString());
         }
@@ -104,7 +111,10 @@ public interface RecordMacroPresenter {
 
             Logger.message(this, "Start");
             
+            setupText();
+            
             try {
+                actionHotkeyMonitor.setHotkeys(getActionHotkeys());
                 actionHotkeyMonitor.setListener(this);
                 actionHotkeyMonitor.start();
             } catch (Exception e) {
@@ -258,16 +268,26 @@ public interface RecordMacroPresenter {
         // # HotkeyMonitor.Listener
         
         @Override
-        public void onHotkeyEvent(@NotNull KeyEventKind kind) {
+        public void onHotkeyEvent(@NotNull InputKeystroke.Protocol key, @NotNull KeyEventKind kind) {
             if (!kind.isReleaseOrTap()) {
                 return;
             }
             
-            if (recorder.isRecording()) {
-                endRecording(this);
-            } else {
+            /// Start
+            var values = preferences.getValues();
+            
+            if (values.startRecordHotkey.get().equals(key) && !recorder.isRecording()) {
                 beginRecording(this);
+            } else if (values.stopRecordHotkey.get().equals(key) && recorder.isRecording()) {
+                endRecording(this);
             }
+        }
+        
+        // # Private
+        
+        private @NotNull List<InputKeystroke.Protocol> getActionHotkeys() {
+            var values = preferences.getValues();
+            return Arrays.asList(values.startRecordHotkey.get(), values.stopRecordHotkey.get());
         }
     }
 }

@@ -7,12 +7,12 @@ package automater.builder;
 import automater.model.InputKeystroke;
 import automater.model.KeyEventKind;
 import automater.model.MouseKey;
-import automater.presenter.MutableEntryPresenter;
 import automater.storage.StorageValue;
 import automater.validator.CommonValidators;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
+import automater.model.MutableStorageValue;
 
 /**
  *
@@ -22,13 +22,13 @@ public interface InternalMacroActionBuilder {
     
     interface Protocol {
         
-        @NotNull List<MutableEntryPresenter.Protocol> buildEntryPresenters();
+        @NotNull List<MutableStorageValue.Protocol> buildEntryPresenters();
     }
     
     class DoNothing implements Protocol {
         
         @Override
-        public @NotNull List<MutableEntryPresenter.Protocol> buildEntryPresenters() {
+        public @NotNull List<MutableStorageValue.Protocol> buildEntryPresenters() {
             return new ArrayList<>();
         }
     }
@@ -45,15 +45,15 @@ public interface InternalMacroActionBuilder {
                 StorageValue.build(() -> { return eventKind; }, (var value) -> { eventKind = value; });
         
         @Override
-        public @NotNull List<MutableEntryPresenter.Protocol> buildEntryPresenters() {
-            var presenters = new ArrayList<MutableEntryPresenter.Protocol>();
+        public @NotNull List<MutableStorageValue.Protocol> buildEntryPresenters() {
+            var presenters = new ArrayList<MutableStorageValue.Protocol>();
             
-            presenters.add(new MutableEntryPresenter.Keystroke("keystroke", keystrokeStorage));
+            presenters.add(new MutableStorageValue.Keystroke("keystroke", keystrokeStorage));
             
             var eventStorage =
                 StorageValue.build(() -> { return eventKind.value; }, (var value) -> { eventKind = KeyEventKind.build(value); });
             
-            presenters.add(new MutableEntryPresenter.EnumList("event", eventStorage, KeyEventKind.allValues));
+            presenters.add(new MutableStorageValue.EnumList("event", eventStorage, KeyEventKind.allValues));
             
             return presenters;
         }
@@ -71,7 +71,7 @@ public interface InternalMacroActionBuilder {
                 StorageValue.build(() -> { return eventKind; }, (var value) -> { eventKind = value; });
         
         @Override
-        public @NotNull List<MutableEntryPresenter.Protocol> buildEntryPresenters() {
+        public @NotNull List<MutableStorageValue.Protocol> buildEntryPresenters() {
             return new ArrayList<>();
         }
     }
@@ -79,7 +79,7 @@ public interface InternalMacroActionBuilder {
     class MacroHardwareActionMouseMove implements Protocol {
         
         @Override
-        public @NotNull List<MutableEntryPresenter.Protocol> buildEntryPresenters() {
+        public @NotNull List<MutableStorageValue.Protocol> buildEntryPresenters() {
             return new ArrayList<>();
         }
     }
@@ -87,7 +87,7 @@ public interface InternalMacroActionBuilder {
     class MacroHardwareActionMouseScroll implements Protocol {
         
         @Override
-        public @NotNull List<MutableEntryPresenter.Protocol> buildEntryPresenters() {
+        public @NotNull List<MutableStorageValue.Protocol> buildEntryPresenters() {
             return new ArrayList<>();
         }
     }

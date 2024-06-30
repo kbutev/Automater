@@ -4,12 +4,12 @@
  */
 package automater.datasource;
 
-import automater.presenter.MutableEntryPresenter;
 import automater.utilities.CollectionUtilities;
 import java.util.List;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataListener;
 import org.jetbrains.annotations.NotNull;
+import automater.model.MutableStorageValue;
 
 /**
  *
@@ -17,13 +17,13 @@ import org.jetbrains.annotations.NotNull;
  */
 public class MutableEntryDataSource implements ListModel<String> {
     
-    private final @NotNull List<MutableEntryPresenter.Protocol> data;
+    private final @NotNull List<MutableStorageValue.Protocol> data;
     
-    public MutableEntryDataSource(@NotNull List<MutableEntryPresenter.Protocol> data) {
+    public MutableEntryDataSource(@NotNull List<MutableStorageValue.Protocol> data) {
         this.data = CollectionUtilities.copy(data);
     }
     
-    public @NotNull List<MutableEntryPresenter.Protocol> getData() {
+    public @NotNull List<MutableStorageValue.Protocol> getData() {
         return data;
     }
     

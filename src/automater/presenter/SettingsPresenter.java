@@ -13,6 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import automater.utilities.Logger;
 import java.util.ArrayList;
 import java.util.List;
+import automater.model.MutableStorageValue;
+import automater.router.MutableStorageValueRouter;
 
 /**
  *
@@ -47,9 +49,7 @@ public interface SettingsPresenter {
             var self = this;
             
             view.onEditItem = (var item) -> {
-                Logger.message(self, "Edited item '" + item.getName() + "'" + " = " + item.getValueAsString());
-                saveCurrentData();
-                refreshData();
+                editItem(item);
             };
             
             view.onResetAll = () -> {
@@ -89,6 +89,21 @@ public interface SettingsPresenter {
             view.setDataSource(dataSource);
         }
         
+        private void editItem(@NotNull MutableStorageValue.Protocol value) {
+            var router = new MutableStorageValueRouter.Impl(view, value);
+            router.start((var result) -> {
+                if (result) {
+                    onItemEdited(value);
+                }
+            });
+        }
+        
+        private void onItemEdited(@NotNull MutableStorageValue.Protocol value) {
+            Logger.message(this, "Edited item '" + value.getName() + "'" + " = " + value.getValueAsString());
+            saveCurrentData();
+            refreshData();
+        }
+        
         private void saveCurrentData() {
             preferences.save();
         }
@@ -97,17 +112,17 @@ public interface SettingsPresenter {
             view.refreshData();
         }
         
-        private List<MutableEntryPresenter.Protocol> buildDataSource() {
+        private List<MutableStorageValue.Protocol> buildDataSource() {
             var v = preferences.getValues();
-            var result = new ArrayList<MutableEntryPresenter.Protocol>();
-            result.add(new MutableEntryPresenter.SystemPath("directory", v.macrosDirectory, null));
-            result.add(new MutableEntryPresenter.Hotkey("start recording hotkey", v.startRecordHotkey));
-            result.add(new MutableEntryPresenter.Hotkey("stop recording hotkey", v.stopRecordHotkey));
-            result.add(new MutableEntryPresenter.Hotkey("play recording hotkey", v.playMacroHotkey));
-            result.add(new MutableEntryPresenter.Hotkey("pause recording hotkey", v.pauseMacroHotkey));
-            result.add(new MutableEntryPresenter.Hotkey("stop recording hotkey", v.stopMacroHotkey));
-            result.add(new MutableEntryPresenter.Flag("start notification", v.startNotification));
-            result.add(new MutableEntryPresenter.Flag("stop notification", v.stopNotification));
+            var result = new ArrayList<MutableStorageValue.Protocol>();
+            result.add(new MutableStorageValue.SystemPath("directory", v.macrosDirectory, null));
+            result.add(new MutableStorageValue.Hotkey("start recording hotkey", v.startRecordHotkey));
+            result.add(new MutableStorageValue.Hotkey("stop recording hotkey", v.stopRecordHotkey));
+            result.add(new MutableStorageValue.Hotkey("play recording hotkey", v.playMacroHotkey));
+            result.add(new MutableStorageValue.Hotkey("pause recording hotkey", v.pauseMacroHotkey));
+            result.add(new MutableStorageValue.Hotkey("stop recording hotkey", v.stopMacroHotkey));
+            result.add(new MutableStorageValue.Flag("start notification", v.startNotification));
+            result.add(new MutableStorageValue.Flag("stop notification", v.stopNotification));
             return result;
         }
     }

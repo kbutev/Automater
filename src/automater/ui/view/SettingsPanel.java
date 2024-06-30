@@ -5,11 +5,11 @@
 package automater.ui.view;
 
 import automater.datasource.MutableEntryDataSource;
-import automater.presenter.MutableEntryPresenter;
 import automater.utilities.Callback;
 import java.awt.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import automater.model.MutableStorageValue;
 
 /**
  *
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 public class SettingsPanel extends javax.swing.JPanel implements View {
     
     // UI callbacks
-    public Callback.Param<MutableEntryPresenter.Protocol> onEditItem = Callback.buildBlankWithParameter();
+    public Callback.Param<MutableStorageValue.Protocol> onEditItem = Callback.buildBlankWithParameter();
     public Callback.Blank onResetAll = Callback.buildBlank();
     
     /**
@@ -110,9 +110,7 @@ public class SettingsPanel extends javax.swing.JPanel implements View {
         
         if (evt.getClickCount() > 1 && dataSource != null) {
             var item = dataSource.getData().get(index);
-            item.onEdit(this, () -> {
-                onEditItem.perform(item);
-            });
+            onEditItem.perform(item);
         }
     }//GEN-LAST:event_settingsListMouseClicked
 

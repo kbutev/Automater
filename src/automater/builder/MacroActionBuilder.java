@@ -9,7 +9,6 @@ import automater.model.KeyEventKind;
 import automater.model.MouseKey;
 import automater.model.action.MacroAction;
 import automater.model.action.MacroHardwareAction;
-import automater.presenter.MutableEntryPresenter;
 import automater.storage.StorageValue;
 import automater.utilities.Errors;
 import automater.validator.CommonValidators;
@@ -17,6 +16,7 @@ import automater.validator.ValueValidator;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
+import automater.model.MutableStorageValue;
 
 /**
  *
@@ -46,7 +46,7 @@ public interface MacroActionBuilder {
         @NotNull StorageValue<Kind> kind();
         @NotNull StorageValue<Double> timestamp();
         
-        @NotNull List<MutableEntryPresenter.Protocol> buildEntryPresenters();
+        @NotNull List<MutableStorageValue.Protocol> buildEntryPresenters();
     }
     
     class Impl implements Protocol {
@@ -73,10 +73,10 @@ public interface MacroActionBuilder {
         }
         
         @Override
-        public @NotNull List<MutableEntryPresenter.Protocol> buildEntryPresenters() {
-            var presenters = new ArrayList<MutableEntryPresenter.Protocol>();
+        public @NotNull List<MutableStorageValue.Protocol> buildEntryPresenters() {
+            var presenters = new ArrayList<MutableStorageValue.Protocol>();
             
-            presenters.add(new MutableEntryPresenter.SimpleDouble("timestamp",
+            presenters.add(new MutableStorageValue.SimpleDouble("timestamp",
                     timestampStorage, CommonValidators.nonNegativeDouble()));
             
             var internalPresenters = internal.buildEntryPresenters();

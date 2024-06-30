@@ -10,6 +10,7 @@ import automater.di.DI;
 import automater.execution.Command;
 import automater.execution.MacroProcess;
 import automater.execution.MacroProcessBuilder;
+import automater.model.InputKeystroke;
 import automater.model.KeyEventKind;
 import automater.model.action.MacroActionDescription;
 import automater.model.macro.Macro;
@@ -23,6 +24,7 @@ import automater.utilities.DeviceNotifications;
 import automater.utilities.Looper;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -98,6 +100,7 @@ public interface PlayMacroPresenter {
             };
             
             setupMacroActionDescriptions();
+            setupText();
         }
         
         private void setupMacroActionDescriptions() {
@@ -108,6 +111,11 @@ public interface PlayMacroPresenter {
                 } catch (Exception e) {}
             }
         }
+        
+        private void setupText() {
+            view.setHotkeyText(preferences.getValues().playMacroHotkey.toString(),
+                    preferences.getValues().stopMacroHotkey.toString());
+        }
 
         // # Protocol
         
@@ -116,14 +124,17 @@ public interface PlayMacroPresenter {
             if (delegate == null) {
                 throw Errors.delegateNotSet();
             }
+            
+            Logger.message(this, "Start");
 
+            setupText();
+            
+            actionHotkeyMonitor.setHotkeys(getActionHotkeys());
             actionHotkeyMonitor.setListener(this);
             
             try {
                 actionHotkeyMonitor.start();
             } catch (Exception e) {}
-
-            Logger.message(this, "Start.");
 
             looper.subscribe(this);
             
@@ -309,22 +320,29 @@ public interface PlayMacroPresenter {
         // # HotkeyMonitor.Listener
         
         @Override
-        public void onHotkeyEvent(@NotNull KeyEventKind kind) {
+        public void onHotkeyEvent(@NotNull InputKeystroke.Protocol key, @NotNull KeyEventKind kind) {
             if (!kind.isReleaseOrTap()) {
                 return;
             }
             
-            if (isPlaying()) {
-                stopMacroExecution(this);
-            } else {
+            var values = preferences.getValues();
+            
+            if (values.playMacroHotkey.get().equals(key) && !isPlaying()) {
                 startMacroExecution(this);
+            } else if (values.stopMacroHotkey.get().equals(key) && isPlaying()) {
+                stopMacroExecution(this);
+            } else if (values.pauseMacroHotkey.get().equals(key) && isPlaying()) {
+                pauseMacroExecution(this);
             }
         }
 
         // # Private
         
-        private void updatePlayStatus() {
-            
+        private @NotNull List<InputKeystroke.Protocol> getActionHotkeys() {
+            var values = preferences.getValues();
+            return Arrays.asList(values.playMacroHotkey.get(),
+                    values.pauseMacroHotkey.get(),
+                    values.stopMacroHotkey.get());
         }
 
         private void displayPlayingStartedNotification() {

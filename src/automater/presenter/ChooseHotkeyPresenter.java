@@ -49,7 +49,7 @@ public interface ChooseHotkeyPresenter {
             success = callback;
         }
         
-        public void setFailureallback(@Nullable Callback.Blank callback) {
+        public void setFailureCallback(@Nullable Callback.Blank callback) {
             failure = callback;
         }
         

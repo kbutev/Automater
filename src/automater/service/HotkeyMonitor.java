@@ -9,8 +9,11 @@ import automater.model.KeyEventKind;
 import automater.model.InputKeystroke;
 import automater.model.event.CapturedEvent;
 import automater.model.event.CapturedHardwareEvent;
+import automater.utilities.CollectionUtilities;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
+import java.util.Arrays;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,8 +37,11 @@ public interface HotkeyMonitor {
 
         @Nullable Listener getListener();
         void setListener(@NotNull Listener listener);
+        
         @Nullable InputKeystroke.Protocol getHotkey();
         void setHotkey(@NotNull InputKeystroke.Protocol hotkey);
+        void setHotkeys(@NotNull List<InputKeystroke.Protocol> hotkeys);
+        
         @NotNull String getName();
         void setName(@NotNull String name);
 
@@ -45,18 +51,24 @@ public interface HotkeyMonitor {
 
     interface Listener {
 
-        void onHotkeyEvent(@NotNull KeyEventKind kind);
+        void onHotkeyEvent(@NotNull InputKeystroke.Protocol key, @NotNull KeyEventKind kind);
     }
 
     class Impl implements Protocol, NativeEventMonitor.Listener {
 
         private final NativeEventMonitor.Protocol monitor = DI.get(NativeEventMonitor.Protocol.class);
-        private @Nullable Listener listener;
-        private @Nullable InputKeystroke.Protocol hotkey;
+        
+        private @NotNull List<InputKeystroke.Protocol> hotkeys;
         private @NotNull String name = "";
+        
+        private @Nullable Listener listener;
 
         public Impl(@NotNull InputKeystroke.Protocol hotkey) {
-            this.hotkey = hotkey;
+            this.hotkeys = Arrays.asList(hotkey);
+        }
+        
+        public Impl(@NotNull List<InputKeystroke.Protocol> hotkeys) {
+            this.hotkeys = CollectionUtilities.copy(hotkeys);
         }
 
         @Override
@@ -73,13 +85,18 @@ public interface HotkeyMonitor {
 
         @Override
         public @Nullable InputKeystroke.Protocol getHotkey() {
-            return hotkey;
+            return hotkeys.getFirst();
         }
 
         @Override
         public void setHotkey(@NotNull InputKeystroke.Protocol hotkey) {
             assert hotkey != null;
-            this.hotkey = hotkey;
+            this.hotkeys = Arrays.asList(hotkey);
+        }
+        
+        @Override
+        public void setHotkeys(@NotNull List<InputKeystroke.Protocol> hotkeys) {
+            this.hotkeys = CollectionUtilities.copy(hotkeys);
         }
 
         @Override
@@ -113,15 +130,17 @@ public interface HotkeyMonitor {
         // # NativeEventMonitor.Listener
         @Override
         public void onParseEvent(CapturedEvent event) {
-            if (listener == null || hotkey == null) {
+            if (listener == null) {
                 return;
             }
 
             if (event instanceof CapturedHardwareEvent.Click click) {
                 Logger.messageVerbose(this, "onParseEvent " + click.toString());
                 
-                if (hotkey.equalsIgnoreModifier(click.keystroke)) {
-                    listener.onHotkeyEvent(click.kind);
+                for (var hotkey : hotkeys) {
+                    if (hotkey.equalsIgnoreModifier(click.keystroke)) {
+                        listener.onHotkeyEvent(hotkey, click.kind);
+                    }
                 }
             }
         }
