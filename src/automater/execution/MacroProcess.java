@@ -237,6 +237,10 @@ public interface MacroProcess {
                 });
             } catch (Exception e) {
                 Logger.error(this, "Failed to end process, error: " + e);
+                
+                if (Logger.VERBOSE) {
+                    e.printStackTrace();
+                }
             }
         }
         

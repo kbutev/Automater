@@ -4,8 +4,12 @@
  */
 package automater.ui.view;
 
+import automater.datasource.MacroActionKindsDataSource;
 import automater.datasource.MutableEntryDataSource;
+import automater.model.MutableStorageValue;
 import automater.utilities.Callback;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +20,10 @@ import org.jetbrains.annotations.Nullable;
 public class EditMacroActionDialog extends javax.swing.JDialog {
 
     // UI callbacks
-    public Callback.Blank onSaveCallback = Callback.buildBlank();
+    public Callback.Param<Integer> onKindChange = Callback.buildBlankWithParameter();
+    public Callback.Param<MutableStorageValue.Protocol> onEditItem = Callback.buildBlankWithParameter();
+    public Callback.Blank onSave = Callback.buildBlank();
+    public Callback.Blank onWindowCloseClick = Callback.buildBlank();
     
     /**
      * Creates new form EditMacroActionDialog
@@ -28,14 +35,56 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     }
     
     private void setup() {
+        addWindowListener(new WindowListener() {
+            @Override
+            public void windowOpened(WindowEvent e) {}
+            @Override
+            public void windowClosing(WindowEvent e) {
+                onWindowCloseClick.perform();
+            }
+            @Override
+            public void windowClosed(WindowEvent e) {}
+            @Override
+            public void windowIconified(WindowEvent e) {}
+            @Override
+            public void windowDeiconified(WindowEvent e) {}
+            @Override
+            public void windowActivated(WindowEvent e) {}
+            @Override
+            public void windowDeactivated(WindowEvent e) {}
+        });
         
+        actionFieldsList.addListSelectionListener((var selection) -> {
+            onSelectItem(selection.getFirstIndex());
+        });
+    }
+    
+    private void onSelectItem(int index) {
+        editButton.setEnabled(index != -1);
     }
     
     // # Configuration
     
-    public void setDataSource(@NotNull MutableEntryDataSource dataSource) {
-        this.dataSource = dataSource;
+    public @Nullable MacroActionKindsDataSource getKindsDataSource() {
+        return kindsDataSource;
+    }
+    
+    public void setKindsDataSource(@NotNull MacroActionKindsDataSource dataSource) {
+        kindsDataSource = dataSource;
+        actionTypeDropdown.setModel(dataSource);
+    }
+    
+    public void setFieldsDataSource(@NotNull MutableEntryDataSource dataSource) {
+        fieldsDataSource = dataSource;
         actionFieldsList.setModel(dataSource);
+    }
+    
+    public void setActionName(@NotNull String name) {
+        actionName.setText(name);
+    }
+    
+    public void selectKind(@NotNull String kind) {
+        actionTypeDropdown.setSelectedItem(kind);
     }
     
     public void refreshData() {
@@ -48,7 +97,10 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         setVisible(true);
     }
     
-    private @Nullable MutableEntryDataSource dataSource;
+    // # Storage
+    
+    private @Nullable MacroActionKindsDataSource kindsDataSource;
+    private @Nullable MutableEntryDataSource fieldsDataSource;
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -64,11 +116,17 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         saveButton = new javax.swing.JButton();
         actionName = new javax.swing.JLabel();
         actionTypeDropdown = new javax.swing.JComboBox<>();
+        editButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Edit action");
 
         actionFieldsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        actionFieldsList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                actionFieldsListMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(actionFieldsList);
 
         saveButton.setText("Save");
@@ -82,6 +140,19 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
         actionName.setText("Action name");
 
         actionTypeDropdown.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        actionTypeDropdown.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                actionTypeDropdownActionPerformed(evt);
+            }
+        });
+
+        editButton.setText("Edit");
+        editButton.setEnabled(false);
+        editButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -93,10 +164,10 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
                     .addComponent(actionName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(saveButton)
-                            .addComponent(actionTypeDropdown, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(editButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(saveButton))
+                    .addComponent(actionTypeDropdown, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -109,7 +180,9 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(saveButton)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(saveButton)
+                    .addComponent(editButton))
                 .addContainerGap())
         );
 
@@ -117,8 +190,30 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-        onSaveCallback.perform();
+        onSave.perform();
     }//GEN-LAST:event_saveButtonActionPerformed
+
+    private void actionFieldsListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_actionFieldsListMouseClicked
+        var index = actionFieldsList.getSelectedIndex();
+        
+        if (evt.getClickCount() > 1 && fieldsDataSource != null) {
+            var item = fieldsDataSource.getData().get(index);
+            onEditItem.perform(item);
+        }
+    }//GEN-LAST:event_actionFieldsListMouseClicked
+
+    private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
+        var index = actionFieldsList.getSelectedIndex();
+        
+        if (fieldsDataSource != null) {
+            var item = fieldsDataSource.getData().get(index);
+            onEditItem.perform(item);
+        }
+    }//GEN-LAST:event_editButtonActionPerformed
+
+    private void actionTypeDropdownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_actionTypeDropdownActionPerformed
+        onKindChange.perform(kindsDataSource.getSelectedIndex());
+    }//GEN-LAST:event_actionTypeDropdownActionPerformed
 
     /**
      * @param args the command line arguments
@@ -164,6 +259,7 @@ public class EditMacroActionDialog extends javax.swing.JDialog {
     private javax.swing.JList<String> actionFieldsList;
     private javax.swing.JLabel actionName;
     private javax.swing.JComboBox<String> actionTypeDropdown;
+    private javax.swing.JButton editButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton saveButton;
     // End of variables declaration//GEN-END:variables

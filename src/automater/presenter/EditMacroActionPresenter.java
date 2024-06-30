@@ -5,16 +5,18 @@
 package automater.presenter;
 
 import automater.builder.MacroActionBuilder;
+import automater.datasource.MacroActionKindsDataSource;
 import automater.datasource.MutableEntryDataSource;
 import automater.model.action.MacroAction;
 import automater.ui.view.EditMacroActionDialog;
 import automater.utilities.Errors;
 import automater.utilities.Logger;
-import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import automater.model.MutableStorageValue;
+import automater.router.MutableStorageValueRouter;
+import java.util.Arrays;
 
 /**
  *
@@ -24,7 +26,10 @@ public interface EditMacroActionPresenter {
     
     interface Delegate {
         
-        void exit();
+        void exitWithoutChanges();
+        void exitWithChanges(@NotNull MacroAction original, @NotNull MacroAction replacement);
+        
+        void showError(@NotNull String title, @NotNull String body);
     }
 
     interface Protocol extends PresenterWithDelegate<Delegate> {
@@ -34,18 +39,32 @@ public interface EditMacroActionPresenter {
     class Impl implements Protocol {
 
         private final @NotNull EditMacroActionDialog view;
-        private final @NotNull MacroAction action;
+        private final @NotNull MacroAction originalAction;
         private @Nullable Delegate delegate;
+        private final @NotNull MacroActionBuilder.Protocol builder;
         
-        public Impl(@NotNull EditMacroActionDialog view, @NotNull MacroAction action) {
+        public Impl(@NotNull EditMacroActionDialog view, @NotNull MacroAction action) throws Exception {
             this.view = view;
-            this.action = action;
+            this.originalAction = action;
+            builder = MacroActionBuilder.buildFromAction(action);
             setup();
         }
         
         private void setup() {
-            view.onSaveCallback = () -> {
-                delegate.exit();
+            view.onKindChange = (var index) -> {
+                onKindChanged(index);
+            };
+            
+            view.onEditItem = (var item) -> {
+                editItem(item);
+            };
+            
+            view.onSave = () -> {
+                saveAndExit();
+            };
+            
+            view.onWindowCloseClick = () -> {
+                exit();
             };
         }
         
@@ -77,27 +96,79 @@ public interface EditMacroActionPresenter {
         
         @Override
         public void reloadData() {
-            var dataSource = new MutableEntryDataSource(buildDataSource());
-            view.setDataSource(dataSource);
+            var kindsData = buildKindsData();
+            view.setKindsDataSource(new MacroActionKindsDataSource(kindsData));
+            view.selectKind(getCurrentKind().value);
+            view.setFieldsDataSource(new MutableEntryDataSource(buildFieldsData()));
+            
+            view.setActionName(getActionName());
+        }
+        
+        // # Private
+        
+        private @NotNull String getActionName() {
+            return builder.getActionName();
+        }
+        
+        private @NotNull MacroActionBuilder.Kind getCurrentKind() {
+            return builder.kind().get();
+        }
+        
+        private void onKindChanged(int index) {
+            if (index == -1) {
+                return;
+            }
+            
+            var selectedKind = buildKindsData().get(index);
+            
+            if (selectedKind == getCurrentKind()) {
+                return;
+            }
+            
+            Logger.message(this, "Kind changed to " + selectedKind.value);
+            
+            builder.kind().set(selectedKind);
+            reloadData();
+        }
+        
+        private void editItem(@NotNull MutableStorageValue.Protocol value) {
+            var router = new MutableStorageValueRouter.Impl(view, value);
+            router.start((var result) -> {
+                if (result) {
+                    onItemEdited(value);
+                }
+            });
+        }
+        
+        private void onItemEdited(@NotNull MutableStorageValue.Protocol value) {
+            Logger.message(this, "Edited item '" + value.getName() + "'" + " = " + value.getValueAsString());
+            refreshData();
         }
         
         private void refreshData() {
             view.refreshData();
         }
         
-        private List<MutableStorageValue.Protocol> buildDataSource() {
-            var result = new ArrayList<MutableStorageValue.Protocol>();
-            
+        private void exit() {
+            delegate.exitWithoutChanges();
+        }
+        
+        private void saveAndExit() {
             try {
-                var builder = MacroActionBuilder.buildFromAction(action);
-                var presenters = builder.buildEntryPresenters();
-                result.addAll(presenters);
+                var result = builder.build();
+                delegate.exitWithChanges(originalAction, result);
             } catch (Exception e) {
-                Logger.error(this, "Failed to build action values, error: " + e);
-                return result;
+                var errorStr = e.getMessage() != null ? e.getMessage() : "unknown";
+                delegate.showError("Save failed", "Error: " + errorStr);
             }
-            
-            return result;
+        }
+        
+        private List<MacroActionBuilder.Kind> buildKindsData() {
+            return Arrays.asList(MacroActionBuilder.Kind.values());
+        }
+        
+        private List<MutableStorageValue.Protocol> buildFieldsData() {
+            return builder.getMutableValues();
         }
     }
 }

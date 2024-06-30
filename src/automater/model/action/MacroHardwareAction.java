@@ -84,6 +84,11 @@ public interface MacroHardwareAction {
         public @NotNull MacroAction copy() {
             return new AWTClick(this);
         }
+        
+        @Override
+        public @NotNull String getName() {
+            return keystroke.isKeyboard() ? "Keyboard Click" : "Mouse Click";
+        }
     }
 
     class MouseMove extends Generic {
@@ -110,6 +115,11 @@ public interface MacroHardwareAction {
         @Override
         public @NotNull MacroAction copy() {
             return new MouseMove(this);
+        }
+        
+        @Override
+        public @NotNull String getName() {
+            return "Move Mouse";
         }
     }
 
@@ -142,6 +152,11 @@ public interface MacroHardwareAction {
         @Override
         public @NotNull MacroAction copy() {
             return new MouseScroll(this);
+        }
+        
+        @Override
+        public @NotNull String getName() {
+            return "Scroll Mouse";
         }
     }
 }

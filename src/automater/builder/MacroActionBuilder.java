@@ -4,19 +4,16 @@
  */
 package automater.builder;
 
-import automater.model.InputKeystroke;
-import automater.model.KeyEventKind;
-import automater.model.MouseKey;
 import automater.model.action.MacroAction;
 import automater.model.action.MacroHardwareAction;
 import automater.storage.StorageValue;
 import automater.utilities.Errors;
 import automater.validator.CommonValidators;
-import automater.validator.ValueValidator;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import automater.model.MutableStorageValue;
+import org.jetbrains.annotations.Nullable;
 
 /**
  *
@@ -26,30 +23,51 @@ public interface MacroActionBuilder {
     
     public static @NotNull Protocol buildFromAction(@NotNull MacroAction action) throws Exception {
         var result = new Impl();
-        result.kind = KindMap.getKindFromAction(action);
-        result.timestamp = action.getTimestamp();
-        result.onKindChanged();
+        result.setupWithAction(action);
         return result;
     }
     
     enum Kind {
         
-        DO_NOTHING,
-        CLICK,
-        MOUSE_CLICK,
-        MOUSE_MOVE,
-        MOUSE_SCROLL
+        DO_NOTHING("do nothing"),
+        CLICK("click"),
+        MOUSE_CLICK("mouse click"),
+        MOUSE_MOVE("mouse move"),
+        MOUSE_SCROLL("mouse scroll");
+        
+        public static final List<String> allValuesAsStrings = allValuesAsStrings();
+        
+        public final @NotNull String value;
+        
+        Kind(@NotNull String value) {
+            this.value = value;
+        }
+        
+        public static @NotNull List<String> allValuesAsStrings() {
+            ArrayList<String> values = new ArrayList<>();
+            
+            for (var kind : Kind.values()) {
+                values.add(kind.value);
+            }
+            
+            return values;
+        }
     }
     
     interface Protocol {
         
+        @NotNull String getActionName();
         @NotNull StorageValue<Kind> kind();
         @NotNull StorageValue<Double> timestamp();
         
-        @NotNull List<MutableStorageValue.Protocol> buildEntryPresenters();
+        @NotNull List<MutableStorageValue.Protocol> getMutableValues();
+        
+        @NotNull MacroAction build() throws Exception;
     }
     
     class Impl implements Protocol {
+        
+        public static final int TIMESTAMP_MAX_DECIMAL_DIGITS = 3;
         
         private @NotNull InternalMacroActionBuilder.Protocol internal = new InternalMacroActionBuilder.DoNothing();
         
@@ -63,6 +81,11 @@ public interface MacroActionBuilder {
                 StorageValue.build(() -> { return timestamp; }, (var value) -> { timestamp = value; });
         
         @Override
+        public @NotNull String getActionName() {
+            return internal.getActionName();
+        }
+        
+        @Override
         public @NotNull StorageValue<Kind> kind() {
             return kindStorage;
         }
@@ -73,16 +96,21 @@ public interface MacroActionBuilder {
         }
         
         @Override
-        public @NotNull List<MutableStorageValue.Protocol> buildEntryPresenters() {
-            var presenters = new ArrayList<MutableStorageValue.Protocol>();
+        public @NotNull List<MutableStorageValue.Protocol> getMutableValues() {
+            var values = new ArrayList<MutableStorageValue.Protocol>();
             
-            presenters.add(new MutableStorageValue.SimpleDouble("timestamp",
-                    timestampStorage, CommonValidators.nonNegativeDouble()));
+            values.add(new MutableStorageValue.SimpleNumber("timestamp",
+                    timestampStorage, CommonValidators.nonNegativeDouble(TIMESTAMP_MAX_DECIMAL_DIGITS)));
             
-            var internalPresenters = internal.buildEntryPresenters();
-            presenters.addAll(internalPresenters);
+            var internalValues = internal.buildValues();
+            values.addAll(internalValues);
             
-            return presenters;
+            return values;
+        }
+        
+        @Override
+        public @NotNull MacroAction build() throws Exception {
+            return internal.build(timestamp);
         }
         
         private void setKind(@NotNull Kind kind) {
@@ -95,21 +123,82 @@ public interface MacroActionBuilder {
             onKindChanged();
         }
         
-        void onKindChanged() {
+        private void onKindChanged() {
+            onKindChanged(null);
+        }
+        
+        private void onKindChanged(@Nullable MacroAction action) {
             switch (kind) {
                 case DO_NOTHING:
-                    internal = new InternalMacroActionBuilder.DoNothing(); break;
+                    internal = setupDoNothing();
+                    break;
                 case CLICK:
-                    internal = new InternalMacroActionBuilder.MacroHardwareActionKeyboardClick(); break;
+                    internal = setupKeyboardClickBuilder(action);
+                    break;
                 case MOUSE_CLICK:
-                    internal = new InternalMacroActionBuilder.MacroHardwareActionMouseClick(); break;
+                    internal = setupMouseClickBuilder(action);
+                    break;
                 case MOUSE_MOVE:
-                    internal = new InternalMacroActionBuilder.MacroHardwareActionMouseMove(); break;
+                    internal = setupMouseMoveBuilder(action);
+                    break;
                 case MOUSE_SCROLL:
-                    internal = new InternalMacroActionBuilder.MacroHardwareActionMouseScroll(); break;
+                    internal = setupMouseScrollBuilder(action);
+                    break;
                 default:
                     throw Errors.parsing();
             }
+        }
+        
+        private void setupWithAction(@NotNull MacroAction action) throws Exception {
+            kind = KindMap.getKindFromAction(action);
+            timestamp = action.getTimestamp();
+            onKindChanged(action);
+        }
+        
+        private InternalMacroActionBuilder.Protocol setupDoNothing() {
+            return new InternalMacroActionBuilder.DoNothing();
+        }
+        
+        private InternalMacroActionBuilder.Protocol setupKeyboardClickBuilder(@Nullable MacroAction action) {
+            var builder = new InternalMacroActionBuilder.MacroHardwareActionKeyboardClick();
+
+            if (action instanceof MacroHardwareAction.AWTClick click) {
+                builder.keystroke = click.keystroke;
+                builder.eventKind = click.kind;
+            }
+            
+            return builder;
+        }
+        
+        private InternalMacroActionBuilder.Protocol setupMouseClickBuilder(@Nullable MacroAction action) {
+            var builder = new InternalMacroActionBuilder.MacroHardwareActionMouseClick();
+
+            if (action instanceof MacroHardwareAction.AWTClick click) {
+                builder.key = click.keystroke.value.getMouseKey();
+                builder.eventKind = click.kind;
+            }
+            
+            return builder;
+        }
+        
+        private InternalMacroActionBuilder.Protocol setupMouseMoveBuilder(@Nullable MacroAction action) {
+            var builder = new InternalMacroActionBuilder.MacroHardwareActionMouseMove();
+
+            if (action instanceof MacroHardwareAction.MouseMove move) {
+                builder.point = move.point;
+            }
+            
+            return builder;
+        }
+        
+        private InternalMacroActionBuilder.Protocol setupMouseScrollBuilder(@Nullable MacroAction action) {
+            var builder = new InternalMacroActionBuilder.MacroHardwareActionMouseScroll();
+
+            if (action instanceof MacroHardwareAction.MouseScroll scroll) {
+                builder.scrollValue = scroll.scroll.y;
+            }
+            
+            return builder;
         }
     }
     

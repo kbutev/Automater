@@ -40,8 +40,8 @@ public interface ChooseHotkeyPresenter {
         }
         
         private void setup() {
-            view.onClose = () -> {
-                stop();
+            view.onWindowCloseClick = () -> {
+                saveAndExit(view);
             };
         }
         
@@ -81,7 +81,7 @@ public interface ChooseHotkeyPresenter {
         
         @Override
         public boolean shouldStop() {
-            return true;
+            return false;
         }
         
         @Override
@@ -89,6 +89,7 @@ public interface ChooseHotkeyPresenter {
             if (key instanceof InputKeystroke.AWT awtKeystroke) {
                 Logger.message(this, "Chose hotkey " + key);
                 result = awtKeystroke;
+                saveAndExit(monitor);
             } else {
                 throw Errors.illegalStateError();
             }
@@ -96,11 +97,25 @@ public interface ChooseHotkeyPresenter {
         
         @Override
         public void onExit() {
-            view.dispose();
-            performCallbacks();
+            
         }
         
         // # Private
+        
+        private void saveAndExit(Object sender) {
+            if (result != null) {
+                Logger.messageVerbose(this, "Save and exit with value '" + result.toString() + "'");
+            } else {
+                Logger.messageVerbose(this, "Exit without value");
+            }
+            
+            if (sender != view) {
+                view.dispose();
+            }
+            
+            performCallbacks();
+            stop();
+        }
         
         private void performCallbacks() {
             if (result != null) {

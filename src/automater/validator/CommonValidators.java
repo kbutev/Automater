@@ -5,7 +5,9 @@
 package automater.validator;
 
 import automater.utilities.Errors;
+import automater.utilities.Range;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  *
@@ -18,6 +20,10 @@ public class CommonValidators {
     }
     
     public static @NotNull ValueValidator.Protocol<Double> nonNegativeDouble() {
-        return (var value) -> { return new ValueValidator.Result(value > 0 ? null : Errors.unknownError()); };
+        return nonNegativeDouble(null);
+    }
+    
+    public static @NotNull ValueValidator.Protocol<Double> nonNegativeDouble(@Nullable Integer maxDecimalDigits) {
+        return new ValueValidator.SimpleNumber(Range.makeMin(0), maxDecimalDigits);
     }
 }

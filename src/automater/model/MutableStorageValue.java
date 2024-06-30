@@ -6,7 +6,10 @@ package automater.model;
 
 import automater.storage.StorageValue;
 import automater.utilities.Errors;
+import automater.utilities.NumberUtilities;
 import automater.utilities.Path;
+import automater.utilities.Point;
+import automater.validator.CommonErrors;
 import automater.validator.ValueValidator;
 import java.util.Arrays;
 import java.util.List;
@@ -26,19 +29,82 @@ public interface MutableStorageValue {
     }
     
     /// Represents the value can represent a small list of possible values.
-    interface Cycling {
+    interface Cycling extends Protocol {
         
         @NotNull List<String> allValues();
         void pickNextValue();
     }
     
-    class SimpleDouble implements Protocol {
+    interface SimpleStringProtocol extends Protocol {
+        
+        @NotNull String getValue();
+        void setValue(@NotNull String value) throws Exception;
+    }
+    
+    class SimpleString implements SimpleStringProtocol {
         
         public final @NotNull String name;
-        public final @NotNull StorageValue<Double> storage;
+        private final @NotNull StorageValue<String> storage;
+        public final @Nullable ValueValidator.Protocol<String> validator;
+        
+        public SimpleString(@NotNull String name,
+                @NotNull StorageValue<String> storage,
+                @Nullable ValueValidator.Protocol<String> validator) {
+            this.name = name;
+            this.storage = storage;
+            this.validator = validator;
+        }
+        
+        @Override
+        public String toString() {
+            return name + "|" + getValueAsString();
+        }
+        
+        @Override
+        public @NotNull String getName() {
+            return name;
+        }
+        
+        @Override
+        public @NotNull String getValueAsString() {
+            return storage.get();
+        }
+        
+        @Override
+        public @NotNull String getValue() {
+            return storage.get();
+        }
+        
+        @Override
+        public void setValue(@NotNull String value) throws Exception {
+            if (validator != null) {
+                var result = validator.validate(value);
+                
+                if (!result.isSuccess()) {
+                    throw result.error;
+                }
+            }
+            
+            storage.set(value);
+        }
+    }
+    
+    interface SimpleNumberProtocol extends Protocol {
+        
+        double getValue();
+        void setValue(double value) throws Exception;
+        @NotNull SimpleStringProtocol asStringStorageValue();
+    }
+    
+    class SimpleNumber implements SimpleNumberProtocol {
+        
+        public static final int MAX_STRING_LENGTH = 16;
+        
+        public final @NotNull String name;
+        private final @NotNull StorageValue<Double> storage;
         public final @Nullable ValueValidator.Protocol<Double> validator;
         
-        public SimpleDouble(@NotNull String name,
+        public SimpleNumber(@NotNull String name,
                 @NotNull StorageValue<Double> storage,
                 @Nullable ValueValidator.Protocol<Double> validator) {
             this.name = name;
@@ -61,19 +127,79 @@ public interface MutableStorageValue {
             return String.valueOf(storage.get());
         }
         
-        public void setValue(@NotNull Double value) {
+        @Override
+        public double getValue() {
+            return storage.get();
+        }
+        
+        @Override
+        public void setValue(double value) throws Exception {
+            if (validator != null) {
+                var result = validator.validate(value);
+                
+                if (!result.isSuccess()) {
+                    throw result.error;
+                }
+            }
+            
             storage.set(value);
+        }
+        
+        @Override
+        public @NotNull SimpleStringProtocol asStringStorageValue() {
+            var self = this;
+            
+            return new SimpleStringProtocol() {
+                @Override
+                public String getValue() {
+                    return self.getValueAsString();
+                }
+                
+                @Override
+                public void setValue(String value) throws Exception {
+                    if (value.length() > MAX_STRING_LENGTH) {
+                        throw CommonErrors.valueTooLarge();
+                    }
+                    
+                    if (!NumberUtilities.isNumber(value)) {
+                        throw CommonErrors.notANumber;
+                    }
+                    
+                    try {
+                        var dValue = Double.parseDouble(value);
+                        self.setValue(dValue);
+                    } catch (NumberFormatException e) {
+                        throw CommonErrors.notANumber;
+                    }
+                }
+                
+                @Override
+                public String getName() {
+                    return name;
+                }
+                
+                @Override
+                public String getValueAsString() {
+                    return self.getValueAsString();
+                }
+            };
         }
     }
     
-    class Flag implements Protocol, Cycling {
+    interface FlagProtocol extends Protocol, Cycling {
+        
+        boolean getValue();
+        void setValue(boolean value);
+    }
+    
+    class Flag implements FlagProtocol {
         
         public static final String YES = "yes";
         public static final String NO = "no";
         public static final List<String> allValues = Arrays.asList(YES, NO);
         
         public final @NotNull String name;
-        public final @NotNull StorageValue<Boolean> storage;
+        private final @NotNull StorageValue<Boolean> storage;
         
         public Flag(@NotNull String name, @NotNull StorageValue<Boolean> storage) {
             this.name = name;
@@ -95,7 +221,13 @@ public interface MutableStorageValue {
             return storage.get() ? YES : NO;
         }
         
-        public void setValue(@NotNull boolean value) {
+        @Override
+        public boolean getValue() {
+            return storage.get();
+        }
+        
+        @Override
+        public void setValue(boolean value) {
             storage.set(value);
         }
         
@@ -110,10 +242,14 @@ public interface MutableStorageValue {
         }
     }
     
-    class EnumList implements Protocol, Cycling {
+    interface EnumListProtocol extends SimpleStringProtocol, Cycling {
+        
+    }
+    
+    class EnumList implements EnumListProtocol {
         
         public final @NotNull String name;
-        public final @NotNull StorageValue<String> storage;
+        private final @NotNull StorageValue<String> storage;
         public final @NotNull List<String> allValues;
         
         public EnumList(@NotNull String name,
@@ -143,7 +279,13 @@ public interface MutableStorageValue {
             return storage.get();
         }
         
-        public void setValue(@NotNull String value) {
+        @Override
+        public @NotNull String getValue() {
+            return storage.get();
+        }
+        
+        @Override
+        public void setValue(@NotNull String value) throws Exception {
             if (!allValues.contains(value)) {
                 throw Errors.illegalStateError();
             }
@@ -174,44 +316,16 @@ public interface MutableStorageValue {
         }
     }
     
-    class SimpleString implements Protocol {
+    interface SystemPathProtocol extends Protocol {
         
-        public final @NotNull String name;
-        public final @NotNull StorageValue<String> storage;
-        public final @Nullable ValueValidator.Protocol<String> validator;
-        
-        public SimpleString(@NotNull String name,
-                @NotNull StorageValue<String> storage,
-                @Nullable ValueValidator.Protocol<String> validator) {
-            this.name = name;
-            this.storage = storage;
-            this.validator = validator;
-        }
-        
-        @Override
-        public String toString() {
-            return name + "|" + getValueAsString();
-        }
-        
-        @Override
-        public @NotNull String getName() {
-            return name;
-        }
-        
-        @Override
-        public @NotNull String getValueAsString() {
-            return storage.get();
-        }
-        
-        public void setValue(@NotNull String value) {
-            storage.set(value);
-        }
+        @NotNull Path getValue();
+        void setValue(@NotNull Path value) throws Exception;
     }
     
-    class SystemPath implements Protocol {
+    class SystemPath implements SystemPathProtocol {
         
         public final @NotNull String name;
-        public final @NotNull StorageValue<Path> storage;
+        private final @NotNull StorageValue<Path> storage;
         public final @Nullable ValueValidator.Protocol<Path> validator;
         
         public SystemPath(@NotNull String name,
@@ -245,15 +359,35 @@ public interface MutableStorageValue {
             return result;
         }
         
-        public void setValue(@NotNull Path value) {
-            this.storage.set(value);
+        @Override
+        public @NotNull Path getValue() {
+            return storage.get();
+        }
+        
+        @Override
+        public void setValue(@NotNull Path value) throws Exception {
+            if (validator != null) {
+                var result = validator.validate(value);
+                
+                if (!result.isSuccess()) {
+                    throw result.error;
+                }
+            }
+            
+            storage.set(value);
         }
     }
     
-    class Hotkey implements Protocol {
+    interface HotkeyProtocol extends Protocol {
+        
+        @NotNull InputKeystroke.AWT getValue();
+        void setValue(@NotNull InputKeystroke.AWT value) throws Exception;
+    }
+    
+    class Hotkey implements HotkeyProtocol {
         
         public final @NotNull String name;
-        public final @NotNull StorageValue<InputKeystroke.AWT> storage;
+        private final @NotNull StorageValue<InputKeystroke.AWT> storage;
         
         public Hotkey(@NotNull String name, @NotNull StorageValue<InputKeystroke.AWT> storage) {
             this.name = name;
@@ -275,15 +409,87 @@ public interface MutableStorageValue {
             return storage.get().toString();
         }
         
-        public void setValue(@NotNull InputKeystroke.AWT value) {
-            this.storage.set(value);
+        @Override
+        public @NotNull InputKeystroke.AWT getValue() {
+            return storage.get();
+        }
+        
+        @Override
+        public void setValue(@NotNull InputKeystroke.AWT value) throws Exception {
+            storage.set(value);
         }
     }
     
-    class Keystroke extends Hotkey {
+    interface KeystrokeProtocol extends Protocol {
+        
+    }
+    
+    class Keystroke extends Hotkey implements KeystrokeProtocol {
         
         public Keystroke(@NotNull String name, @NotNull StorageValue<InputKeystroke.AWT> storage) {
             super(name, storage);
+        }
+    }
+    
+    interface PointXYProtocol extends Protocol {
+        
+        @NotNull Point getValue();
+        void setValue(@NotNull Point value) throws Exception;
+    }
+    
+    class PointXY implements PointXYProtocol {
+        
+        public final @NotNull String name;
+        private final @NotNull StorageValue<Point> storage;
+        public final @Nullable ValueValidator.Protocol<Point> validator;
+        
+        public PointXY(@NotNull String name,
+                @NotNull StorageValue<Point> storage,
+                @Nullable ValueValidator.Protocol<Point> validator) {
+            this.name = name;
+            this.storage = storage;
+            this.validator = validator;
+        }
+        
+        @Override
+        public String toString() {
+            return name + "|" + getValueAsString();
+        }
+        
+        @Override
+        public @NotNull String getName() {
+            return name;
+        }
+        
+        @Override
+        public @NotNull String getValueAsString() {
+            var path = storage.get();
+            var result = path.toString();
+            var limit = 20;
+            
+            if (result.length() > limit) {
+                result = "..." + result.substring(result.length() - limit);
+            }
+            
+            return result;
+        }
+        
+        @Override
+        public @NotNull Point getValue() {
+            return storage.get();
+        }
+        
+        @Override
+        public void setValue(@NotNull Point value) throws Exception {
+            if (validator != null) {
+                var result = validator.validate(value);
+                
+                if (!result.isSuccess()) {
+                    throw result.error;
+                }
+            }
+            
+            storage.set(value);
         }
     }
 }

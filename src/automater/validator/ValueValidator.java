@@ -5,6 +5,8 @@
 package automater.validator;
 
 import automater.utilities.CollectionUtilities;
+import automater.utilities.NumberUtilities;
+import automater.utilities.Range;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +36,7 @@ public interface ValueValidator {
         @NotNull Result validate(@NotNull T value);
     }
     
-    class SimpleString implements Protocol <String> {
+    class SimpleString implements Protocol<String> {
         
         final @Nullable Set<Character> forbiddenChars;
         final @Nullable Integer maxLength;
@@ -48,6 +50,34 @@ public interface ValueValidator {
         
         @Override
         public @NotNull Result validate(@NotNull String value) {
+            return Result.SUCCESS;
+        }
+    }
+    
+    class SimpleNumber implements Protocol<Double> {
+        
+        final @Nullable Range range;
+        final @Nullable Integer maxDecimalDigits;
+        
+        public SimpleNumber(@Nullable Range range, @Nullable Integer maxDecimalDigits) {
+            this.range = range;
+            this.maxDecimalDigits = maxDecimalDigits;
+        }
+        
+        @Override
+        public @NotNull Result validate(@NotNull Double value) {
+            if (range != null && value < range.min) {
+                return new Result(CommonErrors.valueTooSmall(range.min));
+            }
+            
+            if (range != null && value > range.max) {
+                return new Result(CommonErrors.valueTooSmall(range.max));
+            }
+            
+            if (maxDecimalDigits != null && NumberUtilities.numberOfDecimalDigits(value) > maxDecimalDigits) {
+                return new Result(CommonErrors.tooManyDecimalDigits(maxDecimalDigits));
+            }
+            
             return Result.SUCCESS;
         }
     }

@@ -38,7 +38,7 @@ public interface MacroStorage {
         @NotNull List<MacroFileSummary> getMacroSummaryList() throws Exception;
         @NotNull MacroFileSummary getMacroSummary(@NotNull String name) throws Exception;
         @NotNull Macro.Protocol getMacro(@NotNull Path path) throws Exception;
-        @NotNull void saveMacro(@NotNull Macro.Protocol macro) throws Exception;
+        void saveMacro(@NotNull Macro.Protocol macro) throws Exception;
         void deleteMacro(@NotNull MacroFileSummary summary);
     }
     

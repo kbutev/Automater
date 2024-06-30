@@ -14,6 +14,7 @@ public interface MacroAction {
     
     @NotNull String getActionType();
     double getTimestamp();
+    @NotNull String getName();
     
     @NotNull MacroAction copy();
 }

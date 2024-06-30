@@ -6,7 +6,9 @@ package automater.router;
 
 import automater.model.MutableStorageValue;
 import automater.presenter.ChooseHotkeyPresenter;
+import automater.presenter.ChooseStringPresenter;
 import automater.ui.view.ChooseKeyDialog;
+import automater.ui.view.ChooseStringDialog;
 import automater.utilities.Callback;
 import automater.utilities.Path;
 import java.awt.Component;
@@ -38,30 +40,78 @@ public interface MutableStorageValueRouter {
         
         @Override
         public void start(@NotNull Callback.Param<Boolean> completion) {
-            if (value instanceof MutableStorageValue.SimpleString mutablePath) {
-                openPickStringDialog(mutablePath, completion);
-            } else if (value instanceof MutableStorageValue.SystemPath mutablePath) {
-                openPickPathDialog(mutablePath, completion);
-            } else if (value instanceof MutableStorageValue.Cycling cycling) {
+            if (value instanceof MutableStorageValue.Cycling cycling) {
                 cycling.pickNextValue();
                 completion.perform(true);
-            } else if (value instanceof MutableStorageValue.Hotkey keystroke) {
+            } else if (value instanceof MutableStorageValue.SystemPathProtocol mutablePath) {
+                openPickPathDialog(mutablePath, completion);
+            } else if (value instanceof MutableStorageValue.HotkeyProtocol keystroke) {
                 openPickHotkeyDialog(keystroke, completion);
             } else if (value instanceof MutableStorageValue.Keystroke keystroke) {
                 openPickHotkeyDialog(keystroke, completion);
+            } else if (value instanceof MutableStorageValue.SimpleNumberProtocol dnumber) {
+                openPickNumberDialog(dnumber, completion);
+            } else if (value instanceof MutableStorageValue.SimpleStringProtocol string) {
+                openPickStringDialog(string, completion);
             } else {
                 completion.perform(false);
             }
         }
         
-        void openPickStringDialog(@NotNull MutableStorageValue.SimpleString string, @NotNull Callback.Param<Boolean> completion) {
-            completion.perform(true);
+        void openPickStringDialog(@NotNull MutableStorageValue.SimpleStringProtocol string, @NotNull Callback.Param<Boolean> completion) {
+            var frame = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, parentView);
+            
+            if (frame == null) {
+                completion.perform(true);
+                return;
+            }
+            
+            var dialog = new ChooseStringDialog(frame, true);
+            var presenter = new ChooseStringPresenter.Impl(dialog, string);
+            presenter.setSuccessCallback((var result) -> {
+                /// Update storage value
+                try {
+                    string.setValue(result);
+                } catch (Exception e) {
+                    
+                }
+                
+                completion.perform(true);
+            });
+            presenter.setFailureCallback(() -> {
+                completion.perform(true);
+            });
+            
+            presenter.start();
         }
         
-        void openPickPathDialog(@NotNull MutableStorageValue.SystemPath path, @NotNull Callback.Param<Boolean> completion) {
+        void openPickNumberDialog(@NotNull MutableStorageValue.SimpleNumberProtocol number, @NotNull Callback.Param<Boolean> completion) {
+            var frame = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, parentView);
+            
+            if (frame == null) {
+                completion.perform(true);
+                return;
+            }
+            
+            var dialog = new ChooseStringDialog(frame, true);
+            var presenter = new ChooseStringPresenter.Impl(dialog, number.asStringStorageValue());
+            presenter.setSuccessCallback((var result) -> {
+                /// Update storage value
+                try { number.setValue(Double.valueOf(result)); } catch (Exception e) {}
+                
+                completion.perform(true);
+            });
+            presenter.setFailureCallback(() -> {
+                completion.perform(true);
+            });
+            
+            presenter.start();
+        }
+        
+        void openPickPathDialog(@NotNull MutableStorageValue.SystemPathProtocol path, @NotNull Callback.Param<Boolean> completion) {
             var chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            chooser.setCurrentDirectory(path.storage.get().getFile());
+            chooser.setCurrentDirectory(path.getValue().getFile());
             
             var choice = chooser.showOpenDialog(parentView);
 
@@ -75,12 +125,14 @@ public interface MutableStorageValueRouter {
             var result = Path.buildAbsolute(file.getAbsolutePath());
             
             /// Update storage value
-            path.setValue(result);
+            try {
+                path.setValue(result);
+            } catch (Exception e) {}
             
             completion.perform(true);
         }
         
-        void openPickHotkeyDialog(@NotNull MutableStorageValue.Hotkey hotkey, @NotNull Callback.Param<Boolean> completion) {
+        void openPickHotkeyDialog(@NotNull MutableStorageValue.HotkeyProtocol hotkey, @NotNull Callback.Param<Boolean> completion) {
             var frame = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, parentView);
             
             if (frame == null) {
@@ -92,7 +144,9 @@ public interface MutableStorageValueRouter {
             var presenter = new ChooseHotkeyPresenter.Impl(dialog);
             presenter.setSuccessCallback((var result) -> {
                 /// Update storage value
-                hotkey.setValue(result);
+                try {
+                    hotkey.setValue(result);
+                } catch (Exception e) {}
                 
                 completion.perform(true);
             });

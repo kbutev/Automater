@@ -4,10 +4,10 @@
  */
 package automater.model;
 
-import automater.utilities.Errors;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  *
@@ -20,14 +20,14 @@ public enum KeyEventKind {
     
     public static final List<String> allValues = allValues();
     
-    public static @NotNull KeyEventKind build(@NotNull String value) {
-        var result = KeyEventKind.valueOf(value);
-        
-        if (result == null) {
-            throw Errors.unsupported("Invalid enum value");
+    public static @Nullable KeyEventKind named(@NotNull String string) {
+        for (var kind : KeyEventKind.values()) {
+            if (kind.value.equals(string)) {
+                return kind;
+            }
         }
         
-        return result;
+        return null;
     }
     
     public final @NotNull String value;

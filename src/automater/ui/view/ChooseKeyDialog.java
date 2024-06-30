@@ -15,7 +15,7 @@ import java.awt.event.WindowListener;
 public class ChooseKeyDialog extends javax.swing.JDialog {
     
     // UI callbacks
-    public Callback.Blank onClose = Callback.buildBlank();
+    public Callback.Blank onWindowCloseClick = Callback.buildBlank();
     
     /**
      * Creates new form ChooseKeyDialog
@@ -27,12 +27,12 @@ public class ChooseKeyDialog extends javax.swing.JDialog {
     }
     
     private void setup() {
-        this.addWindowListener(new WindowListener() {
+        addWindowListener(new WindowListener() {
             @Override
             public void windowOpened(WindowEvent e) {}
             @Override
             public void windowClosing(WindowEvent e) {
-                onClose.perform();
+                onWindowCloseClick.perform();
             }
             @Override
             public void windowClosed(WindowEvent e) {}

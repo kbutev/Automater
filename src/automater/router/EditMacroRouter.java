@@ -8,6 +8,8 @@ import automater.model.action.MacroAction;
 import automater.model.macro.Macro;
 import automater.presenter.EditMacroPresenter;
 import automater.ui.view.EditMacroFrame;
+import automater.utilities.AlertWindows;
+import automater.utilities.Logger;
 import java.awt.Frame;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +24,11 @@ public interface EditMacroRouter {
         @NotNull Frame getView();
         
         void start();
-        void openMacroAction(@NotNull MacroAction action);
+        void exit();
+        
+        void editMacroAction(@NotNull MacroAction action);
+        
+        void showError(@NotNull String title, @NotNull String body);
     }
     
     class Impl implements Protocol, EditMacroPresenter.Delegate {
@@ -54,11 +60,27 @@ public interface EditMacroRouter {
         }
         
         @Override
-        public void openMacroAction(@NotNull MacroAction action) {
-            var router = new EditMacroActionRouter.Impl(this, action);
-            router.start();
+        public void exit() {
+            presenter.stop();
+            view.dispose();
+        }
+        
+        @Override
+        public void editMacroAction(@NotNull MacroAction action) {
+            try {
+                var router = new EditMacroActionRouter.Impl(this, action);
+                router.setDelegate(presenter);
+                router.start();
+            } catch (Exception e) {
+                Logger.error(this, "Failed to open macro action, error: " + e);
+            }
         }
         
         // # EditMacroPresenter.Delegate
+        
+        @Override
+        public void showError(@NotNull String title, @NotNull String body) {
+            AlertWindows.showErrorMessage(view, title, body, "OK");
+        }
     }
 }

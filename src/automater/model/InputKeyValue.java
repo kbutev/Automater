@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Map;
 import static java.util.Map.entry;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jnativehook.keyboard.NativeKeyEvent;
@@ -119,8 +120,16 @@ public interface InputKeyValue {
                 var result = NativeKeyEvent.getKeyText(code);
                 return result != null ? result : "?";
             } else {
-                return mouseStringMappings.getOrDefault(code, "?");
+                return mouseMappings.getOrDefault(code, MouseKey.LEFT).value;
             }
+        }
+        
+        public @Nullable MouseKey getMouseKey() {
+            if (!isMouse()) {
+                return null;
+            }
+            
+            return mouseMappings.get(code);
         }
         
         public final static Map<Integer, InputKeyModifierValue> modifierCodeMappings = Map.ofEntries(
@@ -130,13 +139,15 @@ public interface InputKeyValue {
             entry(NativeKeyEvent.VC_META, InputKeyModifierValue.META)
         );
 
-        public final static Map<Integer, String> mouseStringMappings = Map.ofEntries(
-            entry(NativeMouseEvent.BUTTON1, "L MOUSE"),
-            entry(NativeMouseEvent.BUTTON2, "R MOUSE"),
-            entry(NativeMouseEvent.BUTTON3, "M MOUSE"),
-            entry(NativeMouseEvent.BUTTON4, "MOUSE 4"),
-            entry(NativeMouseEvent.BUTTON5, "MOUSE 5")
+        public final static Map<Integer, MouseKey> mouseMappings = Map.ofEntries(
+            entry(NativeMouseEvent.BUTTON1, MouseKey.LEFT),
+            entry(NativeMouseEvent.BUTTON2, MouseKey.RIGHT),
+            entry(NativeMouseEvent.BUTTON3, MouseKey.CENTER),
+            entry(NativeMouseEvent.BUTTON4, MouseKey.M4),
+            entry(NativeMouseEvent.BUTTON5, MouseKey.M5)
         );
+        
+        public final static Map<MouseKey, Integer> mouseMappingsReversed = mouseMappings.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
     }
 }
 

@@ -140,6 +140,7 @@ public interface HotkeyMonitor {
                 for (var hotkey : hotkeys) {
                     if (hotkey.equalsIgnoreModifier(click.keystroke)) {
                         listener.onHotkeyEvent(hotkey, click.kind);
+                        break;
                     }
                 }
             }

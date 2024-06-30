@@ -7,9 +7,9 @@ package automater.service;
 import automater.di.DI;
 import automater.model.OutputKeyValue;
 import automater.provider.ScreenProvider;
+import automater.utilities.CollectionUtilities;
 import automater.utilities.Point;
 import java.awt.AWTException;
-import java.awt.GraphicsDevice;
 import java.awt.Robot;
 import org.jetbrains.annotations.NotNull;
 import automater.utilities.Logger;
@@ -40,6 +40,8 @@ public interface HardwareInputSimulator {
         
         private final ScreenProvider.AWTGraphicsDeviceProtocol robotScreen = DI.get(ScreenProvider.AWTGraphicsDeviceProtocol.class);
         private final ScreenProvider.AWTSimulatorScreen simulatorScreen = DI.get(ScreenProvider.AWTSimulatorScreen.class);
+        
+        private final Object lock = new Object();
         
         private final @NotNull Robot robot;
         private final @NotNull Size currentScreen;
@@ -115,65 +117,86 @@ public interface HardwareInputSimulator {
             double screenScaleX = referenceScreen.width / currentScreen.width;
             double screenScaleY = referenceScreen.height / currentScreen.height;
 
-            var result = Point.make(point.x / screenScaleX, point.y / screenScaleY);
-            
-            Logger.messageVerbose(this, "move mouse to  " + result.toString());
-            
-            robot.mouseMove((int)result.x, (int)result.y);
+            mouseMove(Point.make(point.x / screenScaleX, point.y / screenScaleY));
         }
         
         @Override
         public void simulateMouseScroll(@NotNull Point scroll) {
-            Logger.messageVerbose(this, "move scroll by  " + scroll.toString());
-            
-            robot.mouseWheel((int)scroll.y);
+            mouseScroll(scroll);
         }
         
         @Override
         public void end() {
-            // Release all pressed keys
-            
-            for (var key : pressedKeyboardKeys) {
-                releaseKey(key);
+            synchronized (lock) {
+                // Release all pressed keys
+                
+                for (var key : CollectionUtilities.copy(pressedKeyboardKeys)) {
+                    releaseKey(key);
+                }
+
+                for (var key : CollectionUtilities.copy(pressedMouseKeys)) {
+                    releaseMouseKey(key);
+                }
+
+                pressedMouseKeys.clear();
+                pressedKeyboardKeys.clear();
             }
-            
-            for (var key : pressedMouseKeys) {
-                releaseMouseKey(key);
-            }
-            
-            pressedMouseKeys.clear();
-            pressedKeyboardKeys.clear();
         }
         
+        // # Private
+        
         private void pressKey(int code) {
-            try { robot.keyPress(code); } catch(Exception e) {}
-            
-            if (!pressedKeyboardKeys.contains(code)) {
-                pressedKeyboardKeys.add(code);
+            synchronized (lock) {
+                try { robot.keyPress(code); } catch(Exception e) {}
+
+                if (!pressedKeyboardKeys.contains(code)) {
+                    pressedKeyboardKeys.add(code);
+                }
             }
         }
         
         private void releaseKey(int code) {
-            try { robot.keyRelease(code); } catch(Exception e) {}
-            
-            if (pressedKeyboardKeys.contains(code)) {
-                pressedKeyboardKeys.remove((Object)code);
+            synchronized (lock) {
+               try { robot.keyRelease(code); } catch(Exception e) {}
+
+                if (pressedKeyboardKeys.contains(code)) {
+                    pressedKeyboardKeys.remove((Object)code);
+                } 
             }
         }
         
         private void pressMouseKey(int code) {
-            try { robot.mousePress(code); } catch(Exception e) {}
-            
-            if (!pressedMouseKeys.contains(code)) {
-                pressedMouseKeys.add(code);
+            synchronized (lock) {
+                try { robot.mousePress(code); } catch(Exception e) {}
+
+                if (!pressedMouseKeys.contains(code)) {
+                    pressedMouseKeys.add(code);
+                }
             }
         }
         
         private void releaseMouseKey(int code) {
-            try { robot.mouseRelease(code); } catch(Exception e) {}
-            
-            if (pressedMouseKeys.contains(code)) {
-                pressedMouseKeys.remove((Object)code);
+            synchronized (lock) {
+                try { robot.mouseRelease(code); } catch(Exception e) {}
+
+                if (pressedMouseKeys.contains(code)) {
+                    pressedMouseKeys.remove((Object)code);
+                }
+            }
+        }
+        
+        private void mouseMove(@NotNull Point point) {
+            synchronized (lock) {
+                Logger.messageVerbose(this, "move mouse to  " + point.toString());
+                robot.mouseMove((int)point.x, (int)point.y);
+            }
+        }
+        
+        private void mouseScroll(@NotNull Point point) {
+            synchronized (lock) {
+                Logger.messageVerbose(this, "move scroll by  " + point.toString());
+
+                robot.mouseWheel((int)point.y);
             }
         }
     }

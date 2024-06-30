@@ -6,6 +6,7 @@ package automater.parser;
 
 import automater.model.InputKeyModifierValue;
 import automater.model.InputKeyValue;
+import automater.model.MouseKey;
 import automater.utilities.Errors;
 import org.jetbrains.annotations.NotNull;
 import org.jnativehook.keyboard.NativeKeyEvent;
@@ -21,6 +22,7 @@ public interface InputKeyValueParser {
         @NotNull String parseToString(@NotNull InputKeyValue value);
         @NotNull InputKeyValue.AWT parseFromKeyboardCode(int code) throws Exception;
         @NotNull InputKeyValue.AWT parseFromMouseCode(int code) throws Exception;
+        @NotNull InputKeyValue.AWT parseFromMouseKey(@NotNull MouseKey key) throws Exception;
         @NotNull InputKeyModifierValue parseFromModifierKeycode(int code) throws Exception;
     }
     
@@ -62,6 +64,17 @@ public interface InputKeyValueParser {
             }
             
             return result;
+        }
+        
+        @Override
+        public @NotNull InputKeyValue.AWT parseFromMouseKey(@NotNull MouseKey key) throws Exception {
+            Integer code = InputKeyValue.AWT.mouseMappingsReversed.get(key);
+            
+            if (code == null) {
+                throw Errors.parsing();
+            }
+            
+            return parseFromMouseCode(code);
         }
         
         @Override

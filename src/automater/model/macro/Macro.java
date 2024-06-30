@@ -5,7 +5,9 @@
 package automater.model.macro;
 
 import automater.model.action.MacroAction;
+import automater.utilities.CollectionUtilities;
 import com.google.gson.annotations.SerializedName;
+import java.util.Comparator;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,6 +34,10 @@ public interface Macro {
         @NotNull MacroSummary getSummary();
         @NotNull MacroRecordSource getRecordSource();
         @NotNull List<MacroAction> getActions();
+        
+        @NotNull Protocol withActionInserted(@NotNull MacroAction action);
+        @NotNull Protocol withActionRemoved(@NotNull MacroAction action);
+        @NotNull Protocol withActionReplaced(@NotNull MacroAction original, @NotNull MacroAction modified);
     }
     
     class Impl implements Protocol {
@@ -44,14 +50,20 @@ public interface Macro {
         @SerializedName(KEY_ACTIONS)
         public final List<MacroAction> actions;
         
-        Impl(@NotNull MacroSummary summary, @NotNull MacroRecordSource recordSource, @NotNull List<MacroAction> actions) {
+        public Impl(@NotNull MacroSummary summary, @NotNull MacroRecordSource recordSource, @NotNull List<MacroAction> actions) {
             this.summary = summary;
             this.recordSource = recordSource;
-            this.actions = actions;
+            var actionsCopy = CollectionUtilities.copy(actions);
+            actionsCopy.sort(Comparator.comparingDouble(MacroAction::getTimestamp));
+            this.actions = CollectionUtilities.copyAsImmutable(actionsCopy);
+        }
+        
+        public Impl(@NotNull Protocol other) {
+            this(other.getSummary(), other.getRecordSource(), other.getActions());
         }
         
         @Override
-        public MacroSummary getSummary() {
+        public @NotNull MacroSummary getSummary() {
             return summary;
         }
         
@@ -61,8 +73,36 @@ public interface Macro {
         }
         
         @Override
-        public List<MacroAction> getActions() {
+        public @NotNull List<MacroAction> getActions() {
             return actions;
+        }
+        
+        @Override
+        public @NotNull Protocol withActionInserted(@NotNull MacroAction action) {
+            var newActions = CollectionUtilities.copy(this.actions);
+            
+            newActions.add(action);
+            
+            return new Impl(summary, recordSource, newActions);
+        }
+        
+        @Override
+        public @NotNull Protocol withActionRemoved(@NotNull MacroAction action) {
+            var newActions = CollectionUtilities.copy(this.actions);
+            
+            newActions.remove(action);
+            
+            return new Impl(summary, recordSource, newActions);
+        }
+        
+        @Override
+        public @NotNull Protocol withActionReplaced(@NotNull MacroAction original, @NotNull MacroAction modified) {
+            var newActions = CollectionUtilities.copy(this.actions);
+            
+            newActions.remove(original);
+            newActions.add(modified);
+            
+            return new Impl(summary, recordSource, newActions);
         }
     }
 }
