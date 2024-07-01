@@ -6,6 +6,7 @@ package automater.parser;
 
 import automater.di.DI;
 import automater.json.JSONDecoder;
+import automater.model.action.DoNothing;
 import automater.model.event.CapturedEvent;
 import automater.model.event.CapturedHardwareEvent;
 import com.google.gson.Gson;
@@ -20,6 +21,7 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import automater.model.action.MacroAction;
 import automater.model.action.MacroHardwareAction;
+import automater.utilities.Logger;
 
 /**
  * Parsers macro actions and other related data.
@@ -78,6 +80,8 @@ public interface MacroActionParser {
                 var decoder = match.decoder;
                 var parser = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(matchedType, decoder).create();
                 return parser.fromJson(jsonString, matchedType);
+            } else {
+                Logger.error(this, "Macro action is not defined. Make sure it's TYPE is properly mapped to the parser.");
             }
             
             throw new JsonSyntaxException("Invalid action");
@@ -112,6 +116,7 @@ public interface MacroActionParser {
     
     // Action types mapped to their respective class types
     final static Map<String, ClassMapping> type_mappings = Map.of(
+        DoNothing.TYPE, ClassMapping.make(DoNothing.class),
         MacroHardwareAction.AWTClick.TYPE, ClassMapping.make(MacroHardwareAction.AWTClick.class),
         MacroHardwareAction.MouseMove.TYPE, ClassMapping.make(MacroHardwareAction.MouseMove.class),
         MacroHardwareAction.MouseScroll.TYPE, ClassMapping.make(MacroHardwareAction.MouseScroll.class)

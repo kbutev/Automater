@@ -5,6 +5,7 @@
 package automater.ui.view;
 
 import automater.utilities.Callback;
+import java.awt.Component;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author Kristiyan Butev
  */
-public class ChooseStringDialog extends javax.swing.JDialog {
+public class ChooseStringDialog extends javax.swing.JDialog implements View {
     
     // UI callbacks
     public Callback.Param<String> onTextChanged = Callback.buildBlankWithParameter();
@@ -28,8 +29,22 @@ public class ChooseStringDialog extends javax.swing.JDialog {
         setup();
     }
     
+    // # View
+    
+    @Override
+    public Component asComponent() {
+        return this;
+    }
+    
+    @Override
+    public void reloadData() {
+        
+    }
+    
+    // # Setup
+    
     private void setup() {
-        hideInfoText();
+        hideError();
         
         textField.getDocument().addDocumentListener(new DocumentListener() {
             
@@ -50,6 +65,8 @@ public class ChooseStringDialog extends javax.swing.JDialog {
         });
     }
     
+    // # Fields
+    
     public @NotNull String getFieldText() {
         return textField.getText();
     }
@@ -58,13 +75,13 @@ public class ChooseStringDialog extends javax.swing.JDialog {
         textField.setText(text);
     }
     
-    public void setInfoText(@NotNull String text) {
-        infoLabel.setVisible(!text.isEmpty());
-        infoLabel.setText(text);
+    public void setErrorText(@NotNull String text) {
+        errorLabel.setVisible(!text.isEmpty());
+        errorLabel.setText(text);
     }
     
-    public void hideInfoText() {
-        infoLabel.setVisible(false);
+    public void hideError() {
+        errorLabel.setVisible(false);
     }
 
     /**
@@ -77,7 +94,7 @@ public class ChooseStringDialog extends javax.swing.JDialog {
     private void initComponents() {
 
         textField = new javax.swing.JTextField();
-        infoLabel = new javax.swing.JLabel();
+        errorLabel = new javax.swing.JLabel();
         saveButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -91,8 +108,8 @@ public class ChooseStringDialog extends javax.swing.JDialog {
             }
         });
 
-        infoLabel.setForeground(new java.awt.Color(255, 51, 0));
-        infoLabel.setText("Text");
+        errorLabel.setForeground(new java.awt.Color(255, 51, 0));
+        errorLabel.setText("Text");
 
         saveButton.setText("Save");
         saveButton.addActionListener(new java.awt.event.ActionListener() {
@@ -114,7 +131,7 @@ public class ChooseStringDialog extends javax.swing.JDialog {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(saveButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(infoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)))
+                        .addComponent(errorLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 254, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -125,7 +142,7 @@ public class ChooseStringDialog extends javax.swing.JDialog {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(saveButton)
-                    .addComponent(infoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(errorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 9, Short.MAX_VALUE))
         );
 
@@ -181,7 +198,7 @@ public class ChooseStringDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel infoLabel;
+    private javax.swing.JLabel errorLabel;
     private javax.swing.JButton saveButton;
     private javax.swing.JTextField textField;
     // End of variables declaration//GEN-END:variables

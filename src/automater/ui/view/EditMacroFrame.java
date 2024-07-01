@@ -19,8 +19,9 @@ public class EditMacroFrame extends javax.swing.JFrame implements View {
 
     // UI callbacks
     public Callback.Blank onSaveCallback = Callback.buildBlank();
-    public Callback.Param<Integer> onEditItemCallback = Callback.buildBlankWithParameter();
     public Callback.Param<Integer> onInsertItemCallback = Callback.buildBlankWithParameter();
+    public Callback.Param<Integer> onEditItemCallback = Callback.buildBlankWithParameter();
+    public Callback.Param<Integer> onCopyItemCallback = Callback.buildBlankWithParameter();
     public Callback.Param<Integer> onDeleteItemCallback = Callback.buildBlankWithParameter();
     public Callback.Blank onWindowClosedCallback = Callback.buildBlank();
     
@@ -69,6 +70,7 @@ public class EditMacroFrame extends javax.swing.JFrame implements View {
         
         insertButton.setEnabled(isSomethingSelected);
         editButton.setEnabled(isSomethingSelected);
+        copyButton.setEnabled(isSomethingSelected);
         deleteButton.setEnabled(isSomethingSelected);
     }
     
@@ -108,6 +110,7 @@ public class EditMacroFrame extends javax.swing.JFrame implements View {
         insertButton = new javax.swing.JButton();
         editButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
+        copyButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Edit macro");
@@ -129,7 +132,7 @@ public class EditMacroFrame extends javax.swing.JFrame implements View {
         });
         jScrollPane1.setViewportView(macroActionsList);
 
-        saveButton.setText("Save");
+        saveButton.setText("Save Macro");
         saveButton.setEnabled(false);
         saveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -161,6 +164,14 @@ public class EditMacroFrame extends javax.swing.JFrame implements View {
             }
         });
 
+        copyButton.setText("Copy");
+        copyButton.setEnabled(false);
+        copyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                copyButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -175,9 +186,11 @@ public class EditMacroFrame extends javax.swing.JFrame implements View {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(editButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(copyButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(deleteButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(saveButton)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(saveButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -186,13 +199,14 @@ public class EditMacroFrame extends javax.swing.JFrame implements View {
                 .addContainerGap()
                 .addComponent(macroNameLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 319, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(saveButton)
                     .addComponent(insertButton)
-                    .addComponent(editButton)
-                    .addComponent(deleteButton))
+                    .addComponent(deleteButton)
+                    .addComponent(copyButton)
+                    .addComponent(editButton))
                 .addGap(11, 11, 11))
         );
 
@@ -226,6 +240,10 @@ public class EditMacroFrame extends javax.swing.JFrame implements View {
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         onWindowClosedCallback.perform();
     }//GEN-LAST:event_formWindowClosed
+
+    private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyButtonActionPerformed
+        onCopyItemCallback.perform(getSelectedIndex());
+    }//GEN-LAST:event_copyButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -263,6 +281,7 @@ public class EditMacroFrame extends javax.swing.JFrame implements View {
     private @Nullable MacroActionDataSource dataSource;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton copyButton;
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton editButton;
     private javax.swing.JButton insertButton;

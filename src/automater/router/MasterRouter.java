@@ -32,6 +32,9 @@ public interface MasterRouter {
         
         void openMacro(@NotNull Macro.Protocol macro);
         void editMacro(@NotNull Macro.Protocol macro);
+        
+        void onExitOpenMacro(@NotNull Macro.Protocol macro);
+        void onExitEditMacro(@NotNull Macro.Protocol macro);
     }
     
     class Impl implements Protocol {
@@ -118,6 +121,16 @@ public interface MasterRouter {
         public void editMacro(@NotNull Macro.Protocol macro) {
             var router = new EditMacroRouter.Impl(this, macro);
             router.start();
+        }
+        
+        @Override
+        public void onExitOpenMacro(@NotNull Macro.Protocol macro) {
+            showMacrosPresenter.reloadData();
+        }
+        
+        @Override
+        public void onExitEditMacro(@NotNull Macro.Protocol macro) {
+            showMacrosPresenter.reloadData();
         }
         
         // # Primitive

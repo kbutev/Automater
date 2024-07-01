@@ -86,6 +86,11 @@ public interface MacroHardwareAction {
         }
         
         @Override
+        public @NotNull MacroAction copyWithTimestamp(double timestamp) {
+            return new AWTClick(timestamp, kind, keystroke);
+        }
+        
+        @Override
         public @NotNull String getName() {
             return keystroke.isKeyboard() ? "Keyboard Click" : "Mouse Click";
         }
@@ -115,6 +120,11 @@ public interface MacroHardwareAction {
         @Override
         public @NotNull MacroAction copy() {
             return new MouseMove(this);
+        }
+        
+        @Override
+        public @NotNull MacroAction copyWithTimestamp(double timestamp) {
+            return new MouseMove(timestamp, point);
         }
         
         @Override
@@ -152,6 +162,11 @@ public interface MacroHardwareAction {
         @Override
         public @NotNull MacroAction copy() {
             return new MouseScroll(this);
+        }
+        
+        @Override
+        public @NotNull MacroAction copyWithTimestamp(double timestamp) {
+            return new MouseScroll(timestamp, point, scroll);
         }
         
         @Override

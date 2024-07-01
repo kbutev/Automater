@@ -5,11 +5,15 @@
 package automater.router;
 
 import automater.model.MutableStorageValue;
+import automater.presenter.ChooseDoubleStringPresenter;
 import automater.presenter.ChooseHotkeyPresenter;
 import automater.presenter.ChooseStringPresenter;
+import automater.ui.view.ChooseDoubleStringDialog;
 import automater.ui.view.ChooseKeyDialog;
 import automater.ui.view.ChooseStringDialog;
+import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
+import automater.utilities.Logger;
 import automater.utilities.Path;
 import java.awt.Component;
 import javax.swing.JFileChooser;
@@ -26,9 +30,11 @@ public interface MutableStorageValueRouter {
     interface Protocol {
         
         void start(@NotNull Callback.Param<Boolean> completion);
+        
+        void showError(@NotNull Component sender, @NotNull String title, @NotNull String body);
     }
     
-    class Impl implements Protocol {
+    class Impl implements Protocol, ChooseStringPresenter.Delegate, ChooseDoubleStringPresenter.Delegate {
         
         private final @NotNull Component parentView;
         private final @NotNull MutableStorageValue.Protocol value;
@@ -53,9 +59,20 @@ public interface MutableStorageValueRouter {
                 openPickNumberDialog(dnumber, completion);
             } else if (value instanceof MutableStorageValue.SimpleStringProtocol string) {
                 openPickStringDialog(string, completion);
+            } else if (value instanceof MutableStorageValue.PointXYProtocol point) {
+                var x = point.xAsStringStorageValue();
+                var y = point.yAsStringStorageValue();
+                openPickDoubleStringDialog(x, y, completion);
             } else {
                 completion.perform(false);
             }
+        }
+        
+        @Override
+        public void showError(@NotNull Component sender, @NotNull String title, @NotNull String body) {
+            Logger.error(this, "Error: " + body);
+            
+            AlertWindows.showErrorMessage(sender, title, body, "OK");
         }
         
         void openPickStringDialog(@NotNull MutableStorageValue.SimpleStringProtocol string, @NotNull Callback.Param<Boolean> completion) {
@@ -68,6 +85,7 @@ public interface MutableStorageValueRouter {
             
             var dialog = new ChooseStringDialog(frame, true);
             var presenter = new ChooseStringPresenter.Impl(dialog, string);
+            presenter.setDelegate(this);
             presenter.setSuccessCallback((var result) -> {
                 /// Update storage value
                 try {
@@ -95,6 +113,7 @@ public interface MutableStorageValueRouter {
             
             var dialog = new ChooseStringDialog(frame, true);
             var presenter = new ChooseStringPresenter.Impl(dialog, number.asStringStorageValue());
+            presenter.setDelegate(this);
             presenter.setSuccessCallback((var result) -> {
                 /// Update storage value
                 try { number.setValue(Double.valueOf(result)); } catch (Exception e) {}
@@ -147,6 +166,37 @@ public interface MutableStorageValueRouter {
                 try {
                     hotkey.setValue(result);
                 } catch (Exception e) {}
+                
+                completion.perform(true);
+            });
+            presenter.setFailureCallback(() -> {
+                completion.perform(true);
+            });
+            
+            presenter.start();
+        }
+        
+         void openPickDoubleStringDialog(@NotNull MutableStorageValue.SimpleStringProtocol string1,
+                 @NotNull MutableStorageValue.SimpleStringProtocol string2,
+                 @NotNull Callback.Param<Boolean> completion) {
+            var frame = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, parentView);
+            
+            if (frame == null) {
+                completion.perform(true);
+                return;
+            }
+            
+            var dialog = new ChooseDoubleStringDialog(frame, true);
+            var presenter = new ChooseDoubleStringPresenter.Impl(dialog, string1, string2);
+            presenter.setDelegate(this);
+            presenter.setSuccessCallback((var result) -> {
+                /// Update storage value
+                try {
+                    string1.setValue(result.value1);
+                    string2.setValue(result.value2);
+                } catch (Exception e) {
+                    
+                }
                 
                 completion.perform(true);
             });

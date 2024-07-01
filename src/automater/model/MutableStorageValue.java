@@ -39,6 +39,7 @@ public interface MutableStorageValue {
         
         @NotNull String getValue();
         void setValue(@NotNull String value) throws Exception;
+        @Nullable Exception validate(@NotNull String value);
     }
     
     class SimpleString implements SimpleStringProtocol {
@@ -77,15 +78,26 @@ public interface MutableStorageValue {
         
         @Override
         public void setValue(@NotNull String value) throws Exception {
+            var exception = validate(value);
+            
+            if (exception != null) {
+                throw exception;
+            }
+            
+            storage.set(value);
+        }
+        
+        @Override
+        public @Nullable Exception validate(@NotNull String value) {
             if (validator != null) {
                 var result = validator.validate(value);
                 
                 if (!result.isSuccess()) {
-                    throw result.error;
+                    return result.error;
                 }
             }
             
-            storage.set(value);
+            return null;
         }
     }
     
@@ -157,20 +169,13 @@ public interface MutableStorageValue {
                 
                 @Override
                 public void setValue(String value) throws Exception {
-                    if (value.length() > MAX_STRING_LENGTH) {
-                        throw CommonErrors.valueTooLarge();
+                    var exception = validate(value);
+                    
+                    if (exception != null) {
+                        throw exception;
                     }
                     
-                    if (!NumberUtilities.isNumber(value)) {
-                        throw CommonErrors.notANumber;
-                    }
-                    
-                    try {
-                        var dValue = Double.parseDouble(value);
-                        self.setValue(dValue);
-                    } catch (NumberFormatException e) {
-                        throw CommonErrors.notANumber;
-                    }
+                    self.setValue(Double.parseDouble(value));
                 }
                 
                 @Override
@@ -181,6 +186,24 @@ public interface MutableStorageValue {
                 @Override
                 public String getValueAsString() {
                     return self.getValueAsString();
+                }
+                
+                @Override
+                public @Nullable Exception validate(@NotNull String value) {
+                    if (value.length() > MAX_STRING_LENGTH) {
+                        return CommonErrors.valueTooLarge();
+                    }
+                    
+                    if (!NumberUtilities.isNumber(value)) {
+                        return CommonErrors.notANumber;
+                    }
+                    
+                    try {
+                        Double.parseDouble(value);
+                        return null;
+                    } catch (NumberFormatException e) {
+                        return CommonErrors.notANumber;
+                    }
                 }
             };
         }
@@ -286,11 +309,18 @@ public interface MutableStorageValue {
         
         @Override
         public void setValue(@NotNull String value) throws Exception {
-            if (!allValues.contains(value)) {
-                throw Errors.illegalStateError();
+            var exception = validate(value);
+            
+            if (exception != null) {
+                throw exception;
             }
             
             storage.set(value);
+        }
+        
+        @Override
+        public @Nullable Exception validate(@NotNull String value) {
+            return !allValues.contains(value) ? Errors.illegalStateError() : null;
         }
         
         @Override
@@ -435,9 +465,14 @@ public interface MutableStorageValue {
         
         @NotNull Point getValue();
         void setValue(@NotNull Point value) throws Exception;
+        
+        @NotNull SimpleStringProtocol xAsStringStorageValue();
+        @NotNull SimpleStringProtocol yAsStringStorageValue();
     }
     
     class PointXY implements PointXYProtocol {
+        
+        public final int MAX_STRING_LENGTH = 12;
         
         public final @NotNull String name;
         private final @NotNull StorageValue<Point> storage;
@@ -490,6 +525,101 @@ public interface MutableStorageValue {
             }
             
             storage.set(value);
+        }
+        
+        @Override
+        public @NotNull SimpleStringProtocol xAsStringStorageValue() {
+            var self = this;
+            
+            return new SimpleStringProtocol() {
+                @Override
+                public String getValue() {
+                    return String.valueOf(self.storage.get().x);
+                }
+                
+                @Override
+                public void setValue(String value) throws Exception {
+                    var exception = validate(value);
+                    
+                    if (exception != null) {
+                        throw exception;
+                    }
+                    
+                    var x = Double.parseDouble(value);
+                    self.setValue(Point.make(x, self.storage.get().y));
+                }
+                
+                @Override
+                public String getName() {
+                    return "x";
+                }
+                
+                @Override
+                public String getValueAsString() {
+                    return self.getValueAsString();
+                }
+                
+                @Override
+                public @Nullable Exception validate(@NotNull String value) {
+                    return self.validateStringValue(value);
+                }
+            };
+        }
+        
+        @Override
+        public @NotNull SimpleStringProtocol yAsStringStorageValue() {
+            var self = this;
+            
+            return new SimpleStringProtocol() {
+                @Override
+                public String getValue() {
+                    return String.valueOf(self.storage.get().y);
+                }
+                
+                @Override
+                public void setValue(String value) throws Exception {
+                    var exception = validate(value);
+                    
+                    if (exception != null) {
+                        throw exception;
+                    }
+                    
+                    var y = Double.parseDouble(value);
+                    self.setValue(Point.make(self.storage.get().x, y));
+                }
+                
+                @Override
+                public String getName() {
+                    return "y";
+                }
+                
+                @Override
+                public String getValueAsString() {
+                    return self.getValueAsString();
+                }
+                
+                @Override
+                public @Nullable Exception validate(@NotNull String value) {
+                    return self.validateStringValue(value);
+                }
+            };
+        }
+        
+        private @Nullable Exception validateStringValue(@NotNull String value) {
+            if (value.length() > MAX_STRING_LENGTH) {
+                return CommonErrors.valueTooLarge();
+            }
+
+            if (!NumberUtilities.isNumber(value)) {
+                return CommonErrors.notANumber;
+            }
+
+            try {
+                Double.parseDouble(value);
+                return null;
+            } catch (NumberFormatException e) {
+                return CommonErrors.notANumber;
+            }
         }
     }
 }

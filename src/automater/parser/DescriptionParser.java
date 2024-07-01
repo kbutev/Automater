@@ -4,6 +4,7 @@
  */
 package automater.parser;
 
+import automater.model.action.DoNothing;
 import automater.model.macro.MacroSummary;
 import automater.model.action.MacroAction;
 import automater.model.action.MacroActionDescription;
@@ -49,15 +50,17 @@ public interface DescriptionParser {
         public @NotNull MacroActionDescription parseMacroAction(@NotNull MacroAction action) throws Exception {
             var timestamp = action.getTimestamp();
             
-            if (action instanceof MacroHardwareAction.Click click) {
-                return new MacroActionDescription(timestamp, "click." + click.kind.name(), click.keystroke.toString());
+            if (action instanceof DoNothing) {
+                return new MacroActionDescription(timestamp, action.getActionType(), "");
+            } else if (action instanceof MacroHardwareAction.Click click) {
+                return new MacroActionDescription(timestamp, action.getActionType(), click.keystroke.toString());
             } else if (action instanceof MacroHardwareAction.MouseMove mmove) {
-                return new MacroActionDescription(timestamp, "mouse.move", mmove.point.toString());
+                return new MacroActionDescription(timestamp, action.getActionType(), mmove.point.toString());
             } else if (action instanceof MacroHardwareAction.MouseScroll scroll) {
-                return new MacroActionDescription(timestamp, "mouse.scroll", scroll.scroll.toString());
+                return new MacroActionDescription(timestamp, action.getActionType(), scroll.scroll.toString());
             }
             
-            throw new UnsupportedOperationException("Unrecognizable native event");
+            return new MacroActionDescription(timestamp, action.getActionType(), "");
         }
         
         @Override

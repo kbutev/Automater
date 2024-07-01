@@ -18,13 +18,14 @@ public interface PlayMacroRouter {
     interface Protocol {
         
         void start();
+        void exit(@NotNull Macro.Protocol macro);
     }
     
     class Impl implements Protocol, PlayMacroPresenter.Delegate {
         
         private final @NotNull PlayMacroFrame view;
         private final @NotNull MasterRouter.Protocol masterRouter;
-        private @NotNull PlayMacroPresenter.Protocol playMacroPresenter;
+        private @NotNull PlayMacroPresenter.Protocol presenter;
 
         public Impl(@NotNull MasterRouter.Protocol router, @NotNull Macro.Protocol macro) {
             view = new PlayMacroFrame();
@@ -33,21 +34,19 @@ public interface PlayMacroRouter {
         }
         
         private void setup(@NotNull Macro.Protocol macro) {
-            playMacroPresenter = new PlayMacroPresenter.Impl(view, macro);
-            playMacroPresenter.setDelegate(this);
+            presenter = new PlayMacroPresenter.Impl(view, macro);
+            presenter.setDelegate(this);
         }
         
         @Override
         public void start() {
-            playMacroPresenter.start();
+            presenter.start();
             view.present();
         }
         
-        // # PlayMacroPresenter.Delegate
-        
         @Override
-        public void onExit() {
-            playMacroPresenter.stop();
+        public void exit(@NotNull Macro.Protocol macro) {
+            presenter.stop();
         }
     }
 }

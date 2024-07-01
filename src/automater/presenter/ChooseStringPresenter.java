@@ -7,7 +7,9 @@ package automater.presenter;
 import automater.model.MutableStorageValue;
 import automater.ui.view.ChooseStringDialog;
 import automater.utilities.Callback;
+import automater.utilities.Errors;
 import automater.utilities.Logger;
+import java.awt.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,18 +19,23 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface ChooseStringPresenter {
     
-    interface Protocol extends Presenter {
+    interface Delegate {
+        
+        void showError(@NotNull Component sender, @NotNull String title, @NotNull String body);
+    }
+    
+    interface Protocol extends PresenterWithDelegate<Delegate> {
         
     }
     
     class Impl implements ChooseStringPresenter.Protocol {
         
         private final @NotNull ChooseStringDialog view;
-        
         private final @NotNull MutableStorageValue.SimpleStringProtocol storage;
-        
         private final @NotNull String initialValue;
 
+        private @Nullable Delegate delegate;
+        
         private @Nullable Callback.Param<String> success;
         private @Nullable Callback.Blank failure;
         
@@ -60,7 +67,21 @@ public interface ChooseStringPresenter {
         }
         
         @Override
+        public @Nullable Delegate getDelegate() {
+            return delegate;
+        }
+        
+        @Override
+        public void setDelegate(@NotNull Delegate delegate) {
+            this.delegate = delegate;
+        }
+        
+        @Override
         public void start() {
+            if (delegate == null) {
+                throw Errors.delegateNotSet();
+            }
+            
             view.setVisible(true);
         }
         
@@ -80,15 +101,20 @@ public interface ChooseStringPresenter {
             try {
                 Logger.messageVerbose(this, "Text changed to '" + value + "'");
                 storage.setValue(value);
-                view.hideInfoText();
+                view.hideError();
             } catch (Exception e) {
                 var errorStr = e.getMessage() != null ? e.getMessage() : e.toString();
                 Logger.messageVerbose(this, "Error: " + errorStr);
-                view.setInfoText(errorStr);
+                view.setErrorText(errorStr);
             }
         }
         
         private void saveAndExit() {
+            if (view.isVisible()) {
+                delegate.showError(view, "Cannot save", "Enter a valid value.");
+                return;
+            }
+            
             Logger.messageVerbose(this, "Save and exit with value '" + view.getFieldText() + "'");
             
             var text = view.getFieldText();

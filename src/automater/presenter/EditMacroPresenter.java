@@ -6,6 +6,7 @@ package automater.presenter;
 
 import automater.datasource.MacroActionDataSource;
 import automater.di.DI;
+import automater.model.action.DoNothing;
 import automater.model.action.MacroAction;
 import automater.model.action.MacroActionDescription;
 import automater.model.macro.Macro;
@@ -28,8 +29,9 @@ public interface EditMacroPresenter {
     
     interface Delegate {
         
-        void exit();
+        void exit(@NotNull Macro.Protocol macro);
         
+        void insertMacroAction(@NotNull MacroAction action);
         void editMacroAction(@NotNull MacroAction action);
         
         void showError(@NotNull String title, @NotNull String body);
@@ -64,6 +66,10 @@ public interface EditMacroPresenter {
             
             view.onEditItemCallback = (var index) -> {
                 editMacroAction(index);
+            };
+            
+            view.onCopyItemCallback = (var index) -> {
+                copyMacroAction(index);
             };
             
             view.onDeleteItemCallback = (var index) -> {
@@ -130,8 +136,18 @@ public interface EditMacroPresenter {
         }
         
         @Override
+        public void onExitWithInsert(@NotNull MacroAction action) {
+            onInsertedMacroAction(action);
+            
+            view.enableSaveButton(true);
+            
+            setupMacroActionDescriptions();
+            reloadData();
+        }
+        
+        @Override
         public void onExitWithChanges(@NotNull MacroAction original, @NotNull MacroAction replacement) {
-            macro = macro.withActionReplaced(original, replacement);
+            onEditedMacroAction(original, replacement);
             
             view.enableSaveButton(true);
             
@@ -141,26 +157,75 @@ public interface EditMacroPresenter {
         
         // # Private
         
-        private void editMacroAction(int index) {
+        private void insertMacroAction(int index) {
             var actions = macro.getActions();
             
-            if (index >= actions.size()) {
-                throw Errors.illegalStateError();
+            if (index == -1 || index >= actions.size()) {
+                return;
             }
             
             var action = actions.get(index);
             
-            Logger.message(this, "Edit macro action " + action);
+            Logger.message(this, "Inserting macro action...");
+            
+            delegate.insertMacroAction(new DoNothing(action.getTimestamp()));
+        }
+        
+        private void copyMacroAction(int index) {
+            var actions = macro.getActions();
+            
+            if (index == -1 || index >= actions.size()) {
+                return;
+            }
+            
+            var action = actions.get(index);
+            
+            Logger.message(this, "Copying macro action...");
+            
+            delegate.insertMacroAction(action);
+        }
+        
+        private void onInsertedMacroAction(@NotNull MacroAction action) {
+            Logger.message(this, "Insert macro action " + action);
+            
+            macro = macro.withActionInserted(action);
+        }
+        
+        private void editMacroAction(int index) {
+            var actions = macro.getActions();
+            
+            if (index == -1 || index >= actions.size()) {
+                return;
+            }
+            
+            var action = actions.get(index);
+            
+            Logger.message(this, "Editing macro action " + action + " ...");
             
             delegate.editMacroAction(action);
         }
         
-        private void insertMacroAction(int index) {
+        private void onEditedMacroAction(@NotNull MacroAction original, @NotNull MacroAction replacement) {
+            Logger.message(this, "Edited macro action " + original + " -> " + replacement);
             
+            macro = macro.withActionReplaced(original, replacement);
         }
         
         private void deleteMacroAction(int index) {
+            if (index == -1) {
+                return;
+            }
             
+            var action = macro.getActions().get(index);
+            
+            Logger.message(this, "Delete macro action " + action);
+            
+            macro = macro.withActionRemoved(action);
+            
+            view.enableSaveButton(true);
+            
+            setupMacroActionDescriptions();
+            reloadData();
         }
         
         private void saveMacro() {
@@ -168,7 +233,7 @@ public interface EditMacroPresenter {
             
             try {
                 storage.saveMacro(macro);
-                delegate.exit();
+                delegate.exit(macro);
             } catch (Exception e) {
                 var errorStr = e.getMessage() != null ? e.getMessage() : "unknown";
                 delegate.showError("Save failed", "Error: " + errorStr);

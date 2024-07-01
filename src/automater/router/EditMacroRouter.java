@@ -24,8 +24,9 @@ public interface EditMacroRouter {
         @NotNull Frame getView();
         
         void start();
-        void exit();
+        void exit(@NotNull Macro.Protocol macro);
         
+        void insertMacroAction(@NotNull MacroAction action);
         void editMacroAction(@NotNull MacroAction action);
         
         void showError(@NotNull String title, @NotNull String body);
@@ -60,15 +61,28 @@ public interface EditMacroRouter {
         }
         
         @Override
-        public void exit() {
+        public void exit(@NotNull Macro.Protocol macro) {
             presenter.stop();
             view.dispose();
+            
+            masterRouter.onExitEditMacro(macro);
+        }
+        
+        @Override
+        public void insertMacroAction(@NotNull MacroAction action) {
+            try {
+                var router = new EditMacroActionRouter.Impl(this, action, true);
+                router.setDelegate(presenter);
+                router.start();
+            } catch (Exception e) {
+                Logger.error(this, "Failed to open macro action, error: " + e);
+            }
         }
         
         @Override
         public void editMacroAction(@NotNull MacroAction action) {
             try {
-                var router = new EditMacroActionRouter.Impl(this, action);
+                var router = new EditMacroActionRouter.Impl(this, action, false);
                 router.setDelegate(presenter);
                 router.start();
             } catch (Exception e) {

@@ -27,6 +27,7 @@ public interface EditMacroActionPresenter {
     interface Delegate {
         
         void exitWithoutChanges();
+        void exitWithInsert(@NotNull MacroAction action);
         void exitWithChanges(@NotNull MacroAction original, @NotNull MacroAction replacement);
         
         void showError(@NotNull String title, @NotNull String body);
@@ -38,14 +39,17 @@ public interface EditMacroActionPresenter {
     
     class Impl implements Protocol {
 
+        private @Nullable Delegate delegate;
+        
         private final @NotNull EditMacroActionDialog view;
         private final @NotNull MacroAction originalAction;
-        private @Nullable Delegate delegate;
+        private final boolean isInsert;
         private final @NotNull MacroActionBuilder.Protocol builder;
         
-        public Impl(@NotNull EditMacroActionDialog view, @NotNull MacroAction action) throws Exception {
+        public Impl(@NotNull EditMacroActionDialog view, @NotNull MacroAction action, boolean isInsert) throws Exception {
             this.view = view;
             this.originalAction = action;
+            this.isInsert = isInsert;
             builder = MacroActionBuilder.buildFromAction(action);
             setup();
         }
@@ -155,8 +159,15 @@ public interface EditMacroActionPresenter {
         
         private void saveAndExit() {
             try {
+                Logger.message(this, "Save and exit");
+                
                 var result = builder.build();
-                delegate.exitWithChanges(originalAction, result);
+                
+                if (isInsert) {
+                    delegate.exitWithInsert(result);
+                } else {
+                    delegate.exitWithChanges(originalAction, result);
+                }
             } catch (Exception e) {
                 var errorStr = e.getMessage() != null ? e.getMessage() : "unknown";
                 delegate.showError("Save failed", "Error: " + errorStr);

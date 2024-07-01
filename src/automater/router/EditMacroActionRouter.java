@@ -6,7 +6,6 @@ package automater.router;
 
 import automater.model.action.MacroAction;
 import automater.presenter.EditMacroActionPresenter;
-import automater.presenter.EditMacroPresenter;
 import automater.ui.view.EditMacroActionDialog;
 import automater.utilities.AlertWindows;
 import automater.utilities.Errors;
@@ -23,7 +22,8 @@ public interface EditMacroActionRouter {
     interface Delegate {
         
         void onExitWithoutChanges();
-        void onExitWithChanges(@NotNull MacroAction original, @NotNull MacroAction replacement);
+        void onExitWithInsert(@NotNull MacroAction action);
+        void onExitWithChanges(@Nullable MacroAction original, @NotNull MacroAction replacement);
     }
     
     interface Protocol {
@@ -33,6 +33,7 @@ public interface EditMacroActionRouter {
         
         void start();
         void exitWithoutChanges();
+        void exitWithInsert(@NotNull MacroAction action);
         void exitWithChanges(@NotNull MacroAction original, @NotNull MacroAction replacement);
         
         void showError(@NotNull String title, @NotNull String body);
@@ -46,14 +47,14 @@ public interface EditMacroActionRouter {
         
         private @Nullable Delegate delegate;
 
-        public Impl(@NotNull EditMacroRouter.Protocol router, @NotNull MacroAction action) throws Exception {
+        public Impl(@NotNull EditMacroRouter.Protocol router, @NotNull MacroAction action, boolean isInsert) throws Exception {
             view = new EditMacroActionDialog(router.getView(), true);
             masterRouter = router;
-            setup(action);
+            setup(action, isInsert);
         }
         
-        private void setup(@NotNull MacroAction action) throws Exception {
-            presenter = new EditMacroActionPresenter.Impl(view, action);
+        private void setup(@NotNull MacroAction action, boolean isInsert) throws Exception {
+            presenter = new EditMacroActionPresenter.Impl(view, action, isInsert);
             presenter.setDelegate(this);
         }
         
@@ -85,8 +86,17 @@ public interface EditMacroActionRouter {
         }
         
         @Override
+        public void exitWithInsert(@NotNull MacroAction action) {
+            Logger.message(this, "exit with insert");
+            
+            exit();
+            
+            delegate.onExitWithInsert(action);
+        }
+        
+        @Override
         public void exitWithChanges(@NotNull MacroAction original, @NotNull MacroAction replacement) {
-            Logger.message(this, "exit");
+            Logger.message(this, "exit with changes");
             
             exit();
             
@@ -95,6 +105,8 @@ public interface EditMacroActionRouter {
         
         @Override
         public void showError(@NotNull String title, @NotNull String body) {
+            Logger.error(this, "Error: " + body);
+            
             AlertWindows.showErrorMessage(view, title, body, "OK");
         }
         

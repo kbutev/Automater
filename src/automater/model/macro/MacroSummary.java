@@ -7,7 +7,6 @@ package automater.model.macro;
 import com.google.gson.annotations.SerializedName;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import automater.utilities.Size;
 
 /**
  *

@@ -36,7 +36,8 @@ import org.jetbrains.annotations.Nullable;
 public interface PlayMacroPresenter {
 
     interface Delegate {
-        void onExit();
+        
+        void exit(@NotNull Macro.Protocol macro);
     }
 
     interface Protocol extends PresenterWithDelegate<Delegate> {
@@ -96,7 +97,7 @@ public interface PlayMacroPresenter {
             };
             
             view.onWindowClosedCallback = () -> {
-                delegate.onExit();
+               exit();
             };
             
             setupMacroActionDescriptions();
@@ -337,6 +338,10 @@ public interface PlayMacroPresenter {
         }
 
         // # Private
+        
+        private void exit() {
+            delegate.exit(macro);
+        }
         
         private @NotNull List<InputKeystroke.Protocol> getActionHotkeys() {
             var values = preferences.getValues();

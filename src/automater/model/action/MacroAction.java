@@ -17,4 +17,5 @@ public interface MacroAction {
     @NotNull String getName();
     
     @NotNull MacroAction copy();
+    @NotNull MacroAction copyWithTimestamp(double timestamp);
 }

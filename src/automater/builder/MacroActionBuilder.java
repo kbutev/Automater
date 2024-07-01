@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import automater.model.MutableStorageValue;
+import automater.model.action.DoNothing;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -205,11 +206,13 @@ public interface MacroActionBuilder {
     class KindMap {
         
         static @NotNull Kind getKindFromAction(@NotNull MacroAction action) throws Exception {
-            if (action instanceof MacroHardwareAction.Click click) {
+            if (action instanceof DoNothing) {
+                return Kind.DO_NOTHING;
+            } else if (action instanceof MacroHardwareAction.Click click) {
                 return click.keystroke.isKeyboard() ? Kind.CLICK : Kind.MOUSE_CLICK;
-            } else if (action instanceof MacroHardwareAction.MouseMove mm) {
+            } else if (action instanceof MacroHardwareAction.MouseMove) {
                 return Kind.MOUSE_MOVE;
-            } else if (action instanceof MacroHardwareAction.MouseScroll ms) {
+            } else if (action instanceof MacroHardwareAction.MouseScroll) {
                 return Kind.MOUSE_SCROLL;
             }
             

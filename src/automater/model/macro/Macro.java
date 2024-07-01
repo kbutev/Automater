@@ -51,7 +51,7 @@ public interface Macro {
         public final List<MacroAction> actions;
         
         public Impl(@NotNull MacroSummary summary, @NotNull MacroRecordSource recordSource, @NotNull List<MacroAction> actions) {
-            this.summary = summary;
+            this.summary = new MacroSummary(summary.name, summary.description, summary.playCount, actions.size());
             this.recordSource = recordSource;
             var actionsCopy = CollectionUtilities.copy(actions);
             actionsCopy.sort(Comparator.comparingDouble(MacroAction::getTimestamp));
@@ -79,7 +79,7 @@ public interface Macro {
         
         @Override
         public @NotNull Protocol withActionInserted(@NotNull MacroAction action) {
-            var newActions = CollectionUtilities.copy(this.actions);
+            var newActions = CollectionUtilities.copy(actions);
             
             newActions.add(action);
             
@@ -88,7 +88,7 @@ public interface Macro {
         
         @Override
         public @NotNull Protocol withActionRemoved(@NotNull MacroAction action) {
-            var newActions = CollectionUtilities.copy(this.actions);
+            var newActions = CollectionUtilities.copy(actions);
             
             newActions.remove(action);
             
@@ -97,7 +97,7 @@ public interface Macro {
         
         @Override
         public @NotNull Protocol withActionReplaced(@NotNull MacroAction original, @NotNull MacroAction modified) {
-            var newActions = CollectionUtilities.copy(this.actions);
+            var newActions = CollectionUtilities.copy(actions);
             
             newActions.remove(original);
             newActions.add(modified);

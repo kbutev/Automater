@@ -103,7 +103,7 @@ public interface InternalMacroActionBuilder {
         private final InputKeyValueParser.AWTProtocol parser = DI.get(InputKeyValueParser.AWTProtocol.class);
         
         @NotNull MouseKey key = MouseKey.LEFT;
-        @NotNull KeyEventKind eventKind = KeyEventKind.press;
+        @NotNull KeyEventKind eventKind = KeyEventKind.tap;
         
         final @NotNull StorageValue<String> keyStorage =
                 StorageValue.build(() -> { return key.value; }, (var value) -> { setKey(value); });
