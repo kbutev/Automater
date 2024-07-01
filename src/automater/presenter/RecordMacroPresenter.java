@@ -23,6 +23,7 @@ import automater.model.macro.MacroRecordSource;
 import automater.model.macro.MacroRecordSourceKind;
 import automater.model.macro.MacroSummary;
 import automater.utilities.Logger;
+import java.awt.Component;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,10 +40,14 @@ public interface RecordMacroPresenter {
 
     interface Delegate {
         
+        void chooseFileName(@NotNull String initialValue, @NotNull ChooseFileNamePresenter.Delegate delegate);
+        
         void onError(@NotNull Exception e);
         void onStartRecording(@Nullable Object sender);
         void onEndRecording(@Nullable Object sender);
         void onRecordingSave(boolean success);
+        
+        void showError(@NotNull Component sender, @NotNull String title, @NotNull String body);
     }
 
     interface Protocol extends PresenterWithDelegate<Delegate> {
@@ -51,10 +56,10 @@ public interface RecordMacroPresenter {
 
         void beginRecording(@Nullable Object sender);
         void endRecording(@Nullable Object sender);
-        void saveRecording(@NotNull String name, @NotNull String description);
+        void saveRecording(@Nullable Object sender);
     }
 
-    class Impl implements Protocol, EventMonitor.Listener, HotkeyMonitor.Listener {
+    class Impl implements Protocol, EventMonitor.Listener, HotkeyMonitor.Listener, ChooseFileNamePresenter.Delegate {
 
         private final MacroStorage.Protocol storage = DI.get(MacroStorage.Protocol.class);
         private final PreferencesStorage.Protocol preferences = DI.get(PreferencesStorage.Protocol.class);
@@ -79,20 +84,20 @@ public interface RecordMacroPresenter {
         }
         
         private void setup() {
-            view.onSwitchToPlayButtonCallback = () -> {
+            view.onSwitchToPlayButton = () -> {
                 stop();
             };
 
-            view.onBeginRecordMacroButtonCallback = () -> {
+            view.onBeginRecordMacroButton = () -> {
                 beginRecording(view);
             };
 
-            view.onStopRecordMacroButtonCallback = () -> {
+            view.onStopRecordMacroButton = () -> {
                 endRecording(view);
             };
 
-            view.onSaveMacroButtonCallback = (String argument) -> {
-                saveRecording(argument, view.getMacroDescription());
+            view.onSaveMacroButton = () -> {
+                saveRecording(view);
             };
             
             setupText();
@@ -215,23 +220,8 @@ public interface RecordMacroPresenter {
         }
 
         @Override
-        public void saveRecording(@NotNull String name, @NotNull String description) {
-            var result = false;
-            
-            try {
-                var primaryScreen = recorder.getPrimaryScreenSize();
-                var summary = new MacroSummary(name, description, 0, actions.size());
-                var recordSource = new MacroRecordSource(MacroRecordSourceKind.JAVA_AWT_ROBOT, primaryScreen);
-                var macro = Macro.build(summary, recordSource, actions);
-                storage.saveMacro(macro);
-                result = true;
-            } catch (Exception e) {
-                Logger.error(this, "Failed to save macro: " + e);
-            }
-            
-            if (delegate != null) {
-                delegate.onRecordingSave(result);
-            }
+        public void saveRecording(@Nullable Object sender) {
+            delegate.chooseFileName("Macro", this);
         }
 
         // # EventMonitor.Listener
@@ -283,11 +273,49 @@ public interface RecordMacroPresenter {
             }
         }
         
+        // # ChooseFileNamePresenter.Delegate
+        
+        @Override
+        public void onExit() {
+            
+        }
+        
+        @Override
+        public void onExit(@NotNull String fileName) {
+            onSaveMacro(fileName);
+        }
+        
+        @Override
+        public void showError(@NotNull Component sender, @NotNull String title, @NotNull String body) {
+            delegate.showError(sender, title, body);
+        }
+        
         // # Private
         
         private @NotNull List<InputKeystroke.Protocol> getActionHotkeys() {
             var values = preferences.getValues();
             return Arrays.asList(values.startRecordHotkey.get(), values.stopRecordHotkey.get());
+        }
+        
+        private void onSaveMacro(@NotNull String name) {
+            var result = false;
+            
+            try {
+                var primaryScreen = recorder.getPrimaryScreenSize();
+                var summary = new MacroSummary(name, "", 0, actions.size());
+                var recordSource = new MacroRecordSource(MacroRecordSourceKind.JAVA_AWT_ROBOT, primaryScreen);
+                var macro = Macro.build(summary, recordSource, actions);
+                storage.saveMacro(macro);
+                result = true;
+                
+                view.enableSaveButton(false);
+            } catch (Exception e) {
+                Logger.error(this, "Failed to save macro: " + e);
+            }
+            
+            if (delegate != null) {
+                delegate.onRecordingSave(result);
+            }
         }
     }
 }

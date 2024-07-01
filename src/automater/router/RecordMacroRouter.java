@@ -4,12 +4,21 @@
  */
 package automater.router;
 
+import automater.di.DI;
+import automater.presenter.ChooseFileNamePresenter;
 import automater.ui.text.TextValue;
 import automater.presenter.RecordMacroPresenter;
+import automater.storage.MacroStorage;
+import automater.storage.PreferencesStorage;
+import automater.ui.view.ChooseFileNameDialog;
 import automater.ui.view.RecordMacroPanel;
 import automater.utilities.AlertWindows;
 import automater.utilities.Logger;
 import automater.utilities.Callback;
+import automater.validator.CommonValidators;
+import java.awt.Component;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,10 +30,15 @@ public interface RecordMacroRouter {
     
     interface Protocol {
         
-        void goBack();
+        void chooseFileName(@NotNull String initialValue, @NotNull ChooseFileNamePresenter.Delegate delegate);
+        
+        void showError(@NotNull Component sender, @NotNull String title, @NotNull String body);
     }
     
     class Impl implements Protocol, RecordMacroPresenter.Delegate {
+        
+        private final PreferencesStorage.Protocol preferences = DI.get(PreferencesStorage.Protocol.class);
+        
         private final @Nullable MasterRouter.Protocol masterRouter;
         private final @NotNull RecordMacroPanel view;
 
@@ -38,9 +52,26 @@ public interface RecordMacroRouter {
         }
         
         @Override
-        public void goBack() {
-            assert masterRouter != null;
+        public void chooseFileName(@NotNull String initialValue, @NotNull ChooseFileNamePresenter.Delegate delegate) {
+            var frame = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, view);
             
+            if (frame == null) {
+                delegate.onExit();
+                return;
+            }
+            
+            var extension = MacroStorage.MACRO_EXTENSION;
+            var validator = CommonValidators.newFileName(preferences.getValues().macrosDirectory.get());
+            
+            var dialog = new ChooseFileNameDialog(frame, true);
+            var presenter = new ChooseFileNamePresenter.Impl(dialog, initialValue, extension, validator);
+            presenter.setDelegate(delegate);
+            presenter.start();
+        }
+        
+        @Override
+        public void showError(@NotNull Component sender, @NotNull String title, @NotNull String body) {
+            AlertWindows.showErrorMessage(sender, title, body, "OK");
         }
         
         // - RecordMacroPresenter.Delegate

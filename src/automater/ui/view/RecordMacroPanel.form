@@ -31,18 +31,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="macrosList" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="macroNameLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="descriptionMacroLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace pref="18" max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="macroNameField" max="32767" attributes="0"/>
-                          <Component id="macroDescriptionField" pref="299" max="32767" attributes="0"/>
-                      </Group>
-                  </Group>
-                  <Group type="102" attributes="0">
-                      <Component id="macroActionsListName" min="-2" max="-2" attributes="0"/>
+                      <Component id="eventsLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
@@ -50,7 +39,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="saveMacroButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="macroStateLabel" max="32767" attributes="0"/>
+                      <Component id="macroStateLabel" pref="221" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -61,19 +50,9 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="macroNameLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="macroNameField" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="descriptionMacroLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="macroDescriptionField" alignment="3" min="-2" max="-2" attributes="0"/>
-              </Group>
-              <EmptySpace pref="12" max="32767" attributes="0"/>
-              <Component id="macroActionsListName" min="-2" max="-2" attributes="0"/>
+              <Component id="eventsLabel" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="macrosList" min="-2" pref="161" max="-2" attributes="0"/>
+              <Component id="macrosList" pref="235" max="32767" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="saveMacroButton" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -86,23 +65,6 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JLabel" name="macroNameLabel">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Name"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="descriptionMacroLabel">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Description"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="macroNameField">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Name"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="macroDescriptionField">
-    </Component>
     <Container class="javax.swing.JScrollPane" name="macrosList">
       <AuxValues>
         <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
@@ -113,13 +75,7 @@
         <Component class="javax.swing.JList" name="macroActionsList">
           <Properties>
             <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
-              <StringArray count="5">
-                <StringItem index="0" value="Item 1"/>
-                <StringItem index="1" value="Item 2"/>
-                <StringItem index="2" value="Item 3"/>
-                <StringItem index="3" value="Item 4"/>
-                <StringItem index="4" value="Item 5"/>
-              </StringArray>
+              <StringArray count="0"/>
             </Property>
           </Properties>
           <AuxValues>
@@ -149,9 +105,9 @@
         <Property name="text" type="java.lang.String" value="Status"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="macroActionsListName">
+    <Component class="javax.swing.JLabel" name="eventsLabel">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Actions"/>
+        <Property name="text" type="java.lang.String" value="Events"/>
       </Properties>
     </Component>
   </SubComponents>

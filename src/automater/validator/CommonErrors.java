@@ -33,4 +33,12 @@ public class CommonErrors {
     public static @NotNull Exception tooManyDecimalDigits(int digits) {
         return new Exception("Cannot have more decimal digits than " + digits);
     }
+    
+    public static @NotNull Exception nameTaken() {
+        return new Exception("Name taken");
+    }
+    
+    public static @NotNull Exception invalidName() {
+        return new Exception("Invalid name");
+    }
 }

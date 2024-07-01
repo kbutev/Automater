@@ -80,23 +80,23 @@ public interface PlayMacroPresenter {
         private void setup() {
             var self = this;
             
-            view.onPlayButtonCallback = () -> {
+            view.onPlayButton = () -> {
                 startMacroExecution(self);
             };
             
-            view.onStopButtonCallback = () -> {
+            view.onStopButton = () -> {
                 stopMacroExecution(self);
             };
             
-            view.onResumeButtonCallback = () -> {
+            view.onResumeButton = () -> {
                 resumeMacroExecution(self);
             };
             
-            view.onPauseButtonCallback = () -> {
+            view.onPauseButton = () -> {
                 pauseMacroExecution(self);
             };
             
-            view.onWindowClosedCallback = () -> {
+            view.onWindowClosed = () -> {
                exit();
             };
             

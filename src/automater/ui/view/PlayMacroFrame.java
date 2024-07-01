@@ -21,11 +21,11 @@ import org.jetbrains.annotations.Nullable;
 public class PlayMacroFrame extends javax.swing.JFrame implements View {
 
     // UI callbacks
-    public Callback.Blank onPlayButtonCallback = Callback.buildBlank();
-    public Callback.Blank onStopButtonCallback = Callback.buildBlank();
-    public Callback.Blank onPauseButtonCallback = Callback.buildBlank();
-    public Callback.Blank onResumeButtonCallback = Callback.buildBlank();
-    public Callback.Blank onWindowClosedCallback = Callback.buildBlank();
+    public Callback.Blank onPlayButton = Callback.buildBlank();
+    public Callback.Blank onStopButton = Callback.buildBlank();
+    public Callback.Blank onPauseButton = Callback.buildBlank();
+    public Callback.Blank onResumeButton = Callback.buildBlank();
+    public Callback.Blank onWindowClosed = Callback.buildBlank();
     
     /**
      * Creates new form OpenMacroFrame
@@ -268,9 +268,9 @@ public class PlayMacroFrame extends javax.swing.JFrame implements View {
 
     private void stateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stateButtonActionPerformed
         if (!isPlaying) {
-            onPlayButtonCallback.perform();
+            onPlayButton.perform();
         } else {
-            onStopButtonCallback.perform();
+            onStopButton.perform();
         }
     }//GEN-LAST:event_stateButtonActionPerformed
 
@@ -280,14 +280,14 @@ public class PlayMacroFrame extends javax.swing.JFrame implements View {
         }
         
         if (!isPaused) {
-            onPauseButtonCallback.perform();
+            onPauseButton.perform();
         } else {
-            onResumeButtonCallback.perform();
+            onResumeButton.perform();
         }
     }//GEN-LAST:event_pauseResumeButtonActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        onWindowClosedCallback.perform();
+        onWindowClosed.perform();
     }//GEN-LAST:event_formWindowClosed
 
     /**

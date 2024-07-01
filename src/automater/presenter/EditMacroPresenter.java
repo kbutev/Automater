@@ -60,23 +60,23 @@ public interface EditMacroPresenter {
         }
         
         private void setup() {
-            view.onInsertItemCallback = (var index) -> {
+            view.onInsertItem = (var index) -> {
                 insertMacroAction(index);
             };
             
-            view.onEditItemCallback = (var index) -> {
+            view.onEditItem = (var index) -> {
                 editMacroAction(index);
             };
             
-            view.onCopyItemCallback = (var index) -> {
+            view.onCopyItem = (var index) -> {
                 copyMacroAction(index);
             };
             
-            view.onDeleteItemCallback = (var index) -> {
+            view.onDeleteItem = (var index) -> {
                 deleteMacroAction(index);
             };
             
-            view.onSaveCallback = () -> {
+            view.onSave = () -> {
                 saveMacro();
             };
             

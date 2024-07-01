@@ -80,7 +80,7 @@ public interface MasterRouter {
                     settingsView,
                     TextValue.getText(TextValue.Root_TabSettingsTip));
             
-            view.onSwitchTabCallback = (View selectedView) -> {
+            view.onSwitchTab = (View selectedView) -> {
                 onSwitchTab(selectedView);
             };
             

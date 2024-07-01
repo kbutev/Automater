@@ -20,6 +20,10 @@ import java.util.List;
  */
 public class FileSystem {
     
+    public static boolean isFileNameValid(@NotNull String name) {
+        return name.matches("^[\\w\\-. ]+$");
+    }
+    
     public static void createBlankFile(@NotNull Path path) throws IOException {
         path.getFile().createNewFile();
     }

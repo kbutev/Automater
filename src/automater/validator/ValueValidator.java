@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 public interface ValueValidator {
     
     class Result {
-        public final @Nullable Exception error;
+        public final Exception error;
         
         public static Result SUCCESS = new Result(null);
         

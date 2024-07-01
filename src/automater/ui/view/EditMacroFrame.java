@@ -18,12 +18,12 @@ import org.jetbrains.annotations.Nullable;
 public class EditMacroFrame extends javax.swing.JFrame implements View {
 
     // UI callbacks
-    public Callback.Blank onSaveCallback = Callback.buildBlank();
-    public Callback.Param<Integer> onInsertItemCallback = Callback.buildBlankWithParameter();
-    public Callback.Param<Integer> onEditItemCallback = Callback.buildBlankWithParameter();
-    public Callback.Param<Integer> onCopyItemCallback = Callback.buildBlankWithParameter();
-    public Callback.Param<Integer> onDeleteItemCallback = Callback.buildBlankWithParameter();
-    public Callback.Blank onWindowClosedCallback = Callback.buildBlank();
+    public Callback.Blank onSave = Callback.buildBlank();
+    public Callback.Param<Integer> onInsertItem = Callback.buildBlankWithParameter();
+    public Callback.Param<Integer> onEditItem = Callback.buildBlankWithParameter();
+    public Callback.Param<Integer> onCopyItem = Callback.buildBlankWithParameter();
+    public Callback.Param<Integer> onDeleteItem = Callback.buildBlankWithParameter();
+    public Callback.Blank onWindowClosed = Callback.buildBlank();
     
     /**
      * Creates new form EditMacroFrame
@@ -217,32 +217,32 @@ public class EditMacroFrame extends javax.swing.JFrame implements View {
         updateButtonsState();
         
         if (evt.getClickCount() > 1 && getSelectedIndex() != -1) {
-            onEditItemCallback.perform(getSelectedIndex());
+            onEditItem.perform(getSelectedIndex());
         }
     }//GEN-LAST:event_macroActionsListMouseClicked
 
     private void insertButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertButtonActionPerformed
-        onInsertItemCallback.perform(getSelectedIndex());
+        onInsertItem.perform(getSelectedIndex());
     }//GEN-LAST:event_insertButtonActionPerformed
 
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
-        onEditItemCallback.perform(getSelectedIndex());
+        onEditItem.perform(getSelectedIndex());
     }//GEN-LAST:event_editButtonActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-        onDeleteItemCallback.perform(getSelectedIndex());
+        onDeleteItem.perform(getSelectedIndex());
     }//GEN-LAST:event_deleteButtonActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-        onSaveCallback.perform();
+        onSave.perform();
     }//GEN-LAST:event_saveButtonActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        onWindowClosedCallback.perform();
+        onWindowClosed.perform();
     }//GEN-LAST:event_formWindowClosed
 
     private void copyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyButtonActionPerformed
-        onCopyItemCallback.perform(getSelectedIndex());
+        onCopyItem.perform(getSelectedIndex());
     }//GEN-LAST:event_copyButtonActionPerformed
 
     /**

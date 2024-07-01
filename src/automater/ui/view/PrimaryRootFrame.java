@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 public class PrimaryRootFrame extends javax.swing.JFrame {
 
     // UI callbacks
-    public Callback.Param<View> onSwitchTabCallback = Callback.buildBlankWithParameter();
+    public Callback.Param<View> onSwitchTab = Callback.buildBlankWithParameter();
     
     /**
      * Creates new form PrimaryRootFrame
@@ -55,7 +55,7 @@ public class PrimaryRootFrame extends javax.swing.JFrame {
     }
     
     private void onTabClick() {
-        onSwitchTabCallback.perform((View) tabbedPane.getSelectedComponent());
+        onSwitchTab.perform((View) tabbedPane.getSelectedComponent());
     }
 
     /**

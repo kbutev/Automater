@@ -7,7 +7,6 @@ package automater.ui.view;
 import automater.datasource.StandardDescriptionDataSource;
 import automater.ui.text.Strings;
 import automater.ui.text.TextValue;
-import automater.utilities.AlertWindows;
 import automater.utilities.Callback;
 import automater.utilities.Logger;
 import java.awt.Component;
@@ -20,10 +19,10 @@ import org.jetbrains.annotations.NotNull;
 public class RecordMacroPanel extends javax.swing.JPanel implements View {
 
     // UI callbacks
-    public Callback.Blank onSwitchToPlayButtonCallback = Callback.buildBlank();
-    public Callback.Blank onBeginRecordMacroButtonCallback = Callback.buildBlank();
-    public Callback.Blank onStopRecordMacroButtonCallback = Callback.buildBlank();
-    public Callback.Param<String> onSaveMacroButtonCallback = Callback.buildBlankWithParameter();
+    public Callback.Blank onSwitchToPlayButton = Callback.buildBlank();
+    public Callback.Blank onBeginRecordMacroButton = Callback.buildBlank();
+    public Callback.Blank onStopRecordMacroButton = Callback.buildBlank();
+    public Callback.Blank onSaveMacroButton = Callback.buildBlank();
     
     /**
      * Creates new form RecordMacroPanel
@@ -46,10 +45,7 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
     }
     
     private void setup() {
-        macroActionsListName.setText(TextValue.getText(TextValue.Record_MacroActionListName));
-
-        macroNameField.setText(TextValue.getText(TextValue.Record_MacroNameFieldDefaultText));
-        macroNameField.setToolTipText(TextValue.getText(TextValue.Record_MacroNameFieldTip));
+        eventsLabel.setText(TextValue.getText(TextValue.Record_MacroActionListName));
 
         macroStateLabel.setText(TextValue.getText(TextValue.Record_IdleStatus, startHotkey));
 
@@ -64,14 +60,6 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
         return _isRecording;
     }
 
-    public String getMacroName() {
-        return macroNameField.getText();
-    }
-
-    public String getMacroDescription() {
-        return macroDescriptionField.getText();
-    }
-
     public void setListDataSource(@NotNull StandardDescriptionDataSource dataSource) {
         macroActionsList.setModel(dataSource);
 
@@ -79,16 +67,20 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
     }
 
     // # Public UI operations
+    
     public void willSwitchToPlayWindow() {
         if (_isRecording) {
             Logger.warning(this, "Switching to play screen while recording is not allowed.");
         }
     }
+    
+    public void enableSaveButton(boolean enabled) {
+        saveMacroButton.setEnabled(enabled);
+    }
 
     public void beginRecording() {
         _isRecording = true;
         _recordStartCount++;
-        macroNameField.setEnabled(false);
         saveMacroButton.setEnabled(false);
 
         updateRecordState();
@@ -96,18 +88,9 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
 
     public void endRecording() {
         _isRecording = false;
-        macroNameField.setEnabled(true);
         saveMacroButton.setEnabled(true);
 
         updateRecordState();
-    }
-
-    public void willSaveRecording() {
-
-    }
-
-    public void displayError(@NotNull String title, @NotNull String message) {
-        AlertWindows.showErrorMessage(getParent(), title, message, "Ok");
     }
 
     public void setHotkeyText(@NotNull String start, @NotNull String stop) {
@@ -158,31 +141,16 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
     private void initComponents() {
 
         jFrame1 = new javax.swing.JFrame();
-        macroNameLabel = new javax.swing.JLabel();
-        descriptionMacroLabel = new javax.swing.JLabel();
-        macroNameField = new javax.swing.JTextField();
-        macroDescriptionField = new javax.swing.JTextField();
         macrosList = new javax.swing.JScrollPane();
         macroActionsList = new javax.swing.JList<>();
         saveMacroButton = new javax.swing.JButton();
         recordMacroButton = new javax.swing.JButton();
         macroStateLabel = new javax.swing.JLabel();
-        macroActionsListName = new javax.swing.JLabel();
+        eventsLabel = new javax.swing.JLabel();
 
         jFrame1.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         jFrame1.setResizable(false);
 
-        macroNameLabel.setText("Name");
-
-        descriptionMacroLabel.setText("Description");
-
-        macroNameField.setText("Name");
-
-        macroActionsList.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         macrosList.setViewportView(macroActionsList);
 
         saveMacroButton.setText("Save");
@@ -201,7 +169,7 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
 
         macroStateLabel.setText("Status");
 
-        macroActionsListName.setText("Actions");
+        eventsLabel.setText("Events");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -212,39 +180,23 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(macrosList)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(macroNameLabel)
-                            .addComponent(descriptionMacroLabel))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(macroNameField)
-                            .addComponent(macroDescriptionField, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(macroActionsListName)
+                        .addComponent(eventsLabel)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(recordMacroButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(saveMacroButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(macroStateLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(macroStateLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 221, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(macroNameLabel)
-                    .addComponent(macroNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(descriptionMacroLabel)
-                    .addComponent(macroDescriptionField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
-                .addComponent(macroActionsListName)
+                .addComponent(eventsLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(macrosList, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(macrosList, javax.swing.GroupLayout.DEFAULT_SIZE, 235, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(saveMacroButton)
@@ -257,25 +209,21 @@ public class RecordMacroPanel extends javax.swing.JPanel implements View {
     private void recordMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordMacroButtonActionPerformed
         if (!isRecording()) {
             beginRecording();
-            onBeginRecordMacroButtonCallback.perform();
+            onBeginRecordMacroButton.perform();
         } else {
             endRecording();
-            onStopRecordMacroButtonCallback.perform();
+            onStopRecordMacroButton.perform();
         }
     }//GEN-LAST:event_recordMacroButtonActionPerformed
 
     private void saveMacroButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMacroButtonActionPerformed
-        onSaveMacroButtonCallback.perform(macroNameField.getText());
+        onSaveMacroButton.perform();
     }//GEN-LAST:event_saveMacroButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel descriptionMacroLabel;
+    private javax.swing.JLabel eventsLabel;
     private javax.swing.JFrame jFrame1;
     private javax.swing.JList<String> macroActionsList;
-    private javax.swing.JLabel macroActionsListName;
-    private javax.swing.JTextField macroDescriptionField;
-    private javax.swing.JTextField macroNameField;
-    private javax.swing.JLabel macroNameLabel;
     private javax.swing.JLabel macroStateLabel;
     private javax.swing.JScrollPane macrosList;
     private javax.swing.JButton recordMacroButton;
