@@ -51,16 +51,16 @@ public interface DescriptionParser {
             var timestamp = action.getTimestamp();
             
             if (action instanceof DoNothing) {
-                return new MacroActionDescription(timestamp, action.getActionType(), "");
+                return new MacroActionDescription(timestamp, action.getName(), "");
             } else if (action instanceof MacroHardwareAction.Click click) {
-                return new MacroActionDescription(timestamp, action.getActionType(), click.keystroke.toString());
+                return new MacroActionDescription(timestamp, action.getName(), click.keystroke.toString());
             } else if (action instanceof MacroHardwareAction.MouseMove mmove) {
-                return new MacroActionDescription(timestamp, action.getActionType(), mmove.point.toString());
+                return new MacroActionDescription(timestamp, action.getName(), mmove.point.toString());
             } else if (action instanceof MacroHardwareAction.MouseScroll scroll) {
-                return new MacroActionDescription(timestamp, action.getActionType(), scroll.scroll.toString());
+                return new MacroActionDescription(timestamp, action.getName(), scroll.scroll.toString());
             }
             
-            return new MacroActionDescription(timestamp, action.getActionType(), "");
+            return new MacroActionDescription(timestamp, action.getName(), "");
         }
         
         @Override

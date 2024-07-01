@@ -110,7 +110,7 @@ public interface ChooseStringPresenter {
         }
         
         private void saveAndExit() {
-            if (view.isVisible()) {
+            if (view.isErrorVisible()) {
                 delegate.showError(view, "Cannot save", "Enter a valid value.");
                 return;
             }

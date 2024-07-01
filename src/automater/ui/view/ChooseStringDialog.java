@@ -67,6 +67,10 @@ public class ChooseStringDialog extends javax.swing.JDialog implements View {
     
     // # Fields
     
+    public boolean isErrorVisible() {
+        return errorLabel.isVisible();
+    }
+    
     public @NotNull String getFieldText() {
         return textField.getText();
     }
